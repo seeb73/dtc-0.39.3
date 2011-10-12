@@ -17,6 +17,7 @@ function fetchmail_generate() {
 	$num=0;    
 	$fetchline="";
 	while ($row=mysql_fetch_assoc($result)) {
+		if ($row['checkit'] != "yes") continue;
 		/* Yes, only pop3 yet. Must specify it, auto is *sloooow* */
 		$fetchline.="poll ${row['pop3_server']} proto POP3\n";
 		$fetchline.="qvirtual \"MFY\"\n";
@@ -28,7 +29,8 @@ function fetchmail_generate() {
 
 		$num++;
 	}
-	file_put_contents($filename,$fetchline);
+	file_put_contents($filename,$fetchline,LOCK_EX);
+	chmod($filename,0600);
 	$console.="Number of fetchmailrc entries generated: ".$num."\n";
 	updateUsingCron("gen_fetchmail='no'");
 }
