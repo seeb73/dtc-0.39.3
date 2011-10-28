@@ -1045,6 +1045,7 @@ $dtc_database = array(
 			"unicrow" => "int(2) NOT NULL default '0'",
 			"currency_symbol" => "varchar(16) NOT NULL default '$'",
 			"currency_letters" => "varchar(16) NOT NULL default 'USD'",
+			"use_products_for_renewal" => "enum('yes','no') NOT NULL default 'no'",
 			"use_paypal" => "enum('yes','no') NOT NULL default 'no'",
 			"paypal_rate" => "float(6,2) NOT NULL default '0.00'",
 			"paypal_flat" => "float(6,2) NOT NULL default '0.00'",

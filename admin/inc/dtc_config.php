@@ -1653,6 +1653,21 @@ function drawDTCpayConfig(){
 	$out .= configEditorTemplate($dsc);
 
 	$dsc = array(
+		"title" => _("Use vps, dedicated and custom productd as renewall products"),
+		"action" => "use_products_for_renewal",
+		"forward" => array("rub","sousrub"),
+		"cols" => array(
+			"use_products_for_renewal" => array(
+				"legend" => _("Use vps, dedicated and custom productd as renewall products: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))) ));
+	$out .= configEditorTemplate($dsc,"secpay");
+	$out .= _("When this option is Yes, the client can renew his vps, 
+		dedicated or custom product with the plan that already has, allowing
+		renewall of products that don't have renewal products")."<br>";
+
+	$dsc = array(
 		"title" => _("Affiliation"),
 		"action" => "affiliate_edit",
 		"forward" => array("rub","sousrub"),
