@@ -292,7 +292,8 @@ $dtc_database = array(
 			"this_server_default_tld" => "varchar(10) NOT NULL default '.com'",
 			"panel_logolink" => "varchar(255) NOT NULL default 'default'",
 			"invoice_scp_addr" => "varchar(255) NOT NULL default ''",
-			"invoice_scp_when" => "enum('day','month') NOT NULL default 'day'"
+			"invoice_scp_when" => "enum('day','month') NOT NULL default 'day'",
+			"autogen_webmail_protocol" => "enum('http:','https:') NOT NULL default 'https:'"
 		),
 		"keys" => array(
 			"unicrow" => "(unicrow)"

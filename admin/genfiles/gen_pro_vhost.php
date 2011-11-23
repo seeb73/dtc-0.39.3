@@ -201,6 +201,7 @@ function pro_vhost_generate(){
 
 	global $conf_autogen_webmail_alias;
 	global $conf_autogen_webmail_type;
+	global $conf_autogen_webmail_protocol;
 	
 	global $conf_use_shared_ssl;
 	$vhost_file = "";
@@ -402,11 +403,7 @@ AND $pro_mysql_admin_table.adm_login=$pro_mysql_domain_table.owner;";
 </Directory>\n";
 
 	if($conf_autogen_webmail_alias == "yes"){
-		if($conf_autogen_webmail_type == "squirrelmail"){
-			$vhost_file .= "RedirectPermanent /webmail https://$conf_administrative_site/squirrelmail\n";
-		}else{
-			$vhost_file .= "RedirectPermanent /webmail https://$conf_administrative_site/roundcube\n";
-		}
+		$vhost_file .= "RedirectPermanent /webmail $conf_autogen_webmail_protocol//$conf_administrative_site/$conf_autogen_webmail_type\n";
 	}
 
 	#############################

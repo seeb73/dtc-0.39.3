@@ -1242,6 +1242,10 @@ function drawGeneralConfig(){
 				"type" => "radio",
 				"display_replace" => array("Roundcube","Squirrelmail"),
 				"values" => array("roundcube","squirrelmail")),
+			"autogen_webmail_protocol" => array(
+				"legend" => _("Protocol to use for the /webmail alias: "),
+				"type" => "radio",
+				"values" => array("http:","https:")),
 			"apache_directoryindex" => array(
 				"legend" => _("Apache DirectoryIndex Config: "),
 				"size" => "50",
