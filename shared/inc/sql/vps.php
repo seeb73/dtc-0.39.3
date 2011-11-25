@@ -89,6 +89,7 @@ if(isset($_REQUEST["action"]) && ($_REQUEST["action"] == "shutdown_vps" || $_REQ
 	if(checkVPSAdmin($adm_login,$adm_pass,$vps_node,$vps_name) == true){
 		$q = "SELECT * FROM $pro_mysql_vps_table WHERE vps_xen_name='$vps_name' AND vps_server_hostname='$vps_node' AND locked='no';";
 		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysql_num_rows($r);
 		if($n != 1){
 			$submit_err = _("Access not granted (VPS is locked), line ") .__LINE__. _(" file ") .__FILE__;
 		}
