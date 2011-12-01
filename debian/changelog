@@ -1,3 +1,16 @@
+dtc (0.34.6-1) experimental; urgency=low
+
+  * New upstream release:
+    - New option for forcing SSL for the /webmail redirection.
+    - New uptions to pay and edit custom products, thanks to Javier Marcon.
+    - Fixes the "access not granted" for VPSes.
+    - Fixes VAT calculation in invoices (payments and accounting exports were
+    already correct) thanks to Jess Norwell.
+    - Fixed CBand apache module directives, thanks to Javier Marcon.
+    - Fixes English text in the replaying_stoplist postfix maps.
+
+ -- Thomas Goirand <zigo@debian.org>  Thu, 01 Dec 2011 13:46:40 +0800
+
 dtc (0.34.5-1) experimental; urgency=low
 
   * New upstream release:
