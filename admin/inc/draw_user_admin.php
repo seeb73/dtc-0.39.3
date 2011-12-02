@@ -421,7 +421,7 @@ dtcFromOkDraw()."
 	}
 	// Draw the list of users awaiting for an account
 	$waiting_new_users = "<h3>". _("User and domain waiting for addition:") ."</h3>";
-	$q = "SELECT * FROM $pro_mysql_new_admin_table ORDER BY date,time";
+	$q = "SELECT * FROM $pro_mysql_new_admin_table WHERE archive='no' ORDER BY date,time";
 	$r = mysql_query($q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
 	$n = mysql_num_rows($r);
 	if($n < 1){
@@ -508,9 +508,11 @@ dtcFromOkDraw()."
 				$waiting_new_users .= _("Country match: ").$fnt.$maxmind["countryMatch"]." (".$maxmind["countryCode"].")".$fnt2;
 				$waiting_new_users .= "</td>";
 			}
-			$waiting_new_users .= "<$td style=\"white-space:nowrap\"><a target=\"_blank\" href=\"/dtcadmin/view_waitingusers.php?reqadm_id=".$a["id"]."\">". _("Edit") ."</a><br/>
-			<a href=\"?action=valid_waiting_user&reqadm_id=".$a["id"]."\">". _("Add") ."</a><br/>
-			<a href=\"?action=delete_waiting_user&reqadm_id=".$a["id"]."\">". _("Delete") ."</a></td>";
+			$waiting_new_users .= "<$td><table border=\"0\" cellspacing=\"1\" cellpadding=\"0\"><tr>
+			<td><a href=\"?action=valid_waiting_user&reqadm_id=".$a["id"]."\">". dtcAddButton() ."</a></td>
+			<td><a href=\"?action=delete_waiting_user&reqadm_id=".$a["id"]."\">". dtcDeleteButton() ."</a></td></tr>
+			<tr><td><a target=\"_blank\" href=\"/dtcadmin/view_waitingusers.php?reqadm_id=".$a["id"]."\">". dtcEditButton() ."</a></td>
+			<td><a href=\"?action=archive_waiting_user&reqadm_id=".$a["id"]."\">". dtcArchiveButton() ."</a></td></tr></table></td>";
 			$waiting_new_users .= "</tr>";
 		}
 		$waiting_new_users .= "</table>";
@@ -698,7 +700,9 @@ dtcFromOkDraw()."
 				break;
 			}
 			$waiting_new_users .= "<$td>$heb_type</td>";
-			$waiting_new_users .= "<$td style=\"white-space:nowrap\"><a href=\"?action=validate_renewal&id=".$a["id"]."\">". _("Validate") ."</a> <a href=\"?action=delete_renewal&id=".$a["id"]."\">". _("Del") ."</a></td>";
+			$waiting_new_users .= "<$td style=\"white-space:nowrap\">
+			<table border=\"0\" cellspacing=\"1\" cellpadding=\"0\"><tr>
+			                        <td><a href=\"?action=validate_renewal&id=".$a["id"]."\">". dtcAddButton() ."</a></td><td><a href=\"?action=delete_renewal&id=".$a["id"]."\">". dtcDeleteButton() ."</a></td></tr></table></td>";
 			$waiting_new_users .= "</tr>";
 		}
 		$waiting_new_users .= "</table>";

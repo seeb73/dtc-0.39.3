@@ -116,6 +116,28 @@ function dtcAddButton(){
 	return $delete;
 }
 
+function dtcEditButton(){
+	global $gfx_icn_path_editme;
+
+	if(isset($gfx_icn_path_editme)){
+		$delete = "<div class=\"btn_p_container\" onMouseOver=\"this.className='btn_p_container-hover';\" onMouseOut=\"this.className='btn_p_container';\"><input type=\"image\" src=\"".$gfx_icn_path_editme."\"></div>";
+	}else{
+		$delete = "<input type=\"image\" src=\"gfx/stock_add_24.png\">";
+	}
+	return $delete;
+}
+
+function dtcArchiveButton(){
+	global $gfx_icn_path_compress;
+
+	if(isset($gfx_icn_path_compress)){
+		$delete = "<div class=\"btn_p_container\" onMouseOver=\"this.className='btn_p_container-hover';\" onMouseOut=\"this.className='btn_p_container';\"><input type=\"image\" src=\"".$gfx_icn_path_compress."\"></div>";
+	}else{
+		$delete = "<input type=\"image\" src=\"gfx/stock_add_24.png\">";
+	}
+	return $delete;
+}
+
 function dtcFromOkDraw($delete_form=""){
 	$out = "<tr><td>&nbsp;</td><td>".dtcApplyButton()."$delete_form</td></tr>";
 	return $out;

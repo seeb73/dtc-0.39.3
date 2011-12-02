@@ -18,6 +18,8 @@ $gfx_icn_path_generate_pass = "$tmp_path/buttons/btn_generatepass.gif";
 $gfx_icn_path_seepass = "$tmp_path/buttons/btn_seepass.gif";
 $gfx_icn_path_add = "$tmp_path/buttons/btn_p_add.png";
 $gfx_icn_path_delete = "$tmp_path/buttons/btn_p_delete.png";
+$gfx_icn_path_editme = "$tmp_path/buttons/btn_p_edit.gif";
+$gfx_icn_path_compress = "$tmp_path/buttons/btn_p_compress.gif";
 $gfx_icn_path_ok = "$tmp_path/buttons/btn_p_ok.png";
 $gfx_icn_path_help = "$tmp_path/buttons/btn_help.png";
 

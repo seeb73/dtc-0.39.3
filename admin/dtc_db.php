@@ -750,7 +750,7 @@ $dtc_database = array(
 			"last_used_lang" => "varchar(32) NOT NULL default 'en_US.UTF-8'",
 			"add_service" => "enum('yes','no') NOT NULL default 'no'",
 			"customfld" => "text",
-			"archive" => "enum('yes','no') NOT NULL default 'yes'"
+			"archive" => "enum('yes','no') NOT NULL default 'no'"
 		),
 		"primary" => "(id)"
 	),
