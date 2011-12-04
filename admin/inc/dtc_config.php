@@ -590,7 +590,7 @@ function drawTicketConfig(){
 
 	$all_lists = array();
 	$domains[] = _("no list selected");
-	$q = "SELECT * FROM $pro_mysql_list_table WHERE domain='$conf_all_customers_list_domain';";
+	$q = "SELECT * FROM $pro_mysql_list_table WHERE domain='$conf_all_customers_list_domain' ORDER BY name;";
 	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said ".mysql_error());
 	$n = mysql_num_rows($r);
 	for($i=0;$i<$n;$i++){
