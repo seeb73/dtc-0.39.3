@@ -649,7 +649,10 @@ function drawTicketConfig(){
 			// Then we get a list of all the users and we subscribe them
 			$old_file = "";
 			$addr_list = "";
+			// This is absolutely all customer, all time, even deleted admins
 			$q = "SELECT DISTINCT email FROM $pro_mysql_client_table ORDER BY email";
+			// This is all customer having a domain name (so, shared accounts)
+			//$q = "SELECT DISTINCT clients.email FROM clients,admin,domain WHERE clients.id=admin.id_client AND domain.owner=admin.adm_login ORDER BY email";
 			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 			$n = mysql_num_rows($r);
 			for($i=0;$i<$n;$i++){
