@@ -1,0 +1,5 @@
+
+Šo paziņojumu automātiksi nosūtīja Domain Technologie Control (DTC)
+robots. DTC - atvērtā koda pārvaldības panelis, paredzēts komerciālam
+hostingam, kuru izstrādājusi GPLHost kompānija. Sīkāka informācija
+pieejama http://www.gplhost.com/software.html lapā.
