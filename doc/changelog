@@ -745,7 +745,7 @@ mkdir -p /etc/apache/ssl; cd /etc/apache/ssl
 Step 1 - create the key and request:
   openssl req -new > new.cert.csr
 Step 2 - remove the passphrase from the key (optional):
-  openssl rsa -in privkey.pem -out new.cert.key
+  openssl rsa:2048 -in privkey.pem -out new.cert.key
 Step 3 - convert request into signed cert:
    openssl x509 -in new.cert.csr -out new.cert.cert -req -signkey new.cert.key -days 365
 [/quoting apache-ssl.org]

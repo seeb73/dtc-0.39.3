@@ -1597,7 +1597,7 @@ generateOpenSSLApacheCert () {
 					echo ""$conf_cert_email;
 					echo ""$conf_cert_challenge_pass;
 					echo ""$conf_cert_organization; ) | openssl req -passout file:$CERTPASS_TMP_FILE -new > new.cert.csr
-					openssl rsa -passin file:$CERTPASS_TMP_FILE -in privkey.pem -out new.cert.key
+					openssl rsa:2048 -passin file:$CERTPASS_TMP_FILE -in privkey.pem -out new.cert.key
 					openssl x509 -in new.cert.csr -out new.cert.cert -req -signkey new.cert.key -days 3650
 					rm $CERTPASS_TMP_FILE
 					echo "To make use of certificate chains as described in http://www.modssl.org/docs/2.8/ssl_reference.html#ToC12, place the chain certificate file into this directory and name it new.cert.ca. It will then be included through a SSLCertificateChainFile directive." >certificate-chain-file.readme 
@@ -3253,7 +3253,7 @@ db_client_flags = 0
 							 exit 2)
 						echo
 					echoIfVerbose " - generating certificate key.."
-					openssl rsa -passin file:$CERTPASS_TMP_FILE -in privkey.pem -out new.cert.key  ||
+					openssl rsa:2048 -passin file:$CERTPASS_TMP_FILE -in privkey.pem -out new.cert.key  ||
 						(echo " * Problem generating certificate key. If you continue your connections may be insecure." 1>&2 &&
 						 exit 2)
 					echo
@@ -3415,7 +3415,7 @@ configProftpd () {
 								echo $conf_cert_email;
 								echo $conf_cert_challenge_pass;
 								echo $conf_cert_organization; ) | openssl req -passout file:$CERTPASS_TMP_FILE -new > new.cert.csr
-							openssl rsa -passin file:$CERTPASS_TMP_FILE -in privkey.pem -out new.cert.key
+							openssl rsa:2048 -passin file:$CERTPASS_TMP_FILE -in privkey.pem -out new.cert.key
 							openssl x509 -in new.cert.csr -out new.cert.cert -req -signkey new.cert.key -days 3650
 							rm $CERTPASS_TMP_FILE
 						fi

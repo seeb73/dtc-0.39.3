@@ -73,7 +73,7 @@ if [ ! -e $MY_PATH/$COMMON_NAME.cert.new ] ; then
 		echo "fake@example-domain.com";
 		echo $CHALLENGE_PASS;
 		echo "Orga1"; ) | $OPENSSL req -passout file:$CERTPASS_TMP_FILE -new > $COMMON_NAME.cert.csr
-		$OPENSSL rsa -passin file:$CERTPASS_TMP_FILE -in privkey.pem -out $COMMON_NAME.cert.key
+		$OPENSSL rsa:2048 -passin file:$CERTPASS_TMP_FILE -in privkey.pem -out $COMMON_NAME.cert.key
 		$OPENSSL x509 -in $COMMON_NAME.cert.csr -out $COMMON_NAME.cert.cert -req -signkey $COMMON_NAME.cert.key -days 3650
 		/bin/rm $CERTPASS_TMP_FILE
 		cd $OLDCWD
