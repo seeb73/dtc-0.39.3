@@ -33,8 +33,11 @@ function delete_old_files_in_tmp(){
 	$n = mysql_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysql_fetch_array($r);
-		$fullpath = $a["path"]."/".$a["name"]."/subdomains/".$a["subdomain_name"]."/tmp";
 		// Delete files older than 7 days (atime adds one day to the +6...)
+		$fullpath = $a["path"]."/".$a["name"]."/subdomains/".$a["subdomain_name"]."/tmp";
+		$cmd = "find $fullpath -atime +6 -exec rm {} \;";
+		if(file_exists($fullpath)) exec($cmd);
+		$fullpath = $a["path"]."/".$a["name"]."/subdomains/".$a["subdomain_name"]."/var/lib/php5";
 		$cmd = "find $fullpath -atime +6 -exec rm {} \;";
 		if(file_exists($fullpath)) exec($cmd);
 	}
