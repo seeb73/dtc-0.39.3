@@ -1,3 +1,10 @@
+dtc (0.34.6-2) experimental; urgency=low
+
+  * New upstream release:
+    - Also cleans old PHP session files in var/lib/php5 of sbox_aufs vhosts.
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 27 Dec 2011 14:55:51 +0800
+
 dtc (0.34.6-1) experimental; urgency=low
 
   * New upstream release:
