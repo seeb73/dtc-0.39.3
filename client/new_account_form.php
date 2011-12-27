@@ -89,7 +89,7 @@ function register_user($adding_service="no"){
 	}
 
 	// If shared or ssl hosting or custom with domain, we MUST do type checkings
-	if($db_product["heb_type"] == "shared" || $db_product["heb_type"] == "ssl" || $db_product["heb_type"] == "dedicated" || ($db_product["heb_type"] == "custom" && $db_product["reqdomain"] == "yes")){
+	if($db_product["heb_type"] == "shared" || $db_product["heb_type"] == "ssl" || $db_product["heb_type"] == "server" || ($db_product["heb_type"] == "custom" && $db_product["reqdomain"] == "yes")){
 		if(!isHostnameOrIP($_REQUEST["domain_name"].$_REQUEST["domain_tld"])){
 			$ret["err"] = 2;
 			$ret["mesg"] = _("Domain name seems to be incorrect.") ;
@@ -620,7 +620,7 @@ function registration_form(){
 	if(isset($_REQUEST["custom_notes"]))	$frm_custom_notes = htmlspecialchars($_REQUEST["custom_notes"]);
 	else	$frm_custom_notes = "";
 
-	if($heb_type == "all" || $heb_type == "shared" || $heb_type == "ssl"){
+	if($heb_type == "all" || $heb_type == "shared" || $heb_type == "server" || $heb_type == "ssl"){
 		$domname_hidden = " style=\"white-space:nowrap;\" ";
 	}else{
 		$domname_hidden = " style=\"display:none;visibility:hidden;white-space:nowrap;\" ";
