@@ -46,11 +46,10 @@ if($sousrub == "register"){
 	$ZeContent = '
 	
 <div id="FRAMEDIV_ID" style="width:100%;height:100%;display:none;">
-<iframe id="FRAME_ID" allowtransparency="true" overflow="visible" frameborder="0" src="//'.$_SERVER["HTTP_HOST"].'/dtc/new_account.php?product_id=';
+<iframe id="FRAME_ID" allowtransparency="true" overflow="visible" frameborder="0" src="//'.$_SERVER["HTTP_HOST"].'/dtc/new_account.php';
 	if(isset($_REQUEST["product_id"]) && preg_match("/[a-zA-Z0-9]/", $_REQUEST["product_id"])){
-		$ZeContent .= $_REQUEST["product_id"];
+	    $ZeContent .= '?product_id='.$_REQUEST["product_id"];
 	}
-$_REQUEST["product_id"];
 	$heb_types = array('shared', 'ssl', 'vps', 'server');
 	if(isset($_REQUEST["heb_type"]) && preg_match("/[a-zA-Z0-9\_]/", $_REQUEST["heb_type"])){
 		if(in_array(strtolower($_REQUEST["heb_type"]),$heb_types) or preg_match("/custom_[0-9]{1,11}/", $_REQUEST["heb_type"])){
