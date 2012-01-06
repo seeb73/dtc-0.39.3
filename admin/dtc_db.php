@@ -48,8 +48,7 @@ $dtc_database = array(
 			"ob_next" => "varchar(64) NOT NULL default ''",
 			"last_used_lang" => "varchar(32) NOT NULL default 'en_US.UTF-8'",
 			"recovery_token" => "varchar(64) NOT NULL default ''",
-			"recovery_timestamp" => "int(12) NOT NULL default '0'",
-			"max_ssh" => "int(12) NOT NULL default '3'"
+			"recovery_timestamp" => "int(12) NOT NULL default '0'"
 		),
 		"primary" => "(adm_login)",
 		"index" => array(
