@@ -20,6 +20,11 @@ function register_user($adding_service="no"){
 
 	global $gettext_lang;
 
+	global $conf_dtc_system_username;
+	global $pro_mysql_domain_table;
+	global $pro_mysql_dedicated_table;
+	global $pro_mysql_custom_product_table;
+
 	get_secpay_conf();
 
 	// Check if all fields are blank, in wich case don't display error
@@ -66,7 +71,7 @@ function register_user($adding_service="no"){
 		$ret["mesg"] = _("User login format incorrect. Username must contain only letters and numbers and contain 4 to 16 characters.") ;
 		return $ret;
 	}
-	if($_REQUEST["reqadm_login"] == "root" || $_REQUEST["reqadm_login"] == "debian-sys-maint"){
+	if($_REQUEST["reqadm_login"] == "root" || $_REQUEST["reqadm_login"] == "debian-sys-maint" || $_REQUEST["reqadm_login"] == $conf_dtc_system_username){
 		$ret["err"] = 2;
 		$ret["mesg"] = _("Username invalid: please choose a name other than root or debian-sys-maint") ;
 		return $ret;
@@ -93,6 +98,31 @@ function register_user($adding_service="no"){
 		if(!isHostnameOrIP($_REQUEST["domain_name"].$_REQUEST["domain_tld"])){
 			$ret["err"] = 2;
 			$ret["mesg"] = _("Domain name seems to be incorrect.") ;
+			return $ret;
+		}
+		// check duplicated domains
+		$heb_type_tables = array("shared" => $pro_mysql_domain_table,
+		    "ssl" => $pro_mysql_domain_table,
+		    "server" => $pro_mysql_dedicated_table,
+		    "custom" => $pro_mysql_custom_product_table);
+		$heb_type_fields = array("shared" => "name",
+		    "ssl" => "name",
+		    "server" => "server_hostname",
+		    "custom" => "domain");
+		$q = "SELECT ".$heb_type_fields[$db_product["heb_type"]]." FROM ".$heb_type_tables[$db_product["heb_type"]]." WHERE ".$heb_type_fields[$db_product["heb_type"]]."='".$_REQUEST["domain_name"].$_REQUEST["domain_tld"]."';";
+		$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+		$n = mysql_num_rows($r);
+		if($n > 0){
+			$ret["err"] = 3;
+			$ret["mesg"] = _("Domain name already taken. Try again.") ;
+			return $ret;
+		}
+		$q = "SELECT domain_name FROM $pro_mysql_new_admin_table WHERE domain_name='".$_REQUEST["domain_name"].$_REQUEST["domain_tld"]."';";
+		$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+		$n = mysql_num_rows($r);
+		if($n > 0){
+			$ret["err"] = 3;
+			$ret["mesg"] = _("Domain name already taken. Try again.") ;
 			return $ret;
 		}
 	// If not a shared, a dedicated or ssl account, it's a VPS or custom without domain:
