@@ -68,8 +68,11 @@ ssh ${DST} rm -rf ${rem_dir}
 echo "done"
 
 echo "===> DTC Migrate script: upload of all files"
-echo "rsync -e ssh -azvp ${RSYNCOPT} /var/www/sites/ ${DST}:/var/www/sites"
-nice rsync -e ssh -azvp ${RSYNCOPT} /var/www/sites/ ${DST}:/var/www/sites || true
+cd /var/www/sites
+EXCLUDE=""
+for i in */*/subdomains.aufs ; do EXCLUDE="${EXCLUDE} --exclude $i" ; done
+echo "rsync -e ssh -azvp ${RSYNCOPT} /var/www/sites/ ${DST}:/var/www/sites (excluding subdomains.aufs folders)"
+nice rsync ${EXCLUDE} -e ssh -azvp ${RSYNCOPT} /var/www/sites/ ${DST}:/var/www/sites || true
 echo "rsync of the MLMMJ and /etc/dtc folders"
 nice rsync -e ssh -azvp ${RSYNCOPT} /etc/mlmmj/ ${DST}:/etc/mlmmj
 nice rsync -e ssh -azvp /etc/dtc/ ${DST}:/etc/dtc
