@@ -297,7 +297,7 @@ admin/migrate_to_server.php admin/guess_ip.sh admin/dtc_migrate admin/dtc_import
 admin/get_invoices.php admin/create_sbox_bootstrap_copy admin/update_sbox_bootstrap_copy admin/remount_aufs
 
 # Owned by root, executed as DTC
-DTC_CRON_PHP_SCRIPT_FILES=admin/accesslog.php admin/maint_apache.php admin/stat_total_active_prods.php
+DTC_CRON_PHP_SCRIPT_FILES=admin/accesslog.php admin/maint_apache.php admin/stat_total_active_prods.php admin/show_attachment.php
 # Owned by root, executed by root
 DTC_CRON_SH_SCRIPT_FILES=admin/checkbind.sh
 # Ran as dtc user by the php scripts
