@@ -46,6 +46,9 @@ function ticket_get_attach(){
 	$tmp_name = $_FILES["attach"]["tmp_name"];
 	$filename = $_FILES["attach"]["name"];
 	$filetype = $_FILES["attach"]["type"];
+	if( (!isset($filetype) ) || $filetype == ""){
+		return "";
+	}
 	$types = explode("/",$filetype);
 	$prim = $types[0];
 	$sec = $types[1];
@@ -60,6 +63,12 @@ function ticket_get_attach(){
 		if($sec != "pdf" && $sec != "rar" && $sec != "rtf" && $sec != "zip" && $sec != "vnd.ms-powerpoint" &&
 				$sec != "vnd.oasis.opendocument.presentation" && $sec != "vnd.oasis.opendocument.spreadsheet" &&
 				$sec != "vnd.oasis.opendocument.text" && $sec != "x-httpd-php" && $sec != "x-tar" && $sec != "x-gtar"){
+			echo _("Sorry, we do not accept this type of file attachment");
+			return "";
+		}
+		break;
+	case "text":
+		if($sec != "plain"){
 			echo _("Sorry, we do not accept this type of file attachment");
 			return "";
 		}
