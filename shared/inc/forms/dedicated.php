@@ -12,6 +12,7 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	global $pro_mysql_raduser_table;
 
 	global $secpayconf_currency_letters;
+	global $secpayconf_use_products_for_renewal;
 
 	global $submit_err;
 
@@ -51,6 +52,23 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 		."<br>". _("Please renew it with one of the following options") ."<br>";
 	}else{
 		$out .= _("Your dedicated server will expire on the: ") .$dedicated["expire_date"];
+	}
+
+	if ($secpayconf_use_products_for_renewal == 'yes'){
+	    $q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$dedicated["product_id"]."';";
+	    $r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	    $n = mysql_num_rows($r);
+	    if($n == 1){
+		$a = mysql_fetch_array($r);
+		$out .= "<br><form action=\"/dtc/new_account.php\">
+		<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
+		<input type=\"hidden\" name=\"renew_type\" value=\"server\">
+		<input type=\"hidden\" name=\"product_id\" value=\"".$dedicated["product_id"]."\">
+		<input type=\"hidden\" name=\"server_id\" value=\"".$dedicated["id"]."\">
+		<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
+		".submitButtonStart().$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)".submitButtonEnd()."
+		</form><br>";
+	    }
 	}
 
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$dedicated["product_id"]."';";

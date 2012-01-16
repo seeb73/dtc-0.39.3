@@ -12,6 +12,7 @@ function drawAdminTools_VPS($admin,$vps){
 	global $vps_soap_err;
 
 	global $pro_mysql_product_table;
+	global $secpayconf_use_products_for_renewal;
 	global $pro_mysql_vps_ip_table;
 	global $pro_mysql_vps_server_table;
 
@@ -95,6 +96,23 @@ function drawAdminTools_VPS($admin,$vps){
 	}
 
 	// Renewal buttons
+	if ($secpayconf_use_products_for_renewal == 'yes'){
+	    $q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$vps["product_id"]."';";
+	    $r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	    $n = mysql_num_rows($r);
+	    if($n == 1){
+		$a = mysql_fetch_array($r);
+		$out .= "<br><br><form action=\"/dtc/new_account.php\">
+<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
+<input type=\"hidden\" name=\"renew_type\" value=\"vps\">
+<input type=\"hidden\" name=\"product_id\" value=\"".$vps["product_id"]."\">
+<input type=\"hidden\" name=\"vps_id\" value=\"".$vps["id"]."\">
+<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
+".submitButtonStart().$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)".submitButtonEnd()."
+		</form>";
+	    }
+	}
+
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$vps["product_id"]."';";
 	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	$n = mysql_num_rows($r);

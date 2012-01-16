@@ -53,15 +53,15 @@ function drawAdminTools_Custom($admin,$custom_id){
 	}
 
 	if ($secpayconf_use_products_for_renewal == 'yes'){
-	    $q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$custom_prod["product_id"]."';";
+	    $q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$custom_prod["product_id"]."';";
 	    $r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	    $n = mysql_num_rows($r);
-	    for($i=0;$i<$n;$i++){
+	    if($n == 1){
 		$a = mysql_fetch_array($r);
 		$out .= "<br><form action=\"/dtc/new_account.php\">
 		<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 		<input type=\"hidden\" name=\"renew_type\" value=\"custom\">
-		<input type=\"hidden\" name=\"product_id\" value=\"".$a["id"]."\">
+		<input type=\"hidden\" name=\"product_id\" value=\"".$custom_prod["product_id"]."\">
 		<input type=\"hidden\" name=\"custom_id\" value=\"".$custom_prod["id"]."\">
 		<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 		".submitButtonStart().$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)".submitButtonEnd()."
