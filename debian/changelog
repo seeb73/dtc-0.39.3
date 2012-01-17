@@ -1,7 +1,29 @@
-dtc (0.34.6-2) experimental; urgency=low
+dtc (0.34.7-1) experimental; urgency=low
 
   * New upstream release:
     - Also cleans old PHP session files in var/lib/php5 of sbox_aufs vhosts.
+    - New user_migrate.sh script, to move users between DTC instances
+    automatically (also adds a dependency on curl).
+    - An option so that products wont need a separate renewal product for
+    renewals (Javier Marcon).
+    - Domain names are checked for existance at registration time, so that it's
+    not possible anymore to register a dedicated server with an already
+    installed domain name (Javier Marcon).
+    - fixed undefined product_id warning in default_admin_site.php (Javier
+    Marcon).
+    - Packages "show_attachment.php" for viewing support ticket attachments.
+    - Fixed display errors when sending a support ticket without an
+    attachment.
+    - Do not rsync subdomains.aufs when migrating a DTC instance with the
+    dtc_migrate script.
+    - Fixes max_ssh defined twice in dtc_db.php (no consequence, but it's still
+    better to fix).
+    - Domain name mandatory when registering a server (Javier Marcon).
+    - Also cleans old php sessions in var/lib/php5 in case of using sbox and
+    php as CGI.
+    - Some more lv_LV translations, thanks to Nauris Ešenvalds.
+    - Switches SSL cert generation to 2048 bits.
+    - Added some more graphics for the new admin pending list.
 
  -- Thomas Goirand <zigo@debian.org>  Tue, 27 Dec 2011 14:55:51 +0800
 
