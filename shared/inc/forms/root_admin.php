@@ -389,6 +389,9 @@ function drawDomainConfig($admin){
 	global $pro_mysql_vps_table;
 	global $pro_mysql_dedicated_table;
 	global $pro_mysql_subdomain_table;
+	global $pro_mysql_custom_product_table;
+	global $pro_mysql_custom_heb_types_fld_table;
+	global $pro_mysql_custom_heb_types_table;
 
 	global $conf_site_addrs;
 	global $conf_use_shared_ssl;
@@ -741,6 +744,76 @@ function drawDomainConfig($admin){
 					"help" => _("Bandwidth per month in GBytes."),
 					"size" => "5",
 					"legend" => _("Bandwidth per month") ),
+				"country_code" => array(
+					"type" => "popup",
+					"legend" => _("Country") ,
+					"values" => array_keys($cc_code_array),
+					"display_replace" => array_values($cc_code_array)),
+				"product_id" => array(
+					"type" => "popup",
+					"legend" => _("Product") ,
+					"values" => $prod_id,
+					"display_replace" => $prod_name)
+				));
+		$ret .= dtcDatagrid($dsc);
+	}
+
+	// Custom Product configuration
+	if(isset($admin["custom"])){
+		$servers = $admin["custom"];
+		$nbr_server = sizeof($servers);
+	}else{
+		$nbr_server = 0;
+	}
+	if($nbr_server > 0){
+		$q = "SELECT id,name FROM $pro_mysql_product_table WHERE heb_type='custom' AND renew_prod_id='0';";
+		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysql_num_rows($r);
+		$prod_name = array();
+		$prod_id = array();
+		for($i=0;$i<$n;$i++){
+			$a = mysql_fetch_array($r);
+			$prod_name[] = $a["name"];
+			$prod_id[] = $a["id"];
+		}
+
+		$dsc = array(
+			"table_name" => $pro_mysql_custom_product_table,
+			"title" => "",
+			"action" => _("Configuration of the Custom product") ,
+			"forward" => array("rub","adm_login","adm_pass"),
+			"skip_deletion" => "yes",
+			"skip_creation" => "yes",
+			"where_condition" => "owner='$adm_login'",
+			"cols" => array(
+				"id" => array(
+					"type" => "id",
+					"display" => "no",
+					"legend" => "id"),
+				"domain" => array(
+					"type" => "text",
+					"legend" => _("Domain") ),
+				"start_date" => array(
+					"type" => "text",
+					"help" => _("Format: YYYY-MM-DD."),
+					"size" => "10",
+					"legend" => _("Registration") ),
+				"expire_date" => array(
+					"type" => "text",
+					"help" => _("Format: YYYY-MM-DD."),
+					"size" => "10",
+					"legend" => _("Expiration") ),
+				/* "custom_heb_type_fld" => array(
+					"type" => "custom_fld",
+					"legend" => _("Custom fields"),
+					"main_table" => $pro_mysql_custom_heb_types_fld_table,
+					"second_table" => $pro_mysql_custom_heb_types_table,
+					"third_table" => $pro_mysql_product_table,
+					"main_join_clause" => $pro_mysql_custom_heb_types_fld_table.".custom_heb_type_id = ".$pro_mysql_custom_heb_types_table.".id",
+					"second_join_clause" => $pro_mysql_custom_heb_types_table.".id = ".$pro_mysql_product_table.".custom_heb_type",
+					"where_field" => $pro_mysql_product_table.".id",
+					"order_field" => "widgetorder"
+				), */
 				"country_code" => array(
 					"type" => "popup",
 					"legend" => _("Country") ,
