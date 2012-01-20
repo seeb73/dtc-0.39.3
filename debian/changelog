@@ -1,3 +1,10 @@
+dtc (0.34.8-1) experimental; urgency=low
+
+  * Reverted commit 89314dc189743c377b8b8eaa3c7af5281562367c for RSA 2048 bits,
+  as it seems to break the install process.
+
+ -- Thomas Goirand <zigo@debian.org>  Fri, 20 Jan 2012 17:56:43 +0800
+
 dtc (0.34.7-1) experimental; urgency=low
 
   * New upstream release:
