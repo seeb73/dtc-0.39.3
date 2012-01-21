@@ -1,0 +1,45 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:          dtc
+# Required-Start:    $local_fs $remote_fs $network $syslog $named
+# Required-Stop:     $local_fs $remote_fs $network $syslog $named apache2
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# X-Start-Before:    apache2
+# Short-Description: Mounts aufs filesystems holding the chroot systems
+# Description:       Mounts aufs filesystems holding the chroot systems
+#                    of your vhosts before apache2 starts.
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+if ! [ -x /usr/share/dtc/admin/remount_aufs ] ; then
+	exit 0
+fi
+
+case "${1}" in
+start)
+	log_daemon_msg "Mounting AUFS mount points for DTC" "aufs"
+	/usr/share/dtc/admin/remount_aufs
+	log_end_msg $?
+;;
+stop)
+	log_daemon_msg "Unmounting AUFS mount points for DTC" "aufs"
+	# This is disabled because you might have lock-ups due to AUFS bugs.
+	# But I'm keeping it here as a documentation.
+	# for i in `cat /proc/mounts | grep aufs | cut -d" " -f2 | more` ; do umount $i ; done
+	log_end_msg $?
+;;
+restart|reload|force-reload)
+	${0} stop
+	sleep 1
+	${0} start
+;;
+*)
+	echo "Usage: ${0} "'{start|stop|restart|reload}'
+	exit 1
+;;
+esac
+
+exit 0
