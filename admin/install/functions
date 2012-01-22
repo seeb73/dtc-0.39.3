@@ -3182,6 +3182,7 @@ auth default {
   }
 }
 plugin {
+	quota = maildir
 }
 ${DOVECOT_SSL_CERT_CONF}
 # End of DTC configuration v0.x : please don't touch this line !
