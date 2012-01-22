@@ -230,7 +230,7 @@ function get_secpay_conf(){
 	global $pro_mysql_secpayconf_table;
 
         $query = "SELECT * FROM $pro_mysql_secpayconf_table WHERE 1 LIMIT 1;";
-        $result = mysql_query($query)or die("Cannot query $query !!! line: ".__LINE__." file: ".__FULE__." sql said: ".mysql_error());
+        $result = mysql_query($query)or die("Cannot query $query !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
         $num_rows = mysql_num_rows($result);
         if($num_rows != 1)      die("No config values in table !!!");
         $row = mysql_fetch_array($result);
