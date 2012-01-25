@@ -22,7 +22,7 @@ PHP_PKGS="php5-cgi php5-mysql php5-curl php5-gd php5-imap php5-mcrypt php5-odbc 
 PERL_PKGS="perl"
 PYTHON_PKGS="python"
 RUBY_PKGS="ruby"
-UTILS="vim joe screen bash openssh-client ssmtp"
+UTILS="vim joe screen bash openssh-client ssmtp equivs"
 DO_ALL_PKGS="${PHP_PKGS} ${PERL_PKGS} ${PYTHON_PKGS} ${RUBY_PKGS} ${UTILS}"
 
 ############# get arch #############
@@ -93,6 +93,17 @@ if [ -f /etc/debian_version ] ; then
 		grep ^dtc:x: /etc/passwd >>${sbox_copy_disk_path}/etc/passwd
 	fi
 	chown -R dtc:dtcgrp ${sbox_copy_disk_path}
+
+	# Install a dummy web package
+	cd /root
+	if ! [ -f webserver-dummy_1.0_all.deb ] ; then
+		if [ -f /usr/share/doc/equivs/examples/webserver.ctl ] ; then
+			equivs-build /usr/share/doc/equivs/examples/webserver.ctl
+		fi
+	fi
+	if [ -f webserver-dummy_1.0_all.deb ] ; then
+		dpkg -i webserver-dummy_1.0_all.deb
+	fi
 else
 	echo "Currently only supported in Debian: sorry..."
 	exit 1
