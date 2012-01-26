@@ -1141,4 +1141,102 @@ function createSymLink($target, $link) {
 	}
 }
 
+function executeCustomActions($product_id, $action, $custom_id = null) {
+    global $conf_webmaster_email_addr;
+    global $pro_mysql_product_table;
+    global $pro_mysql_custom_product_table;
+    global $pro_mysql_custom_heb_types_table;
+    //global $pro_mysql_custom_heb_types_fld_table;
+    $arr_flds = array();
+
+    switch($action){
+	case "new":
+	    $acfield = "new_account_command";
+	    $actype = "new_account_execution_type";
+	    $subj = _("New Account");
+	    break;
+	case "expire":
+	    $acfield = "expiration_command";
+	    $actype = "expiration_execution_type";
+	    $subj = _("Expired");
+	    break;
+	case "renew":
+	    $acfield = "renewall_command";
+	    $actype = "renewall_execution_type";
+	    $subj = _("Renewall");
+	    break;
+	default:
+	    $acfield = "";
+	    $actype = "";
+	    $subj = "";
+	    break;
+    }
+
+    $q = "SELECT $pro_mysql_custom_heb_types_table.$acfield, $pro_mysql_custom_heb_types_table.$actype, $pro_mysql_product_table.custom_heb_type_fld FROM $pro_mysql_product_table LEFT JOIN $pro_mysql_custom_heb_types_table ON $pro_mysql_product_table.custom_heb_type = $pro_mysql_custom_heb_types_table.id WHERE $pro_mysql_product_table.id='$product_id';";
+    $r = mysql_query($q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+    $n = mysql_num_rows($r);
+    if($n != 1){
+	    die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__);
+    }
+    $actxt = mysql_fetch_array($r);
+    /*$q = "SELECT varname FROM $pro_mysql_custom_heb_types_fld_table WHERE custom_heb_type_id='$custom_type';";
+    $r = mysql_query($q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+    $n = mysql_num_rows($r);
+    for($i=0;$i<$n;$i++){
+	    $a = mysql_fetch_array($r);
+	    $arr_flds[$a[0]] = "";
+    }*/
+    // this are the default values stored in product table
+    $cus_fld = explode("|", $actxt[2]);
+    foreach ($cus_fld as $cur_fld_data){
+	$cur_fld = explode(":", $cur_fld_data);
+	if (count($cur_fld) > 0 ){
+		if (!isset($cur_fld[1])){
+			$cur_fld[1] = "";
+		}
+		$arr_flds["%%%".$cur_fld[0]."%%%"] = $cur_fld[1];
+	    }
+    }
+    if ($custom_id != null){
+	$qs = "SELECT custom_heb_type_fld FROM $pro_mysql_custom_product_table WHERE id='$product_id';";
+	$rs = mysql_query($qs)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+	$ns = mysql_num_rows($rs);
+	if($n != 1){
+		die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__);
+	}
+	$actxts = mysql_fetch_array($rs);
+	$cus_flds = explode("|", $actxts[0]);
+	foreach ($cus_flds as $cur_fld_datas){
+	    $cur_fld = explode(":", $cur_fld_datas);
+	    if (count($cur_fld) > 0 ){
+		if (!isset($cur_fld[1])){
+			$cur_fld[1] = "";
+		}
+		$arr_flds["%%%".$cur_fld[0]."%%%"] = $cur_fld[1];
+	    }
+	}
+    }
+
+    $cmd = str_replace(array_keys($arr_flds), array_values($arr_flds), $actxt[0]);
+
+    switch ($actxt[1]){
+	case "url":
+	    if (strtolower(substr($cmd, 0, 4)) != "http" or strtolower(substr($cmd, 0, 4)) != "ftp"){
+		$cmd = "http://".$cmd;
+	    }
+	    exec("wget -O - '".escapeshellarg($cmd)."' 2>&1 >/dev/null\n");
+	    break;
+	case "eval":
+	    eval($cmd);
+	    break;
+	case "admin_email":
+	    $subject = _("Custom Product")." ".$subj;
+	    $headers = "From: ".$conf_webmaster_email_addr;
+	    mail($conf_webmaster_email_addr, $subject, htmlspecialchars($cmd), $headers);
+	    break;
+	case "none":
+	default:
+	    break;
+    }
+}
 ?>

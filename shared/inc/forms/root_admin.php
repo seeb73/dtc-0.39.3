@@ -803,17 +803,10 @@ function drawDomainConfig($admin){
 					"help" => _("Format: YYYY-MM-DD."),
 					"size" => "10",
 					"legend" => _("Expiration") ),
-				/* "custom_heb_type_fld" => array(
-					"type" => "custom_fld",
-					"legend" => _("Custom fields"),
-					"main_table" => $pro_mysql_custom_heb_types_fld_table,
-					"second_table" => $pro_mysql_custom_heb_types_table,
-					"third_table" => $pro_mysql_product_table,
-					"main_join_clause" => $pro_mysql_custom_heb_types_fld_table.".custom_heb_type_id = ".$pro_mysql_custom_heb_types_table.".id",
-					"second_join_clause" => $pro_mysql_custom_heb_types_table.".id = ".$pro_mysql_product_table.".custom_heb_type",
-					"where_field" => $pro_mysql_product_table.".id",
-					"order_field" => "widgetorder"
-				), */
+				"custom_heb_type_fld" => array(
+					"type" => "text",
+					"legend" => _("Custom fields and values")
+				),
 				"country_code" => array(
 					"type" => "popup",
 					"legend" => _("Country") ,

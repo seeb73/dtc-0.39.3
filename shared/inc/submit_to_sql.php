@@ -245,6 +245,7 @@ login: ";
 A renewal have been paid! Here is the details of the renewal:
 
 login: ";
+		executeCustomActions($product["id"], 'renew', $renew_entry["renew_id"]);
 		break;
 	case "ssl_renew":
 		$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$renew_entry["adm_login"]."';";
@@ -615,6 +616,7 @@ last_used_lang   ,path            ,id_client,bandwidth_per_month_mb,quota,nbrdb,
 		// Read the (customizable) registration message to send
 		$txt_welcome_message = readCustomizedMessage("registration_msg/custom_".$product["custom_heb_type"]."_open",$waiting_login);
 		addCustomProductToUser($waiting_login,$new_admin["domain_name"],$product["id"]);
+		executeCustomActions($product["id"], 'new', null);
 		break;
 	default:
 		break;

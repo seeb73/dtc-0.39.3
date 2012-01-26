@@ -338,6 +338,12 @@ function sendCustomProductsReminderEmail($remaining_days,$file,$cust_heb_type_id
 	for($i=0;$i<$n;$i++){
 		$cust_pr = mysql_fetch_array($r);
 
+		// Execute custom action if it reaches the shutdown warning
+		if($remaining_days == -$conf_custom_renewal_lastwarning){
+			//remoteVPSAction($vps["vps_server_hostname"],$vps["vps_xen_name"],"shutdown_vps");
+			executeCustomActions($cust_heb_type_id, 'expire', $cust_pr["id"]);
+		}
+
 		// Get the admin
 		$q2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$cust_pr["owner"]."';";
 		$r2 = mysql_query($q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
