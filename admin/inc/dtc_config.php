@@ -775,6 +775,21 @@ function drawFTPBacupConfig(){
 		"forward" => array("rub","sousrub"),
 		"cols" => array(
 			"ftp_backup_activate" => array(
+				"legend" => _("Activate Backups:"),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"ftp_7z_mode" => array(
+				"legend" => _("Activate 7z compression instead of gzip:"),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"ftp_7z_level" => array(
+				"legend" => _("7z compression level:"),
+				"type" => "popup",
+				"values" => array("fastest","fast","normal","max","ultra"),
+				"display_replace" => array(_("Fastest"),_("Fast"),_("Normal"),_("Maximum"),_("Ultra"))),
+			"ftp_ftp_mode" => array(
 				"legend" => _("Activate FTP Backups:"),
 				"type" => "radio",
 				"values" => array("yes","no"),
@@ -804,7 +819,20 @@ function drawFTPBacupConfig(){
 				"legend" => _("Use active FTP connection to backup server:"),
 				"type"=>"radio",
 				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No")))));
+				"display_replace" => array(_("Yes"),_("No"))),
+			"ftp_ssh_mode" => array(
+				"legend" => _("Activate SSH Backups:"),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"ftp_backup_host_ssh" => array(
+				"legend" => _("Hostname:"),
+				"type" => "text",
+				"size" => "30"),
+			"ftp_backup_dest_folder_ssh" => array(
+				"legend" => _("SSH Destination folder:"),
+				"type" => "text",
+				"size" => "30")));
 	return configEditorTemplate ($dsc);
 }
 
