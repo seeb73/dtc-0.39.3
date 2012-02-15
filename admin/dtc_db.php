@@ -342,14 +342,11 @@ $dtc_database = array(
 			"id" => "int(11) NOT NULL auto_increment",
 			"name" => "varchar(32) NOT NULL default ''",
 			"reqdomain" => "enum('yes','no') NOT NULL default 'no'",
-			"new_account_execution_type" => "enum('none','url','eval','admin_email') NOT
-NULL default 'none'",
+			"new_account_execution_type" => "enum('none','url','eval','admin_email') NOT NULL default 'none'",
 			"new_account_command" => "text",
-			"expiration_execution_type" => "enum('none','url','eval','admin_email') NOT
-NULL default 'none'",
+			"expiration_execution_type" => "enum('none','url','eval','admin_email') NOT NULL default 'none'",
 			"expiration_command" => "text",
-			"renewall_execution_type" => "enum('none','url','eval','admin_email') NOT
-NULL default 'none'",
+			"renewall_execution_type" => "enum('none','url','eval','admin_email') NOT NULL default 'none'",
 			"renewall_command" => "text"
 		),
 		"primary" => "(id)",
