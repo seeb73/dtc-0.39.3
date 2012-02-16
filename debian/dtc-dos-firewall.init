@@ -2,8 +2,8 @@
 
 ### BEGIN INIT INFO
 # Provides:          dtc-dos-firewall
-# Required-Start:    $all
-# Required-Stop:
+# Required-Start:    $remote_fs $all
+# Required-Stop:     $remote_fs
 # Should-Start:      $local_fs
 # Should-Stop:       $local_fs
 # Default-Start:     2 3 4 5
@@ -15,6 +15,15 @@
 #                    just another attempt to make things a bit more smooth.
 ### END INIT INFO
 
+DESC="DTC DoS firewall"   
+NAME="dtc-dos-firewall"
+
+. /lib/lsb/init-functions
+
+if [ -r /lib/init/vars.sh ] ; then
+	. /lib/init/vars.sh
+fi
+
 IPTABLES=/sbin/iptables
 
 if [ -f /etc/dtc/dtc-dos-firewall.conf ] ; then
@@ -24,18 +33,6 @@ fi
 if [ -z "${INTERFACE}" ] ; then
 	INTERFACE="eth0"
 fi
-
-flush-input-chain () {
-	${IPTABLES} -F dtc-dos-in
-}
-
-create-dtc-dos-chain () {
-	# Create the chain (if it doesn't exists, then it should be inserted in the INPUT chain)
-	if ${IPTABLES} --new-chain dtc-dos-in ; then
-		${IPTABLES} -I INPUT -j dtc-dos-in
-	fi
-	${IPTABLES} -F dtc-dos-in
-}
 
 accept-localhost-traffic () {
 	${IPTABLES} -A dtc-dos-in -i lo -j ACCEPT
@@ -111,9 +108,35 @@ limit-ftp-connection-rate () {
 	${IPTABLES} -A dtc-dos-in -p tcp --dport 21 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${FTP_TIME} --hitcount ${FTP_RATE} -j REJECT
 }
 
+create-dtc-dos-chain () {
+	# Create the chain (if it doesn't exists, then it should be inserted in the INPUT chain)
+	CHAINTEST=`LC_ALL=C ${IPTABLES} -t filter -L -n | grep dtc-dos-in | awk '{printf $1}'`
+	if [ "${CHAINTEST}" = "dtc-dos-inChain" ] ; then
+		${IPTABLES} -F dtc-dos-in
+	elif [ "${CHAINTEST}" = "Chain" ] ; then
+		${IPTABLES} -I INPUT -j dtc-dos-in
+		${IPTABLES} -F dtc-dos-in
+	else
+		${IPTABLES} --new-chain dtc-dos-in
+		${IPTABLES} -I INPUT -j dtc-dos-in
+	fi
+}
+
+delete-dtc-dos-chain () {
+	CHAINTEST=`LC_ALL=C ${IPTABLES} -t filter -L -n | grep dtc-dos-in | awk '{printf $1}'`
+	if [ "${CHAINTEST}" = "dtc-dos-inChain" ] ; then
+		${IPTABLES} -D INPUT -j dtc-dos-in
+		${IPTABLES} -F dtc-dos-in
+		${IPTABLES} -X dtc-dos-in
+	elif [ "${CHAINTEST}" = "Chain" ] ; then
+		${IPTABLES} -F dtc-dos-in
+		${IPTABLES} -X dtc-dos-in
+	fi
+}
+
 case "${1}" in
 start)
-	# flush-input-chain
+	[ "${VERBOSE}" != no ] && log_daemon_msg "Starting ${DESC}" ${NAME}
 	create-dtc-dos-chain
 	accept-localhost-traffic
 	limit-ssh-login-rate
@@ -121,9 +144,12 @@ start)
 	limit-http-connection-rate
 	limit-ftp-connection-rate
 	limit-pop-and-imap-connection-rate
+	[ "${VERBOSE}" != no ] && log_end_msg 0
 ;;
 stop)
-	while iptables -D dtc-dos-in 1 ; do echo -n "" ; done
+	[ "${VERBOSE}" != no ] && log_daemon_msg "Stopping ${DESC}" ${NAME}
+	delete-dtc-dos-chain
+	[ "${VERBOSE}" != no ] && log_end_msg 0
 ;;
 restart|reload|force-reload)
 	${0} stop
