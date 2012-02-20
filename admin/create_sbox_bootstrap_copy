@@ -3,6 +3,21 @@
 # copy_path
 sbox_copy_disk_path=/var/lib/dtc/sbox_copy
 
+usage () {
+	echo "Usage: ${0} [debian-repository]"
+	exit 1
+}
+
+if [ $# -gt 1 ] ; then
+	usage
+fi
+
+if [ $# = 1 ] ; then
+	DEBIAN_REPOSITORY=${1}
+else
+	DEBIAN_REPOSITORY="http://cdn.debian.net/debian"
+fi
+
 FOUNDED_ARCH=`uname -m`
 
 case "$FOUNDED_ARCH" in
@@ -37,7 +52,7 @@ esac
 if [ -f /etc/debian_version ] ; then
 	mkdir -p /var/lib/dtc/sbox_copy
 	RELEASE=`lsb_release -c | awk '{print $2}'`
-	debootstrap --verbose --include=php5-cgi,locales-all --arch ${DEBIAN_BINARCH} ${RELEASE} ${sbox_copy_disk_path} http://cdn.debian.net/debian || debret=$?
+	debootstrap --verbose --include=php5-cgi,locales-all --arch ${DEBIAN_BINARCH} ${RELEASE} ${sbox_copy_disk_path} ${DEBIAN_REPOSITORY} || debret=$?
 	if [ "$debret" != "" ]; then
 		echo "create_sbox_bootstrap_copy: Failed to debootstrap"
 		exit 1
