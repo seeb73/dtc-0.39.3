@@ -15,8 +15,15 @@ require("../shared/autoSQLconfig.php"); // Our main configuration file
 require_once("$dtcshared_path/dtc_lib.php");
 
 function cleanTempFolder ($subdomain_path){
+	# Cleans the old folder (tmp) where php sessions used to be
 	if( is_dir("$subdomain_path/tmp") ){
 		$cmd = "find $subdomain_path/tmp -iname 'sess*' -mtime +2 -exec rm {} \\;";
+		echo $cmd."\n";
+		exec($cmd);
+	}
+	# Cleans the new folder where php sessions are using sbox_aufs
+	if( is_dir("$subdomain_path/var/lib/php5") ){
+		$cmd = "find $subdomain_path/var/lib/php5 -iname 'sess*' -mtime +2 -exec rm {} \\;";
 		echo $cmd."\n";
 		exec($cmd);
 	}
