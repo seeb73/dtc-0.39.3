@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dtc 0.32.2-1\n"
 "Report-Msgid-Bugs-To: dtc@packages.debian.org\n"
-"POT-Creation-Date: 2012-02-22 12:56+0800\n"
+"POT-Creation-Date: 2012-02-22 14:58+0800\n"
 "PO-Revision-Date: 2010-09-21 06:52+0900\n"
 "Last-Translator: Hideki Yamane (Debian-JP) <henrich@debian.or.jp>\n"
 "Language-Team: Japanese <debian-japanese@lists.debian.org>\n"
@@ -256,33 +256,15 @@ msgstr ""
 "アクセスは、ルートパスにある .htpasswd ファイルを介して手動で設定する必要があ"
 "ります。"
 
-#. Type: select
-#. Description
-#: ../dtc-common.templates:14001
-msgid "Mail Transfer Agent (MTA) type:"
-msgstr "メール転送エージェント (MTA) の種類"
-
-#. Type: select
-#. Description
-#: ../dtc-common.templates:14001
-msgid ""
-"Please select the MTA that will be used with DTC. It should be installed on "
-"the system already. If no such MTA is currently installed, please complete "
-"the setup of DTC, install a MTA package, then run \"dpkg-reconfigure dtc\"."
-msgstr ""
-"DTC で使う MTA を選んでください。既にシステムに導入されているものである必要が"
-"あります。現状そのような MTA が導入されていない場合は、DTC の設定を完了し、"
-"MTA パッケージを導入してから「dpkg-reconfigure dtc」を実行してください。"
-
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:15001
+#: ../dtc-common.templates:14001
 msgid "Use Cyrus mail system?"
 msgstr "Cyrus メールシステムを使いますか?"
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:15001
+#: ../dtc-common.templates:14001
 msgid ""
 "Please choose this option if you are using Cyrus for mail delivery, IMAP and "
 "MTA. This option is only compatible with Postfix."
@@ -292,13 +274,13 @@ msgstr ""
 
 #. Type: select
 #. Description
-#: ../dtc-common.templates:16001
+#: ../dtc-common.templates:15001
 msgid "Apache version to configure:"
 msgstr "設定する Apache のバージョン:"
 
 #. Type: select
 #. Description
-#: ../dtc-common.templates:16001
+#: ../dtc-common.templates:15001
 msgid ""
 "DTC supports both Apache and Apache2. Please enter the version which DTC "
 "should use."
@@ -308,13 +290,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:17001
+#: ../dtc-common.templates:16001
 msgid "Use \"NATed\" vhosts?"
 msgstr "「NAT された」 vhost を使いますか?"
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:17001
+#: ../dtc-common.templates:16001
 msgid ""
 "DTC can configure Apache to use one of your IP addresses. If the server is "
 "firewalled with NAT and port redirections of public IP(s) address(es), a "
@@ -326,7 +308,7 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:17001
+#: ../dtc-common.templates:16001
 msgid ""
 "This option should be chosen only if the server is not connected to the "
 "Internet directly, but through a firewall doing network address translation "
@@ -340,13 +322,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:18001
+#: ../dtc-common.templates:17001
 msgid "NATed LAN IP address:"
 msgstr "NAT された LAN の IP アドレス:"
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:18001
+#: ../dtc-common.templates:17001
 msgid ""
 "Please enter the IP address of the server for DTC to generate all vhosts "
 "that will be used by Apache."
@@ -356,13 +338,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:19001
+#: ../dtc-common.templates:18001
 msgid "Generate an SSL certificate for DTC?"
 msgstr "DTC 用に SSL 証明書を生成しますか?"
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:19001
+#: ../dtc-common.templates:18001
 msgid ""
 "If you choose this option, DTC will generate a self-signed SSL certificate "
 "and will use SSL to browse the panel. SSL will also be activated and the "
@@ -375,13 +357,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:19001
+#: ../dtc-common.templates:18001
 msgid "This certificate can be changed for a root CA certificate later."
 msgstr "この証明書は、後ほどルート CA 証明書に合わせて変更できます。"
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:19001
+#: ../dtc-common.templates:18001
 msgid ""
 "Previously-generated certificates will never be overwritten. To regenerate "
 "the certificate, you need to remove all the files in /usr/share/dtc/etc/ssl."
@@ -391,25 +373,25 @@ msgstr ""
 
 #. Type: password
 #. Description
-#: ../dtc-common.templates:20001
+#: ../dtc-common.templates:19001
 msgid "DTC certificate passphrase:"
 msgstr "DTC の証明書パスフレーズ:"
 
 #. Type: password
 #. Description
-#: ../dtc-common.templates:20001
+#: ../dtc-common.templates:19001
 msgid "Please choose a passphrase to protect the generated SSL certificate."
 msgstr "生成した SSL 証明書を保護するパスフレーズを入力してください。"
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:21001
+#: ../dtc-common.templates:20001
 msgid "Country code for the DTC SSL certificate:"
 msgstr "DTC 用 SSL 証明書の国コード:"
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:21001
+#: ../dtc-common.templates:20001
 msgid ""
 "Please enter the 2-letter country code for the generated certificate. This "
 "should usually be the code for the country the server is located in."
@@ -419,43 +401,43 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:22001
+#: ../dtc-common.templates:21001
 msgid "City name for the DTC SSL certificate:"
 msgstr "DTC 用 SSL 証明書の都市名:"
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:23001
+#: ../dtc-common.templates:22001
 msgid "Organization name for the DTC SSL certificate:"
 msgstr "DTC 用 SSL 証明書の組織名:"
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:24001
+#: ../dtc-common.templates:23001
 msgid "Organizational unit for the DTC SSL certificate:"
 msgstr "DTC 用 SSL 証明書の組織名:"
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:25001
+#: ../dtc-common.templates:24001
 msgid "Email address for the DTC SSL certificate:"
 msgstr "DTC 用 SSL 証明書のメールアドレス:"
 
 #. Type: password
 #. Description
-#: ../dtc-common.templates:26001
+#: ../dtc-common.templates:25001
 msgid "DTC SSL certificate challenge password:"
 msgstr "SSL 証明書のチャレンジパスワード:"
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:27001
+#: ../dtc-common.templates:26001
 msgid "DNSBL (DNS BlackList) list:"
 msgstr "DNSBL (DNS ブラックリスト) のリスト:"
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:27001
+#: ../dtc-common.templates:26001
 msgid ""
 "Please enter the list of preferred DNSBL servers to add to your Postfix mail "
 "server configuration."
@@ -464,13 +446,13 @@ msgstr ""
 
 #. Type: select
 #. Description
-#: ../dtc-common.templates:28001
+#: ../dtc-common.templates:27001
 msgid "Local address extension character:"
 msgstr "ローカルアドレスの拡張文字:"
 
 #. Type: select
 #. Description
-#: ../dtc-common.templates:28001
+#: ../dtc-common.templates:27001
 msgid ""
 "Please choose the character that will be used to define a local address "
 "extension. This MUST match what you have set in your postfix or qmail setup."
@@ -480,7 +462,7 @@ msgstr ""
 
 #. Type: select
 #. Description
-#: ../dtc-common.templates:28001
+#: ../dtc-common.templates:27001
 msgid ""
 "The recipient delimiter will be used for your mailing lists. Let's say you "
 "use the + char as delimiter, then your users will have to send a mail to list"
@@ -499,13 +481,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:29001
+#: ../dtc-common.templates:28001
 msgid "Subdomain name for the MX server:"
 msgstr "MX サーバのサブドメイン名:"
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:29001
+#: ../dtc-common.templates:28001
 msgid ""
 "Your mail server will need to use a subdomain name to accept mail. This "
 "subdomain will be configured in your mail server and your domain name server "
@@ -517,13 +499,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:30001
+#: ../dtc-common.templates:29001
 msgid "Network devices to monitor:"
 msgstr "監視するネットワークデバイス:"
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:30001
+#: ../dtc-common.templates:29001
 msgid ""
 "Please enter all the network devices you wish to be monitored by the RRDTool "
 "graphing utility."
@@ -533,13 +515,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:31001
+#: ../dtc-common.templates:30001
 msgid "Skip mknod calls when building the chroot template?"
 msgstr "chroot テンプレートの構築時に mknod の呼び出しをスキップしますか?"
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:31001
+#: ../dtc-common.templates:30001
 msgid ""
 "In some environments, such as Linux vServer, mknod cannot be executed. This "
 "option allows skipping the creation of the null, random and urandom devices "
@@ -551,13 +533,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:32001
+#: ../dtc-common.templates:31001
 msgid "Enforce DTC admin password encryption?"
 msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:32001
+#: ../dtc-common.templates:31001
 msgid ""
 "To enhance security in case of a breach, DTC can encrypt all admin "
 "passwords. If passwords are encrypted, you cannot see them by clicking on "
@@ -568,12 +550,26 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:32001
+#: ../dtc-common.templates:31001
 msgid ""
 "The encryption will be applied to passwords created from now on. If you have "
 "existing unencrypted admin passwords that should be converted, see /usr/"
 "share/doc/dtc-common/README.Debian."
 msgstr ""
+
+#~ msgid "Mail Transfer Agent (MTA) type:"
+#~ msgstr "メール転送エージェント (MTA) の種類"
+
+#~ msgid ""
+#~ "Please select the MTA that will be used with DTC. It should be installed "
+#~ "on the system already. If no such MTA is currently installed, please "
+#~ "complete the setup of DTC, install a MTA package, then run \"dpkg-"
+#~ "reconfigure dtc\"."
+#~ msgstr ""
+#~ "DTC で使う MTA を選んでください。既にシステムに導入されているものである必"
+#~ "要があります。現状そのような MTA が導入されていない場合は、DTC の設定を完"
+#~ "了し、MTA パッケージを導入してから「dpkg-reconfigure dtc」を実行してくださ"
+#~ "い。"
 
 #~ msgid "Allow to report anonymous statistics to GPLHost?"
 #~ msgstr "GPLHost への匿名での統計レポートを許可しますか?"

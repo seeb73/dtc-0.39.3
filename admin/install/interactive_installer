@@ -104,48 +104,7 @@ installerQuestions () {
 		conf_mysql_db="dtc"
 	fi
 
-	# conf_mta_type
-	if [ -f $PATH_POSTFIX_CONF -a -f $PATH_QMAIL_NEWU ]; then
-		if [ -z ""$conf_mta_type ] ; then
-			conf_mta_type=postfix
-		fi
-		echo ""
-		echo "Both Qmail and Postfix have been found on your system"
-		echo "and DTC needs to work with one of them."
-		echo "What MTA (Mail Tranport Agent, the one that"
-		echo "will route and deliver your incoming mail) do"
-		echo "you wish to use with DTC ? Type q for qmail"
-		echo "or type p for postfix."
-		if [ ""$conf_mta_type = "postfix" ] ; then
-			echo -n 'MTA type (Qmail or Postfix) [q/P]: '
-			read answer
-			if [ -z ""$answer ] ; then
-				conf_mta_type=postfix
-			fi
-		else
-			echo -n 'MTA type (Qmail or Postfix) [Q/p]: '
-			read answer
-			if [ -z ""$answer ] ; then
-				conf_mta_type=qmail
-			fi
-		fi
-		if [ ""$answer = "Q" -o ""$answer = "q" ]; then
-			conf_mta_type=qmail
-		fi
-		if [ ""$answer = "P" -o ""$answer = "p" ]; then
-			conf_mta_type=postfix
-		fi
-		if [ ! ""$conf_mta_type = "postfix" ] ; then
-			conf_mta_type=qmail
-		fi
-	elif [ -f $PATH_POSTFIX_CONF ]; then
-		conf_mta_type=postfix
-	elif [ -f $PATH_QMAIL_NEWU ]; then
-		conf_mta_type=qmail
-	else
-		echo "No MTA Available"
-		exit 1;
-	fi
+	conf_mta_type=postfix
 
 	# conf_use_cyrus
 	if [ -z ""$conf_use_cyrus -a -f $PATH_CYRUS_CONF ] ; then

@@ -19,8 +19,7 @@ debianGetDebconfValues () {
 	conf_mysql_db=$RET
 	db_get dtc/conf_mysql_change_root
 	conf_mysql_change_root=$RET
-	db_get dtc/conf_mta_type
-	conf_mta_type=$RET
+	conf_mta_type=postfix
 	db_get dtc/conf_use_cyrus
 	conf_use_cyrus=$RET
 	db_get dtc/main_domainname

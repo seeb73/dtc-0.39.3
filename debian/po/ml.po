@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dtc 20070331\n"
 "Report-Msgid-Bugs-To: dtc@packages.debian.org\n"
-"POT-Creation-Date: 2012-02-22 12:56+0800\n"
+"POT-Creation-Date: 2012-02-22 14:58+0800\n"
 "PO-Revision-Date: 2007-03-31 05:35+0530\n"
 "Last-Translator: Praveen|പ്രവീണ്‍ A|എ <pravi.a@gmail.com>\n"
 "Language-Team: Swathanthra|സ്വതന്ത്ര Malayalam|മലയാളം Computing|കമ്പ്യൂട്ടിങ്ങ്  <smc-"
@@ -250,34 +250,15 @@ msgstr ""
 "ദയവായി പ്രധാന ഡൊമൈന്‍ ഭരണാധികാരിയുടെ അടയാളവാക്ക് തിരഞ്ഞെടുക്കുക. നിയന്ത്രണ പാനലിലേക്കുള്ള "
 "സമീപനം റൂട്ട് പാത്തിലുള്ള .htpasswd ഫയല്‍ വഴി മാന്വലായി മാനേജ് ചെയ്യേണ്ടതുണ്ട്."
 
-#. Type: select
-#. Description
-#: ../dtc-common.templates:14001
-msgid "Mail Transfer Agent (MTA) type:"
-msgstr "കത്ത് എത്തിയ്ക്കുന്ന ഏജന്റ് (MTA) തരം:"
-
-#. Type: select
-#. Description
-#: ../dtc-common.templates:14001
-msgid ""
-"Please select the MTA that will be used with DTC. It should be installed on "
-"the system already. If no such MTA is currently installed, please complete "
-"the setup of DTC, install a MTA package, then run \"dpkg-reconfigure dtc\"."
-msgstr ""
-"ദയവായി DTC യുടെയൊപ്പം ഉപയോഗിയ്ക്കാന്‍ പോകുന്ന MTA ഏതെന്ന് തിരഞ്ഞെടുക്കുക. ഇത് സിസ്റ്റത്തില്‍ "
-"നേരത്തെ തന്നെ ഇന്‍സ്റ്റാള്‍ ചെയ്തിരിയ്ക്കണം. അങ്ങനെയൊരു MTA ഇപ്പോള്‍ ഇന്‍സ്റ്റാള്‍ "
-"ചെയ്തിട്ടില്ലെങ്കില്‍, ദയവായി DTC യുടെ സജ്ജീകരണം പൂര്‍ത്തിയാക്കുക, MTA പാക്കേജ് ഇന്‍സ്റ്റാള്‍ "
-"ചെയ്യുക, അതിനു ശേഷം \"dpkg-reconfigure dtc\" എന്ന് പ്രവര്‍ത്തിപ്പിയ്ക്കുക."
-
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:15001
+#: ../dtc-common.templates:14001
 msgid "Use Cyrus mail system?"
 msgstr "സൈറസ് കത്ത് സിസ്റ്റം ഉപയോഗിയ്ക്കണോ?"
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:15001
+#: ../dtc-common.templates:14001
 msgid ""
 "Please choose this option if you are using Cyrus for mail delivery, IMAP and "
 "MTA. This option is only compatible with Postfix."
@@ -287,13 +268,13 @@ msgstr ""
 
 #. Type: select
 #. Description
-#: ../dtc-common.templates:16001
+#: ../dtc-common.templates:15001
 msgid "Apache version to configure:"
 msgstr "ക്രമീകരിയ്ക്കേണ്ട അപാച്ചെ ലക്കം:"
 
 #. Type: select
 #. Description
-#: ../dtc-common.templates:16001
+#: ../dtc-common.templates:15001
 msgid ""
 "DTC supports both Apache and Apache2. Please enter the version which DTC "
 "should use."
@@ -303,13 +284,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:17001
+#: ../dtc-common.templates:16001
 msgid "Use \"NATed\" vhosts?"
 msgstr "\"NATed\" vhost കള്‍ ഉപയോഗിയ്ക്കണോ?"
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:17001
+#: ../dtc-common.templates:16001
 msgid ""
 "DTC can configure Apache to use one of your IP addresses. If the server is "
 "firewalled with NAT and port redirections of public IP(s) address(es), a "
@@ -321,7 +302,7 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:17001
+#: ../dtc-common.templates:16001
 msgid ""
 "This option should be chosen only if the server is not connected to the "
 "Internet directly, but through a firewall doing network address translation "
@@ -335,13 +316,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:18001
+#: ../dtc-common.templates:17001
 msgid "NATed LAN IP address:"
 msgstr "NATed ലാന്‍ ഐപി വിലാസം:"
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:18001
+#: ../dtc-common.templates:17001
 msgid ""
 "Please enter the IP address of the server for DTC to generate all vhosts "
 "that will be used by Apache."
@@ -351,13 +332,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:19001
+#: ../dtc-common.templates:18001
 msgid "Generate an SSL certificate for DTC?"
 msgstr "DTC യ്ക്കായി ഒരു SSL സാക്ഷ്യപത്രെ ഉണ്ടാക്കട്ടേ?"
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:19001
+#: ../dtc-common.templates:18001
 msgid ""
 "If you choose this option, DTC will generate a self-signed SSL certificate "
 "and will use SSL to browse the panel. SSL will also be activated and the "
@@ -370,13 +351,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:19001
+#: ../dtc-common.templates:18001
 msgid "This certificate can be changed for a root CA certificate later."
 msgstr "ഈ സാക്ഷ്യപത്രം ഒരു റൂട്ട് CA സാക്ഷ്യപത്രത്തിനായി പിന്നീട് മാറ്റാവുന്നതാണ്."
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:19001
+#: ../dtc-common.templates:18001
 msgid ""
 "Previously-generated certificates will never be overwritten. To regenerate "
 "the certificate, you need to remove all the files in /usr/share/dtc/etc/ssl."
@@ -386,25 +367,25 @@ msgstr ""
 
 #. Type: password
 #. Description
-#: ../dtc-common.templates:20001
+#: ../dtc-common.templates:19001
 msgid "DTC certificate passphrase:"
 msgstr "DTC സാക്ഷ്യപത്ര അടയാളവാക്യം:"
 
 #. Type: password
 #. Description
-#: ../dtc-common.templates:20001
+#: ../dtc-common.templates:19001
 msgid "Please choose a passphrase to protect the generated SSL certificate."
 msgstr "ഉണ്ടാക്കിയ SSL സാക്ഷ്യപത്രത്തെ സംരക്ഷിയ്ക്കാന്‍ ഒരു അടയാളവാക്യം തിരഞ്ഞെടുക്കുക."
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:21001
+#: ../dtc-common.templates:20001
 msgid "Country code for the DTC SSL certificate:"
 msgstr "DTC SSL സാക്ഷ്യപത്രത്തിന് വേണ്ട രാജ്യ കോഡ്:"
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:21001
+#: ../dtc-common.templates:20001
 msgid ""
 "Please enter the 2-letter country code for the generated certificate. This "
 "should usually be the code for the country the server is located in."
@@ -414,43 +395,43 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:22001
+#: ../dtc-common.templates:21001
 msgid "City name for the DTC SSL certificate:"
 msgstr "DTC SSL സാക്ഷ്യപത്രത്തിന് വേണ്ട നഗരനാമം:"
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:23001
+#: ../dtc-common.templates:22001
 msgid "Organization name for the DTC SSL certificate:"
 msgstr "DTC SSL സാക്ഷ്യപത്രത്തിന് വേണ്ട സ്ഥാപന നാമം:"
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:24001
+#: ../dtc-common.templates:23001
 msgid "Organizational unit for the DTC SSL certificate:"
 msgstr "DTC SSL സാക്ഷ്യപത്രത്തിന് വേണ്ട സ്ഥാപന വിഭാഗം:"
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:25001
+#: ../dtc-common.templates:24001
 msgid "Email address for the DTC SSL certificate:"
 msgstr "DTC SSL സാക്ഷ്യപത്രത്തിന് വേണ്ട ഇമെയില്‍ വിലാസം:"
 
 #. Type: password
 #. Description
-#: ../dtc-common.templates:26001
+#: ../dtc-common.templates:25001
 msgid "DTC SSL certificate challenge password:"
 msgstr "DTC SSL സാക്ഷ്യപത്രത്തിന് വേണ്ട വെല്ലുവിളി അടയാളവാക്ക്:"
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:27001
+#: ../dtc-common.templates:26001
 msgid "DNSBL (DNS BlackList) list:"
 msgstr "DNSBL (DNS കരിമ്പട്ടിക) പട്ടിക:"
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:27001
+#: ../dtc-common.templates:26001
 msgid ""
 "Please enter the list of preferred DNSBL servers to add to your Postfix mail "
 "server configuration."
@@ -460,13 +441,13 @@ msgstr ""
 
 #. Type: select
 #. Description
-#: ../dtc-common.templates:28001
+#: ../dtc-common.templates:27001
 msgid "Local address extension character:"
 msgstr ""
 
 #. Type: select
 #. Description
-#: ../dtc-common.templates:28001
+#: ../dtc-common.templates:27001
 msgid ""
 "Please choose the character that will be used to define a local address "
 "extension. This MUST match what you have set in your postfix or qmail setup."
@@ -474,7 +455,7 @@ msgstr ""
 
 #. Type: select
 #. Description
-#: ../dtc-common.templates:28001
+#: ../dtc-common.templates:27001
 msgid ""
 "The recipient delimiter will be used for your mailing lists. Let's say you "
 "use the + char as delimiter, then your users will have to send a mail to list"
@@ -486,13 +467,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:29001
+#: ../dtc-common.templates:28001
 msgid "Subdomain name for the MX server:"
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:29001
+#: ../dtc-common.templates:28001
 msgid ""
 "Your mail server will need to use a subdomain name to accept mail. This "
 "subdomain will be configured in your mail server and your domain name server "
@@ -501,13 +482,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:30001
+#: ../dtc-common.templates:29001
 msgid "Network devices to monitor:"
 msgstr "നിരീക്ഷിയ്ക്കേണ്ട ശൃംഘലാ ഉപകരണങ്ങള്‍:"
 
 #. Type: string
 #. Description
-#: ../dtc-common.templates:30001
+#: ../dtc-common.templates:29001
 msgid ""
 "Please enter all the network devices you wish to be monitored by the RRDTool "
 "graphing utility."
@@ -517,13 +498,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:31001
+#: ../dtc-common.templates:30001
 msgid "Skip mknod calls when building the chroot template?"
 msgstr "chroot ടെംപ്ലേറ്റ് നിര്‍മിച്ചുകൊണ്ടിരിയ്ക്കുമ്പോള്‍ mknod വിളികള്‍ വിട്ടുകളയണോ?"
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:31001
+#: ../dtc-common.templates:30001
 msgid ""
 "In some environments, such as Linux vServer, mknod cannot be executed. This "
 "option allows skipping the creation of the null, random and urandom devices "
@@ -535,13 +516,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:32001
+#: ../dtc-common.templates:31001
 msgid "Enforce DTC admin password encryption?"
 msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:32001
+#: ../dtc-common.templates:31001
 msgid ""
 "To enhance security in case of a breach, DTC can encrypt all admin "
 "passwords. If passwords are encrypted, you cannot see them by clicking on "
@@ -552,12 +533,26 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:32001
+#: ../dtc-common.templates:31001
 msgid ""
 "The encryption will be applied to passwords created from now on. If you have "
 "existing unencrypted admin passwords that should be converted, see /usr/"
 "share/doc/dtc-common/README.Debian."
 msgstr ""
+
+#~ msgid "Mail Transfer Agent (MTA) type:"
+#~ msgstr "കത്ത് എത്തിയ്ക്കുന്ന ഏജന്റ് (MTA) തരം:"
+
+#~ msgid ""
+#~ "Please select the MTA that will be used with DTC. It should be installed "
+#~ "on the system already. If no such MTA is currently installed, please "
+#~ "complete the setup of DTC, install a MTA package, then run \"dpkg-"
+#~ "reconfigure dtc\"."
+#~ msgstr ""
+#~ "ദയവായി DTC യുടെയൊപ്പം ഉപയോഗിയ്ക്കാന്‍ പോകുന്ന MTA ഏതെന്ന് തിരഞ്ഞെടുക്കുക. ഇത് സിസ്റ്റത്തില്‍ "
+#~ "നേരത്തെ തന്നെ ഇന്‍സ്റ്റാള്‍ ചെയ്തിരിയ്ക്കണം. അങ്ങനെയൊരു MTA ഇപ്പോള്‍ ഇന്‍സ്റ്റാള്‍ "
+#~ "ചെയ്തിട്ടില്ലെങ്കില്‍, ദയവായി DTC യുടെ സജ്ജീകരണം പൂര്‍ത്തിയാക്കുക, MTA പാക്കേജ് ഇന്‍സ്റ്റാള്‍ "
+#~ "ചെയ്യുക, അതിനു ശേഷം \"dpkg-reconfigure dtc\" എന്ന് പ്രവര്‍ത്തിപ്പിയ്ക്കുക."
 
 #~ msgid "Allow to report anonymous statistics to GPLHost?"
 #~ msgstr ""

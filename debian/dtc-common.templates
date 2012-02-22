@@ -105,15 +105,6 @@ _Description: Main domain admin password:
  to the control panel must be managed manually through a .htpasswd
  file in the root path.
 
-Template: dtc/conf_mta_type
-Type: select
-Choices: postfix, qmail
-_Description: Mail Transfer Agent (MTA) type:
- Please select the MTA that will be used with DTC. It
- should be installed on the system already. If no such MTA is currently
- installed, please complete the setup of DTC, install a MTA
- package, then run "dpkg-reconfigure dtc".
-
 Template: dtc/conf_use_cyrus
 Type: boolean
 Default: false
