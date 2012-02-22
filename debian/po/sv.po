@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dtc\n"
 "Report-Msgid-Bugs-To: dtc@packages.debian.org\n"
-"POT-Creation-Date: 2011-08-12 08:49+0800\n"
+"POT-Creation-Date: 2012-02-22 12:56+0800\n"
 "PO-Revision-Date: 2011-09-01 20:37+0100\n"
 "Last-Translator: Martin Bagge / brother <brother@bsnet.se>\n"
 "Language-Team: swedish <debian-l10n-swedish@lists.debian.org>\n"
@@ -547,32 +547,12 @@ msgstr ""
 #. Type: boolean
 #. Description
 #: ../dtc-common.templates:31001
-msgid "Allow to report anonymous statistics to GPLHost?"
-msgstr "Vill du skicka anonyma rapporter med statistik till GPL Host?"
-
-#. Type: boolean
-#. Description
-#: ../dtc-common.templates:31001
-msgid ""
-"DTC installations can be reported to the GPLHost web site. The only "
-"collected data are the operating system name (Debian) and the IP address "
-"(used as a unique identifier only). An Internet connection and the wget "
-"binary are required to report the statistics."
-msgstr ""
-"DTC-installationen kan skicka rapporter till webbplatsen GPL Host. Datan som "
-"skickas är bara operativ system (Debian) och IP-adressen (som unik "
-"identitet). En Internetanslutning och binären wget krävs för att skicka "
-"statistiken."
-
-#. Type: boolean
-#. Description
-#: ../dtc-common.templates:32001
 msgid "Skip mknod calls when building the chroot template?"
 msgstr "Hoppa över att köra mknod när chroot-mallen skapas?"
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:32001
+#: ../dtc-common.templates:31001
 msgid ""
 "In some environments, such as Linux vServer, mknod cannot be executed. This "
 "option allows skipping the creation of the null, random and urandom devices "
@@ -584,13 +564,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:33001
+#: ../dtc-common.templates:32001
 msgid "Enforce DTC admin password encryption?"
 msgstr "Ska kryptering av lösenord för DTC-adminstratörer användas?"
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:33001
+#: ../dtc-common.templates:32001
 msgid ""
 "To enhance security in case of a breach, DTC can encrypt all admin "
 "passwords. If passwords are encrypted, you cannot see them by clicking on "
@@ -606,7 +586,7 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:33001
+#: ../dtc-common.templates:32001
 msgid ""
 "The encryption will be applied to passwords created from now on. If you have "
 "existing unencrypted admin passwords that should be converted, see /usr/"
@@ -615,6 +595,20 @@ msgstr ""
 "Krypteringen kommer att användas på lösenord som skapas från och med nu. "
 "Existerande okrypterade administratörslösenord ska konverteras, läs mer i /"
 "usr/share/doc/dtc-common/README.Debian."
+
+#~ msgid "Allow to report anonymous statistics to GPLHost?"
+#~ msgstr "Vill du skicka anonyma rapporter med statistik till GPL Host?"
+
+#~ msgid ""
+#~ "DTC installations can be reported to the GPLHost web site. The only "
+#~ "collected data are the operating system name (Debian) and the IP address "
+#~ "(used as a unique identifier only). An Internet connection and the wget "
+#~ "binary are required to report the statistics."
+#~ msgstr ""
+#~ "DTC-installationen kan skicka rapporter till webbplatsen GPL Host. Datan "
+#~ "som skickas är bara operativ system (Debian) och IP-adressen (som unik "
+#~ "identitet). En Internetanslutning och binären wget krävs för att skicka "
+#~ "statistiken."
 
 #~ msgid ""
 #~ "Cyrus is a replacement for the Maildir delivery and storage. You must "

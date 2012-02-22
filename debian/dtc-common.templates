@@ -235,15 +235,6 @@ _Description: Network devices to monitor:
  Please enter all the network devices you wish to be monitored by the
  RRDTool graphing utility.
 
-Template: dtc/conf_report_setup_stat
-Type: boolean
-Default: false
-_Description: Allow to report anonymous statistics to GPLHost?
- DTC installations can be reported to the GPLHost web site. The only
- collected data are the operating system name (Debian) and the IP
- address (used as a unique identifier only). An Internet connection
- and the wget binary are required to report the statistics.
-
 Template: dtc/conf_omit_dev_mknod
 Type: boolean
 Default: false

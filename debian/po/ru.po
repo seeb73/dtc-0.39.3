@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dtc 0.34.1-1\n"
 "Report-Msgid-Bugs-To: dtc@packages.debian.org\n"
-"POT-Creation-Date: 2011-08-12 08:49+0800\n"
+"POT-Creation-Date: 2012-02-22 12:56+0800\n"
 "PO-Revision-Date: 2011-08-27 09:02+0400\n"
 "Last-Translator: Yuri Kozlov <yuray@komyakino.ru>\n"
 "Language-Team: Russian <debian-l10n-russian@lists.debian.org>\n"
@@ -17,8 +17,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Lokalize 1.0\n"
-"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #. Type: boolean
 #. Description
@@ -379,9 +379,8 @@ msgid ""
 msgstr ""
 "Если вы ответите утвердительно, то DTC сгенерирует самоподписанный "
 "сертификат SSL и будет использовать SSL для доступа к панели. SSL будет "
-"всегда "
-"включён и созданная конфигурация Apache будет включать HTTPS URL-ы для "
-"панели управления."
+"всегда включён и созданная конфигурация Apache будет включать HTTPS URL-ы "
+"для панели управления."
 
 #. Type: boolean
 #. Description
@@ -546,32 +545,12 @@ msgstr ""
 #. Type: boolean
 #. Description
 #: ../dtc-common.templates:31001
-msgid "Allow to report anonymous statistics to GPLHost?"
-msgstr "Разрешать анонимно отсылать статистику на GPLHost?"
-
-#. Type: boolean
-#. Description
-#: ../dtc-common.templates:31001
-msgid ""
-"DTC installations can be reported to the GPLHost web site. The only "
-"collected data are the operating system name (Debian) and the IP address "
-"(used as a unique identifier only). An Internet connection and the wget "
-"binary are required to report the statistics."
-msgstr ""
-"DTC установки могут отсылать отчёты на веб-сайт GPLHost. Собирается только "
-"имя операционной системы (Debian) и IP адрес (используется только как "
-"уникальный идентификатор). Для отправки статистики требуется подключение к "
-"Интернет и программа wget."
-
-#. Type: boolean
-#. Description
-#: ../dtc-common.templates:32001
 msgid "Skip mknod calls when building the chroot template?"
 msgstr "Пропускать вызовы mknod при сборке шаблона chroot?"
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:32001
+#: ../dtc-common.templates:31001
 msgid ""
 "In some environments, such as Linux vServer, mknod cannot be executed. This "
 "option allows skipping the creation of the null, random and urandom devices "
@@ -583,13 +562,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:33001
+#: ../dtc-common.templates:32001
 msgid "Enforce DTC admin password encryption?"
 msgstr "Шифровать административные пароли?"
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:33001
+#: ../dtc-common.templates:32001
 msgid ""
 "To enhance security in case of a breach, DTC can encrypt all admin "
 "passwords. If passwords are encrypted, you cannot see them by clicking on "
@@ -597,24 +576,37 @@ msgid ""
 "password), but you can always use the /usr/share/dtc/admin/dtcpasswdm shell "
 "script to (re)set a password."
 msgstr ""
-"В с целью усиления безопасности в случае компроментации, DTC "
-"может хранить все административные пароли зашифрованными. "
-"Если пароли зашифрованы, то вы не сможете увидеть их при нажатии на "
-"значок с лупой (вы увидите зашифрованный текст), но всегда можете "
-"использовать сценарий оболочки /usr/share/dtc/admin/dtcpasswdm "
-"для их сброса(установки)."
+"В с целью усиления безопасности в случае компроментации, DTC может хранить "
+"все административные пароли зашифрованными. Если пароли зашифрованы, то вы "
+"не сможете увидеть их при нажатии на значок с лупой (вы увидите "
+"зашифрованный текст), но всегда можете использовать сценарий оболочки /usr/"
+"share/dtc/admin/dtcpasswdm для их сброса(установки)."
 
 #. Type: boolean
 #. Description
-#: ../dtc-common.templates:33001
+#: ../dtc-common.templates:32001
 msgid ""
 "The encryption will be applied to passwords created from now on. If you have "
 "existing unencrypted admin passwords that should be converted, see /usr/"
 "share/doc/dtc-common/README.Debian."
 msgstr ""
 "Зашифрованными будут только вновь создаваемые пароли. О том, как "
-"преобразовать имеющиеся нешифрованные административные пароли, "
-"смотрите в /usr/share/doc/dtc-common/README.Debian."
+"преобразовать имеющиеся нешифрованные административные пароли, смотрите в /"
+"usr/share/doc/dtc-common/README.Debian."
+
+#~ msgid "Allow to report anonymous statistics to GPLHost?"
+#~ msgstr "Разрешать анонимно отсылать статистику на GPLHost?"
+
+#~ msgid ""
+#~ "DTC installations can be reported to the GPLHost web site. The only "
+#~ "collected data are the operating system name (Debian) and the IP address "
+#~ "(used as a unique identifier only). An Internet connection and the wget "
+#~ "binary are required to report the statistics."
+#~ msgstr ""
+#~ "DTC установки могут отсылать отчёты на веб-сайт GPLHost. Собирается "
+#~ "только имя операционной системы (Debian) и IP адрес (используется только "
+#~ "как уникальный идентификатор). Для отправки статистики требуется "
+#~ "подключение к Интернет и программа wget."
 
 #~ msgid ""
 #~ "Cyrus is a replacement for the Maildir delivery and storage. You must "

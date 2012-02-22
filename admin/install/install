@@ -77,7 +77,6 @@ preseed_default_conf_values () {
 	conf_recipient_delim="+"
 	conf_mx_mail=mx
 	conf_dnsbl_list=zen.spamhaus.org
-	conf_report_setup=true
 	conf_omit_dev_mknod=false
 	conf_gen_ssl_cert=true
 	conf_cert_passphrase=${gen_pass}
