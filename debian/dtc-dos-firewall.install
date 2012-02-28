@@ -1,1 +1,4 @@
 etc/dtc/dtc-dos-firewall.conf /etc/dtc
+etc/dtc/general-firewall /etc/dtc
+etc/dtc/general6-firewall /etc/dtc
+etc/dtc/dos-6firewall /etc/dtc

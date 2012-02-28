@@ -34,6 +34,18 @@ if [ -z "${INTERFACE}" ] ; then
 	INTERFACE="eth0"
 fi
 
+if [ -f /etc/dtc/dos-6firewall ] ; then
+	. /etc/dtc/dos-6firewall
+fi
+
+if [ -f /etc/dtc/general-firewall ] ; then
+	. /etc/dtc/general-firewall
+fi
+
+if [ -f /etc/dtc/general6-firewall ] ; then
+	. /etc/dtc/general6-firewall
+fi
+
 accept-localhost-traffic () {
 	${IPTABLES} -A dtc-dos-in -i lo -j ACCEPT
 }
@@ -146,11 +158,66 @@ start)
 	limit-http-connection-rate
 	limit-ftp-connection-rate
 	limit-pop-and-imap-connection-rate
+	if [ ${IPTVDOSFW} == 1 ] ; then
+	create-vdos-chain	
+	limit-6ssh-login-rate
+	limit-6smtp-connection-rate
+	limit-6http-connection-rate
+	limit-6ftp-connection-rate
+	limit-6pop-and-imap-connection-rate
+	fi
+	if [ ${IPTFW} == 1 ] ; then 
+	create-in-chain
+	create-out-chain
+	create-for-chain
+	general-in
+	general-out
+	general-for
+	fi
+	if [ ${IPT6FW} == 1 ] ; then 
+	create-6in-chain
+	create-6out-chain
+	create-6for-chain
+	general-6in
+	general-6out
+	general-6for	
+	fi
 	[ "${VERBOSE}" != no ] && log_end_msg 0
 ;;
 stop)
 	[ "${VERBOSE}" != no ] && log_daemon_msg "Stopping ${DESC}" ${NAME}
 	delete-dtc-dos-chain
+	if [ ${IPTVDOSFW} == 1 ] ; then
+	echo "Stop IPv6 Dos firewall"
+	${IPT6} -F dos-6in
+	${IPT6} -X dos-6in
+	fi
+	if [ ${IPTFW} == 1 ] ; then 
+	echo "Stop firewall"
+	${IPTABLES} -F general-in
+	${IPTABLES} -X general-in
+	${IPTABLES} -F general-out
+	${IPTABLES} -X general-out
+	${IPTABLES} -F general-for
+	${IPTABLES} -X general-for
+	# stop drop
+	${IPTABLES} -P INPUT ACCEPT
+	${IPTABLES} -P OUTPUT ACCEPT
+	${IPTABLES} -P FORWARD ACCEPT
+	fi
+	if [ ${IPT6FW} == 1 ] ; then
+	echo "Stop IPv6 firewall" 
+	${IPT6} -F general-6in
+	${IPT6} -X general-6in
+	${IPT6} -F general-6out
+	${IPT6} -X general-6out
+	${IPT6} -F general-6for
+	${IPT6} -X general-6for
+	# stop drop
+	${IPT6} -P INPUT ACCEPT
+	${IPT6} -P OUTPUT ACCEPT
+	${IPT6} -P FORWARD ACCEPT
+	fi
 	[ "${VERBOSE}" != no ] && log_end_msg 0
 ;;
 restart|reload|force-reload)

@@ -1,0 +1,77 @@
+IPT6="/sbin/ip6tables"
+# 1 ON, 0 OFF
+IPT6FW=0
+
+create-6in-chain (){
+        # Create the chain (if it doesn't exists, then it should be inserted in the INPUT chain)
+        if ${IPT6} --new-chain general-6in ; then
+                ${IPT6} -I INPUT 1 -j general-6in
+        fi
+        ${IPT6} -F general-6in
+}
+create-6out-chain (){
+        # Create the chain (if it doesn't exists, then it should be inserted in the OUTPUT chain)
+        if ${IPT6} --new-chain general-6out ; then
+                ${IPT6} -I OUTPUT -j general-6out
+        fi
+        ${IPT6} -F general-6out
+}
+create-6for-chain (){
+        # Create the chain (if it doesn't exists, then it should be inserted in the FORWARD chain)
+        if ${IPT6} --new-chain general-6for ; then
+                ${IPT6} -I FORWARD -j general-6for
+        fi
+        ${IPT6} -F general-6for
+}
+
+general-6in () {
+echo "Starting IPv6 firewall..."
+## Drop incomming traffic
+${IPT6} -P INPUT DROP
+#Allow localhost
+${IPT6} -A general-6in -i lo -j ACCEPT
+## Allow established connection
+${IPT6} -A general-6in -i ${INTERFACE} -m state --state ESTABLISHED,RELATED -j ACCEPT
+# Allow pings
+${IPT6} -A general-6in -i ${INTERFACE} -p ipv6-icmp -j ACCEPT
+# Allow incoming to servers
+### open IPv6  http
+${IPT6} -A general-6in -i ${INTERFACE} -p tcp --destination-port 80 -j ACCEPT
+${IPT6} -A general-6in -i ${INTERFACE} -p tcp --destination-port 443 -j ACCEPT
+### open IPv6  ssh
+${IPT6} -A general-6in -i ${INTERFACE} -p tcp --destination-port 22 -j ACCEPT
+### open IPv6  smtp
+${IPT6} -A general-6in -i ${INTERFACE} -p tcp --destination-port 25 -j ACCEPT
+${IPT6} -A general-6in -i ${INTERFACE} -p tcp --destination-port 465 -j ACCEPT
+${IPT6} -A general-6in -i ${INTERFACE} -p tcp --destination-port 587 -j ACCEPT
+### open IPv6 ftp
+${IPT6} -A general-6in -i ${INTERFACE} -p tcp --destination-port 21 -j ACCEPT
+${IPT6} -A general-6in -i ${INTERFACE} -p tcp --destination-port 20 -j ACCEPT
+### open IPv6 dns
+${IPT6} -A general-6in -i ${INTERFACE} -p tcp --destination-port 53 -j ACCEPT
+${IPT6} -A general-6in -i ${INTERFACE} -p udp --destination-port 53 -j ACCEPT
+### open IPv6 pop
+${IPT6} -A general-6in -i ${INTERFACE} -p tcp --destination-port 110 -j ACCEPT
+${IPT6} -A general-6in -i ${INTERFACE} -p tcp --destination-port 995 -j ACCEPT
+### open IPv6 imap
+${IPT6} -A general-6in -i ${INTERFACE} -p tcp --destination-port 143 -j ACCEPT
+${IPT6} -A general-6in -i ${INTERFACE} -p tcp --destination-port 993 -j ACCEPT
+## Log incoming traffic
+${IPT6} -A general-6in -m limit --limit 5/min -j LOG --log-prefix '** Incoming v6 **' --log-level 7
+}
+general-6out () {
+# Drop outgoing traffic
+${IPT6} -P OUTPUT DROP
+# Allow localhost
+${IPT6} -A general-6out -o lo -j ACCEPT
+# Allow full outgoing connection
+${IPT6} -A general-6out -o ${INTERFACE} -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+# Allow ping
+${IPT6} -A general-6out -o ${INTERFACE} -p ipv6-icmp -j ACCEPT
+}
+general-6for () {
+## Drop forward traffic
+${IPT6} -P FORWARD DROP
+## Log forward traffic
+${IPT6} -A general-6for -m limit --limit 5/min -j LOG --log-prefix '** Forward v6 **' --log-level 7
+}

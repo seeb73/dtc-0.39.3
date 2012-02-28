@@ -1,0 +1,85 @@
+# 1 ON, 0 OFF
+IPTFW=0
+
+create-in-chain (){
+        # Create the chain (if it doesn't exists, then it should be inserted in the INPUT chain)
+        if ${IPTABLES} --new-chain general-in ; then
+                ${IPTABLES} -I INPUT 1 -j general-in
+        fi
+        ${IPTABLES} -F general-in
+}
+create-out-chain (){
+        # Create the chain (if it doesn't exists, then it should be inserted in the OUTPUT chain)
+        if ${IPTABLES} --new-chain general-out ; then
+                ${IPTABLES} -I OUTPUT -j general-out
+        fi
+        ${IPTABLES} -F general-out
+}
+create-for-chain (){
+        # Create the chain (if it doesn't exists, then it should be inserted in the FORWARD chain)
+        if ${IPTABLES} --new-chain general-for ; then
+                ${IPTABLES} -I FORWARD -j general-for
+        fi
+        ${IPTABLES} -F general-for
+}
+general-in () {
+	echo "Starting firewall..."
+        ## Drop incomming traffic
+        ${IPTABLES} -P INPUT DROP
+        #Allow localhost.
+        ${IPTABLES} -A general-in -i lo -j ACCEPT
+        ## Allow established connection
+        ${IPTABLES} -A general-in -m state --state ESTABLISHED,RELATED -j ACCEPT
+        ## Drop scans XMAS and NULL
+        ${IPTABLES} -A general-in -p tcp --tcp-flags FIN,URG,PSH FIN,URG,PSH -j DROP
+        ${IPTABLES} -A general-in -p tcp --tcp-flags ALL ALL -j DROP
+        ${IPTABLES} -A general-in -p tcp --tcp-flags ALL NONE -j DROP
+        ${IPTABLES} -A general-in -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+        ## Silent drop broadcast
+        ${IPTABLES} -A general-in -m pkttype --pkt-type broadcast -j DROP
+        # Allow pings
+        ${IPTABLES} -A general-in -p icmp -j ACCEPT
+        # Allow incoming to servers
+        # DNS
+        ${IPTABLES} -A general-in -p udp -i ${INTERFACE} --dport 53 -j ACCEPT
+        ${IPTABLES} -A general-in -p tcp -i ${INTERFACE} --dport 53 -j ACCEPT
+        # SSH
+        ${IPTABLES} -A general-in -p tcp -i ${INTERFACE} --dport 22 -j ACCEPT
+        # HTTP
+        ${IPTABLES} -A general-in -p tcp -i ${INTERFACE} --dport 80 -j ACCEPT
+        ${IPTABLES} -A general-in -p tcp -i ${INTERFACE} --dport 443 -j ACCEPT
+        # SMTP
+        ${IPTABLES} -A general-in -p tcp -i ${INTERFACE} --dport 25 -j ACCEPT
+        ${IPTABLES} -A general-in -p tcp -i ${INTERFACE} --dport 465 -j ACCEPT
+        ${IPTABLES} -A general-in -p tcp -i ${INTERFACE} --dport 587 -j ACCEPT
+        # FTP
+        ${IPTABLES} -A general-in -p tcp -i ${INTERFACE} --dport 21 -j ACCEPT
+        ${IPTABLES} -A general-in -p tcp -i ${INTERFACE} --dport 20 -j ACCEPT
+        #${IPTABLES} -A general-in -p tcp --dport 21 -m state --state NEW,ESTABLISHED -j ACCEPT
+
+        # POP
+        ${IPTABLES} -A general-in -p tcp -i ${INTERFACE} --dport 110 -j ACCEPT
+        ${IPTABLES} -A general-in -p tcp -i ${INTERFACE} --dport 995 -j ACCEPT
+        # IMAP
+        ${IPTABLES} -A general-in -p tcp -i ${INTERFACE} --dport 143 -j ACCEPT
+        ${IPTABLES} -A general-in -p tcp -i ${INTERFACE} --dport 993 -j ACCEPT
+
+        ## Log incoming traffic
+        ${IPTABLES} -A general-in -m limit --limit 5/min -j LOG --log-prefix '** Incoming **' --log-level 7
+}
+general-out () {
+        # Drop outgoing traffic
+        ${IPTABLES} -P OUTPUT DROP
+	#Allow localhost.
+        ${IPTABLES} -A general-out -i lo -j ACCEPT
+        ## Allow an open connection to receive traffic output
+        ${IPTABLES} -A general-out -m state ! --state INVALID -j ACCEPT
+        # Allow ping on external ip and respond to ping
+        ${IPTABLES} -A general-out -p icmp -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+}
+general-for () {
+        ## Drop forward traffic
+        ${IPTABLES} -P FORWARD DROP
+        ## Log outgoing traffic
+        ${IPTABLES} -A general-for -m limit --limit 5/min -j LOG --log-prefix '** Forward **' --log-level 7
+}
