@@ -14,28 +14,28 @@ subdomains, email, and FTP accounts to users for the domain names they own.
 
 This doc is for unix server administrators that have root acccess to a server
 that have a minimum knowledge of internet services, and that wish to
-installe or use DTC. If you are a simple user of DTC (you have one or more
+install or use DTC. If you are a simple user of DTC (you have one or more
 domain name hosted), please read the integrated help.<br><br>
 
 <h4><a name="1.3"></a>1.3 Good points of DTC</h4>
 
-If you are used to others web GUI to configurate fastly your servers
+If you are used to another web GUI to configure your servers
 (http, ftp, etc.) on an unix machine, you will be surprised by the
-ease and speed of use of DTC. It's main goal was to be the most hergonomic
-as possible for final user, minimising task number.<br><br>
+ease and speed of use of DTC. Its main goal was to be the most ergonomic
+as possible for final users, minimising task number.<br><br>
 
-The biggest diference between Webmin and DTC for example, is that webmin
-has a services aproache (one server, one module to configure that server).
-DTC does the opposite, and centralise all the tasks in one unic interface.
-For example, when an admin add a domain to DTC, the configuration is updated
+The biggest difference between Webmin and DTC for example, is that webmin
+has a services approach (one server, one module to configure that server).
+DTC does the opposite, and centralises all the tasks in one unique interface.
+For example, when an admin adds a domain to DTC, the configuration is updated
 for both apache, bind and qmail.<br><br>
 
 Be aware that it's not because it seems easy that you can skip the
-reading on how to configurate each daemons, otherwise you wont understand
-the values used in the control panel. If you don't know what is a MX or
-what is a Virtual Host directive, you'd better go and read some
+reading on how to configure each daemon, otherwise you will not understand
+the values used in the control panel. If you don't know what a MX or
+Virtual Host directive are, you'd better go and read some
 documentation about bind, apache, or mail servers, and have a try
-with them manualy first.<br><br>
+with them manually first.<br><br>
 
 <h4><a name="1.4"></a>1.4 Technologies used by DTC</h4>
 
@@ -43,25 +43,25 @@ DTC is based on PHP scripts and on a MySQL database allowing configuration
 of your domains. For the moment, the following servers are supported:<br><br>
 
 - The name server <b>bind</b> and all RFC compatible name servers (<a href="http://www.isc.org">http://www.isc.org</a>)
-Note that even is Bind is often considered badly because of security issues
-in the past, a lot alternative DNS servers are compatible with Bind's
-zonefile format. Bind is just the standard in most distribution, but for
+Note that even if Bind is often considered badly because of security issues
+in the past, a lot of alternative DNS servers are compatible with Bind's
+zonefile format. Bind is just the standard in most distributions, but for
 sure some other would work.<br>
 - The webserver <b>apache</b> (<a href="http://www.apache.org">http://www.apache.org</a>)<br>
 - The ftp server <b>proftpd</b> (<a href="http://www.proftpd.org">http://www.proftpd.org</a>)<br>
 - The module <b>mod_sql</b> for proftpd<br>
 - The SBOX CGI script wrapper for cgi chrooting and limitations<br><br>
 
-If one of those programms are not available for your Unix distribution,
+If one of those programs are not available for your Unix distribution,
 you will have to compile it. Under most Unix, only SBOX is not available,
-but it's very easy to compile from source available on DTC project
-page. Debian user should use precompiled i386 binary package that runs
-on both 3 current Debian flavor (Woody, Sarge and Sid).<br><br>
+but it's very easy to compile it from source which is available on the DTC
+project page. Debian users should use precompiled i386 binary package that
+runs on all 3 current Debian flavors (Woody, Sarge and Sid).<br><br>
 
 The Mail Transport Agent (MTA, or SMTPd) is your choice between:<br>
 - <b>qmail</b> (<a href="http://www.qmail.org">http://www.qmail.org</a>)<br>
 - <b>Postfix</b> (<a href="http://www.postfix.org">http://www.postfix.org</a>)
-with or without tls patch + SASL to enable SMTP with auth. If you need,
+with or without tls patch + SASL to enable SMTP with auth. If you need it,
 a logger is available for postfix to log SMTP traffic in MySQL.<br><br>
 
 It is then possible to bind the following daemons directly connected to the
@@ -80,35 +80,36 @@ it, feel free to write to us if you wrote one.<br>
 - <b>Courier POP3 and iMAP daemons</b> Those daemons have internal support
 for MySQL, but are known to be slow.<br><br>
 
-To be able to use fully DTC, you can install the followings:<br>
-- The module <b>mod_log_sql</b> that logs trafic HTTP in MySQL database
+To be able to fully use DTC, you can install the following:<br>
+- The module <b>mod_log_sql</b> that logs traffic HTTP in MySQL database
 (<a href="http://www.grubbybaby.com/mod_log_sql/">http://www.grubbybaby.com/mod_log_sql/</a>)<br>
 - The statistic generator tool <b>Webalizer</b> that parses CommonLog access.log
-standard file to produce it's stats (<a href="http://www.mrunix.net/webalizer/">http://www.mrunix.net/webalizer/</a>)<br><br>
+standard file to produce its stats (<a href="http://www.mrunix.net/webalizer/">http://www.mrunix.net/webalizer/</a>)<br><br>
 DTC can also be used to work as a backup solution, compressing all domain files in a tar file.<br><br>
 
-Choices on thoses programs has been motivated by the avalability of thoses programs
-under lot's of Unix systems. Please note that it would be easy to add compatibility
-to other servers (I'm thiking namely about exim, or pureftpd), and that all
-contributions are welcomes to extend the compatibility list.<br><br>
+Choices on thoses programs has been motivated by the availability of those
+programs under lot's of Unix systems. Please note that it would be easy to add
+compatibility to other servers (I'm thiking namely about exim, or pureftpd),
+and that all contributions are welcomes to extend the compatibility
+list.<br><br>
 
 
 <h4><a name="1.5"></a>1.5 DTC's possibilities</h4>
 
-- Nearly unlimited number of user<br>
+- Nearly unlimited number of users<br>
 - Number of domains and subzone (nearly) unlimited<br>
-- Use only <b>one system UID/GID</b> (if you don't coun't does for the deamons)<br>
+- Use only <b>one system UID/GID</b> (if you don't users for the deamons)<br>
 - No conflict with the same email name for a different domain (for example
-with postnamster@domaine1.com and postmaster@domaine2.com)
-butwithout using vpopmgr (standalone qmail package)<br>
+with postmaster@domaine1.com and postmaster@domaine2.com)
+but without using vpopmgr (standalone qmail package)<br>
 - <b>Monitoring of band width usage per services and per users.</b><br>
-- Integrate 2 paiement systep (for the moment paypal and worldpay)<br>
+- Integration of 2 payment systems (for the moment paypal and worldpay)<br>
 - Working with the help of openSRS-PHP lib to register domain name to Tucows
 (you need to have a Tucows account).<br>
 - Working with a <b>skin system</b> that allow changing of the interface visuals.<br>
 - NAT support (realy conveinient if you have a web server running in a natted LAN network).<br>
 - SSL support<br>
-- Modular programming allowing easy changes (aspecialy for conf file generation).<br>
+- Modular programming allowing easy changes (especially for conf file generation).<br>
 - Compatible with almost all browsers: Internet Explorer, Mozilla, lynx/links, .. (no
 frames, and javascript confirmations can be disabled).<br>
 - SASL (smtp with auth) relaying when using Postfix<br>
@@ -116,13 +117,13 @@ frames, and javascript confirmations can be disabled).<br>
 
 <h4><a name="1.6"></a>1.6 How does it works</h4>
 
-DTC write all hosting informations for it's services in a MySQL database. It then reuse it to
+DTC writes all hosting information for its services in a MySQL database. It then reuses it to
 generate config files for apache, qmail, and bind. Whenever it was easily possible, some MySQL
-modules for some daemons where used, but sometimes, it was better not to use them and still use
-generated configurations files. Sometimes, there was no other options.<br><br>
+modules for some daemons were used, but sometimes, it was better not to use them and still use
+generated configuration files. Sometimes, there was no other options.<br><br>
 
 Once installed, DTC grant access to 3 types of interface. One for the root administrator (we will
 call it root-admin), and one for final customer (the client interface, or virtual admin).
-The root-admin will add domain names to it's clients, and grant access to them. The client will
+The root-admin will add domain names to its clients, and grant access to them. The client will
 be allowed to add or change mail, ftp, zones, mx, and the data of his domains.<br>
-Another panel is for twiking one email address.<br><br>
+Another panel is for configuring email addresses.<br><br>

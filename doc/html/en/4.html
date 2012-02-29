@@ -2,31 +2,31 @@
 
 <CENTER><IMG src="dtc.png"></CENTER><br>
 
-The administrator interfacce is divided in 3 parts. We have already talked
+The administrator interface is divided in 3 parts. We have already talked
 about the general configuration. Let's talk about the 2 other parts: user management
 and config file generation.<br><br>
 
-<h4><a name="4.1"></a>4.1 Generale description</h4>
+<h4><a name="4.1"></a>4.1 General description</h4>
 
 <h5><a name="4.1.1"></a>4.1.1 How it works</h5>
 
 DTC aims to generate config files for all supported daemons. All you
 will do here will control the way those files will be generated.<br><br>
-A cron script is launched each 10 minutes validating the changes by wrinting
+A cron script is launched each 10 minutes validating the changes by writing
 config files and reloading specified services.<br><br>
 
 <h5><a name="4.1.2"></a>4.1.2 The web interface</h5>
 
-DTC is splited in 3 main directories. The admin console (normally in
+DTC is split up into 3 main directories. The admin console (normally in
 /usr/share/dtc/admin, but that may vary upon systems, like bsd likes to
 find it in /usr/local/share...) is your main root web interface. This is
-where you control all the domain hosted on your machine.<br><bbr>
+where you control all the domains hosted on your machine.<br><bbr>
 
 The "client" folder (normally in /usr/share/dtc/client) is for all your
-virual administrator to enter their domain name configuration module.
+virtual administrators to enter their domain name configuration module.
 You don't need it if you don't use the delegation of privilege
 (virtual administrators), because all user modules are show on the root
-console allso.<br><br>
+console also.<br><br>
 
 In standard distribution, dtc will install the root console to
 http[s]://dtc.yourdomain-name.com/dtcadmin/, and a client panel to all
@@ -41,14 +41,14 @@ to enter all informations for mailbox and/or ftp accounts, and you can
 create subdomains like "http://my.example.com" if "example.com"
 was his domain name.<br><br>
 
-A good idear is to create "mx.your-domain-name.com" on your main domain
+A good idea is to create "mx.your-domain-name.com" on your main domain
 name, and to enter "mx.your-domain-name.com" as the default mx server for
 the hosted domains (in the configuration panel). You can add an IP to that
-subdomain, so it won't have an apache vhost associated.<br><br>
+subdomain, so it will not have an apache vhost associated.<br><br>
 
 You can then either call the php script files from the root console to
 generate the config files, and relaunch the deamons (named, qmail-send,
-and apache) manualy. You can of cource rely on the
+and apache) manually. You can of course rely on the
 /usr/share/dtc/admin/cron.php script, so everything is all automatic.
 
 <h4><a name="4.2"></a>4.2 User management</h4>
@@ -62,18 +62,18 @@ be allowed to change properties of his domain(s).<br><br>
 
 The path tells where domain files will be stored (mail and http files).<br><br>
 
-<b>Take care</b>! The login will be happened to the path specified. So if you have
+<b>Take care</b>! The login will happen to the path specified. So if you have
 set /var/www/sites as the path, and that you add the user named foo, then
 his path will be /var/www/sites/foo.<br><br>
 
-<h5><a name="4.2.2"></a>4.2.2 Managing you client domains</h5>
+<h5><a name="4.2.2"></a>4.2.2 Managing your client domains</h5>
 
 <CENTER><IMG src="clientconfig.png"></CENTER><br>
 
 <b>- Editing the virtual admin:</b><br><br>
 
-This form make you add and delete domains for a client and change his path. If you
-change his path here, you have to move the files manualy.<br><br>
+This form lets you add and delete domains for a client and change his path. If you
+change his path here, you have to move the files manually.<br><br>
 
 <b>- Configuration of each domains:</b><br><br>
 
@@ -85,5 +85,5 @@ of this domain.<br><br>
 
 <CENTER><IMG src="conffilegen.png"></CENTER><br>
 
-This pannel allow to generate config file for each daemon individualy. It helps when
-debuggin a server and check that everythings work fine.<br><br>
+This panel allows to generate config files for each daemon individually. It helps when
+debugging a server and to check that everything's working fine.<br><br>
