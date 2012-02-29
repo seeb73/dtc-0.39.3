@@ -559,26 +559,26 @@ function productManager(){
 				"legend" => _("Command to execute when an account is created")),
 			"expiration_execution_type" => array(
 				"type" => "popup",
-				"legend" => _("New account execution type") ,
-				"help" => _("Action to execute when a new account of this type is created. It can be none (no action is done), URL (a web url is opened in background), Ue PHP eval funtion (php code is executed with eval) or Send an email to admin (ends an email to the dtc administrator)"),
+				"legend" => _("Expiration execution type") ,
+				"help" => _("Action to execute when an account of this type expires. It can be none (no action is done), URL (a web url is opened in background), Ue PHP eval funtion (php code is executed with eval) or Send an email to admin (ends an email to the dtc administrator)"),
 				"values" => array('none','url','eval','admin_email'),
 				"display_replace" => array(_("None"),_("URL"),_("Use PHP eval function"),_("Send an email to admin")),
 				"default" => "none"),
 			"expiration_command" => array(
 				"type" => "textarea",
 				"help" => _("URL or command or mail body to execute or send when a custom product of this type expires. To pass custom fields of the product to this, put them as %%%var%%% to be replaced by that custom field."),
-				"legend" => _("Command to execute when an account is created")),
+				"legend" => _("Command to execute when an account expires")),
 			"renewall_execution_type" => array(
 				"type" => "popup",
-				"legend" => _("New account execution type") ,
-				"help" => _("Action to execute when a custom product of this type expires. It can be none (no action is done), URL (a web url is opened in background), Ue PHP eval funtion (php code is executed with eval) or Send an email to admin (ends an email to the dtc administrator)"),
+				"legend" => _("Renewall execution type") ,
+				"help" => _("Action to execute when a custom product of this type is renewed. It can be none (no action is done), URL (a web url is opened in background), Ue PHP eval funtion (php code is executed with eval) or Send an email to admin (ends an email to the dtc administrator)"),
 				"values" => array('none','url','eval','admin_email'),
 				"display_replace" => array(_("None"),_("URL"),_("Use PHP eval function"),_("Send an email to admin")),
 				"default" => "none"),
 			"renewall_command" => array(
 				"type" => "textarea",
 				"help" => _("URL or command or mail body to execute or send when a custom product of this type is renewed.  To pass custom fields of the product to this, put them as %%%var%%% to be replaced by that custom field."),
-				"legend" => _("Command to execute when an account is created")),
+				"legend" => _("Command to execute when an account is renewed")),
 			)
 		);
 	$out .= dtcDatagrid($dsc);
