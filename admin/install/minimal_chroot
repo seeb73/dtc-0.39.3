@@ -17,9 +17,46 @@ createChrootTemplate () {
 	mkdir -p $conf_chroot_path
 	cd $conf_chroot_path
 
+	mkdir -p usr/lib usr/libexec usr/lib/openssh lib usr/bin
+	# the sftp-server binary can be in /usr/lib or /lib, so check both places
+	if [ -e /usr/lib/sftp-server ] ; then
+		cp -pf /usr/lib/sftp-server usr/lib/
+	fi
+
+	if [ -e /usr/libexec/sftp-server ] ; then
+		cp -pf /usr/libexec/sftp-server usr/libexec/
+	fi
+
+	if [ -e /usr/lib/openssh/sftp ] ; then
+		cp -pf /usr/lib/openssh/sftp usr/lib/openssh
+	fi
+
+	if [ -e /lib/sftp-server ] ; then
+		cp -pf /lib/sftp-server lib/
+	fi
+
+	# Debian location for the sftp-server
+	if [ -e /usr/lib/openssh/sftp-server ] ; then
+		mkdir -p usr/lib/openssh
+		cp -pf /usr/lib/openssh/sftp-server usr/lib/openssh
+	fi
+
+	# CentOS location
+	if [ -e /usr/libexec/openssh/sftp-server ] ; then
+		mkdir -p usr/libexec/openssh
+		cp -pf /usr/libexec/openssh/sftp-server usr/libexec/openssh
+	fi
+
+	if [ -e /usr/bin/scp ] ; then
+		cp -pf /usr/bin/scp bin/
+	fi
+	if [ "$UNIX_TYPE" = "debian" ] ; then
+		return
+	fi
+
 	# create directory structure
-	mkdir -p etc dev bin lib tmp var/tmp var/run sbin libexec
-	mkdir -p usr/bin usr/lib usr/libexec usr/share usr/lib/zoneinfo
+	mkdir -p etc dev bin tmp var/tmp var/run sbin libexec
+	mkdir -p usr/share usr/lib/zoneinfo
 
 	# make devices - adjust MAJOR/MINOR as appropriate ( see ls -l /dev/* )
 	if ! [ ""$conf_omit_dev_mknod = "true" ] ; then
@@ -115,40 +152,6 @@ createChrootTemplate () {
 
 	if [ -e /usr/bin/sftp ] ; then
 		cp -pf /usr/bin/sftp bin/
-	fi
-
-	# the sftp-server binary can be in /usr/lib or /lib, so check both places
-	if [ -e /usr/lib/sftp-server ] ; then
-		cp -pf /usr/lib/sftp-server usr/lib/
-	fi
-
-	if [ -e /usr/libexec/sftp-server ] ; then
-		cp -pf /usr/libexec/sftp-server usr/libexec/
-	fi
-
-	mkdir -p usr/lib/openssh
-	if [ -e /usr/lib/openssh/sftp ] ; then
-		cp -pf /usr/lib/openssh/sftp usr/lib/openssh
-	fi
-
-	if [ -e /lib/sftp-server ] ; then
-		cp -pf /lib/sftp-server lib/
-	fi
-
-	# Debian location for the sftp-server
-	if [ -e /usr/lib/openssh/sftp-server ] ; then
-		mkdir -p usr/lib/openssh
-		cp -pf /usr/lib/openssh/sftp-server usr/lib/openssh
-	fi
-
-	# CentOS location
-	if [ -e /usr/libexec/openssh/sftp-server ] ; then
-		mkdir -p usr/libexec/openssh
-		cp -pf /usr/libexec/openssh/sftp-server usr/libexec/openssh
-	fi
-
-	if [ -e /usr/bin/scp ] ; then
-		cp -pf /usr/bin/scp bin/
 	fi
 
 	# copy more required binaries to $conf_chroot_path/bin
