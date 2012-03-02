@@ -324,6 +324,7 @@ function sendCustomProductsReminderEmail($remaining_days,$file,$cust_heb_type_id
 	global $pro_mysql_client_table;
 	global $pro_mysql_custom_product_table;
 	global $conf_webmaster_email_addr;
+	global $conf_custom_renewal_lastwarning;
 
 	global $conf_message_subject_header;
 	global $dtcshared_path;

@@ -51,6 +51,9 @@ date\n";
 date
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 ";
+	$z7_mode=0;
+	$ftp_mode=0;
+	$ssh_mode=0;
 	
 	//Set it to -F, we will go passive by default, active, if it turned on
 	
