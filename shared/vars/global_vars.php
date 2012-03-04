@@ -8,6 +8,15 @@ $send_email_header = "Content-Type: text/plain; charset=\"UTF-8\"\n";
 //$send_email_header .= "Content-Transfer-Encoding: 8bit\n";
 $send_email_header .= "Content-Transfer-Encoding: quoted-printable\n";
 
+$version_ar = explode(".",phpversion());
+$php_major_vers = $version_ar[0];
+$php_minor_vers = $version_ar[1];
+if($php_major_vers > 5 || ($php_major_vers == 5 && $php_minor_vers >= 4)){
+        $php_vers_bigger_than_53 = 1;
+}else{
+        $php_vers_bigger_than_53 = 0;
+}
+
 if(isset($_REQUEST["rub"])){
 	if(!preg_match("/^([a-z0-9]+)([.a-z_0-9-]*)([a-z0-9]+)\$/",$_REQUEST["rub"]) && $_REQUEST["rub"] != ""){
 		die("Rub parameter not correct: XSS attempt?");

@@ -625,14 +625,20 @@ AND $pro_mysql_admin_table.id_client != '0'";
 						}else{
 							$gblx = "php_admin_value register_globals 0";
 						}
-						if($rowX["safe_mode"] == "no" && $ax["safe_mode"] == "no"){
-							$safex = "php_admin_value safe_mode 0";
+						if($php_vers_bigger_than_53 = 0){
+							if($rowX["safe_mode"] == "no" && $ax["safe_mode"] == "no"){
+								$safex = "php_admin_value safe_mode 0";
+							}else{
+								$safex = "php_admin_value safe_mode 1";
+							}
+							$my_open_basedir = "\n\t\tphp_admin_value open_basedir \"$web_pathX/$web_nameX/:$conf_php_library_path:$conf_php_additional_library_path:\"";
 						}else{
-							$safex = "php_admin_value safe_mode 1";
+							$my_open_basedir = "";
+							$safex = "";
 						}
 						$vhost_file .= "\tAlias /$subdomx.$web_nameX $web_pathX/$web_nameX/subdomains/$subdomx/html
 	<Location /$subdomx.$web_nameX>
-		".$safex.$custom_directives."
+		".$safex.$custom_directives.$my_open_basedir."
 		php_admin_value open_basedir \"$web_pathX/$web_nameX/:$conf_php_library_path:$conf_php_additional_library_path:\"
 		$gblx
 	</Location>\n";
@@ -903,13 +909,18 @@ $vhost_file .= "
 		Allow from all
 	</Directory>\n";
 							if($webadmin["shared_hosting_security"] == 'mod_php' && $shared_hosting_subdomain_security == 'mod_php'){
-								$vhost_file .= $vhost_more_conf.$php_more_conf."	php_admin_value safe_mode $safe_mode_value
+								if($php_vers_bigger_than_53){
+									$my_php_safe_mode = "";
+									$my_open_basedir = "";
+								}else{
+									$my_php_safe_mode = "\n\tphp_admin_value safe_mode $safe_mode_value";
+									$my_open_basedir = "\n\t<Location />
+		php_admin_value open_basedir \"$web_path:$conf_php_library_path:$conf_php_additional_library_path:\"\n\t</Location>";
+								}
+								$vhost_file .= $vhost_more_conf.$php_more_conf.$my_php_safe_mode."
 	php_admin_value sendmail_from phpmailfunction$web_subname@$web_name
 	php_admin_value sendmail_path \"/usr/sbin/sendmail -t -i -f phpmailfunction$web_subname@$domain_to_get\"
-	php_value session.save_path $web_path/$domain_to_get/subdomains/$web_subname/tmp
-	<Location />
-		php_admin_value open_basedir \"$web_path:$conf_php_library_path:$conf_php_additional_library_path:\"
-	</Location>
+	php_value session.save_path $web_path/$domain_to_get/subdomains/$web_subname/tmp".$my_open_basedir."
 	$cgi_directive\n";
 							}else{
 								$vhost_file .= "$vhost_more_conf	ScriptAlias /cgi-bin /usr/lib/cgi-bin
