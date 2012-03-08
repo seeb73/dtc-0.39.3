@@ -39,6 +39,8 @@ function drawAdminTools_SSH($domain,$adm_path){
 		$sub_name = $domain["subdomains"][$i]["name"];
 		$path_popup_vals[] = "$adm_path/$edit_domain/subdomains/$sub_name";
 		$path_popup_disp[] = "/$edit_domain/subdomains/$sub_name";
+		$path_popup_vals[] = "$adm_path/$edit_domain/subdomains.aufs/$sub_name";
+		$path_popup_disp[] = "/$edit_domain/subdomains.aufs/$sub_name";
 	}
 
 	$dsc = array(
