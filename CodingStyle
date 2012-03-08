@@ -1,0 +1,45 @@
+DTC coding style
+----------------
+
+I always see stupid coding style files, so I thought, why not one for DTC!
+
+* No stupid line size limit
+
+In many projects, I see that line size are supposed to be limited to 80
+cols. That's really stupid: we all have bigger monitors, we aren't in the
+early 70s, come on! More over, it makes code unreadable. So please, feel free
+to use more than 80 cols.
+
+* Tabs vs spaces
+
+In many projects, I see that they forbid the use of tabs, in the favor of
+white spaces. This is overly stupid. If you do that, then move blocks of
+code from one place to another, you spend your time removing a bunch of
+space caracters. If the convention is to use 8 spaces, then your spending 8
+times the amount of time. Lucky, PHP isn't python, but in python, that's
+even more stupid, because creating loads of issues when re-indenting.
+
+* AND vs &&
+
+Don't use AND, use && in PHP, just like you would in C. Same with OR vs ||.
+
+* Indenting
+
+We don't want to save precious monitor real estate, so no need to go too
+much at the next line. Something like this:
+
+if($a){
+	...
+}
+
+will be prefered over:
+
+if($a)
+{
+	...
+}
+
+which doesn't increase readability. The former is just stupid habbits that
+people are using because they have read the K&R bible.
+
+That's it (for the moment).
