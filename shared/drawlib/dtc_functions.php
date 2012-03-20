@@ -1141,7 +1141,7 @@ function createSymLink($target, $link) {
 	}
 }
 
-function executeCustomActions($product_id, $action, $custom_id = null) {
+function executeCustomActions($product_id, $action, $custom_id = null, $new_admin = null) {
     global $conf_webmaster_email_addr;
     global $pro_mysql_product_table;
     global $pro_mysql_custom_product_table;

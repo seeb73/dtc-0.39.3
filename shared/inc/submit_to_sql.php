@@ -616,7 +616,7 @@ last_used_lang   ,path            ,id_client,bandwidth_per_month_mb,quota,nbrdb,
 		// Read the (customizable) registration message to send
 		$txt_welcome_message = readCustomizedMessage("registration_msg/custom_".$product["custom_heb_type"]."_open",$waiting_login);
 		addCustomProductToUser($waiting_login,$new_admin["domain_name"],$product["id"]);
-		executeCustomActions($product["id"], 'new', null);
+		executeCustomActions($product["id"], 'new', null, $new_admin);
 		break;
 	default:
 		break;
