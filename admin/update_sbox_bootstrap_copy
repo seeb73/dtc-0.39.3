@@ -85,6 +85,9 @@ if [ -f /etc/debian_version ] ; then
 		if grep "^; cgi.fix_pathinfo=0$" ${PHP_INI_PATH} ; then
 			sed -i "s/; cgi.fix_pathinfo=0/cgi.fix_pathinfo=1/" ${PHP_INI_PATH}
 		fi
+		sed -i 's#^;sendmail_path =$#sendmail_path = /usr/sbin/sendmail#' ${PHP_INI_PATH}
+		sed -i 's#^SMTP = localhost$#;SMTP = localhost#' ${PHP_INI_PATH}
+		sed -i 's#^smtp_port = 25$#;smtp_port = 25#' ${PHP_INI_PATH}
 	fi
 	mkdir -p ${sbox_copy_disk_path}/html/sbox404
 	cp -auxf ${sbox_copy_disk_path}/../etc/dtc404/* ${sbox_copy_disk_path}/html/sbox404
