@@ -1,0 +1,20 @@
+Jūsu pieprasītais hostinga pakalpojums ir gatavs lietošanai. Jūsu
+domēns būs pieejams 10 minūšu laikā (laiks, lai pievienotu jūsu 
+domēnu Apache un DNS servera konfigurācijas failā, kuru veic robots,
+ik pēc katrām 10 minūtēm). Iepriekš pieminētais ierobežojums neattiecas
+uz FTP un SSH piekļuves kontiem - tie pieejami uzreiz pēc izveides.
+
+Iegaumējiet, ka interneta lapas saturam jāatrodas mapē:
+
+/var/www/sites/YOU-USERNAME/your-domain.com/subdomains/www/html
+
+Veidojot FTP un SSH kontus, jaiegaumē, ka mapes pilnais ceļš netiek uzrādīts.
+Tiks uzrādīts mapes relatīvais ceļš attiecībā pret mapi:
+
+/var/www/sites/YOU-USERNAME
+
+Jūs variet autorizēties vadības panelī, izmantojot zemāk redzamos datus:
+
+%%%DTC_LOGIN_INFO%%%
+
+%%%SIGNATURE%%%

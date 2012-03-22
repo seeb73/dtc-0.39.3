@@ -561,7 +561,7 @@ msgstr "Nē"
 #: shared/dtcrm/draw_handle.php:278
 #: shared/dtcrm/draw_handle.php:434
 msgid "Company Name: "
-msgstr "Uzņēmuma nosaukums:"
+msgstr "Uzņēmuma nosaukums: "
 
 #: admin/view_waitingusers.php:173
 #: admin/dtcrm/main.php:231
@@ -834,9 +834,8 @@ msgid "Network Usage Statistics for"
 msgstr "Tīkla trafika statistika - "
 
 #: admin/authme.php:13
-#, fuzzy
 msgid "Please login with your admin username and password to access the DTC admin interface."
-msgstr "Lūdzu, piesakieties ar lietotājvārdu un paroli, lai piekļūtu DTC administratora interfeisam."
+msgstr "Lūdzu, piesakieties ar lietotājvārdu un paroli, lai piekļūtu DTC administratora panelim."
 
 #: admin/authme.php:18
 #, fuzzy
@@ -1047,7 +1046,7 @@ msgstr ""
 
 #: admin/inc/renewals.php:326
 msgid "Type of Payment"
-msgstr ""
+msgstr "Maksājuma veids"
 
 #: admin/inc/renewals.php:335
 msgid "View/Add Upstream Providers"
@@ -1114,7 +1113,7 @@ msgstr "Pasta indekss: "
 #: admin/inc/renewals.php:386
 #: shared/inc/forms/my_account.php:225
 msgid "State:"
-msgstr "Valsts: "
+msgstr "Štats: "
 
 #: admin/inc/renewals.php:389
 #: admin/inc/dtc_config.php:2419
@@ -1129,7 +1128,7 @@ msgstr "Tālrunis:"
 #: admin/inc/renewals.php:395
 #: shared/inc/forms/my_account.php:228
 msgid "Fax:"
-msgstr "Fakss:"
+msgstr "Fakss: "
 
 #: admin/inc/renewals.php:398
 #: client/recover_pass.php:59
@@ -1210,7 +1209,7 @@ msgstr ""
 #: admin/inc/ip_usage_report.php:286
 #: shared/inc/forms/ticket.php:180
 msgid "Type"
-msgstr ""
+msgstr "Tips"
 
 #: admin/inc/renewals.php:553
 #, fuzzy
@@ -1377,7 +1376,7 @@ msgstr ""
 
 #: admin/inc/renewals.php:760
 msgid "Total: "
-msgstr ""
+msgstr "Kopā: "
 
 #: admin/inc/renewals.php:776
 #: shared/inc/forms/my_account.php:242
@@ -1649,7 +1648,7 @@ msgstr "Parole:"
 #: shared/inc/forms/root_admin.php:172
 #: shared/inc/forms/ssh.php:81
 msgid "Path:"
-msgstr "Ceļš:"
+msgstr "Mape:"
 
 #: admin/inc/draw_user_admin.php:392
 msgid "MaxMind says"
@@ -1672,7 +1671,7 @@ msgstr ""
 #: admin/dtcrm/product_manager.php:423
 #: admin/inc/ip_usage_report.php:286
 msgid "Name"
-msgstr ""
+msgstr "Nosaukums"
 
 #: admin/inc/draw_user_admin.php:407
 msgid "Domain Name / VPS Server Hostname"
@@ -1848,11 +1847,11 @@ msgstr "Konsoles izvade"
 #: admin/inc/dtc_config.php:29
 #: admin/inc/dtc_config.php:1113
 msgid "General"
-msgstr "Galvenie"
+msgstr "Galvenie parametri"
 
 #: admin/inc/dtc_config.php:32
 msgid "Support and auth"
-msgstr ""
+msgstr "Atbalsts un piekļuve"
 
 #: admin/inc/dtc_config.php:35
 #, fuzzy
@@ -1870,9 +1869,8 @@ msgid "IP Address Pools"
 msgstr "IPv6 adrese: "
 
 #: admin/inc/dtc_config.php:44
-#, fuzzy
 msgid "Nagios Config"
-msgstr "Domēna uzstādījumi"
+msgstr "Nagios uzstādījumi"
 
 #: admin/inc/dtc_config.php:47
 msgid "Dedicated Server IPs"
@@ -1897,7 +1895,7 @@ msgstr "VPS serveri"
 #: admin/inc/dtc_config.php:65
 #: admin/inc/dtc_config.php:2295
 msgid "Paths"
-msgstr "Ceļi"
+msgstr "Mapes"
 
 #: admin/inc/dtc_config.php:68
 #, fuzzy
@@ -2205,7 +2203,7 @@ msgstr ""
 
 #: admin/inc/dtc_config.php:715
 msgid "List of administrators allowed to login and receiving support messages:"
-msgstr ""
+msgstr "Administratoru saraksts, kuriem ir DTC administratora paneļa piekļuve un kuri saņem atbalsta paziņojumus:"
 
 #: admin/inc/dtc_config.php:725
 msgid "Nickname"
@@ -2243,11 +2241,11 @@ msgstr ""
 
 #: admin/inc/dtc_config.php:757
 msgid "Category"
-msgstr ""
+msgstr "Kategorija"
 
 #: admin/inc/dtc_config.php:761
 msgid "Category description"
-msgstr ""
+msgstr "Kategorijas apraksts"
 
 #: admin/inc/dtc_config.php:770
 msgid "FTP Backup Configuration"
@@ -2331,11 +2329,11 @@ msgstr ""
 
 #: admin/inc/dtc_config.php:963
 msgid "SOAP login"
-msgstr ""
+msgstr "SOAP lietotājvārds"
 
 #: admin/inc/dtc_config.php:967
 msgid "SOAP password"
-msgstr ""
+msgstr "SOAP parole"
 
 #: admin/inc/dtc_config.php:970
 #: shared/inc/forms/root_admin.php:712
@@ -2662,7 +2660,7 @@ msgstr ""
 #: shared/inc/forms/my_account.php:143
 #: shared/inc/forms/root_admin.php:444
 msgid "IP address"
-msgstr ""
+msgstr "IP adrese"
 
 #: admin/inc/dtc_config.php:1459
 msgid "Notify the following servers when a domain is added or removed :"
@@ -3066,7 +3064,7 @@ msgstr ""
 
 #: admin/inc/dtc_config.php:2000
 msgid "NAS config"
-msgstr ""
+msgstr "NAS uzstādījumi"
 
 #: admin/inc/dtc_config.php:2017
 #, fuzzy
@@ -3092,9 +3090,8 @@ msgid "Description"
 msgstr "Apraksts"
 
 #: admin/inc/dtc_config.php:2043
-#, fuzzy
 msgid "Group config"
-msgstr "Domēna uzstādījumi"
+msgstr "Grupas uzstādījumi"
 
 #: admin/inc/dtc_config.php:2067
 #: admin/inc/dtc_config.php:2146
@@ -3151,7 +3148,7 @@ msgstr "Nē"
 
 #: admin/inc/dtc_config.php:2168
 msgid "Radius Users"
-msgstr ""
+msgstr "Radius lietotāji"
 
 #: admin/inc/dtc_config.php:2182
 #: admin/inc/dtc_config.php:2214
@@ -3191,7 +3188,7 @@ msgstr ""
 
 #: admin/inc/dtc_config.php:2313
 msgid "Apache htpasswd path"
-msgstr ""
+msgstr "Apache htpasswd pilnais ceļš"
 
 #: admin/inc/dtc_config.php:2319
 #, fuzzy
@@ -3317,7 +3314,7 @@ msgstr "Izmantotā diska vieta"
 
 #: admin/inc/monitor.php:18
 msgid "Quota"
-msgstr "Diska kvota"
+msgstr "Diska vieta"
 
 #: admin/inc/monitor.php:99
 msgid "HDD"
@@ -3347,7 +3344,7 @@ msgstr ""
 #: admin/inc/graphs.php:15
 #: admin/inc/graphs.php:17
 msgid "Local host"
-msgstr "Lokālais"
+msgstr "Lokālais serveris"
 
 #: admin/inc/graphs.php:20
 msgid "VPS servers"
@@ -3595,7 +3592,7 @@ msgstr ""
 #: admin/dtcrm/product_manager.php:212
 #: admin/dtcrm/product_manager.php:305
 msgid "Disk"
-msgstr "Disks"
+msgstr "Diska vieta"
 
 #: admin/dtcrm/product_manager.php:60
 #, fuzzy
@@ -5514,7 +5511,7 @@ msgstr ""
 #: shared/dtcrm/draw_adddomain.php:72
 #: shared/dtcrm/draw_adddomain.php:104
 msgid "Add another service to your account:"
-msgstr ""
+msgstr "Pievienot manam kontam citu pakalpojumu:"
 
 #: shared/dtcrm/draw_adddomain.php:79
 msgid "Special setup notes:"
@@ -5526,7 +5523,7 @@ msgstr "Reģistrēt"
 
 #: shared/dtcrm/draw_adddomain.php:90
 msgid "What do you want to add:"
-msgstr ""
+msgstr "Ko jūs vēlaties pievienot:"
 
 #: shared/dtcrm/draw_adddomain.php:93
 msgid "Hosting plus domain name registration or transfer"
@@ -5534,7 +5531,7 @@ msgstr ""
 
 #: shared/dtcrm/draw_adddomain.php:98
 msgid "Hosting only"
-msgstr ""
+msgstr "Tikai hostinga pakalpojumu"
 
 #: shared/dtcrm/draw_adddomain.php:135
 msgid "You curently don't have enough privileges to add domain names. If you often add domain names, you can ask the administrator to add this capability to your account. To request hosting for a new domain without domain name registration, please write to:"
@@ -6235,7 +6232,7 @@ msgstr ""
 
 #: shared/inc/draw.php:166
 msgid "Add a domain or service"
-msgstr ""
+msgstr "Pievienot domēnu vai pakalpojumu"
 
 #: shared/inc/draw.php:171
 msgid "Multiple renew"
@@ -6410,7 +6407,7 @@ msgstr "Statistika:"
 
 #: shared/inc/draw.php:487
 msgid "My account global statistics"
-msgstr ""
+msgstr "Mana konta kopējā statistika"
 
 #: shared/inc/draw.php:491
 msgid "Statistics of domain:"
@@ -6467,11 +6464,11 @@ msgstr ""
 
 #: shared/inc/draw.php:522
 msgid "Add a domain or service:"
-msgstr ""
+msgstr "Pievienot domēnu vai pakalpojumu:"
 
 #: shared/inc/draw.php:524
 msgid "Add a domain name to my account"
-msgstr ""
+msgstr "Pievienot manam kontam domēnu"
 
 #: shared/inc/draw.php:526
 #, fuzzy
@@ -7042,7 +7039,7 @@ msgstr "Kopā pārraidītie baiti šajā mēnesī: "
 
 #: shared/inc/forms/admin_stats.php:38
 msgid "hits"
-msgstr "Saišu klikšķi"
+msgstr "saišu klikšķi"
 
 #: shared/inc/forms/admin_stats.php:62
 #: shared/inc/forms/admin_stats.php:73
@@ -7052,12 +7049,12 @@ msgstr "Kopējais diska aizpildījums: "
 
 #: shared/inc/forms/admin_stats.php:67
 msgid "Domain name files:"
-msgstr ""
+msgstr "Domēnu failu diska aizpildījums:"
 
 #: shared/inc/forms/admin_stats.php:69
 #: shared/inc/forms/admin_stats.php:71
 msgid "Database files:"
-msgstr ""
+msgstr "Datu bāzes failu diska aizpildījums:"
 
 #: shared/inc/forms/admin_stats.php:81
 msgid "Databases disk usage:"
@@ -7070,7 +7067,7 @@ msgstr "Datu bāzes nosaukums"
 #: shared/inc/forms/admin_stats.php:83
 #: shared/inc/forms/admin_stats.php:104
 msgid "Disk usage"
-msgstr ""
+msgstr "Diska aizpildījums"
 
 #: shared/inc/forms/admin_stats.php:102
 msgid "Domain name traffic and disk usage:"
@@ -7083,7 +7080,7 @@ msgstr "Domēns"
 
 #: shared/inc/forms/admin_stats.php:107
 msgid "Total traffic"
-msgstr ""
+msgstr "Kopējais trafiks"
 
 #: shared/inc/forms/aliases.php:21
 msgid "List of your mail groups"
@@ -7701,7 +7698,7 @@ msgstr ""
 
 #: shared/inc/forms/ftp.php:102
 msgid "Path: "
-msgstr ""
+msgstr "Mape: "
 
 #: shared/inc/forms/invoices.php:21
 msgid "There is no company defined: impossible to show invoices. Contact your administrator."
@@ -8130,11 +8127,11 @@ msgstr "Jūsu hostinga konts:"
 
 #: shared/inc/forms/my_account.php:114
 msgid "Storage space"
-msgstr ""
+msgstr "Diska vieta"
 
 #: shared/inc/forms/my_account.php:114
 msgid "Allowed bandwidth per month"
-msgstr ""
+msgstr "Atļautā datu pārraide mēnesī"
 
 #: shared/inc/forms/my_account.php:114
 msgid "Expiry date"
@@ -8187,7 +8184,7 @@ msgstr "Jūsu adrese (Lūdzu, ziņojiet mums, ja zemāk esošā informācija ir 
 
 #: shared/inc/forms/my_account.php:215
 msgid "Company name:"
-msgstr "Uzņēmuma nosaukums:"
+msgstr "Uzņēmuma nosaukums: "
 
 #: shared/inc/forms/my_account.php:216
 msgid "VAT / GST number:"
@@ -8198,9 +8195,8 @@ msgid "First name:"
 msgstr "Vārds: "
 
 #: shared/inc/forms/my_account.php:220
-#, fuzzy
 msgid "Last name:"
-msgstr "Vārds: "
+msgstr "Uzvārds: "
 
 #: shared/inc/forms/my_account.php:227
 msgid "Phone number:"
@@ -8275,7 +8271,7 @@ msgstr "klients"
 
 #: shared/inc/forms/root_admin.php:174
 msgid "Disk quota (MB):"
-msgstr "Diska kvota (MB):"
+msgstr "Diska vieta (MB):"
 
 #: shared/inc/forms/root_admin.php:175
 msgid "Allowed bandwidth per month (MB):"
@@ -8316,21 +8312,19 @@ msgstr "Atļaut pievienot FTP kontus:"
 
 #: shared/inc/forms/root_admin.php:184
 msgid "Restrict FTP to the html folder:"
-msgstr ""
+msgstr "Ierobežot FTP piekļuvi tikai html mapei:"
 
 #: shared/inc/forms/root_admin.php:185
 msgid "Allow edition of mailing lists and mail groups:"
 msgstr ""
 
 #: shared/inc/forms/root_admin.php:186
-#, fuzzy
 msgid "Allow edition of DNS and MX:"
-msgstr "Atļaut pievienot SSH kontus:"
+msgstr "Atļaut rediģēt DNS un MX ierakstus:"
 
 #: shared/inc/forms/root_admin.php:187
-#, fuzzy
 msgid "Allow edition of subdomains:"
-msgstr "Atļaut pievienot SSH kontus:"
+msgstr "Atļaut rediģēt apakšdomēnus:"
 
 #: shared/inc/forms/root_admin.php:188
 msgid "Allow the use of the package installer:"
@@ -8805,7 +8799,7 @@ msgstr ""
 
 #: shared/inc/forms/ticket.php:180
 msgid "Time"
-msgstr ""
+msgstr "Laiks"
 
 #: shared/inc/forms/ticket.php:180
 msgid "Status"
@@ -9469,7 +9463,7 @@ msgstr "Nomainīt savu paroli:"
 #: shared/gfx/skin/bwoup/layout.php:53
 #: shared/gfx/skin/bwoup/layout.php:61
 msgid "Email panel: "
-msgstr ""
+msgstr "e-pasta panelis: "
 
 #: shared/gfx/skin/default_layout.php:60
 #: shared/gfx/skin/bwoup/layout.php:251
@@ -9519,7 +9513,7 @@ msgstr "Konfigurācijas ģenerēšana"
 #: shared/gfx/skin/default_layout.php:141
 #: shared/gfx/skin/bwoup/layout.php:504
 msgid "Please note that you need to create at least one mailbox and one FTP account in order for the daemon status to work correctly."
-msgstr ""
+msgstr "Lūdzu, iegaumējiet, ka jums ir nepieciešams izveidot vismaz vienu pastkastīti un FTP kontu, lai dēmonu status darbotos pareizi."
 
 #: shared/gfx/skin/default_layout.php:142
 #: shared/gfx/skin/bwoup/layout.php:505
