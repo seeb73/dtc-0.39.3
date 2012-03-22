@@ -18,6 +18,8 @@
 DESC="DTC DoS firewall"   
 NAME="dtc-dos-firewall"
 
+
+
 . /lib/lsb/init-functions
 
 if [ -r /lib/init/vars.sh ] ; then
@@ -25,199 +27,152 @@ if [ -r /lib/init/vars.sh ] ; then
 fi
 
 IPTABLES=/sbin/iptables
+IP6TABLES=/sbin/ip6tables
 
 if [ -f /etc/dtc/dtc-dos-firewall.conf ] ; then
 	. /etc/dtc/dtc-dos-firewall.conf
+fi
+
+# General firewall preferences
+if [ -z "${GENERAL_FIREWALL_ACTIVATE}" ] ; then
+	GENERAL_FIREWALL_ACTIVATE=0
+fi
+if [ -z "${GENERAL_IN_CHAIN}" ] ; then
+	GENERAL_IN_CHAIN="general-in"
+fi
+if [ -z "${GENERAL_OUT_CHAIN}" ] ; then
+	GENERAL_OUT_CHAIN="dtc-general-out"
+fi
+if [ -z "${GENERAL_FOR_CHAIN}" ] ; then
+	GENERAL_FOR_CHAIN="dtc-general-for"
+fi
+# General ip6 firewall preferences
+if [ -z "${GENERAL_IP6_FIREWALL_ACTIVATE}" ] ; then
+	GENERAL_IP6_FIREWALL_ACTIVATE=0
+fi
+if [ -z "${DOS_IP6_IN_CHAIN}" ] ; then
+	DOS_IP6_IN_CHAIN="dtc-dos6-in"
+fi
+if [ -z "${GENERAL_IP6_IN_CHAIN}" ] ; then
+	GENERAL_IP6_IN_CHAIN="dtc-general6-in"
+fi
+if [ -z "${GENERAL_IP6_OUT_CHAIN}" ] ; then
+	GENERAL_IP6_OUT_CHAIN="dtc-general6-out"
+fi
+if [ -z "${GENERAL_IP6_FOR_CHAIN}" ] ; then
+	GENERAL_IP6_FOR_CHAIN="dtc-general6-for"
 fi
 
 if [ -z "${INTERFACE}" ] ; then
 	INTERFACE="eth0"
 fi
 
-if [ -f /etc/dtc/dos-6firewall ] ; then
-	. /etc/dtc/dos-6firewall
+
+if ! [ -f /etc/dtc/dos-firewall -a -f /etc/dtc/dos-6firewall -a -f /etc/dtc/general-firewall -a -f /etc/dtc/general6-firewall ] ; then
+	exit 0
 fi
+. /etc/dtc/dos-firewall
+. /etc/dtc/dos-6firewall
+. /etc/dtc/general-firewall
+. /etc/dtc/general6-firewall
 
-if [ -f /etc/dtc/general-firewall ] ; then
-	. /etc/dtc/general-firewall
-fi
-
-if [ -f /etc/dtc/general6-firewall ] ; then
-	. /etc/dtc/general6-firewall
-fi
-
-accept-localhost-traffic () {
-	${IPTABLES} -A dtc-dos-in -i lo -j ACCEPT
-}
-
-limit-ssh-login-rate () {
-	if [ -z "${SSH_LOGIN_RATE}" ] ; then
-		SSH_LOGIN_RATE=10
-	fi
-	if [ -z "${SSH_LOGIN_TIME}" ] ; then
-		SSH_LOGIN_TIME=300
-	fi
-	# Anti DoS SSH : deny ssh for 300 seconds after 10 attempts
-	# This can't be too high because of the use of scp
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 22 -i ${INTERFACE} -m state --state NEW -m recent --set
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 22 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${SSH_LOGIN_TIME} --hitcount ${SSH_LOGIN_RATE} -j REJECT
-}
-limit-smtp-connection-rate () {
-	if [ -z "${SMTP_RATE}" ] ; then
-		SMTP_RATE=8
-	fi
-	if [ -z "${SMTP_TIME}" ] ; then
-		SMTP_TIME=1
-	fi
-	# max-rate to 15 connections per seconds
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 25 -i ${INTERFACE} -m state --state NEW -m recent --set
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 25 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${SMTP_TIME} --hitcount ${SMTP_RATE} -j REJECT
-	set -x
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 587 -i ${INTERFACE} -m state --state NEW -m recent --set
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 587 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${SMTP_TIME} --hitcount ${SMTP_RATE} -j REJECT
-	set +x
-}
-
-limit-http-connection-rate () {
-	if [ -z "${HTTP_RATE}" ] ; then
-		HTTP_RATE=20
-	fi
-	if [ -z "${HTTP_TIME}" ] ; then
-		HTTP_TIME=1
-	fi
-	# max-rate to 20 connections per seconds
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 80 -i ${INTERFACE} -m state --state NEW -m recent --set
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 80 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${HTTP_TIME} --hitcount ${HTTP_RATE} -j REJECT
-}
-
-limit-pop-and-imap-connection-rate () {
-	if [ -z "${POP_RATE}" ] ; then
-		POP_RATE=5
-	fi
-	if [ -z "${POP_TIME}" ] ; then
-		POP_TIME=1
-	fi
-	# max-rate to 10 connections per seconds
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 110 -i ${INTERFACE} -m state --state NEW -m recent --set
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 110 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${POP_TIME} --hitcount ${POP_RATE} -j REJECT
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 995 -i ${INTERFACE} -m state --state NEW -m recent --set
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 995 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${POP_TIME} --hitcount ${POP_RATE} -j REJECT
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 143 -i ${INTERFACE} -m state --state NEW -m recent --set
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 143 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${POP_TIME} --hitcount ${POP_RATE} -j REJECT
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 993 -i ${INTERFACE} -m state --state NEW -m recent --set
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 993 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${POP_TIME} --hitcount ${POP_RATE} -j REJECT
-}
-
-limit-ftp-connection-rate () {
-	if [ -z "${FTP_RATE}" ] ; then
-		FTP_RATE=5
-	fi
-	if [ -z "${FTP_TIME}" ] ; then
-		FTP_TIME=1
-	fi
-	# max-rate to 5 connections per seconds for both ftp and ftp-data
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 20 -i ${INTERFACE} -m state --state NEW -m recent --set
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 20 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${FTP_TIME} --hitcount ${FTP_RATE} -j REJECT
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 21 -i ${INTERFACE} -m state --state NEW -m recent --set
-	${IPTABLES} -A dtc-dos-in -p tcp --dport 21 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${FTP_TIME} --hitcount ${FTP_RATE} -j REJECT
-}
-
-create-dtc-dos-chain () {
+# Create a firewall chain
+# Params:
+# $1: name of the chain
+# $2: iptables general chain name
+# $3: iptables or ip6tables binary
+create-dtc-chain () {
 	# Create the chain (if it doesn't exists, then it should be inserted in the INPUT chain)
-	CHAINTEST=`LC_ALL=C ${IPTABLES} -t filter -L -n | grep dtc-dos-in | awk '{printf $1}'`
-	if [ "${CHAINTEST}" = "dtc-dos-inChain" ] ; then
-		${IPTABLES} -F dtc-dos-in
+	CHAINTEST=`LC_ALL=C ${1} -t filter -L -n | grep ${2} | awk '{printf $1}'`
+	if [ "${CHAINTEST}" = "${2}Chain" ] ; then
+		${1} -F ${2}
 	elif [ "${CHAINTEST}" = "Chain" ] ; then
-		${IPTABLES} -I INPUT -j dtc-dos-in
-		${IPTABLES} -F dtc-dos-in
+		${1} -I ${3} -j ${2}
+		${1} -F ${2}
 	else
-		${IPTABLES} --new-chain dtc-dos-in
-		${IPTABLES} -I INPUT -j dtc-dos-in
+		${1} --new-chain ${2}
+		${1} -I ${3} -j ${2}
 	fi
 }
 
-delete-dtc-dos-chain () {
-	CHAINTEST=`LC_ALL=C ${IPTABLES} -t filter -L -n | grep dtc-dos-in | awk '{printf $1}'`
-	if [ "${CHAINTEST}" = "dtc-dos-inChain" ] ; then
-		${IPTABLES} -D INPUT -j dtc-dos-in
-		${IPTABLES} -F dtc-dos-in
-		${IPTABLES} -X dtc-dos-in
+# Delete a firewall chain
+# Params:
+# $1: name of the chain
+# $2: iptables general chain name
+# $3: iptables or ip6tables binary
+delete-dtc-chain () {
+	CHAINTEST=`LC_ALL=C ${1} -t filter -L -n | grep ${2} | awk '{printf $1}'`
+	if [ "${CHAINTEST}" = "${2}Chain" ] ; then
+		${1} -D ${3} -j ${2}
+		${1} -F ${2}
+		${1} -X ${2}
 	elif [ "${CHAINTEST}" = "Chain" ] ; then
-		${IPTABLES} -F dtc-dos-in
-		${IPTABLES} -X dtc-dos-in
+		${1} -F ${2}
+		${1} -X ${2}
 	fi
 }
+
 
 case "${1}" in
 start)
-	[ "${VERBOSE}" != no ] && log_daemon_msg "Starting ${DESC}" ${NAME}
-	create-dtc-dos-chain
+	[ "${VERBOSE}" != no ] && log_daemon_msg "Starting ${DESC}"
+	[ "${VERBOSE}" != no ] && log_progress_msg "IPv4-anti-dos"
+	create-dtc-chain ${IPTABLES} dtc-dos-in INPUT
 	accept-localhost-traffic
 	limit-ssh-login-rate
 	limit-smtp-connection-rate
 	limit-http-connection-rate
 	limit-ftp-connection-rate
 	limit-pop-and-imap-connection-rate
-	if [ ${IPTVDOSFW} == 1 ] ; then
-	create-vdos-chain	
-	limit-6ssh-login-rate
-	limit-6smtp-connection-rate
-	limit-6http-connection-rate
-	limit-6ftp-connection-rate
-	limit-6pop-and-imap-connection-rate
+	if [ ${IPV6_ANTI_DOS_ACTIVATE} == 1 ] ; then
+		[ "${VERBOSE}" != no ] && log_progress_msg "IPv6-anti-dos"
+		create-dtc-chain ${IP6TABLES} ${DOS_IP6_IN_CHAIN} INPUT
+		limit-6ssh-login-rate
+		limit-6smtp-connection-rate
+		limit-6http-connection-rate
+		limit-6ftp-connection-rate
+		limit-6pop-and-imap-connection-rate
 	fi
-	if [ ${IPTFW} == 1 ] ; then 
-	create-in-chain
-	create-out-chain
-	create-for-chain
-	general-in
-	general-out
-	general-for
+	if [ ${GENERAL_FIREWALL_ACTIVATE} == 1 ] ; then
+		[ "${VERBOSE}" != no ] && log_progress_msg "IPv4-general"
+		create-dtc-chain ${IPTABLES} ${GENERAL_IN_CHAIN} INPUT
+		create-dtc-chain ${IPTABLES} ${GENERAL_OUT_CHAIN} OUTPUT
+		create-dtc-chain ${IPTABLES} ${GENERAL_FOR_CHAIN} FORWARD
+		general-in
+		general-out
+		general-for
 	fi
-	if [ ${IPT6FW} == 1 ] ; then 
-	create-6in-chain
-	create-6out-chain
-	create-6for-chain
-	general-6in
-	general-6out
-	general-6for	
+	if [ ${GENERAL_IP6_FIREWALL_ACTIVATE} == 1 ] ; then
+		[ "${VERBOSE}" != no ] && log_progress_msg "IPv6-general"
+		create-dtc-chain ${IP6TABLES} ${GENERAL_IP6_IN_CHAIN} INPUT
+		create-dtc-chain ${IP6TABLES} ${GENERAL_IP6_OUT_CHAIN} INPUT
+		create-dtc-chain ${IP6TABLES} ${GENERAL_IP6_FOR_CHAIN} INPUT
+		general-6in
+		general-6out
+		general-6for	
 	fi
 	[ "${VERBOSE}" != no ] && log_end_msg 0
 ;;
 stop)
-	[ "${VERBOSE}" != no ] && log_daemon_msg "Stopping ${DESC}" ${NAME}
-	delete-dtc-dos-chain
-	if [ ${IPTVDOSFW} == 1 ] ; then
-	echo "Stop IPv6 Dos firewall"
-	${IPT6} -F dos-6in
-	${IPT6} -X dos-6in
-	fi
-	if [ ${IPTFW} == 1 ] ; then 
-	echo "Stop firewall"
-	${IPTABLES} -F general-in
-	${IPTABLES} -X general-in
-	${IPTABLES} -F general-out
-	${IPTABLES} -X general-out
-	${IPTABLES} -F general-for
-	${IPTABLES} -X general-for
-	# stop drop
+	[ "${VERBOSE}" != no ] && log_daemon_msg "Stopping ${DESC}"
+	[ "${VERBOSE}" != no ] && log_progress_msg "IPv4-anti-dos"
+	delete-dtc-chain ${IPTABLES} dtc-dos-in INPUT
+	[ "${VERBOSE}" != no ] && log_progress_msg "IPv6-anti-dos"
+	delete-dtc-chain ${IP6TABLES} ${DOS_IP6_IN_CHAIN} INPUT
+	[ "${VERBOSE}" != no ] && log_progress_msg "IPv4-general"
 	${IPTABLES} -P INPUT ACCEPT
 	${IPTABLES} -P OUTPUT ACCEPT
 	${IPTABLES} -P FORWARD ACCEPT
-	fi
-	if [ ${IPT6FW} == 1 ] ; then
-	echo "Stop IPv6 firewall" 
-	${IPT6} -F general-6in
-	${IPT6} -X general-6in
-	${IPT6} -F general-6out
-	${IPT6} -X general-6out
-	${IPT6} -F general-6for
-	${IPT6} -X general-6for
-	# stop drop
-	${IPT6} -P INPUT ACCEPT
-	${IPT6} -P OUTPUT ACCEPT
-	${IPT6} -P FORWARD ACCEPT
-	fi
+	delete-dtc-chain ${IPTABLES} ${GENERAL_IN_CHAIN} INPUT
+	delete-dtc-chain ${IPTABLES} ${GENERAL_OUT_CHAIN} OUTPUT
+	delete-dtc-chain ${IPTABLES} ${GENERAL_FOR_CHAIN} FORWARD
+	[ "${VERBOSE}" != no ] && log_progress_msg "IPv6-general"
+	${IP6TABLES} -P INPUT ACCEPT
+	${IP6TABLES} -P OUTPUT ACCEPT
+	${IP6TABLES} -P FORWARD ACCEPT
+	delete-dtc-chain ${IP6TABLES} ${GENERAL_IP6_IN_CHAIN} INPUT
+	delete-dtc-chain ${IP6TABLES} ${GENERAL_IP6_OUT_CHAIN} INPUT
+	delete-dtc-chain ${IP6TABLES} ${GENERAL_IP6_FOR_CHAIN} INPUT
 	[ "${VERBOSE}" != no ] && log_end_msg 0
 ;;
 restart|reload|force-reload)

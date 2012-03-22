@@ -1,15 +1,7 @@
-IPT6="/sbin/ip6tables"
-# 1 ON, 0 OFF
-IPTVDOSFW=0
-
-create-vdos-chain () {
-	echo "Starting IPv6 Dos firewall..."
-        # Create the chain (if it doesn't exists, then it should be inserted in the INPUT chain)
-        if ${IPT6} --new-chain dos-6in ; then
-                ${IPT6} -I INPUT 2 -j dos-6in
-        fi
-        ${IPT6} -F dos-6in
+accept-6localhost-traffic () {
+	${IP6TABLES} -A dtc-dos-in -i lo -j ACCEPT
 }
+
 limit-6ssh-login-rate () {
         if [ -z "${SSH_LOGIN_RATE}" ] ; then
                 SSH_LOGIN_RATE=3
@@ -19,8 +11,8 @@ limit-6ssh-login-rate () {
         fi
         # Anti DoS SSH : deny ssh for 300 seconds after 10 attempts
         # This can't be too high because of the use of scp
-        ${IPT6} -A dos-6in -p tcp --dport 22 -i ${INTERFACE} -m state --state NEW -m recent --set
-        ${IPT6} -A dos-6in -p tcp --dport 22 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${SSH_LOGIN_TIME} --hitcount ${SSH_LOGIN_RATE} -j REJECT
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 22 -i ${INTERFACE} -m state --state NEW -m recent --set
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 22 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${SSH_LOGIN_TIME} --hitcount ${SSH_LOGIN_RATE} -j REJECT
 }
 limit-6smtp-connection-rate () {
         if [ -z "${SMTP_RATE}" ] ; then
@@ -30,10 +22,10 @@ limit-6smtp-connection-rate () {
                 SMTP_TIME=1
         fi
         # max-rate to 15 connections per seconds
-        ${IPT6} -A dos-6in -p tcp --dport 25 -i ${INTERFACE} -m state --state NEW -m recent --set
-        ${IPT6} -A dos-6in -p tcp --dport 25 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${SMTP_TIME} --hitcount ${SMTP_RATE} -j REJECT
-        ${IPT6} -A dos-6in -p tcp --dport 587 -i ${INTERFACE} -m state --state NEW -m recent --set
-        ${IPT6} -A dos-6in -p tcp --dport 587 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${SMTP_TIME} --hitcount ${SMTP_RATE} -j REJECT
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 25 -i ${INTERFACE} -m state --state NEW -m recent --set
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 25 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${SMTP_TIME} --hitcount ${SMTP_RATE} -j REJECT
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 587 -i ${INTERFACE} -m state --state NEW -m recent --set
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 587 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${SMTP_TIME} --hitcount ${SMTP_RATE} -j REJECT
 }
 limit-6http-connection-rate () {
         if [ -z "${HTTP_RATE}" ] ; then
@@ -43,8 +35,8 @@ limit-6http-connection-rate () {
                 HTTP_TIME=1
         fi
         # max-rate to 20 connections per seconds
-        ${IPT6} -A dos-6in -p tcp --dport 80 -i ${INTERFACE} -m state --state NEW -m recent --set
-        ${IPT6} -A dos-6in -p tcp --dport 80 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${HTTP_TIME} --hitcount ${HTTP_RATE} -j REJECT
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 80 -i ${INTERFACE} -m state --state NEW -m recent --set
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 80 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${HTTP_TIME} --hitcount ${HTTP_RATE} -j REJECT
 }
 limit-6pop-and-imap-connection-rate () {
         if [ -z "${POP_RATE}" ] ; then
@@ -54,14 +46,14 @@ limit-6pop-and-imap-connection-rate () {
                 POP_TIME=1
         fi
         # max-rate to 10 connections per seconds
-        ${IPT6} -A dos-6in -p tcp --dport 110 -i ${INTERFACE} -m state --state NEW -m recent --set
-        ${IPT6} -A dos-6in -p tcp --dport 110 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${POP_TIME} --hitcount ${POP_RATE} -j REJECT
-        ${IPT6} -A dos-6in -p tcp --dport 995 -i ${INTERFACE} -m state --state NEW -m recent --set
-        ${IPT6} -A dos-6in -p tcp --dport 995 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${POP_TIME} --hitcount ${POP_RATE} -j REJECT
-        ${IPT6} -A dos-6in -p tcp --dport 143 -i ${INTERFACE} -m state --state NEW -m recent --set
-        ${IPT6} -A dos-6in -p tcp --dport 143 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${POP_TIME} --hitcount ${POP_RATE} -j REJECT
-        ${IPT6} -A dos-6in -p tcp --dport 993 -i ${INTERFACE} -m state --state NEW -m recent --set
-        ${IPT6} -A dos-6in -p tcp --dport 993 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${POP_TIME} --hitcount ${POP_RATE} -j REJECT
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 110 -i ${INTERFACE} -m state --state NEW -m recent --set
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 110 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${POP_TIME} --hitcount ${POP_RATE} -j REJECT
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 995 -i ${INTERFACE} -m state --state NEW -m recent --set
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 995 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${POP_TIME} --hitcount ${POP_RATE} -j REJECT
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 143 -i ${INTERFACE} -m state --state NEW -m recent --set
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 143 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${POP_TIME} --hitcount ${POP_RATE} -j REJECT
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 993 -i ${INTERFACE} -m state --state NEW -m recent --set
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 993 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${POP_TIME} --hitcount ${POP_RATE} -j REJECT
 
 }
 limit-6ftp-connection-rate () {
@@ -72,8 +64,8 @@ limit-6ftp-connection-rate () {
                 FTP_TIME=1
         fi
         # max-rate to 5 connections per seconds for both ftp and ftp-data
-        ${IPT6} -A dos-6in -p tcp --dport 20 -i ${INTERFACE} -m state --state NEW -m recent --set
-        ${IPT6} -A dos-6in -p tcp --dport 20 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${FTP_TIME} --hitcount ${FTP_RATE} -j REJECT
-        ${IPT6} -A dos-6in -p tcp --dport 21 -i ${INTERFACE} -m state --state NEW -m recent --set
-        ${IPT6} -A dos-6in -p tcp --dport 21 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${FTP_TIME} --hitcount ${FTP_RATE} -j REJECT
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 20 -i ${INTERFACE} -m state --state NEW -m recent --set
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 20 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${FTP_TIME} --hitcount ${FTP_RATE} -j REJECT
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 21 -i ${INTERFACE} -m state --state NEW -m recent --set
+        ${IP6TABLES} -A ${DOS_IP6_IN_CHAIN} -p tcp --dport 21 -i ${INTERFACE} -m state --state NEW -m recent --update --seconds ${FTP_TIME} --hitcount ${FTP_RATE} -j REJECT
 }
