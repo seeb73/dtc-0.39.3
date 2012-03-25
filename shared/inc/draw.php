@@ -114,6 +114,9 @@ function drawAdminTools($admin){
 	global $server_subscreen;
 	global $vps_subcommand;
 
+	global $pro_mysql_custom_product_table;
+	global $pro_mysql_product_table;
+
 	$add_array = explode("/",$addrlink);
         $doms_txt = "";
 
@@ -248,8 +251,25 @@ function drawAdminTools($admin){
 
 	//Draw all custom products
 	for($i=0;$i<$nbr_custom;$i++){
+		$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE id='".$admin_custom[$i]["id"]."'";
+		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysql_num_rows($r);
+		if($n != 1){
+			$custprod_name = _("Error 1 while retriving custom product name");
+		}else{
+			$a = mysql_fetch_array($r);
+			$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$a["product_id"]."'";
+			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysql_num_rows($r);
+			if($n != 1){
+				$custprod_name = _("Error 2 while retriving custom product name");
+			}else{
+				$a = mysql_fetch_array($r);
+				$custprod_name = $a["name"];
+			}
+		}
 		$user_menu[] = array(
-			"text" => $admin_custom[$i]["id"],
+			"text" => $custprod_name,
 			"icon" => "box_wnb_nb_picto-dedicatedservers.gif",
 			"type" => "link",
 			"link" => "custom:".$admin_custom[$i]["id"]);
