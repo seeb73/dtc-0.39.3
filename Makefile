@@ -372,6 +372,10 @@ install-dtc-stats-daemon:
 
 install-dtc-dos-firewall:
 	$(INSTALL) -m 0644 etc/dtc/dtc-dos-firewall.conf $(DESTDIR)$(CONFIG_DIR)/dtc/dtc-dos-firewall.conf
+	$(INSTALL) -m 0644 etc/dtc/general-firewall $(DESTDIR)$(CONFIG_DIR)/dtc/general-firewall
+	$(INSTALL) -m 0644 etc/dtc/general6-firewall $(DESTDIR)$(CONFIG_DIR)/dtc/general6-firewall
+	$(INSTALL) -m 0644 etc/dtc/dos-6firewall $(DESTDIR)$(CONFIG_DIR)/dtc/dos-6firewall
+	$(INSTALL) -m 0644 etc/dtc/dos-firewall $(DESTDIR)$(CONFIG_DIR)/dtc/dos-firewall
 	if [ $(UNIX_TYPE) = "redhat" ] ; then \
 		$(INSTALL) -m 0755 etc/init.d/dtc-dos-firewall $(DESTDIR)$(INIT_DIR) ; fi
 
@@ -434,6 +438,10 @@ install-dtc-common:
 		cp -auxf etc/dtc/* $(DTC_ETC_DIRECTORY) ; \
 	fi ; \
 	rm $(DTC_ETC_DIRECTORY)/dtc-dos-firewall.conf
+	rm $(DTC_ETC_DIRECTORY)/general-firewall
+	rm $(DTC_ETC_DIRECTORY)/general6-firewall
+	rm $(DTC_ETC_DIRECTORY)/dos-6firewall
+	rm $(DTC_ETC_DIRECTORY)/dos-firewall
 
 	# Doc dir
 	$(INSTALL) -m $(NORMAL_FOLDER) -d $(DOC_DIR)
