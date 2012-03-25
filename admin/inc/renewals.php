@@ -86,6 +86,7 @@ function drawRenewalTables (){
 	global $pro_mysql_spent_bank_table;
 	global $pro_mysql_client_table;
 	global $pro_mysql_new_admin_table;
+	global $pro_mysql_custom_product_table;
 
 	global $secpayconf_currency_letters;
 	global $rub;
@@ -1187,6 +1188,48 @@ function drawRenewalTables (){
 					$client_name = $a2["company_name"].":".$a2["christname"].", ".$a2["familyname"];
 				}
 				$out .= "<tr><$td>".$a["owner"]."</td><$td>".$a["server_hostname"]."</td><$td>$client_name</td><$td>".$a2["email"]."</td><$td>".$a["expire_date"]."</td></tr>";
+			}
+			$out .= "</table>";
+		}
+		// List expired custom products
+		$out .= "<h3>". _("Custom Products Renewals:") ."</h3>";
+		$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE expire_date < '".date("Y-m-d")."' ORDER BY expire_date";
+		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysql_num_rows($r);
+		if($n < 1){
+			$out .= _("No expired custom products.") ."<br>";
+		}else{
+			$out .= dtcFormTableAttrs()."
+			<tr><td class=\"dtcDatagrid_table_titles\">". _("Login") ."</td>
+			<td class=\"dtcDatagrid_table_titles\">". _("Domain name") ."</td>
+			<td class=\"dtcDatagrid_table_titles\">". _("Client") ."</td>
+			<td class=\"dtcDatagrid_table_titles\">". _("Email") ."</td>
+			<td class=\"dtcDatagrid_table_titles\">". _("Expiration Date") ."</td></tr>";
+			for($i=0;$i<$n;$i++){
+				if($i % 2){
+					$td = "td  class=\"dtcDatagrid_table_flds\"";
+				}else{
+					$td = "td  class=\"dtcDatagrid_table_flds_alt\"";
+				}
+				$a = mysql_fetch_array($r);
+				$q2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$a["owner"]."';";
+				$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysql_num_rows($r2);
+				if($n2 != 1){
+					die("Cannot find admin name ".$a["owner"]." line ".__LINE__." file ".__FILE__);
+				}else{
+					$admin = mysql_fetch_array($r2);
+				}
+				$q2 = "SELECT * FROM $pro_mysql_client_table WHERE id='".$admin["id_client"]."';";
+				$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysql_num_rows($r2);
+				if($n2 != 1){
+					$client_name = _("Client name not found.");
+				}else{
+					$a2 = mysql_fetch_array($r2);
+					$client_name = $a2["company_name"].":".$a2["christname"].", ".$a2["familyname"];
+				}
+				$out .= "<tr><$td>".$a["owner"]."</td><$td>".$a["domain"]."</td><$td>$client_name</td><$td>".$a2["email"]."</td><$td>".$a["expire_date"]."</td></tr>";
 			}
 			$out .= "</table>";
 		}
