@@ -8,6 +8,7 @@ function drawAdminTools_Custom($admin,$custom_id){
 
 	global $pro_mysql_product_table;
 	global $pro_mysql_custom_product_table;
+	global $pro_mysql_custom_heb_types_table;
 
 	global $secpayconf_currency_letters;
 	global $secpayconf_use_products_for_renewal;
@@ -25,6 +26,7 @@ function drawAdminTools_Custom($admin,$custom_id){
 	$n = mysql_num_rows($r);
 	if($n != 1){
 		$out .= _("Custom id not found!");
+		return $out;
 	}
 	$custom_prod = mysql_fetch_array($r);
 
@@ -38,7 +40,25 @@ function drawAdminTools_Custom($admin,$custom_id){
 	}else{
 		$contact = _("Not found!");
 	}
-	$out .= "<h3>". _("Custom product contract:") ."</h3><br>$contract<br><br>";
+
+	$additiona_info = "";
+	if($server_prod["custom_heb_type"] != 0){
+		$q = "SELECT * FROM $pro_mysql_custom_heb_types_table WHERE id='".$server_prod["custom_heb_type"]."'";
+		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysql_num_rows($r);
+		if($n == 1){
+			$custom_heb_types = mysql_fetch_array($r);
+			if($custom_heb_types["reqdomain"] == "yes"){
+				$additiona_info .= "<br>"._("Domain name:")." ".$custom_prod["domain"];
+			}
+		}else{
+			$additiona_info .= "<br>"._("Warning: no custom type found")." line ".__LINE__." file ".__FILE__;
+		}
+	}
+	$out .= "<h3>". _("Custom product contract:") ."</h3>
+<br>
+"._("Custom product contract:")." ".$contract.$additiona_info."
+<br><br>";
 
 	$ar = explode("-",$custom_prod["expire_date"]);
 	$out .= "<b><u>". _("Custom product expiration dates:") ."</u></b><br>";
