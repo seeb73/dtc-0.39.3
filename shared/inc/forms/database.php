@@ -27,11 +27,13 @@ function drawDataBase($database){
 	if($n != 1)	die("Cannot find user !");
 	$admin_param = mysql_fetch_array($r);
 
+	$out = "";
 	if($conf_user_mysql_type=="distant"){
 		$newid = mysql_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass)or die("Cannot connect to user SQL host");
+	}else {
+	    $out = "<br />" . _("Please use 127.0.0.1 instead of localhost to connect to the database in your scripts.") . "<br />";
 	}
-
-	$out = "<br><h3>". _("Your users") ."</h3>";
+	$out .= "<br /><h3>". _("Your users") ."</h3>";
 	if($conf_user_mysql_prepend_admin_name == "yes"){
 		$out .= "<i>" . _("Your username will be prepended to the database username.") . "</i><br>";
 	}
