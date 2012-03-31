@@ -50,6 +50,7 @@ function mail_account_generate_postfix(){
 	global $conf_dtc_system_username;
 
 	global $conf_use_cyrus;
+	global $conf_use_sieve;
 	global $conf_use_mail_alias_group;
 
 	global $conf_support_ticket_email;
@@ -288,7 +289,11 @@ function mail_account_generate_postfix(){
 						if ($localdeliver == "yes" || $localdeliver == "true" || $vacation_flag == "yes"){
 							// need to generate .mailfilter file with "cc" and also local delivery
 							if($conf_use_cyrus != "yes" && (!isset($redirect2) || $redirect2 == "" )){
-								genDotMailfilterFile($home,$id,$domain_full_name,$spam_mailbox_enable,$spam_mailbox,$localdeliver,$vacation_flag,$vacation_text,$redirect1);
+								if($conf_use_sieve == "yes"){
+									genDotSieveFile($home,$id,$domain_full_name,$spam_mailbox_enable,$spam_mailbox,$localdeliver,$vacation_flag,$vacation_text,$redirect1);
+								}else{
+									genDotMailfilterFile($home,$id,$domain_full_name,$spam_mailbox_enable,$spam_mailbox,$localdeliver,$vacation_flag,$vacation_text,$redirect1);
+								}
 							}
 							$spam_stuff_done = 1;
 						} else {
@@ -298,7 +303,11 @@ function mail_account_generate_postfix(){
 							if ($localdeliver == "yes" || $localdeliver == "true" || $vacation_flag == "yes"){
 								//need to generate .mailfilter file with "cc" and also local delivery
 								if($conf_use_cyrus != "yes"){
-									genDotMailfilterFile($home,$id,$domain_full_name,$spam_mailbox_enable,$spam_mailbox,$localdeliver,$vacation_flag,$vacation_text,$redirect1,$redirect2);
+									if($conf_use_sieve == "yes"){
+										genDotSieveFile($home,$id,$domain_full_name,$spam_mailbox_enable,$spam_mailbox,$localdeliver,$vacation_flag,$vacation_text,$redirect1,$redirect2);
+									}else{
+										genDotMailfilterFile($home,$id,$domain_full_name,$spam_mailbox_enable,$spam_mailbox,$localdeliver,$vacation_flag,$vacation_text,$redirect1,$redirect2);
+									}
 								}
 								$spam_stuff_done = 1;
 							} else if (isset($extra_redirects)) {
@@ -317,7 +326,11 @@ function mail_account_generate_postfix(){
 					//if we haven't added the spam mailbox yet, do it here
 					if ($spam_stuff_done == 0){
 						if($conf_use_cyrus != "yes"){
-							genDotMailfilterFile($home,$id,$domain_full_name,$spam_mailbox_enable,$spam_mailbox,$localdeliver,$vacation_flag,$vacation_text,$redirect1,$redirect2);
+							if($conf_use_sieve == "yes"){
+									genDotSieveFile($home,$id,$domain_full_name,$spam_mailbox_enable,$spam_mailbox,$localdeliver,$vacation_flag,$vacation_text,$redirect1,$redirect2);
+								} else {
+									genDotMailfilterFile($home,$id,$domain_full_name,$spam_mailbox_enable,$spam_mailbox,$localdeliver,$vacation_flag,$vacation_text,$redirect1,$redirect2);
+							}
 						}
 					}
 					if(is_dir($home) && $homedir_created == 1 && $id != "cyrus" && $id != "cyradm"){

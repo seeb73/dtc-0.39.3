@@ -1229,6 +1229,11 @@ function drawGeneralConfig(){
 				"legend" => _("Use cyrus: "),
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
+			"use_sieve" => array(
+				"type" => "radio",
+				"legend" => _("Use sieve: "),
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
 			"use_advanced_lists_tunables" => array(
 				"type" => "radio",
 				"legend" => _("Show advanced mailing list options: "),

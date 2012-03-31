@@ -55,6 +55,7 @@ preseed_default_conf_values () {
 	conf_mysql_change_root=false
 	conf_mta_type=postfix
 	conf_use_cyrus=false
+	conf_use_sieve=false
 	dtc_admin_subdomain=dtc
 	main_domain_name=`hostname -d`
 	conf_adm_login=dtc

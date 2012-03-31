@@ -252,6 +252,7 @@ $dtc_database = array(
 			"default_company_invoicing" => "int(12) NOT NULL default '0'",
 			"this_server_country_code" => "varchar(4) NOT NULL default 'US'",
 			"use_cyrus" => "enum('yes','no') NOT NULL default 'no'",
+			"use_sieve" => "enum('yes','no') NOT NULL default 'no'",
 			"use_amavis" => "enum('yes','no') NOT NULL default 'yes'",
 			"use_clamav" => "enum('yes','no') NOT NULL default 'yes'",
 			"use_advanced_lists_tunables" => "enum('yes','no') NOT NULL default 'no'",

@@ -946,7 +946,12 @@ setupDTCDatabase () {
 	else
 		use_cyrus=no
 	fi
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="UPDATE config SET main_site_ip='"$conf_ip_addr"',administrative_site='"$dtc_admin_subdomain"."$main_domain_name"',site_root_host_path='"$conf_hosting_path"',generated_file_path='"$PATH_DTC_ETC"',mta_type='"$conf_mta_type"',main_domain='"$main_domain_name"',404_subdomain='404',apache_version='"$conf_apache_version"',use_cyrus='"$use_cyrus"',chroot_path='$conf_chroot_path' WHERE 1"
+	if [ ""$conf_use_sieve  = "true" ] ; then
+		use_sieve=yes
+	else
+		use_sieve=no
+	fi
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="UPDATE config SET main_site_ip='"$conf_ip_addr"',administrative_site='"$dtc_admin_subdomain"."$main_domain_name"',site_root_host_path='"$conf_hosting_path"',generated_file_path='"$PATH_DTC_ETC"',mta_type='"$conf_mta_type"',main_domain='"$main_domain_name"',404_subdomain='404',apache_version='"$conf_apache_version"',use_cyrus='"$use_cyrus"',use_sieve='"$use_sieve"',chroot_path='$conf_chroot_path' WHERE 1"
 	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="UPDATE config SET php_library_path='/usr/lib/php:/tmp:/usr/share/pear:$PATH_DTC_ETC/dtc404:/usr/share/php', dtc_system_uid='$CONF_DTC_SYSTEM_UID', dtc_system_username='$CONF_DTC_SYSTEM_USERNAME', dtc_system_gid='$CONF_DTC_SYSTEM_GID',dtc_system_groupname='$CONF_DTC_SYSTEM_GROUPNAME',generated_file_path='${PATH_DTC_ETC}' WHERE 1"
 	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="UPDATE domain SET ip_addr='"$conf_ip_addr"', generate_flag='yes' WHERE name='"$main_domain_name"'"
 
@@ -2727,7 +2732,13 @@ pickup fifo n - n 60 1 pickup
 
 " >> $TMP_FILE2
 				fi
+				# if we also have sieve, we should use it too!
+				if [ ""$conf_use_sieve = "true" ] ; then
+					echo "dovecot unix    -       n       n       -       -      pipe
+    flags=DRhu user=${CONF_DTC_SYSTEM_USERNAME} argv=$PATH_DOVECOT_DELIVER -f \${sender} -d \${user}@\${nexthop} -n -m \${extension} -a \${recipient}
 
+" >> $TMP_FILE2
+				fi
 				echo "# End of DTC configuration v0.17 : please don't touch this line !" >> $TMP_FILE2
 				cat < $TMP_FILE2 >>"$PATH_POSTFIX_ETC/master.cf"
 				rm $TMP_FILE2
@@ -2763,14 +2774,18 @@ smtpd_client_restrictions = permit_mynetworks,
 	check_client_access regexp:${PATH_POSTFIX_ETC}/maps/relaying_stoplist,
 	permit
 " >> $TMP_FILE
-			
-			# if we have maildrop, we should use it!
-			if [ -n ""$PATH_MAILDROP_BIN -a -f "$PATH_MAILDROP_BIN" ] ; then
-				echo "virtual_transport = maildrop" >> $TMP_FILE
-				echo "## Set to 1 because Maildrop only delivers one message at a time.
+			# if we also have sieve, we should use it too!
+			if [ ""$conf_use_sieve = "true" ] ; then
+				echo "virtual_transport = dovecot" >> $TMP_FILE
+				echo "dovecot_destination_recipient_limit = 1" >> $TMP_FILE
+			else
+				# if we have maildrop, we should use it!
+				if [ -n ""$PATH_MAILDROP_BIN -a -f "$PATH_MAILDROP_BIN" ] ; then
+					echo "virtual_transport = maildrop" >> $TMP_FILE
+					echo "## Set to 1 because Maildrop only delivers one message at a time.
 maildrop_destination_recipient_limit = 1" >> $TMP_FILE
+				fi
 			fi
-
 			echo "# End of DTC configuration v0.12 : please don't touch this line !" >> $TMP_FILE
 
 			# now to insert it at the end of the actual main.cf
@@ -3134,9 +3149,14 @@ ssl_key_file = $PATH_DTC_ETC/ssl/dovecot/new.cert.key
 				else
 					DOVECOT_SSL_CERT_CONF=""
 				fi
+				if [ ""$conf_use_sieve = "true" ] ; then
+					MGSIEVESET="managesieve"
+					else
+					MGSIEVESET=""
+				fi
 				echo "
 # Configured by DTC v0.x : Please don't touch this line !
-protocols = imap imaps pop3 pop3s
+protocols = imap imaps pop3 pop3s ${MGSIEVESET}
 ${dovecot_env_directive} = maildir:%h/Maildir
 pop3_uidl_format = %08Xu%08Xv
 maildir_copy_with_hardlinks = yes
@@ -3147,6 +3167,22 @@ protocol imap {
 protocol pop3 {
     mail_plugins = quota
 }
+" > $PATH_DOVECOT_CONF
+			# if we also have sieve, we should use it too!
+			if [ ""$conf_use_sieve = "true" ] ; then
+				echo "protocol managesieve {" >> $PATH_DOVECOT_CONF
+				echo "managesieve_logout_format = bytes ( in=%i : out=%o )
+}" >> $PATH_DOVECOT_CONF
+				echo "protocol lda {
+  postmaster_address = mail@exemple.com
+  mail_plugin_dir = /usr/lib/dovecot/modules/lda
+  auth_socket_path = /var/run/dovecot-auth-master
+  log_path = /var/log/sieve.log
+  info_log_path = /var/log/sieve.info
+  mail_plugins = sieve quota
+} " >> $PATH_DOVECOT_CONF
+			fi
+echo "
 auth default {
   mechanisms = plain
 #  passdb pam {
@@ -3172,7 +3208,7 @@ auth default {
       # security risk, don't give too wide permissions to it!
       mode = 0600
       # Default user/group is the one who started dovecot-auth (root)
-      #user =
+      user = $CONF_DTC_SYSTEM_USERNAME
       #group =
     }
     client {
@@ -3181,12 +3217,31 @@ auth default {
     }
   }
 }
-plugin {
-	quota = maildir
-}
+" >> $PATH_DOVECOT_CONF
+if [ ""$conf_use_sieve = "true" ] ; then
+	echo "plugin {
+   ## Sieve
+   # custom script:
+   sieve=~/.dovecot.sieve
+   # default script
+   #sieve_global_path=
+   # user's directory
+   sieve_dir=~/sieve
+   # default directory
+   #sieve_global_dir =
+ 
+   ## Quota
+   quota = maildir
+ }" >> $PATH_DOVECOT_CONF
+else echo "plugin {
+   ## Quota
+   quota = maildir
+ }" >> $PATH_DOVECOT_CONF
+fi
+echo "
 ${DOVECOT_SSL_CERT_CONF}
 # End of DTC configuration v0.x : please don't touch this line !
-" > $PATH_DOVECOT_CONF
+" >> $PATH_DOVECOT_CONF
 			else
 				echoIfVerbose "Inserting DTC configuration inside "$PATH_DOVECOT_CONF
 				if ! [ -f $PATH_DOVECOT_CONF.DTC.backup ]
@@ -5252,6 +5307,7 @@ conf_mysql_db=\"${conf_mysql_db}\"
 conf_mysql_change_root=\"${conf_mysql_change_root}\"
 conf_mta_type=${conf_mta_type}
 conf_use_cyrus=${conf_use_cyrus}
+conf_use_sieve=${conf_use_sieve}
 conf_cyrus_pass=\"${conf_cyrus_pass}\"
 dtc_admin_subdomain=\"${dtc_admin_subdomain}\"
 main_domain_name=\"${main_domain_name}\"

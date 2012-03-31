@@ -112,6 +112,13 @@ _Description: Use Cyrus mail system?
  Please choose this option if you are using Cyrus for mail
  delivery, IMAP and MTA. This option is only compatible with Postfix.
 
+Template: dtc/conf_use_sieve
+Type: boolean
+Default: false
+_Description: Use Sieve mail system?
+ Choose this option if you want to use Sieve for mail
+ delivery, this option is only compatible with Postfix and Dovecot.
+
 Template: dtc/conf_apache_version
 Type: select
 Choices: 2, 1
