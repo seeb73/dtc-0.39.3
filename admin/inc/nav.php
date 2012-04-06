@@ -104,6 +104,7 @@ function listTypePopup(){
 	global $admlist_type;
 	global $cur_admlist_type;
 	global $panel_type;
+	global $conf_post_or_get;
 
 	if($panel_type!="cronjob"){
 		if(isset($_REQUEST["admlist_type"]) && $_REQUEST["admlist_type"] != ""){
@@ -130,7 +131,7 @@ function listTypePopup(){
 	}
 
 	$admins = "<div class=\"box_wnb_nb_content\">
-<div style=\"white-space: nowrap\" nowrap><form action=\"?\"><font size=\"-2\">". _("Display and sort by:")  ."<br>
+<div style=\"white-space: nowrap\" nowrap><form method=\"$conf_post_or_get\" action=\"?\"><font size=\"-2\">". _("Display and sort by:")  ."<br>
 <select class=\"box_wnb_nb_input\" name=\"admlist_type\">
 <option value=\"Logins\"$selectedlist_logins>" . _("Logins") . "
 <option value=\"Names\"$selectedlist_name>" . _("Names") . "

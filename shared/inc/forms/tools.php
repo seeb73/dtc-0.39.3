@@ -249,6 +249,7 @@ function passwd_read($file2){
 	global $txt;
 	global $adm_login;
 	global $adm_pass;
+	global $conf_post_or_get;
 
 	$output_form="";
 
@@ -258,7 +259,7 @@ function passwd_read($file2){
 		fclose($handle);
 		//$output_form .= str_replace(":|","<br>",$output);
 		$linebrk_contents = explode(":|", $contents);
-		$txt .= "<form action=\"?\">";
+		$txt .= "<form method=\"$conf_post_or_get\" action=\"?\">";
 		$txt .= "<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">";
 		$txt .= "<input type=\"hidden\" name=\"addrlink\" value=\"".$_REQUEST["addrlink"]."\">";
 		$txt .= "<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">";

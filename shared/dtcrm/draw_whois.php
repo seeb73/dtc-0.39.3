@@ -32,6 +32,7 @@ function drawAdminTools_Whois($admin,$eddomain){
 
 	global $conf_addr_primary_dns;
 	global $conf_addr_secondary_dns;
+	global $conf_post_or_get;
 
 	$domain_name = $eddomain["name"];
     
@@ -100,7 +101,7 @@ function drawAdminTools_Whois($admin,$eddomain){
 		$out .= "<br><h3>". _("Your domain name whois data:") ."</h3>
 ";
 
-		$out .= "<form action=\"?\">
+		$out .= "<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 <input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
 <input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">

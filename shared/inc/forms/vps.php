@@ -18,6 +18,7 @@ function drawAdminTools_VPS($admin,$vps){
 
 	global $pro_mysql_vps_stats_table;
 	global $secpayconf_currency_letters;
+	global $conf_post_or_get;
 
 	global $panel_type;
 
@@ -102,7 +103,7 @@ function drawAdminTools_VPS($admin,$vps){
 	    $n = mysql_num_rows($r);
 	    if($n == 1){
 		$a = mysql_fetch_array($r);
-		$out .= "<br><br><form action=\"/dtc/new_account.php\">
+		$out .= "<br><br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 <input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 <input type=\"hidden\" name=\"renew_type\" value=\"vps\">
 <input type=\"hidden\" name=\"product_id\" value=\"".$vps["product_id"]."\">
@@ -118,7 +119,7 @@ function drawAdminTools_VPS($admin,$vps){
 	$n = mysql_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysql_fetch_array($r);
-		$out .= "<br><br><form action=\"/dtc/new_account.php\">
+		$out .= "<br><br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 <input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 <input type=\"hidden\" name=\"renew_type\" value=\"vps\">
 <input type=\"hidden\" name=\"product_id\" value=\"".$a["id"]."\">

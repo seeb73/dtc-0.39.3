@@ -9,6 +9,7 @@ function drawAdminTools_MailingLists($domain){
 	global $edit_domain;
 	global $edit_mailbox;
 	global $addrlink;
+	global $conf_post_or_get;
 
 	$txt = "";
 //	$nbr_email = sizeof($domain["emails"]);
@@ -60,7 +61,7 @@ function drawAdminTools_MailingLists($domain){
 
 		$txt .= "
 <table border=\"1\"><tr><td align=\"right\">
-<form action=\"?\" method=\"post\">
+<form method=\"$conf_post_or_get\" action=\"?\" method=\"post\">
 	<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 	<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
 	<input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">
@@ -87,7 +88,7 @@ $txt .= "<tr><td>&nbsp;</td><td><input type=\"submit\" name=\"modifylistdata\" v
 
 		if($nbr_email < $max_email){
 			$txt .= "
-<form action=\"?\" method=\"post\">
+<form method=\"$conf_post_or_get\" action=\"?\" method=\"post\">
 <table border=\"1\"><tr><td align=\"right\">
 	<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 	<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
@@ -119,6 +120,7 @@ function subscribers_list($list_path){
 	global $adm_pass;
 	global $addrlink;
 	global $edit_domain;
+	global $conf_post_or_get;
 
 	$out = "<br><h3>". _("Subscriber list (click the address to unsubscribe):") ."</h3><br><br>";
 
@@ -151,7 +153,7 @@ function subscribers_list($list_path){
 		$out .= "<a href=\"?adm_login=$adm_login&adm_pass=$adm_pass&addrlink=$addrlink&edit_domain=$edit_domain&whatdoiedit=mails&edit_mailbox=".$_REQUEST["edit_mailbox"]."&action=unsubscribe_user&subscriber_email=".$subs[$i]."\">".$subs[$i]."</a>";
 	}
 	$out .= "<br><br><h3>". _("Subscribe a new user") .":</h3><br><br>";
-	$out .= "<form action=\"?\" method=\"post\">
+	$out .= "<form method=\"$conf_post_or_get\" action=\"?\" method=\"post\">
 	<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 	<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
 	<input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">

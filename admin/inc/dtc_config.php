@@ -90,6 +90,7 @@ function drawDTCConfigMenu(){
 function configEditorTemplate ($dsc,$conftype="config"){
 	global $pro_mysql_config_table;
 	global $pro_mysql_secpayconf_table;
+	global $conf_post_or_get;
 	$out = "";
 
 	if($conftype == "config"){
@@ -146,7 +147,7 @@ function configEditorTemplate ($dsc,$conftype="config"){
 	}
 
 	$out .= dtcFormTableAttrs();
-	$out .= "<form action=\"?\">
+	$out .= "<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"action\" value=\"".$dsc["action"]."\">$fw";
 	for($i=0;$i<$n;$i++){
 		$fld = $prefix.$keys[$i];
@@ -425,6 +426,7 @@ function drawIPPoolConfig(){
 	global $pro_mysql_dedicated_ips_table;
 	global $pro_mysql_vps_ip_table;
 	global $pro_mysql_cronjob_table;
+	global $conf_post_or_get;
 
 	global $rub;
 	global $sousrub;
@@ -504,7 +506,7 @@ function drawIPPoolConfig(){
 			$a = mysql_fetch_array($r);
 			$out .= "<h3>"._("Custom RDNS entries for the IP pool")." " .$a["location"] . " (" . $a["ip_addr"] . " / " . $a["netmask"] . "):</h3>";
 			$out .= _("The following will be appened at the end of the reverse zone file.");
-			$out .= "<form action=\"?\">
+			$out .= "<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"rub\" value=\"$rub\">
 <input type=\"hidden\" name=\"sousrub\" value=\"".$_REQUEST["sousrub"]."\">
 <input type=\"hidden\" name=\"editpool\" value=\"".$_REQUEST["editpool"]."\">
@@ -572,6 +574,7 @@ function drawTicketConfig(){
 	global $conf_all_customers_list_domain;
 	global $conf_all_customers_list_email;
 	global $conf_enforce_adm_encryption;
+	global $conf_post_or_get;
 	global $pro_mysql_list_table;
 	global $pro_mysql_domain_table;
 	global $pro_mysql_client_table;
@@ -677,7 +680,7 @@ function drawTicketConfig(){
 			}
 		}
 	}
-	$out .= "<form action=\"?\">
+	$out .= "<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"rub\" value=\"$rub\">
 <input type=\"hidden\" name=\"sousrub\" value=\"".$_REQUEST["sousrub"]."\">
 <input type=\"hidden\" name=\"action\" value=\"resubscript_all_users\">
@@ -1107,9 +1110,11 @@ function drawVPSServerConfig(){
 
 function drawRegistrySelection(){
 	global $pro_mysql_registry_table;
+	global $conf_post_or_get;
+
 	$out = "<h3>". _("Registry selection") ."</h3>";
 	$out .= "";
-	$out .= "<form action=\"?\">
+	$out .= "<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"rub\" value=\"".$_REQUEST["rub"]."\">
 <input type=\"hidden\" name=\"sousrub\" value=\"".$_REQUEST["sousrub"]."\">
 <input type=\"hidden\" name=\"action\" value=\"add_mx_trigger_backup\">

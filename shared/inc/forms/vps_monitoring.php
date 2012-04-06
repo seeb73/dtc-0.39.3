@@ -17,6 +17,7 @@ function drawAdminTools_VPSMonitor($admin,$vps){
 	global $pro_mysql_vps_stats_table;
 	global $secpayconf_currency_letters;
 
+	global $conf_post_or_get;
 	global $panel_type;
 
 	$reinstall_os = 1;
@@ -267,7 +268,7 @@ function drawAdminTools_VPSMonitor($admin,$vps){
 		$vps_out .= _("Could not connect to the VPS SOAP Server.") ;
 	}
 
-	$frm_start = "<form action=\"?\">
+	$frm_start = "<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 <input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
 <input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">";
@@ -297,7 +298,7 @@ function drawAdminTools_VPSMonitor($admin,$vps){
 	// VPS Monitoring
 	$out .= "<br><h3>". _("Service monitoring:") ."</h3><br>";
 
-	$frm_start = dtcFormTableAttrs() ."<form action=\"?\">
+	$frm_start = dtcFormTableAttrs() ."<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 <input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
 <input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">";

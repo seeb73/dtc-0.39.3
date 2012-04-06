@@ -8,6 +8,7 @@ function drawAdminTools_NameServers($admin){
 	global $pro_mysql_subdomain_table;
 	global $pro_mysql_nameservers_table;
 	global $pro_mysql_domain_table;
+	global $conf_post_or_get;
 
 	$out = "";
 
@@ -97,7 +98,7 @@ owner,domain_name,subdomain,ip)VALUES(
 		$row = mysql_fetch_array($result);
 		$out .= "<br><br><a href=\"?adm_login=$adm_login&adm_pass=$adm_pass&addrlink=$addrlink\">New name server</a><br>
 <b><u>". _("Edit a name server:") ."</u></b><br>
-<form action=\"?\">
+<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\"> 
 <input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">   
 <input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">   
@@ -109,7 +110,7 @@ owner,domain_name,subdomain,ip)VALUES(
 ". _("IP address of name server:") ."<input type=\"text\" name=\"ip\" value=\"". $row["ip"] ."\">
 <input type=\"submit\" value=\"Ok\">
 </form>
-<form action=\"?\">
+<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\"> 
 <input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">    
 <input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">    
@@ -123,7 +124,7 @@ owner,domain_name,subdomain,ip)VALUES(
 	}else{
 		$out .= "<br><br><b><u>". _("Register a new name server:") ."</u></b><br>
 		". _("What subzone do you want to use (example: ns1):") ."
-<form action=\"?\">
+<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 <input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">   
 <input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">   

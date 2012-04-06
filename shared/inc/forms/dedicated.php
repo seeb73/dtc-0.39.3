@@ -15,6 +15,7 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	global $secpayconf_use_products_for_renewal;
 
 	global $submit_err;
+	global $conf_post_or_get;
 
 	get_secpay_conf();
 
@@ -60,7 +61,7 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	    $n = mysql_num_rows($r);
 	    if($n == 1){
 		$a = mysql_fetch_array($r);
-		$out .= "<br><form action=\"/dtc/new_account.php\">
+		$out .= "<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 		<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 		<input type=\"hidden\" name=\"renew_type\" value=\"server\">
 		<input type=\"hidden\" name=\"product_id\" value=\"".$dedicated["product_id"]."\">
@@ -76,7 +77,7 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	$n = mysql_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysql_fetch_array($r);
-		$out .= "<br><form action=\"/dtc/new_account.php\">
+		$out .= "<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 		<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 		<input type=\"hidden\" name=\"renew_type\" value=\"server\">
 		<input type=\"hidden\" name=\"product_id\" value=\"".$a["id"]."\">
@@ -88,7 +89,7 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 
 //	$out .= "Dedicated server content!";
 
-	$frm_start = "<form name=\"radius\" action=\"?\">
+	$frm_start = "<form method=\"$conf_post_or_get\" name=\"radius\" action=\"?\">
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 <input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
 <input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">";
@@ -144,7 +145,7 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 			$alt_color = 1;
 		}
 
-		$frm_start = "<form name=\"iprdns\" action=\"?\">
+		$frm_start = "<form method=\"$conf_post_or_get\" name=\"iprdns\" action=\"?\">
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 <input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
 <input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">";

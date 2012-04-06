@@ -6,12 +6,13 @@ function drawAdminTools_MultipleRenew($admin){
 	global $addrlink;
 	global $pro_mysql_product_table;
 	global $secpayconf_currency_letters;
+	global $conf_post_or_get;
 
 	get_secpay_conf();
 	$out = "<br><br>";
 
 	//echo "<pre>"; print_r($admin); echo "</pre>";
-	$out .= "<form action=\"/dtc/new_account.php\">
+	$out .= "<form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 <input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 <input type=\"hidden\" name=\"renew_type\" value=\"multiple-services\">
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">

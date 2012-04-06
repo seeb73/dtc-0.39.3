@@ -18,6 +18,7 @@ function drawAdminTools_PackageInstaller($domain,$adm_path){
 	global $conf_user_mysql_host;
 	global $conf_user_mysql_root_login;
 	global $conf_user_mysql_root_pass;
+	global $conf_post_or_get;
 
 	global $package_installer_console;
 	global $dtcpkg_db_login;
@@ -143,7 +144,7 @@ function drawAdminTools_PackageInstaller($domain,$adm_path){
 		<u>Description:</u> ".$pkg_info["long_desc"]."<br>
 		<u>Version:</u> ".$pkg_info["version"]."<br><br>";
 
-		$txt .= "<form action=\"?\">
+		$txt .= "<form method=\"$conf_post_or_get\" action=\"?\">
 		<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 		<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
 		<input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">";

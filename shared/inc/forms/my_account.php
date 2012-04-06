@@ -12,12 +12,13 @@ function drawAdminTools_MyAccount($admin){
 	global $pro_mysql_product_table;
 	global $pro_mysql_pending_renewal_table;
 	global $secpayconf_currency_letters;
+	global $conf_post_or_get;
 
 	global $cc_code_array;
 
 	get_secpay_conf();
 
-	$frm_start = "<form action=\"?\">
+	$frm_start = "<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 <input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
 <input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">
@@ -122,7 +123,7 @@ function drawAdminTools_MyAccount($admin){
 				$out .= "<br><center>$frm_start<input type=\"hidden\" name=\"action\" value=\"upgrade_myaccount\">
 <input type=\"submit\" value=\"". _("Upgrade my account") ."\">
 </form>";
-				$out .= "<form action=\"/dtc/new_account.php\">
+				$out .= "<form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 <input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 <input type=\"hidden\" name=\"renew_type\" value=\"shared\">
 <input type=\"hidden\" name=\"product_id\" value=\"".$admin["info"]["prod_id"]."\">
@@ -160,7 +161,7 @@ function drawAdminTools_MyAccount($admin){
 						$ssl_renew_form = _("No ssl product defined.") ;
 					}else{
 						$prod = mysql_fetch_array($prodr);
-						$ssl_renew_form = "<form action=\"/dtc/new_account.php\">
+						$ssl_renew_form = "<form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 <input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 <input type=\"hidden\" name=\"renew_type\" value=\"ssl_renew\">
 <input type=\"hidden\" name=\"ssl_ip_id\" value=\"".$a["id"]."\">
@@ -187,7 +188,7 @@ function drawAdminTools_MyAccount($admin){
 					$out .= _("No ssl product defined.") ;
 				}else{
 					$prod = mysql_fetch_array($r);
-					$out .= "<form action=\"/dtc/new_account.php\">
+					$out .= "<form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 <input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 <input type=\"hidden\" name=\"renew_type\" value=\"ssl\">
 <input type=\"hidden\" name=\"product_id\" value=\"".$prod["id"]."\">

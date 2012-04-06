@@ -70,123 +70,15 @@ function drawImportedMail($mailbox){
         $out = dtcListItemsEdit($dsc);
 	return $out;
 }
-/*
-function drawAntispamRules($mailbox){
-	global $adm_email_login;
-	global $adm_email_pass;
-	global $pro_mysql_whitelist_table;
-	global $pro_mysql_whitelist_table;
 
-	$bnc_msg = _("Hello,
-You have sent an email to me, but due to the large amount
-of spam I recieve, I use antispam software that requires message
-confirmation. This is very easy, and you will have to do it only once.
-Just click on the following link, copy the number you see on the
-screen and I will receive the message you sent me. If you do not
-click, then your message will be considered spam and I will
-NOT receive it.
-
-***URL***
-
-Thank you for your understanding.
-
-Antispam software:
-Grey listing+SPF, only available with Domain Technologie Control
-http://www.gplhost.com/software-dtc.html
-");
-
-	$out = "";
-
-	$url_start = "<a href=\"?adm_email_login=$adm_email_login&adm_email_pass=$adm_email_pass&addrlink=".$_REQUEST["addrlink"];
-	$form_start = "<form action=\"?\">
-<input type=\"hidden\" name=\"adm_email_login\" value=\"$adm_email_login\">
-<input type=\"hidden\" name=\"adm_email_pass\" value=\"$adm_email_pass\">
-<input type=\"hidden\" name=\"addrlink\" value=\"".$_REQUEST["addrlink"]."\">";
-
-	if($mailbox["data"]["iwall_protect"] == "yes")	$checked = " checked "; else $checked = "";
-	$out = $form_start."<input type=\"hidden\" name=\"action\" value=\"activate_antispam\"><input type=\"checkbox\" name=\"iwall_on\" value=\"yes\"$checked>" . _("Activate iGlobalWall protection") . "
-	". drawSubmitButton( _("Ok") ) ."</form>";
-
-	if($mailbox["data"]["iwall_protect"] == "yes"){
-		$frm_start = "<form action=\"?\">
-<input type=\"hidden\" name=\"adm_email_login\" value=\"".$_REQUEST["adm_email_login"]."\">
-<input type=\"hidden\" name=\"adm_email_pass\" value=\"".$_REQUEST["adm_email_pass"]."\">
-<input type=\"hidden\" name=\"addrlink\" value=\"".$_REQUEST["addrlink"]."\">";
-
-		if(strlen($mailbox["data"]["bounce_msg"]) < 9 || false == strstr($mailbox["data"]["bounce_msg"],"***URL***")){
-			$zebounce = $bnc_msg;
-		}else{
-			$zebounce = $mailbox["data"]["bounce_msg"];
-		}
-
-		$out .= "<br><h3>" . _("Your bounce message") . ":</h3>
-		
-		$frm_start<input type=\"hidden\" name=\"action\" value=\"edit_bounce_msg\">
-		<textarea cols=\"80\" rows=\"16\" name=\"bounce_msg\">$zebounce</textarea><br><br>
-		<input type=\"submit\" value=\"" . _("Save") . "\"></form>";
-
-		$out .= "<h3>" . _("Your white list") . ":</h3>";
-
-		$q = "SELECT * FROM $pro_mysql_whitelist_table";
-		$r = mysql_query($q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-		$n = mysql_num_rows($r);
-		$out .= "<table cellpadding=\"0\" cellspacing=\"0\" border=\"1\">
-<tr><td>" . _("Mail user from") . "</td><td>&nbsp;</td><td>" . _("Mail user domain") . "</td><td>" . _("Mail user to (mailling list)") . "</td><td>" . _("Action") . "</td></tr>";
-		for($i=0;$i<$n;$i++){
-			$a = mysql_fetch_array($r);
-			$out .= "<tr>$frm_start
-			<input type=\"hidden\" name=\"action\" value=\"edit_whitelist_rule\">
-			<input type=\"hidden\" name=\"ruleid\" value=\"".$a["id"]."\">";
-			$out .= "<td><input type=\"text\" name=\"mail_from_user\" value=\"".$a["mail_from_user"]."\"></td>";
-			$out .= "<td>@</td>";
-			$out .= "<td><input type=\"text\" name=\"mail_from_domain\" value=\"".$a["mail_from_domain"]."\"></td>";
-			$out .= "<td><input type=\"text\" size=\"30\" name=\"mail_to\" value=\"".$a["mail_to"]."\"></td>";
-			$out .= "<td><input type=\"submit\"  value=\"". _("Save") . "\"></form>
-			$frm_start<input type=\"hidden\" name=\"ruleid\" value=\"".$a["id"]."\">
-			<input type=\"hidden\" name=\"action\" value=\"delete_whitelist_rule\">
-			<input type=\"submit\" value=\"". _("Delete") . "\"></form></td></tr>";
-		}
-		$out .= "<tr>$frm_start
-			<input type=\"hidden\" name=\"action\" value=\"add_whitelist_rule\">
-			<td><input type=\"text\" name=\"mail_from_user\" value=\"\"></td>";
-		$out .= "<td>@</td>";
-		$out .= "<td><input type=\"text\" name=\"mail_from_domain\" value=\"\"></td>";
-		$out .= "<td><input type=\"text\" size=\"30\" name=\"mail_to\" value=\"\"></td>";
-		$out .= "<td><input type=\"submit\" value=\"" . _("Save") . "\"></form></td></tr>";
-		$out .= "</table>";
-	}
-	if($mailbox["data"]["clamav_protect"] == "yes")	$checked = " checked "; else $checked = "";
-	$out .= $form_start."<input type=\"hidden\" name=\"action\" value=\"activate_clamav\"><input type=\"checkbox\" name=\"clamav_on\" value=\"yes\"$checked>" . _("Activate Clamav antivirus") . "
-	". drawSubmitButton( _("Ok") ) ."</form>";
-	return $out;
-}
-
-function drawQuarantine($mailbox){
-	global $adm_email_login;
-	global $adm_email_pass;
-
-	$out = "";
-
-	$url_start = "<a href=\"?adm_email_login=$adm_email_login&adm_email_pass=$adm_email_pass&addrlink=".$_REQUEST["addrlink"];
-	$form_start = "<form action=\"?\">
-<input type=\"hidden\" name=\"adm_email_login\" value=\"$adm_email_login\">
-<input type=\"hidden\" name=\"adm_email_pass\" value=\"$adm_email_pass\">
-<input type=\"hidden\" name=\"addrlink\" value=\"".$_REQUEST["addrlink"]."\">";
-
-//	$out = $form_start."<input type=\"hidden\" name=\"action\" value=\"activate_antispam\"><input type=\"checkbox\" name=\"iwall_on\" value=\"yes\"$checked>Activate iGlobalWall protection
-//	<input type=\"submit\" value=\"Ok\"></form>";
-	$out = _("Here will go quarantinized messages");
-
-	return $out;
-}
-*/
 function drawAdminTools_emailAccount($mailbox){	
 	global $adm_email_login;
 	global $adm_email_pass;
 	global $cyrus_used;
+	global $conf_post_or_get;
 
 	$url_start = "<a href=\"?adm_email_login=$adm_email_login&adm_email_pass=$adm_email_pass&addrlink=".$_REQUEST["addrlink"];
-	$form_start = "<form action=\"?\" method=\"post\">
+	$form_start = "<form method=\"$conf_post_or_get\" action=\"?\" method=\"post\">
 <input type=\"hidden\" name=\"adm_email_login\" value=\"$adm_email_login\">
 <input type=\"hidden\" name=\"adm_email_pass\" value=\"$adm_email_pass\">
 <input type=\"hidden\" name=\"addrlink\" value=\"".$_REQUEST["addrlink"]."\">";
@@ -519,6 +411,7 @@ function drawAdminTools_Emails($domain){
 
 	global $conf_hide_password;
 	global $pro_mysql_pop_table;
+	global $conf_post_or_get;
 
 	checkLoginPassAndDomain($adm_login,$adm_pass,$domain["name"]);
 
@@ -644,7 +537,7 @@ function drawAdminTools_Emails($domain){
 		$catch_popup .= "<option value=\"".$a["id"]."\" $selected>".$a["id"]."</option>";
         }
 	$out .= "<b><u>". _("Catch-all email set to deliver to") .":</u></b><br>";
-	$out .= "<form action=\"?\" method=\"post\">
+	$out .= "<form method=\"$conf_post_or_get\" action=\"?\" method=\"post\">
 	<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 	<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
 	<input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">

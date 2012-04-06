@@ -103,6 +103,7 @@ if($n != 1){
 	global $pro_mysql_product_table;
 	global $pro_mysql_vps_ip_table;
 	global $pro_mysql_vps_server_table;
+	global $conf_post_or_get;
 	
 	$prod_popup = "";
 	$prod_ids = array();
@@ -155,7 +156,7 @@ if($n != 1){
 	}
 	$vps_location_popup = "<select name=\"vps_location\">".$vps_location_popup."</select>";
 	
-	$text = "<form action=\"?\" method = \"POST\">
+	$text = "<form method=\"$conf_post_or_get\" action=\"?\" method = \"POST\">
 <input type=\"hidden\" name=\"reqadm_id\" value=\"".$_REQUEST["reqadm_id"]."\">
 ";
 	$text .= dtcFormTableAttrs();

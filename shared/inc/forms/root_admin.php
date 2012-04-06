@@ -15,6 +15,7 @@ function drawEditAdmin($admin){
 	global $adm_pass;
 	global $rub;
 	global $conf_hide_password;
+	global $conf_post_or_get;
 
 	$info = $admin["info"];
 	if(isset($admin["data"])){
@@ -165,7 +166,7 @@ function drawEditAdmin($admin){
 
 	// Generate the user configuration form
 	$user_data = "
-<form name=\"admattrbfrm\" action=\"?\" methode=\"post\">
+<form method=\"$conf_post_or_get\" name=\"admattrbfrm\" action=\"?\" methode=\"post\">
 <input type=\"hidden\" name=\"rub\" value=\"$rub\">
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 <input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
@@ -239,7 +240,7 @@ function drawEditAdmin($admin){
 	// Creation of domains :
 	$domain_conf .= "<h3>". _("Add a domain for this user:") ."</h3>";
 
-	$domain_conf .= "<form action=\"?\"><table cellspacing=\"0\" cellpadding=\"0\" border=\"0\">
+	$domain_conf .= "<form method=\"$conf_post_or_get\" action=\"?\"><table cellspacing=\"0\" cellpadding=\"0\" border=\"0\">
 <tr><td><input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 	<input type=\"hidden\" name=\"rub\" value=\"$rub\">
 	<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
@@ -252,7 +253,7 @@ function drawEditAdmin($admin){
 	</form>";
 
 	$domain_conf .= "<h3>". _("Import a domain file for this user:") ."<h3></b>
-	<form action=\"?\" enctype=\"multipart/form-data\" method=\"post\">
+	<form method=\"$conf_post_or_get\" action=\"?\" enctype=\"multipart/form-data\" method=\"post\">
 	<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\">
 	<tr><td><input type=\"hidden\" name=\"rub\" value=\"$rub\">
 	<input type=\"hidden\" name=\"action\" value=\"import_domain\">
@@ -304,7 +305,7 @@ function drawEditAdmin($admin){
 	}
 	if($n > 0 && $num_prods_vps > 0){
 		$domain_conf .= "<h3>". _("Add a VPS for this admin:") ."</h3>
-		<form action=\"?\">
+		<form method=\"$conf_post_or_get\" action=\"?\">
 		<input type=\"hidden\" name=\"rub\" value=\"$rub\">
 		<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 		<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
@@ -351,7 +352,7 @@ function drawEditAdmin($admin){
 		$server_prods .= "<option value=\"".$a["id"]."\">".$a["name"]."</option>";
 	}
 	$domain_conf .= "<br><br><h3>". _("Add a dedicated server for this admin:") ."</h3>
-	<form action=\"?\">
+	<form method=\"$conf_post_or_get\" action=\"?\">
 	<input type=\"hidden\" name=\"rub\" value=\"$rub\">
 	<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 	<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
@@ -395,6 +396,7 @@ function drawDomainConfig($admin){
 
 	global $conf_site_addrs;
 	global $conf_use_shared_ssl;
+	global $conf_post_or_get;
 
 	$site_addrs = explode("|",$conf_site_addrs);
 

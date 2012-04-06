@@ -25,13 +25,14 @@ function drawAdminTools_AddDomain($admin){
 
 	global $secpayconf_currency_letters;
 	global $pro_mysql_handle_table;
+	global $conf_post_or_get;
 
 	get_secpay_conf();
 
 	$out = "";
 
 $form_start = "
-<form action=\"?\">
+<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 <input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
 <input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">
@@ -88,7 +89,7 @@ $form_start = "
 				break;
 			}
 		$out .= "<br><br><h3>"._("Add another service to your account:")."</h3>".
-"<br><form action=\"/dtc/new_account.php\">
+"<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 <input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
 <input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">
@@ -149,7 +150,7 @@ $form_start";
 //			if($i > 0){
 //				$out .= " - ";
 //			}
-			$out .= "<form action=\"?\">
+			$out .= "<form method=\"$conf_post_or_get\" action=\"?\">
 			<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 			<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
 			<input type=\"hidden\" name=\"action\" value=\"add_new_service\">

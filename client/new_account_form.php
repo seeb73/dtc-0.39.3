@@ -505,6 +505,7 @@ $vps_mail_add1
 function registration_form(){
 	global $conf_this_server_country_code;
         global $conf_skin;
+        global $conf_post_or_get;
 
 	global $pro_mysql_product_table;
 	global $pro_mysql_vps_ip_table;
@@ -931,7 +932,7 @@ function hostingProductChanged(){
 </script><br>
 <br>
 <i>" . _("Fields with a <font color=\"red\">*</font> are mandatory.") . "</i><br>
-<form name=\"newuser_form\" action=\"?\" methode=\"post\">
+<form name=\"newuser_form\" action=\"?\" method=\"$conf_post_or_get\">
 <input type=\"hidden\" name=\"action\" value=\"new_user_request\">
 <table>
 <tr>

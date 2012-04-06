@@ -50,6 +50,7 @@ function drawPasswordChange(){
 	global $addrlink;
 	global $pro_mysql_admin_table;
 	global $conf_enforce_adm_encryption;
+	global $conf_post_or_get;
 
 	$pass_submit_err = "";
 
@@ -77,7 +78,7 @@ function drawPasswordChange(){
 
 	$out = "<h3>". _("Change your password:") ."</h3><br>
 $pass_submit_err
-<form action=\"?\" method=\"post\">
+<form method=\"$conf_post_or_get\" action=\"?\" method=\"post\">
 ".dtcFormTableAttrs()."
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 <input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">

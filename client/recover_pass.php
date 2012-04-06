@@ -8,8 +8,9 @@ require_once("$dtcshared_path/dtc_lib.php");
 
 
 function recover_enter_login_or_email(){
+	global $conf_post_or_get;
 	$recover_l_txt = dtcFormTableAttrs();
-	$recover_l_txt .= "<form action=\"?\">
+	$recover_l_txt .= "<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"subaction\" value=\"do_send_recovery_token\">";
 	$recover_l_txt .= dtcFormLineDraw( _("Login:") ,"<table border=\"0\"><tr><td><input type=\"text\" name=\"adm_lost_login\">
 						<td>".submitButtonStart()._("Recover login").submitButtonEnd()."</td></tr></table>",0);
@@ -17,7 +18,7 @@ function recover_enter_login_or_email(){
 
 	// or an email
 	$recover_r_txt = dtcFormTableAttrs();
-	$recover_r_txt .= "<form action=\"?\">
+	$recover_r_txt .= "<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"subaction\" value=\"select_login_out_of_email\">";
 	$recover_r_txt .= dtcFormLineDraw( _("Email:") ,"<table border=\"0\"><tr><td><input type=\"text\" name=\"adm_lost_email\"></td>
 						<td>".submitButtonStart()._("Search email").submitButtonEnd()."</td></tr></table>",0);
@@ -99,10 +100,11 @@ https://$conf_administrative_site/dtc/recover_pass.php?adm_lost_login=3D".$_REQU
 }
 
 function do_recovery_new_pass_form(){
+	global $conf_post_or_get;
 	if( !isDTCLogin($_REQUEST["adm_lost_login"])){
 		return _("Login format incorrect");
 	}
-	$recover_txt = dtcFormTableAttrs()."<form action=\"?\">
+	$recover_txt = dtcFormTableAttrs()."<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"subaction\" value=\"do_recovery_validate_new_pass\">
 <input type=\"hidden\" name=\"adm_lost_login\" value=\"".$_REQUEST["adm_lost_login"]."\">
 <input type=\"hidden\" name=\"token\" value=\"".$_REQUEST["token"]."\">

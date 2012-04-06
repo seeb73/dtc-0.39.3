@@ -15,6 +15,7 @@ function drawNameTransfer($admin,$given_fqdn="none"){
 	global $form_enter_auth_code;
 	global $whois_forwareded_params;
 	global $secpayconf_currency_letters;
+	global $conf_post_or_get;
 
         global $allTLD;
 
@@ -37,7 +38,7 @@ function drawNameTransfer($admin,$given_fqdn="none"){
 	}
 
 	// Step 1: enter domain name and check domain transferability
-	$form_start = "<form action=\"?\">
+	$form_start = "<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 <input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
 <input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">

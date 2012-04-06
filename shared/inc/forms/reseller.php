@@ -14,6 +14,7 @@ function drawReseller($admin){
 	global $pro_mysql_admin_table;
 	
 	global $conf_demo_version;
+	global $conf_post_or_get;
 
 	$hidden = "<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 		<input type=\"hidden\" name=\"addrlink\" value=\"".$_REQUEST["addrlink"]."\">
@@ -31,17 +32,17 @@ function drawReseller($admin){
 			if($n != 1)	die("Could not fetch one of the child accounts !!!");
 			$a = mysql_fetch_array($r);
 			$next_adm = $a["ob_next"];
-			$out .= "<tr><td><form action=\"?\">$hidden
+			$out .= "<tr><td><form method=\"$conf_post_or_get\" action=\"?\">$hidden
 			<input type=\"hidden\" name=\"action\" value=\"change_child_account_values\">
 			<input type=\"hidden\" name=\"account_name\" value=\"".$a["adm_login"]."\">".$a["adm_login"]."</td>
 			<td><input type=\"text\" name=\"new_adm_pass\" value=\"\"></td><td><input type=\"submit\" value=\"." . _("Save") . "\"></form>
-			<form action=\"?\">$hidden
+			<form method=\"$conf_post_or_get\" action=\"?\">$hidden
 			<input type=\"hidden\" name=\"action\" value=\"delete_child_account\">
 			<input type=\"hidden\" name=\"account_name\" value=\"".$a["adm_login"]."\"><input type=\"submit\" value=\"". _("Del") . "\"></form></td></tr>";
 		}
 //		TMDselectTables("treeindex",$pro_mysql_admin_table,"childrens");
 	}
-	$out .= "<tr><td><form action=\"?\">
+	$out .= "<tr><td><form method=\"$conf_post_or_get\" action=\"?\">
 	$hidden<input type=\"hidden\" name=\"action\" value=\"add_child_account\">
 	<input type=\"text\" name=\"new_adm_login\" value=\"\"></td>
 	<td><input type=\"text\" name=\"new_adm_pass\" value=\"\"></td>

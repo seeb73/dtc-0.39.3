@@ -7,8 +7,9 @@ function drawNameRenew($domain_name,$admin){
 	global $registry_api_modules;
 	global $pro_mysql_client_table;
 	global $pro_mysql_domain_table;
+	global $conf_post_or_get;
 	
-	$form_start = "<form action=\"?\">
+	$form_start = "<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 <input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
 <input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">

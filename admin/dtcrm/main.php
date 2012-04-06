@@ -5,6 +5,7 @@ function DTCRMlistClients(){
 		$id_client = $_REQUEST["id"];
 	global $pro_mysql_client_table;
 	global $pro_mysql_admin_table;
+	global $conf_post_or_get;
 
 	// The popup value is stored in the session, let's manage it
 	if(isset($_REQUEST["clientlist_type"]) && $_REQUEST["clientlist_type"] != ""){
@@ -107,7 +108,7 @@ function DTCRMlistClients(){
 		$selectedlist_search = " selected";
 	}
        $list_prefs = "<div class=\"box_wnb_nb_content\">
-<div style=\"white-space: nowrap\" nowrap><form action=\"?\"><font size=\"-2\">". _("Show:")  ."<br>
+<div style=\"white-space: nowrap\" nowrap><form method=\"$conf_post_or_get\" action=\"?\"><font size=\"-2\">". _("Show:")  ."<br>
 <input type=\"hidden\" name=\"rub\" value=\"crm\">
 <select class=\"box_wnb_nb_input\" name=\"clientlist_type\">
 <option value=\"hide-no-admins\"$selectedlist_hide_no_admin>". _("Hide client without admin") ."
@@ -130,6 +131,7 @@ function DTCRMlistClients(){
 function DTCRMclientAdmins(){
 	global $pro_mysql_client_table;
 	global $pro_mysql_admin_table;
+	global $conf_post_or_get;
 
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE id_client='".$_REQUEST["id"]."'";
 	$r = mysql_query($q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysql_error());
@@ -146,7 +148,7 @@ function DTCRMclientAdmins(){
 	$r = mysql_query($q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysql_error());
         $n = mysql_num_rows($r);
 	$text .= "<br><br><h3>". _("Add an administrator to this customer:") ."</h3><br>";
-	$text .= "<form action=\"?\">
+	$text .= "<form method=\"$conf_post_or_get\" action=\"?\">
 <table cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr><td><input type=\"hidden\" name=\"rub\" value=\"".$_REQUEST["rub"]."\">
 <input type=\"hidden\" name=\"id\" value=\"".$_REQUEST["id"]."\">
 <input type=\"hidden\" name=\"action\" value=\"add_admin_to_client\">
@@ -169,6 +171,7 @@ function DTCRMclientAdmins(){
 function DTCRMeditClients(){
 	global $pro_mysql_client_table;
 	global $pro_mysql_custom_fld_table;
+	global $conf_post_or_get;
 
 	if(isset($_REQUEST["id"])){
 		$cid = $_REQUEST["id"];	// current customer id
@@ -218,7 +221,7 @@ function DTCRMeditClients(){
 	}else{
 		$specnot = "";
 	}
-	$text = "<form action=\"?\">
+	$text = "<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"rub\" value=\"crm\">
 <input type=\"hidden\" name=\"id\" value=\"$cid\">$hidden_inputs
 ";
@@ -329,7 +332,7 @@ cc_code_popup($row["country"])."</select>",0);
  <div class=\"input_btn_mid\"><input class=\"input_btn\" type=\"submit\" value=\"Save\"></div>
  <div class=\"input_btn_right\"></div>
 </div></form>
-<form><form action=\"?\">
+<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"rub\" value=\"crm\">
 <input type=\"hidden\" name=\"delete_id\" value=\"$cid\">
 <input type=\"hidden\" name=\"action\" value=\"delete_customer_id\">

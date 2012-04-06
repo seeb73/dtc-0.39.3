@@ -12,6 +12,7 @@ function drawAdminTools_Custom($admin,$custom_id){
 
 	global $secpayconf_currency_letters;
 	global $secpayconf_use_products_for_renewal;
+	global $conf_post_or_get;
 
 	global $submit_err_custom;
 
@@ -78,7 +79,7 @@ function drawAdminTools_Custom($admin,$custom_id){
 	    $n = mysql_num_rows($r);
 	    if($n == 1){
 		$a = mysql_fetch_array($r);
-		$out .= "<br><form action=\"/dtc/new_account.php\">
+		$out .= "<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 		<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 		<input type=\"hidden\" name=\"renew_type\" value=\"custom\">
 		<input type=\"hidden\" name=\"product_id\" value=\"".$custom_prod["product_id"]."\">
@@ -94,7 +95,7 @@ function drawAdminTools_Custom($admin,$custom_id){
 	$n = mysql_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysql_fetch_array($r);
-		$out .= "<br><form action=\"/dtc/new_account.php\">
+		$out .= "<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 		<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 		<input type=\"hidden\" name=\"renew_type\" value=\"custom\">
 		<input type=\"hidden\" name=\"product_id\" value=\"".$a["id"]."\">

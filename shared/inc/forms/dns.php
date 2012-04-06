@@ -6,10 +6,11 @@ function drawAdminTools_DomainDNS($admin,$eddomain){
 	global $addrlink;
 
 	global $conf_generated_file_path;
+	global $conf_post_or_get;
 
 	// The domain DNS configuration
 	$domain_dns_mx_conf_form = "
-<form action=\"?\">
+<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 <input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
 <input type=\"hidden\" name=\"edit_domain\" value=\"".$eddomain["name"]."\">

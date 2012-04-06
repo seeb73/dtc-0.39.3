@@ -15,6 +15,7 @@ function renew_form(){
 	global $conf_webmaster_email_addr;
 	global $conf_message_subject_header;
 	global $conf_this_server_country_code;
+	global $conf_post_or_get;
 
 	global $secpayconf_currency_letters;
 
@@ -403,7 +404,7 @@ Service country: $country
 			$out = _("After renewal, you will have") . ": " . $after_upgrade_remaining . " " .$secpayconf_currency_letters . "<br><br>";
 
 			// Check for confirmation
-			$frm_start = "<form action=\"?\">
+			$frm_start = "<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"action\" value=\"renew_myaccount\">
 ";
 			$out .= _("You have sufficient funds in your account. Press the confirm button and your order will be processed.") ."<br><br>

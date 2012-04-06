@@ -25,6 +25,7 @@ function draw_UpgradeAccount($admin){
 
 	global $secpayconf_currency_letters;
 	global $conf_this_server_country_code;
+	global $conf_post_or_get;
 
 	if(!isset($secpayconf_currency_letters)){
 		get_secpay_conf();
@@ -34,7 +35,7 @@ function draw_UpgradeAccount($admin){
 	$out = "";
 	$nowrap = 'style="white-space:nowrap"';
 
-	$frm_start = "<form action=\"?\">
+	$frm_start = "<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 <input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
 <input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">

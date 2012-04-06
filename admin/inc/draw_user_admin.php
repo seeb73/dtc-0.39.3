@@ -178,6 +178,7 @@ function getCustomerInfoFromLogin($login){
 function drawNewAdminForm(){
 	global $conf_site_root_host_path;
 	global $conf_session_expir_minute;
+	global $conf_post_or_get;
 	global $lang;
 
 	global $pro_mysql_admin_table;
@@ -294,7 +295,7 @@ function drawNewAdminForm(){
 		}else{
 			$out .= "<font color=\"#FF0000\">"._("No")."</font><br>";
 		}
-		$out .= "<form action=\"?\" method=\"post\">
+		$out .= "<form method=\"$conf_post_or_get\" action=\"?\" method=\"post\">
 		<input type=\"hidden\" name=\"subaction\" value=\"ticket_reply\">
 		<textarea cols=\"100\" rows=\"10\" wrap=\"physical\" name=\"ticketbody\"></textarea><br>
 		<input type=\"hidden\" name=\"tik_id\" value=\"".$_REQUEST["tik_id"]."\">
@@ -403,7 +404,7 @@ function drawNewAdminForm(){
 
 	// Draw the form for making a new admin
 	$add_a_user = "<h3>". _("Add a new user") ."</h3>
-<form name=\"addnewuser_frm\" action=\"?\" method=\"post\">
+<form method=\"$conf_post_or_get\" name=\"addnewuser_frm\" action=\"?\" method=\"post\">
 <input type=\"hidden\" name=\"newadminuser\" value=\"Ok\">
 ".dtcFormTableAttrs().
 dtcFormLineDraw(_("Login:"),"<input class=\"dtcDatagrid_input_color\" type=\"text\" name=\"newadmin_login\" value=\"\">").
@@ -792,7 +793,7 @@ dtcFromOkDraw()."
 		$ss = "";
 	}
 	$search = "<h3>". _("Search engine") ."</h3>
-<form name=\"search_me\" action=\"?\" method=\"get\">
+<form method=\"$conf_post_or_get\" name=\"search_me\" action=\"?\" method=\"get\">
 <input type=\"hidden\" name=\"search_query\" value=\"do\">
 ".dtcFormTableAttrs().
 dtcFormLineDraw("","

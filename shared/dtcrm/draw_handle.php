@@ -239,6 +239,8 @@ function drawAdminTools_NickHandles($admin){
 	global $addrlink;
 	global $cc_code_array;
 
+	global $conf_post_or_get;
+
 	global $cc_code_popup;
 
 	global $hdl_id;
@@ -422,7 +424,7 @@ function drawAdminTools_NickHandles($admin){
 		$hdlemail = "";
 	}
 	$rf = "<font color=\"red\">*</font>";	// Required field
-	$out .= "($rf ". _("marked fields are required") .")<form action=\"?\">
+	$out .= "($rf ". _("marked fields are required") .")<form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 <input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">$hidden_inputs
 <input type=\"hidden\" name=\"hdl_id\" value=\"$hdl_id\">
