@@ -1190,6 +1190,11 @@ function drawGeneralConfig(){
 				"type" => "radio",
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
+			"post_or_get"  => array(
+				"legend" => _("Type of form requsts: "),
+				"type" => "radio",
+				"values" => array("POST","GET"),
+				"display_replace" => array("POST","GET" . _(" (insecure, but useful for scripting DTC)"))),
 			"session_expir_minute" => array(
 				"legend" => _("User session expire time (min): "),
 				"type" => "text",
