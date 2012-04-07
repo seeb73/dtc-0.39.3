@@ -1,5 +1,25 @@
-dtc (0.34.9-1) experimental; urgency=low
+dtc (0.35.1-1) experimental; urgency=low
 
+  * New upstream release with the following changes:
+  - Fixed __FULE__ instead of __FILE__ in pay_functions.php
+  - A lot of custom products enhancement (renewals, admin editor, etc.)
+  - dovecot config modify to enable quota
+  - Install a webserver-dummy package in the chroot to allow the install of any
+  PHP software in it without hassle (uses equivs).
+  - add 7z compression and scp transfert to backup script
+  - Now also cleans the /var/lib/php5 of all vhosts (needed if using sbox_aufs).
+  - Patches for the English docs.
+  - Removes generation of safe_mode if using php >= 5.4
+  - Fixes logrotate.d script (creates dtc.log as dtc user)
+  - Adds possibility to ssh inside the subdomains.aufs folder.
+  - Updates of various language translations.
+  - Improved dtc-dos-firewall.
+  - Now using method="POST" in most forms (which is configurable, so that users
+  can still switch this off to be able to do scripting and see URL and
+  parameters).
+  - Added a new Sieve support (dovecot only).
+  * New init.d script to mount / umount aufs folders for the new sbox_aufs mode
+  of DTC.
   * Fixed the dtc-dos-firewall init.d script, so it always works and wont print
   error messages.
 
