@@ -82,7 +82,7 @@ function readCustomizedMessage($filename,$adm_login){
 		$to_open = "/usr/share/dtc/etc/" . $filename . ".txt";
 	// then it means we didn't find the file...
 	}else{
-		return "Customized message language file not found. Get in touch with your administrator.";
+		return "Customized message language file not found for $filename and lanaguage $mylang. Get in touch with your administrator.";
 	}
 	$fp = fopen($to_open, "r");
 	$content = fread($fp,filesize($to_open));
