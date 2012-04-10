@@ -145,8 +145,8 @@ start)
 	if [ ${GENERAL_IP6_FIREWALL_ACTIVATE} == 1 ] ; then
 		[ "${VERBOSE}" != no ] && log_progress_msg "IPv6-general"
 		create-dtc-chain ${IP6TABLES} ${GENERAL_IP6_IN_CHAIN} INPUT
-		create-dtc-chain ${IP6TABLES} ${GENERAL_IP6_OUT_CHAIN} INPUT
-		create-dtc-chain ${IP6TABLES} ${GENERAL_IP6_FOR_CHAIN} INPUT
+		create-dtc-chain ${IP6TABLES} ${GENERAL_IP6_OUT_CHAIN} OUTPUT
+		create-dtc-chain ${IP6TABLES} ${GENERAL_IP6_FOR_CHAIN} FORWARD
 		general-6in
 		general-6out
 		general-6for	
@@ -171,8 +171,8 @@ stop)
 	${IP6TABLES} -P OUTPUT ACCEPT
 	${IP6TABLES} -P FORWARD ACCEPT
 	delete-dtc-chain ${IP6TABLES} ${GENERAL_IP6_IN_CHAIN} INPUT
-	delete-dtc-chain ${IP6TABLES} ${GENERAL_IP6_OUT_CHAIN} INPUT
-	delete-dtc-chain ${IP6TABLES} ${GENERAL_IP6_FOR_CHAIN} INPUT
+	delete-dtc-chain ${IP6TABLES} ${GENERAL_IP6_OUT_CHAIN} OUTPUT
+	delete-dtc-chain ${IP6TABLES} ${GENERAL_IP6_FOR_CHAIN} FORWARD
 	[ "${VERBOSE}" != no ] && log_end_msg 0
 ;;
 restart|reload|force-reload)
