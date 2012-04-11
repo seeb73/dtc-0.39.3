@@ -1348,6 +1348,10 @@ $more_mx_server
 			// First, generate a list of "auto generated subdomains", preseed with "no"
 			$autosubs = array();
 			$list_autogen = explode("|",$conf_autogen_subdomain_list);
+			// autogenerate autodiscover subdomain if primary and other mx are here, but only once 
+			if (!strpos($conf_autogen_subdomain_list, 'autodiscover') && ($row["primary_mx"]=='default') && ($row["other_mx"]=='default')) {
+				$list_autogen[] = 'autodiscover';
+			}
 			$n_autogen = sizeof($list_autogen);
 			for($autog=0;$autog<$n_autogen;$autog++){
 				$autosubs[$list_autogen[$autog]] = "no";

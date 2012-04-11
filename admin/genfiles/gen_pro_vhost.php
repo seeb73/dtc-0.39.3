@@ -435,6 +435,38 @@ AND $pro_mysql_admin_table.id_client != '0'";
 	# end mod_cband user generation #
 	#################################
 
+	// autodiscover vhost
+	$autodiscover_hosts = array();
+	for ($i=0;$i<$num_rows;$i++) {
+		$row = mysql_fetch_array($result) or die ("Cannot fetch user");
+		$web_name = $row["name"];
+		if ($web_name == "" || $row['primary_mx'] != 'default' || $row['other_mx'] != 'default') {
+			continue;
+		}
+		$query2 = "SELECT COUNT(*) FROM $pro_mysql_subdomain_table WHERE domain_name='$web_name' AND subdomain_name='autodiscover';";
+		$result2 = mysql_query($query2) or die("Cannot execute query \"$query2\"");
+		if (mysql_result($result2, 0, 'COUNT(*)') > 0) {
+			continue;
+		}
+		$autodiscover_hosts[] = $web_name;
+	}			
+	mysql_data_seek($result, 0);
+	if (count($autodiscover_hosts) > 0) {
+		$vhost_file .= "<VirtualHost ".$conf_main_site_ip.":80>
+	ServerName autodiscover.$conf_main_domain\n";
+		foreach ($autodiscover_hosts as $autodiscover_host) {
+			$vhost_file .= "	ServerAlias autodiscover.$autodiscover_host\n";	
+		}
+		$vhost_file .="	Alias /autodiscover/autodiscover.xml $conf_generated_file_path/autodiscover-redirect.xml
+	<Location /autodiscover/autodiscover.xml>
+		Order Deny,Allow
+	</Location>
+	<LocationMatch \"^/(?!autodiscover/autodiscover.xml)\">
+		Order Allow,Deny
+	</LocationMatch>
+</VirtualHost>\n\n";
+	}
+	
 	for($i=0;$i<$num_rows;$i++){
 		$row = mysql_fetch_array($result) or die ("Cannot fetch user");
 		$web_name = $row["name"];
@@ -451,7 +483,8 @@ AND $pro_mysql_admin_table.id_client != '0'";
 		$domain_parking_type = $row["domain_parking_type"];
 		$domain_wildcard_dns = $row["wildcard_dns"];
 		$domain_default_sub_server_alias = $row["default_sub_server_alias"];
-
+		$create_mail_autoconfig = $row["primary_mx"] == "default";
+		
 		unset($backup_ip_addr);
 		if (isset($row["backup_ip_addr"])){
 			$backup_ip_addr = $row["backup_ip_addr"];
@@ -672,6 +705,7 @@ AND $pro_mysql_admin_table.id_client != '0'";
 	Alias /squirrelmail ".$conf_tools_prefix."/squirrelmail
 	Alias /roundcube /var/lib/roundcube
 	Alias /extplorer /usr/share/extplorer
+	AliasMatch ^/autodiscover/autodiscover\.xml\$ $conf_generated_file_path/autodiscover.xml.php
 	php_admin_value sendmail_from webmaster@$web_name
 	DocumentRoot $web_path/$web_name/subdomains/$web_subname/html
 	<Directory $web_path/$web_name/subdomains/$web_subname/html>
@@ -954,10 +988,13 @@ $vhost_file .= "
 	<IfModule mod_cband.c>
 		CBandUser $web_owner
 		CBandRemoteSpeed 2Mbps 3 3
-	</IfModule>
-</VirtualHost>
+	</IfModule>\n";
 
-";
+						if ($create_mail_autoconfig && ($domain_default_sub_server_alias == "yes") && ($web_subname == "$web_default_subdomain")) {
+							$vhost_file .= "	AliasMatch ^/.well-known/autoconfig/mail/config-v1.1.xml\$ $conf_generated_file_path/config-v1.1.xml\n";
+						}
+	
+						$vhost_file .= "</VirtualHost>\n\n";
 						$logrotate_file_chk[] = "$web_path/$web_name/subdomains/$web_subname/logs/error.log";
 						//$logrotate_file .= "$web_path/$web_name/subdomains/$web_subname/logs/error.log ";
 						$num_generated_vhosts += $num_rows2;
