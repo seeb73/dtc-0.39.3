@@ -181,9 +181,9 @@ If you want to add more domain names, you should get in touch by opening a new s
 			}
 		}
 		if(!isset($_REQUEST["domain_name"]) || $_REQUEST["domain_name"] == ""){
-			return "<br><b><u>". _("Please enter the domain name you wish to add:") ."</u></b><br>
-$form_start<input type=\"text\" name=\"domain_name\" value=\"\">
-".submitButtonStart(). _("Ok") .submitButtonEnd()."
+			return "<br><br><b><u>". _("Please enter the domain name you wish to add:") ."</u></b><br><br>
+$form_start
+<table><tr><td>www.</td><td><input type=\"text\" name=\"domain_name\" value=\"\"></td><td>".submitButtonStart(). _("Ok") .submitButtonEnd()."</td></tr></table>
 </form>";
 		}
 		if(!isHostname($_REQUEST["domain_name"])){
@@ -202,9 +202,9 @@ $form_start<input type=\"text\" name=\"domain_name\" value=\"\">
 			_("An administrator will examine your request shortly, and validate the addition of this domain name to your account. You curently don't have enough privileges to add domain names. If you often add domain names, you can ask the administrator to grant you the privilege of automatic domain name addition. To request hosting for a new domain name, without administrator validation or domain name registration, please write to:") ."<br>
 <a href=\"$conf_webmaster_email_addr?subject=[DTC] More domains\">$conf_webmaster_email_addr</a>.<br>
 <br>
-". _("You can add another domain name:") ."
-$form_start<input type=\"text\" name=\"domain_name\" value=\"\">
-".submitButtonStart(). _("Ok") .submitButtonEnd()."
+<u>". _("You can add another domain name:") ."</u><br><br>
+$form_start
+<table><tr><td>www.</td><td><input type=\"text\" name=\"domain_name\" value=\"\"></td><td>".submitButtonStart(). _("Ok") .submitButtonEnd()."</td></tr></table>
 </form>
 ";
 		}
