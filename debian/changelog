@@ -1,6 +1,11 @@
-dtc (0.35.1-2) experimental; urgency=low
+dtc (0.35.2-1) experimental; urgency=low
 
-  * Fixes the sendmail parameters in the chroot (-t -i was needed).
+  * New upstream version with the following changes:
+  - Fixes the sendmail parameters in the chroot (-t -i was needed).
+  - Minor ipv6 firewall fixes (thanks to Jeremy).
+  - Fixes sendmail parameters in the sbox_copy chroot template.
+  - Added www in front of the form to add a new domain name in my-account.
+  - Added email autodiscover feature thanks to Jan-Claas Dirks.
 
  -- Thomas Goirand <zigo@debian.org>  Sun, 08 Apr 2012 14:16:25 +0800
 
