@@ -443,7 +443,8 @@ function fetchAdminData($adm_login,$adm_input_pass){
 	global $adm_realpass;
 	global $adm_pass;
 	global $adm_random_pass;
-
+	global $idn;
+	
 	// This one is used by the root GUI so that you can browse your user
 	// account at the same time as him without destroying his session.
 	global $DONOT_USE_ROTATING_PASS;
@@ -547,8 +548,8 @@ function fetchAdminData($adm_login,$adm_input_pass){
 		return $ret;
 	}
 	$num_rows = mysql_num_rows($result);
+	// re-order by name, using idn
 	for($i=0;$i<$num_rows;$i++){
-		//echo "$i<br>";
 		$row = mysql_fetch_array($result);
 		if (!$row)
 		{
@@ -556,6 +557,16 @@ function fetchAdminData($adm_login,$adm_input_pass){
 			$ret["mesg"] = "Cannot fetch domain";
 			return $ret;
 		}
+		$domains[] = $row;
+		$b[$i] = $idn->decode($row["name"]);	
+	}
+	asort($b, SORT_LOCALE_STRING);
+	foreach($b as $key=>$val) {
+		$domains_idnsorted[] = $domains[$key];
+	}
+	for($i=0;$i<$num_rows;$i++){
+		//echo "$i<br>";
+		$row = $domains_idnsorted[$i]; //mysql_fetch_array($result);
 		unset($domain);
 		$domain["name"] = $row["name"];
 		$domain["safe_mode"] = $row["safe_mode"];

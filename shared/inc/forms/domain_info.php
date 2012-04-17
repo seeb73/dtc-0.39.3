@@ -11,7 +11,8 @@ function drawAdminTools_DomainInfo($admin,$eddomain){
 	global $renew_return;
 	global $secpayconf_currency_letters;
 	global $conf_post_or_get;
-
+	global $idn;
+	
 	$out = "";
 
 	$webname = $eddomain["name"];
@@ -229,7 +230,7 @@ function drawAdminTools_DomainInfo($admin,$eddomain){
 		}else{
 			$checked = "";
 		}
-		$out .= "<option value=\"".$a["name"]."\"$checked>".$a["name"]."</option>";
+		$out .= "<option value=\"".$a["name"]."\"$checked>".$idn->decode($a["name"])."</option>";
 	}
 
 	$out .= "</select><br>";

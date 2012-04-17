@@ -206,8 +206,9 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "set_vhost_custom_direct
 }
 
 if(isset($_REQUEST["newdomain"]) && $_REQUEST["newdomain"] == "Ok"){
-	if(isHostname($_REQUEST["newdomain_name"])){
-		addDomainToUser($adm_login,$adm_pass,$_REQUEST["newdomain_name"]);
+	$newdomain_idn = $idn->encode($_REQUEST["newdomain_name"]);
+	if(isHostname($newdomain_idn)){
+		addDomainToUser($adm_login,$adm_pass,$newdomain_idn);
 		triggerDomainListUpdate();
 	}else{
 		echo "<font color=\"red\">Hostname is not a valid domain name!</font>";

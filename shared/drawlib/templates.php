@@ -195,6 +195,7 @@ function dtcDatagrid($dsc){
 	global $gfx_form_entry_label_background;
 	global $conf_enforce_adm_encryption;
 	global $conf_post_or_get;
+	global $idn;
 
 	$nbr_forwards = sizeof($dsc["forward"]);
 	$keys_fw = array_keys($dsc["forward"]);
@@ -661,7 +662,11 @@ function dtcDatagrid($dsc){
 				if($dsc["cols"][ $the_name ]["display"] == "yes"){
 					$out .= "<td class=\"$tdclass\">";
 					$out .= $id_hidden;
-					$out .= $db_value;
+					if ($the_name == 'name') {
+						$out .= $idn->decode($db_value);
+					} else {
+						$out .= $db_value;
+					}
 					$out .= "</td>";
 				}else{
 					$out .= $id_hidden;

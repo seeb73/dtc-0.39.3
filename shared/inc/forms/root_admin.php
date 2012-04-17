@@ -16,7 +16,8 @@ function drawEditAdmin($admin){
 	global $rub;
 	global $conf_hide_password;
 	global $conf_post_or_get;
-
+	global $idn;
+	
 	$info = $admin["info"];
 	if(isset($admin["data"])){
 		$data = $admin["data"];
@@ -228,12 +229,13 @@ function drawEditAdmin($admin){
 		$nbr_domain = sizeof($data);
 		for($i=0;$i<$nbr_domain;$i++){
 			$dom = $data[$i]["name"];
+			$dom_idn = $idn->decode($dom);
 			if($i != 0){
 				$domain_conf .= " - ";
 			}
 			$url = "?adm_login=$adm_login&adm_pass=$adm_pass&deluserdomain=$dom&rub=$rub";
 			$js_url = dtcJavascriptConfirmLink( _("Are you sure you want to delete this domain name? This will DELETE all hosted files for this domain.") ,$url);
-			$domain_conf .= "<a href=\"$js_url\">$dom</a>";
+			$domain_conf .= "<a href=\"$js_url\">$dom_idn</a>";
 		}
 		$domain_conf .= "</b><br><br>";
 	}
@@ -402,7 +404,8 @@ function drawDomainConfig($admin){
 
 	global $adm_login;
 	global $adm_pass;
-
+	global $idn;
+	
 	$ret = "";
 
 	if(isset($admin["data"])){
@@ -427,6 +430,7 @@ function drawDomainConfig($admin){
 			"skip_deletion" => "yes",
 			"skip_creation" => "yes",
 			"where_condition" => "owner='$adm_login'",
+			"order_by" => "name",
 			"cols" => array(
 				"name" => array(
 					"type" => "id",
@@ -489,7 +493,7 @@ function drawDomainConfig($admin){
 			);
 		$ret .= dtcDatagrid($dsc);
 		if( isset($_REQUEST["edithost"]) && isHostname($_REQUEST["edithost"]) ){
-			$ret .= "<h3>". _("Custom Apache directives for") ." ".$_REQUEST["edithost"]."</h3>";
+			$ret .= "<h3>". _("Custom Apache directives for") ." ".$idn->decode($_REQUEST["edithost"])."</h3>";
 			$q = "SELECT subdomain_name FROM $pro_mysql_subdomain_table WHERE domain_name='".$_REQUEST["edithost"]."';";
 			$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 			$n = mysql_num_rows($r);

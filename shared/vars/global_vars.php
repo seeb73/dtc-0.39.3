@@ -111,6 +111,12 @@ if($panel_type != "email" && isset($edit_domain) && !preg_match("/^([a-z0-9]+)([
 	die("The domain provided does not look like a correct domain name...");
 }
 
+require("$dtcshared_path/inc/idna_convert.class.php");
+$idn = new idna_convert(array('idn_version' => 2008));
+if (isset($edit_domain)) {
+	$edit_domain_idn = $idn->decode($edit_domain);	
+}
+
 //don't save things into the session for cronjobs
 if($panel_type!="cronjob"){
 	// Save menu style preference in session

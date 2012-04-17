@@ -94,6 +94,8 @@ function drawAdminTools($admin){
 	global $adm_login;
 	global $adm_pass;
 	global $edit_domain;
+	global $edit_domain_idn;
+	global $idn;
 	global $whatdoiedit;
 	global $domain_conf_submenu;
 	
@@ -378,16 +380,17 @@ function drawAdminTools($admin){
 //				"link" => "tools");
 //		}
 //udns.us /add
+		$dom_idn = $idn->decode($dom);
 		if($add_array[0] == $dom){
 		  $selected_domain = array(
-			"text" => "$dom",
+			"text" => $dom_idn,
 			"icon" => "box_wnb_nb_picto-servers.gif",
 			"type" => "menu",
 			"link" => "$dom",
 			"sub" => $domain_conf_submenu);
 		}else{
 		  $not_selected_domains[] = array(
-			"text" => "$dom",
+			"text" => $dom_idn,
 			"icon" => "box_wnb_nb_picto-servers.gif",
 			"type" => "menu",
 			"link" => "$dom",
@@ -500,15 +503,15 @@ function drawAdminTools($admin){
 		}else if(@$add_array[1] == "mailboxs"){
                         $web_editor .= "<img src=\"gfx/toolstitles/mailboxs.png\" align=\"left\"><font size=\"+2\"><b><u>". _("Mailboxes:") ."</u></b><br></font>";
                         $web_editor .= drawAdminTools_Emails($eddomain);
-                  	$title = _("Mailboxes of ") .$edit_domain;
+                  	$title = _("Mailboxes of ") .$edit_domain_idn;
 		}else if(@$add_array[1] == "mailaliases"){
                         $web_editor .= "<img src=\"gfx/toolstitles/mailaliasgroup.png\" align=\"left\"><font size=\"+2\"><b><u>". _("Mail Groups:") ."</u></b><br></font>";
                         $web_editor .= drawAdminTools_Aliases($eddomain);
-                  	$title = _("Mail groups of ").$edit_domain;
+                  	$title = _("Mail groups of ").$edit_domain_idn;
 		}else if(@$add_array[1] == "mailing-lists"){
                         $web_editor .= "<img src=\"gfx/toolstitles/mailing-lists.png\" align=\"left\"><font size=\"+2\"><b><u>". _("Mailing lists:") ."</u></b><br></font>";
 			$web_editor .= drawAdminTools_MailingLists($eddomain);
-			$title = _("Edit mailing lists of domain:") .$edit_domain;
+			$title = _("Edit mailing lists of domain:") .$edit_domain_idn;
 		//udns.us add
 		}else if(@$add_array[1] == "tools"){
 			$web_editor .= "<img src=\"gfx/toolstitles/tools.png\" align=\"left\"><font size=\"+2\"><b><u>Tools:</u></b><br></font>";
@@ -519,7 +522,7 @@ function drawAdminTools($admin){
 		}else if(@$add_array[1] == "dns"){
                         $web_editor .= "<img src=\"gfx/toolstitles/nameservers.png\" align=\"left\"><font size=\"+2\"><b><u>". _("Name servers:") ."</u></b><br></font>";
 			$web_editor .= drawAdminTools_DomainDNS($admin,$eddomain);
-			$title = _("DNS config of:") ." ".$edit_domain;
+			$title = _("DNS config of:") ." ".$edit_domain_idn;
 		}else if(@$add_array[1] == "invoices"){
 			$web_editor .= "<img src=\"gfx/toolstitles/stats.png\" align=\"left\"><font size=\"+2\"><b><u>". _("Invoices") .":</u></b><br></font>";
 			$web_editor .= drawAdminTools_Invoices($admin);
@@ -532,32 +535,32 @@ function drawAdminTools($admin){
 			}else{
 				$web_editor .= "<img src=\"gfx/toolstitles/stats.png\" align=\"left\"><font size=\"+2\"><b><u>". _("Statistics:") ."</u></b><br></font>";
 				$web_editor .= drawAdminTools_DomainStats($admin,$eddomain);
-				$title = _("Statistics of domain:")." ".$edit_domain;
+				$title = _("Statistics of domain:")." ".$edit_domain_idn;
 			}
 		}else if(@$add_array[1] == "whois"){
                         $web_editor .= "<img src=\"gfx/toolstitles/nickhandles.png\" align=\"left\"><font size=\"+2\"><b><u>". _("Whois:") ."</u></b><br></font>";
 			$web_editor .= drawAdminTools_Whois($admin,$eddomain);
-			$title = _("Whois of:") ." ".$edit_domain;
+			$title = _("Whois of:") ." ".$edit_domain_idn;
 		}else if(@$add_array[1] == "subdomains"){
                         $web_editor .= "<img src=\"gfx/toolstitles/subdomains.png\" align=\"left\"><font size=\"+2\"><b><u>". _("Subdomains:") ."</u></b><br></font>";
 			$web_editor .= drawAdminTools_Subdomain($admin,$eddomain);
-			$title = _("Subdomains of ") .$edit_domain;
+			$title = _("Subdomains of ") .$edit_domain_idn;
 		}else if(@$add_array[1] == "cronjobs"){
 			$web_editor .= "<img src=\"gfx/toolstitles/subdomains.png\" align=\"left\"><font size=\"+2\"><b><u>". _("Cron jobs:") ."</u></b><br></font>";
 			$web_editor .= drawAdminTools_User_CronJob($admin,$eddomain);
-			$title = _("Cron jobs of ") .$edit_domain;
+			$title = _("Cron jobs of ") .$edit_domain_idn;
 		}else if(@$add_array[1] == "ftp-accounts"){
                         $web_editor .= "<img src=\"gfx/toolstitles/ftp-accounts.png\" align=\"left\"><font size=\"+2\"><b><u>". _("FTP accounts") ."</u></b><br></font>";
 			$web_editor .= drawAdminTools_Ftp($eddomain,$adm_path);
-			$title = _("FTP accounts of ") .$edit_domain;
+			$title = _("FTP accounts of ") .$edit_domain_idn;
 		}else if(@$add_array[1] == "ssh-accounts"){
                         $web_editor .= "<img src=\"gfx/toolstitles/ssh-accounts.png\" align=\"left\"><font size=\"+2\"><b><u>". _("SSH accounts:") ."</u></b><br></font>";
 			$web_editor .= drawAdminTools_SSH($eddomain,$adm_path);
-			$title = _("SSH accounts of ") .$edit_domain;
+			$title = _("SSH accounts of ") .$edit_domain_idn;
 		}else if(@$add_array[1] == "package-installer"){
                         $web_editor .= "<img src=\"gfx/toolstitles/package-installer.png\" align=\"left\"><font size=\"+2\"><b><u>"._("Package installer:") ."</u></b><br></font>";
 			$web_editor .= drawAdminTools_PackageInstaller($eddomain,$adm_path);			
-			$title = _("Package") .": ".$edit_domain;
+			$title = _("Package") .": ".$edit_domain_idn;
 		}else if(@$add_array[1] == "nickhandles"){
                         $web_editor .= "<img src=\"gfx/toolstitles/nickhandles.png\" align=\"left\"><font size=\"+2\"><b><u>". _("DNS NIC handles") ."</u></b><br></font>";
 			$web_editor .= drawAdminTools_NickHandles($admin);
@@ -709,9 +712,9 @@ effect in realtime.<br><br>
 </a></pre>";
 			$title = _("Online DTC help");
 		}else{
-                        $web_editor .= "<img src=\"gfx/toolstitles/domains.png\" align=\"left\"><font size=\"+2\"><b><u>$addrlink:</u></b><br></font>";
+                        $web_editor .= "<img src=\"gfx/toolstitles/domains.png\" align=\"left\"><font size=\"+2\"><b><u>$edit_domain_idn:</u></b><br></font>";
 			$web_editor .= drawAdminTools_DomainInfo($admin,$eddomain);
-			$title = _("General Information ") .$edit_domain;
+			$title = _("General Information ") .$edit_domain_idn;
 		}
 		$edition = skin($conf_skin,$web_editor,$title);
 	}else{
