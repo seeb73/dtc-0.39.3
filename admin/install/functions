@@ -5292,7 +5292,8 @@ uninstallETC_CONFD_APACHE2 () {
 }
 
 createMailAutoconfigFiles () {
-	MAILSERVER=$dtc_admin_subdomain.$main_domain_name 
+	MAILSERVER=$conf_mx_mail.$main_domain_name
+	DTC_SERVER=$dtc_admin_subdomain.$main_domain_name
 	
 	cat >$PATH_DTC_ETC/config-v1.1.xml << EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -5404,7 +5405,7 @@ EOF
 		<Account>
 			<AccountType>email</AccountType>
 			<Action>redirectUrl</Action>
-			<RedirectUrl>https://$MAILSERVER/autodiscover/autodiscover.xml</RedirectUrl>
+			<RedirectUrl>https://$DTC_SERVER/autodiscover/autodiscover.xml</RedirectUrl>
 		</Account>
 	</Response>
 </Autodiscover>

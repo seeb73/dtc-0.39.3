@@ -1,3 +1,9 @@
+dtc (0.35.2-2) experimental; urgency=low
+
+  * Fixed the address of the mail server advertized by the autoconfiguration.
+
+ -- Thomas Goirand <zigo@debian.org>  Fri, 20 Apr 2012 02:30:23 +0800
+
 dtc (0.35.2-1) experimental; urgency=low
 
   * New upstream version with the following changes:
