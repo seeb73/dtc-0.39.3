@@ -122,6 +122,7 @@ function DTCdeleteAdmin ($adm_to_del) {
 	global $pro_mysql_tik_atc_table;
 	global $pro_mysql_cronjob_table;
 	global $pro_mysql_ssl_ips_table;
+	global $pro_mysql_custom_product_table;
 
 	global $conf_demo_version;
 	global $conf_mysql_db;
@@ -203,6 +204,10 @@ function DTCdeleteAdmin ($adm_to_del) {
 
 	// Delete all support tickets of the admin
 	$q = "DELETE FROM $pro_mysql_tik_queries_table WHERE adm_login='$adm_to_del';";
+	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+
+	// Delete all custom products of the admin
+	$q = "DELETE FROM $pro_mysql_custom_product_table WHERE owner='$adm_to_del';";
 	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 
 	$adm_query = "DELETE FROM $pro_mysql_admin_table WHERE adm_login='$adm_to_del'";
