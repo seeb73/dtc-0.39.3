@@ -119,6 +119,7 @@ function DTCdeleteAdmin ($adm_to_del) {
 	global $pro_mysql_vps_table;
 	global $pro_mysql_dedicated_table;
 	global $pro_mysql_tik_queries_table;
+	global $pro_mysql_tik_atc_table;
 	global $pro_mysql_cronjob_table;
 	global $pro_mysql_ssl_ips_table;
 
@@ -180,6 +181,25 @@ function DTCdeleteAdmin ($adm_to_del) {
 	// Delete all dedicated servers of the admin
 	$q = "DELETE FROM $pro_mysql_dedicated_table WHERE owner='$adm_to_del';";
 	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+
+	// Delete all support tickets attachements of the admin
+	$q = "SELECT attach FROM $pro_mysql_tik_queries_table WHERE adm_login='$adm_to_del' AND attach IS NOT NULL;";
+	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysql_num_rows($r);
+	for($i=0;$i<$n;$i++){
+		$tik_a = mysql_fetch_array($r);
+		if($tik_a != ""){
+			$exploded = explode("|",$tik_a);
+			$num = sizeof($exploded);
+			for($j=0;$j<$num;$j++){
+				$id = $exploded[$j];
+				if(isRandomNum($id)){
+					$qd = "DELETE FROM $pro_mysql_tik_atc_table WHERE id='$id';";
+					mysql_query($qd)or die("Cannot execute query \"$qd\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				}
+			}
+		}
+	}
 
 	// Delete all support tickets of the admin
 	$q = "DELETE FROM $pro_mysql_tik_queries_table WHERE adm_login='$adm_to_del';";
