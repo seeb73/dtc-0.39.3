@@ -21,7 +21,7 @@ fi
 case "${1}" in
 start)
 	log_daemon_msg "Mounting AUFS mount points for DTC" "aufs"
-	/usr/share/dtc/admin/remount_aufs
+	/usr/share/dtc/admin/remount_aufs -q
 	log_end_msg $?
 ;;
 stop)

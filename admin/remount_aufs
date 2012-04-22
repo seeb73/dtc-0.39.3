@@ -16,7 +16,19 @@
 
 set -e
 
-echo "Computing lists of mounts and unmounts..."
+if [ "${1}" = -q ] ; then
+	VERBOSE=0
+else
+	VERBOSE=1
+fi
+
+echoIfVerbose () {
+	if [ "${VERBOSE}" = "1" ] ; then
+		echo $1
+	fi
+}
+
+echoIfVerbose "Computing lists of mounts and unmounts..."
 # List all line numbers of /proc/mounts holding an aufs filesystem
 CNT=0
 LINES=""
@@ -60,20 +72,19 @@ UMOUNT_LIST=`comm -23 ${SORTED_MOUNTED_LIST_FILE} ${SORTED_TOMOUNT_LIST_FILE}`
 MOUNT_LIST=`comm -13 ${SORTED_MOUNTED_LIST_FILE} ${SORTED_TOMOUNT_LIST_FILE}`
 
 # Umount what's needed
-echo "umount list:"
+echoIfVerbose "umount list:"
 for i in ${UMOUNT_LIST} ; do
-	echo umount ${i}
+	echoIfVerbose umount ${i}
 	umount ${i} || true
 done
 
 # Mount what's not mounted yet
-echo "mount list:"
+echoIfVerbose "mount list:"
 for i in ${MOUNT_LIST} ; do
 	SUBDOMAIN=`basename ${i}`
 	TMP=`dirname ${i}`
 	TARGET=`dirname ${TMP}`/subdomains.aufs/${SUBDOMAIN}
 	SOURCE=`dirname ${TMP}`/subdomains/${SUBDOMAIN}
-	echo "mount -t aufs -o br:${SOURCE}=rw:/var/lib/dtc/sbox_copy=ro none ${TARGET}"
+	echoIfVerbose "mount -t aufs -o br:${SOURCE}=rw:/var/lib/dtc/sbox_copy=ro none ${TARGET}"
 	mount -t aufs -o br:${SOURCE}=rw:/var/lib/dtc/sbox_copy=ro none ${TARGET} || true
 done
-#echo ${MOUNT_LIST}
