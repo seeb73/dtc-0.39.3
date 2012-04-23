@@ -1,16 +1,21 @@
-Format: DEP5
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: dtc
 Upstream-Contact: dtcdev@gplhost.sg
 Source: git clone http://git.gplhost.com/dtc.git
 
+Files: shared/inc/idna_convert.class.php
+Copyright: (c) 2004-2011, phlyLabs Berlin
+  (c) 2004-2011, Matthias Sommerfeld <mso@phlylabs.de>
+License: LGPL-2
+
 Files: admin/sa-learn
-Copyright: (C) 2004, Alexandre Jousset
+Copyright: 2004, Alexandre Jousset
 License: GPL-2
 
 Files: shared/dtcrm/srs/*
-Copyright: (C) 2000-2003 Colin Viebrock
-	(C) 2000-2003 easyDNS Technologies, Inc.
-	(C) 2000 Tuwcows, Inc.
+Copyright: (c) 2000-2003, Colin Viebrock
+	(c) 2000-2003, easyDNS Technologies, Inc.
+	2000 Tuwcows, Inc.
 License: GPL-2
 
 Files: client/xanjaxXHR.js admin/xanjaxXHR.js shared/gfx/xanjaxXHR.js
@@ -80,12 +85,17 @@ Files: *
 Copyright: (C) 2001-2008, Thomas Goirand <thomas@goirand.fr>
 	(C) 2001-2008, Damien Mascord <tusker@tusker.org>
 	(C) 2003-2008, GPLHost LLC <info@gplhost.com>
-	Plus minor contribution from around the world as follow:
+	Minor contribution from around the world as follow:
 	  * Cristian Livadaru <cristian@livadaru.net>: Cyrus support
 	  * Luca Franceschini <lupin3rd@gmx.it>: MLMMJ support
 	  * Brian Freemans <admin@udns.us>: Protected apache directories.
 	  * Dwayne Meertins <Meertins@indivision.nl> Many HTML corrections
 	  * George Vieira <projects@djtremors.com>: mailgroup alias
+	Major contributions by:
+	  * Javier Marcon <javiermarcon@gmail.com>
+	  * Jesse Norel <jesse@kci.net>
+	  * Fernando M. Kiernan <fernando.kiernan@gmail.com>
+	  * Jan-Claas Dirks (jcdIT.net) <Dirks@jcdIT.net>
 	With translations by:
 	- Erwan Lerale <erwan@thiscow.fr> (corrected my *bad* French typos)
 	- Jelle Kalf (Dutch) <JKalf@uno.nl> and
