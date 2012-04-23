@@ -163,6 +163,7 @@ function adminList($password=""){
 	global $panel_type;
 	global $cur_admlist_type;
 	global $conf_mysql_db;
+	global $idn;
 
 	if($password != ""){
 		$zepass = $password;
@@ -292,8 +293,9 @@ function adminList($password=""){
 				$linkadm_login = $row2["adm_login"];
 				$linkadm_pass = $row2["adm_pass"];
 				$admins .= "<a href=\"?adm_login=$linkadm_login&adm_pass=$zepass$added_rub\">$domain_name</a><br>";
+				$domain_idn = $idn->decode($domain_name);
 				$dsc["admins"][] = array(
-					"text" => $domain_name,
+					"text" => $domain_idn,
 					"adm_login" => $linkadm_login,
 					"adm_pass" => "$zepass");
 			}
