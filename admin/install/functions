@@ -2738,6 +2738,10 @@ pickup fifo n - n 60 1 pickup
     flags=DRhu user=${CONF_DTC_SYSTEM_USERNAME} argv=$PATH_DOVECOT_DELIVER -f \${sender} -d \${user}@\${nexthop} -n -m \${extension} -a \${recipient}
 
 " >> $TMP_FILE2
+					touch /var/log/sieve.log
+					chown ${CONF_DTC_SYSTEM_USERNAME} /var/log/sieve.log
+					touch /var/log/sieve.info
+					chown ${CONF_DTC_SYSTEM_USERNAME} /var/log/sieve.info
 				fi
 				echo "# End of DTC configuration v0.17 : please don't touch this line !" >> $TMP_FILE2
 				cat < $TMP_FILE2 >>"$PATH_POSTFIX_ETC/master.cf"
