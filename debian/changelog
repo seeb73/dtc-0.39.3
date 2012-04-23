@@ -1,6 +1,12 @@
-dtc (0.35.2-2) experimental; urgency=low
+dtc (0.35.3-1) experimental; urgency=low
 
-  * Fixed the address of the mail server advertized by the autoconfiguration.
+  * New upstream version with the following changes:
+  - Fixed the address of the mail server advertized by the autoconfiguration.
+  - Deletes support tickets attachments when deleting an admin.
+  - Deletes all custom products when deleting an admin.
+  - Silents remoute_aufs echos when starting it up from init script.
+  - Added missing file creation of /var/log/sieve.{info,log}
+  - Added IDN domain support thanks to Jan-Class Dirk.
 
  -- Thomas Goirand <zigo@debian.org>  Fri, 20 Apr 2012 02:30:23 +0800
 
