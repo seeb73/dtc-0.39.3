@@ -124,7 +124,7 @@ start)
 	limit-http-connection-rate
 	limit-ftp-connection-rate
 	limit-pop-and-imap-connection-rate
-	if [ ${IPV6_ANTI_DOS_ACTIVATE} == 1 ] ; then
+	if [ ${IPV6_ANTI_DOS_ACTIVATE} = 1 ] ; then
 		[ "${VERBOSE}" != no ] && log_progress_msg "IPv6-anti-dos"
 		create-dtc-chain ${IP6TABLES} ${DOS_IP6_IN_CHAIN} INPUT
 		limit-6ssh-login-rate
@@ -133,7 +133,7 @@ start)
 		limit-6ftp-connection-rate
 		limit-6pop-and-imap-connection-rate
 	fi
-	if [ ${GENERAL_FIREWALL_ACTIVATE} == 1 ] ; then
+	if [ ${GENERAL_FIREWALL_ACTIVATE} = 1 ] ; then
 		[ "${VERBOSE}" != no ] && log_progress_msg "IPv4-general"
 		create-dtc-chain ${IPTABLES} ${GENERAL_IN_CHAIN} INPUT
 		create-dtc-chain ${IPTABLES} ${GENERAL_OUT_CHAIN} OUTPUT
@@ -142,7 +142,7 @@ start)
 		general-out
 		general-for
 	fi
-	if [ ${GENERAL_IP6_FIREWALL_ACTIVATE} == 1 ] ; then
+	if [ ${GENERAL_IP6_FIREWALL_ACTIVATE} = 1 ] ; then
 		[ "${VERBOSE}" != no ] && log_progress_msg "IPv6-general"
 		create-dtc-chain ${IP6TABLES} ${GENERAL_IP6_IN_CHAIN} INPUT
 		create-dtc-chain ${IP6TABLES} ${GENERAL_IP6_OUT_CHAIN} OUTPUT
