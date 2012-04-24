@@ -1,0 +1,8 @@
+/var/log/sieve.info /var/log/sieve.log {
+	weekly
+	missingok
+	rotate 5
+	compress
+	delaycompress
+	create 640 dtc dtcgrp
+}

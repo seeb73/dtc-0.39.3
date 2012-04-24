@@ -422,6 +422,7 @@ install-dtc-common:
 	# Set the stuffs for the logrotate
 	mkdir -p $(DESTDIR)$(CONFIG_DIR)/logrotate.d
 	$(INSTALL) -m 0644 etc/logrotate.d/dtc $(DESTDIR)$(CONFIG_DIR)/logrotate.d/dtc
+	$(INSTALL) -m 0644 etc/logrotate.d/dtc-sieve $(DESTDIR)$(CONFIG_DIR)/logrotate.d/dtc-sieve
 	[ -h $(DESTDIR)$(CONFIG_DIR)/logrotate.d/dtc-vhosts ] || ln -s $(DTC_GEN_DIR)/dtc/etc/logrotate $(DESTDIR)$(CONFIG_DIR)/logrotate.d/dtc-vhosts
 
 	# Setup the cron
