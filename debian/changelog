@@ -1,3 +1,11 @@
+dtc (0.35.4-1) experimental; urgency=low
+
+  * New upstream version fixing:
+  - Bashism in the dtc-dos-firewall (double =).
+  - Added logrotate.d script for sieve.log / sieve.info.
+
+ -- Thomas Goirand <zigo@debian.org>  Wed, 25 Apr 2012 14:29:02 +0800
+
 dtc (0.35.3-1) experimental; urgency=low
 
   * New upstream version with the following changes:
