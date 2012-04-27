@@ -328,9 +328,9 @@ function dtcDatagrid($dsc){
                                                 $vals .= ", ";
                                         }
 					if( isset($dsc["cols"][ $keys[$i] ]["encrypt"]) && $dsc["cols"][ $keys[$i] ]["encrypt"] == "yes" && $conf_enforce_adm_encryption){
-	                                        $vals .= " ".$keys[$i]."=SHA1('".$_REQUEST[ $keys[$i] ]."') ";
+	                                        $vals .= " ".$keys[$i]."=SHA1('".mysql_real_escape_string($_REQUEST[ $keys[$i] ])."') ";
 					}else{
-	                                        $vals .= " ".$keys[$i]."='".$_REQUEST[ $keys[$i] ]."' ";
+	                                        $vals .= " ".$keys[$i]."='".mysql_real_escape_string($_REQUEST[ $keys[$i] ])."' ";
 					}
                                         $added_one = "yes";
 					// if the crypt field is set, then we use this as the SQL field to populate the crypted password into
@@ -350,14 +350,14 @@ function dtcDatagrid($dsc){
 						$arr_request[] = $req_field.":".$req_value;
 					}
 					$txt_request = join("|",$arr_request);
-					$vals .= " ".$keys[$i]."='".$txt_request."' ";
+					$vals .= " ".$keys[$i]."='".mysql_real_escape_string($txt_request)."' ";
 					$added_one = "yes";
 					break;
 				default:
 					if($added_one == "yes"){
 						$vals .= ", ";
 					}
-					$vals .= " ".$keys[$i]."='".$_REQUEST[ $keys[$i] ]."' ";
+					$vals .= " ".$keys[$i]."='".mysql_real_escape_string($_REQUEST[ $keys[$i] ])."' ";
 					$added_one = "yes";
 					break;
 				}
