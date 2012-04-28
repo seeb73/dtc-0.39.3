@@ -257,9 +257,9 @@ function dtcDatagrid($dsc){
 						$happen = "";
 					}
 					if( $dsc["cols"][ $keys[$i] ]["type"] == "password" && isset($dsc["cols"][ $keys[$i] ]["encrypt"]) && $dsc["cols"][ $keys[$i] ]["encrypt"] == "yes" && $conf_enforce_adm_encryption == "yes"){
-						$vals .= "SHA1('".$_REQUEST[ $keys[$i] ].$happen."')";
+						$vals .= "SHA1('".mysql_real_escape_string($_REQUEST[ $keys[$i] ]).$happen."')";
 					}else{
-						$vals .= "'".$_REQUEST[ $keys[$i] ].$happen."'";
+						$vals .= "'".mysql_real_escape_string($_REQUEST[ $keys[$i] ]).$happen."'";
 					}
 					$added_one = "yes";
 					break;
