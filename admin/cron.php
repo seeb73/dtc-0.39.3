@@ -92,6 +92,9 @@ function getCronFlags () {
 function checkLockFlag () {
 	global $cronjob_table_content;
 	global $pro_mysql_cronjob_table;
+	global $conf_webmaster_email_addr;
+	global $conf_send_cron_alert;
+	global $conf_mark_finished_cron;
 
 	$cronjob_table_content = getCronFlags();
 	// Lock the cron flag, in case the cron script takes more than 10 minutes
@@ -102,6 +105,13 @@ mysql -uroot -Ddtc -p --execute=\"UPDATE $pro_mysql_cronjob_table SET lock_flag=
 If runing Debian, you can directly run:\n
 mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute=\"UPDATE cron_job SET lock_flag='finished';\"\n
 ";
+		//warn the administrator
+		if($conf_send_cron_alert == "yes"){
+			$subject = "DTC cron error: previous cron not finished";
+			$headers = "From: ".$conf_webmaster_email_addr;
+			mail($conf_webmaster_email_addr, $subject, $subject, $headers);
+		}
+		
 		die("Exiting NOW!");
 	}
 	echo "Setting-up lock flag\n";
@@ -371,37 +381,6 @@ function checkPop3dStarted () {
 			fclose ($fp);
 		}
 	
-	}
-}
-
-function checkTimeAndLaunchNetBackupScript () {
-	global $start_stamps;
-	global $conf_ftp_backup_activate;
-	global $conf_ftp_backup_frequency;
-	global $conf_generated_file_path;
-	if(($start_stamps%(60*60*24))< 60*10 && $conf_ftp_backup_activate == "yes"){	// If 00:00 and check the frequency of the bacup and launch it if needed
-		$do_ftp_backup = "no";
-		switch($conf_ftp_backup_frequency){
-		case "day":
-			$do_ftp_backup = "yes";
-			break;
-		case "week":
-			if(date("N",$start_stamps) == "1"){
-				$do_ftp_backup = "yes";
-			}
-			break;
-		case "month":
-			if(date("j",$start_stamps) == "1"){
-				$do_ftp_backup = "yes";
-			}
-			break;
-		default:
-			break;
-                }
-		if($do_ftp_backup == "yes"){
-			echo "Launching ftp backup script !\n";
-			system("$conf_generated_file_path/net_backup.sh &");
-		}
 	}
 }
 
@@ -721,7 +700,6 @@ if(($start_stamps%(60*60))< 60*10){	updateAllListWebArchive();	}
 checkWebalizerCronService();
 checkUserCronJob();
 $cronjob_table_content = getCronFlags();
-checkTimeAndLaunchNetBackupScript();
 resetLockFlag();
 // Echo the console:
 echo("Report for this job:\n");

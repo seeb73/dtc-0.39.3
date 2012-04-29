@@ -13,3 +13,7 @@
 
 # SCP all invoices every 1st of the months at 2:35
 35   2 * * * dtc [ -d /usr/share/dtc/admin ] && cd /usr/share/dtc/admin && /usr/bin/php /usr/share/dtc/admin/get_invoices.php 2>&1 >> /var/log/dtc.log
+
+# Run backup script
+0 0 * * * root [ -d /usr/share/dtc/admin ] && cd /usr/share/dtc/admin && /usr/bin/php /usr/share/dtc/admin/backupcron.php 2>&1 >> /var/log/dtc.log
+

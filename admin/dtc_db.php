@@ -300,7 +300,8 @@ $dtc_database = array(
 			"invoice_scp_addr" => "varchar(255) NOT NULL default ''",
 			"invoice_scp_when" => "enum('day','month') NOT NULL default 'day'",
 			"autogen_webmail_protocol" => "enum('http:','https:') NOT NULL default 'https:'",
-			"post_or_get" => "enum('GET','POST') NOT NULL default 'POST'"
+			"post_or_get" => "enum('GET','POST') NOT NULL default 'POST'",
+			"send_cron_alert" => "enum('yes','no') NOT NULL default 'no'"
 		),
 		"keys" => array(
 			"unicrow" => "(unicrow)"

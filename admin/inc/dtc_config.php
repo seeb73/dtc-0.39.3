@@ -1211,7 +1211,12 @@ function drawGeneralConfig(){
 			"selling_conditions_url" => array(
 				"legend" => _("Terms and Conditions URL: "),
 				"type" => "text",
-				"size" => "40")));
+				"size" => "40")),
+			"send_cron_alert" => array(
+				"legend" => _("Send mail to admin when an error occurs in dtc cron:"),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))));
 	$out .= configEditorTemplate ($dsc);
 
 	$dsc = array(
