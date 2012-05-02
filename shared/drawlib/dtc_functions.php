@@ -938,7 +938,7 @@ function addDomainToUser($adm_login,$adm_pass,$domain_name,$domain_password=""){
 		}
 		make_new_adm_domain_dir("$admin_path/$domain_name");
 		if($admin["shared_hosting_security"] != "mod_php"){
-			if($admin["shared_hosting_security"] != "sbox_copy"){
+			if($admin["shared_hosting_security"] == "sbox_copy"){
 				exec("cp -flpRv /var/lib/dtc/sbox_copy/* $admin_path/$domain_name/subdomains/www");
 			}
 		}else{
