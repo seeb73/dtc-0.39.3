@@ -968,10 +968,10 @@ function addDomainToUser($adm_login,$adm_pass,$domain_name,$domain_password=""){
 			}else{
 				$cp_opt = "up";
 			}
-			system ("cp -r$cp_opt $conf_generated_file_path/template/* $admin_path/$domain_name/subdomains/www/html");
-			if( file_exists("$conf_generated_file_path/template/.htaccess") ){
-				system ("cp -$cp_opt $conf_generated_file_path/template/.htaccess $admin_path/$domain_name/subdomains/www/html");
-			}
+		}
+		system ("cp -r$cp_opt $conf_generated_file_path/template/* $admin_path/$domain_name/subdomains/www/html");
+		if( file_exists("$conf_generated_file_path/template/.htaccess") ){
+			system ("cp -$cp_opt $conf_generated_file_path/template/.htaccess $admin_path/$domain_name/subdomains/www/html");
 		}
 	}
 
