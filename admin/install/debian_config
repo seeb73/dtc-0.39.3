@@ -87,6 +87,11 @@ debianGetDebconfValues () {
 	conf_recipient_delim=$RET
 	db_get dtc/conf_mx_mail
 	conf_mx_mail=$RET
+	db_get dtc/conf_postmaster_email
+	conf_postmaster_email=$RET
+	if [ -z "${conf_postmaster_email}" ] ; then
+		conf_postmaster_email="postmaster@${conf_mx_mail}.${main_domain_name}"
+	fi
 	db_get dtc/conf_eth2monitor
 	conf_eth2monitor=$RET
 	db_unregister dtc/conf_mysqlpass

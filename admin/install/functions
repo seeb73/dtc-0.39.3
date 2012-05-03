@@ -3175,10 +3175,10 @@ protocol pop3 {
 			# if we also have sieve, we should use it too!
 			if [ ""$conf_use_sieve = "true" ] ; then
 				echo "protocol managesieve {" >> $PATH_DOVECOT_CONF
-				echo "managesieve_logout_format = bytes ( in=%i : out=%o )
+				echo "    managesieve_logout_format = bytes ( in=%i : out=%o )
 }" >> $PATH_DOVECOT_CONF
 				echo "protocol lda {
-  postmaster_address = mail@exemple.com
+  postmaster_address = $conf_postmaster_email
   mail_plugin_dir = /usr/lib/dovecot/modules/lda
   auth_socket_path = /var/run/dovecot-auth-master
   log_path = /var/log/sieve.log
@@ -5461,6 +5461,7 @@ conf_cert_organization=\"${conf_cert_organization}\"
 conf_cert_unit=\"${conf_cert_unit}\"
 conf_cert_email=\"${conf_cert_email}\"
 conf_cert_challenge_pass=\"${conf_cert_challenge_pass}\"
+conf_postmaster_email=\"${conf_postmaster_email}\"
 " >${DTC_SAVED_INSTALL_CONFIG}
 	if [ -n "${conf_ftp_type}" ] ; then
 		echo "conf_ftp_type=\"${conf_ftp_type}\"" >>${DTC_SAVED_INSTALL_CONFIG}

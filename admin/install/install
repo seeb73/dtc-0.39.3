@@ -89,6 +89,7 @@ preseed_default_conf_values () {
 	conf_cert_challenge_pass=${gen_pass}
 	conf_ftp_type=pureftpd
 	conf_mta_type=postfix
+	conf_postmaster_email="postmaster@${conf_mx_mail}.${main_domain_name}"
 }
 
 

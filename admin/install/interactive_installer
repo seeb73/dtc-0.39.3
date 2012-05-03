@@ -447,6 +447,16 @@ installerQuestions () {
 		conf_mx_mail=${answer}
 	fi
 
+	if [ -z "${conf_postmaster_email}" ] ; then
+		conf_postmaster_email="postmaster@${conf_mx_mail}.${main_domain_name}"
+	fi
+	echo ""
+	echo -n "What is your Postmaster email address [${conf_postmaster_email}]:"
+	read answer
+	if [ ! -z "$answer" ] ; then
+		conf_postmaster_email=${answer}
+	fi
+
 	echo ""
 	echo "In some environment, like FreeBSD Jail or Linux vServer,"
 	echo "mknod is not allowed to be executed. For that reason, it's possible"

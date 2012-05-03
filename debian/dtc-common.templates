@@ -254,3 +254,9 @@ _Description: Enforce DTC admin password encryption?
  The encryption will be applied to passwords created from now on. If
  you have existing unencrypted admin passwords that should be
  converted, see /usr/share/doc/dtc-common/README.Debian.
+
+Template: dtc/conf_postmaster_email
+Type: string
+_Description: Postmaster email address
+ Email address of this server's postmaster.  This will default to
+ postmaster@{mx_mail_host} using the mx subdomain you specify.
