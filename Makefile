@@ -311,7 +311,7 @@ ROOT_CRON_SH_SCRIPT_FILES=admin/rrdtool.sh admin/updateChroot.sh admin/queuegrap
 admin/queuegraph/createrrd.sh admin/cpugraph/createrrd.sh admin/cpugraph/get_cpu_load.sh admin/memgraph/createrrd.sh \
 admin/memgraph/get_meminfo.sh admin/netusegraph/createrrd.sh admin/netusegraph/get_net_usage.sh admin/create_stat_total_active_prods_rrd.sh
 
-OTHER_SCRIPT_FILES=admin/sa-wrapper
+OTHER_SCRIPT_FILES=admin/sa-wrapper admin/sa-remailer
 BIN_DIR_SCRIPTS=dtc-chroot-shell dtc-chroot-wrapper
 
 ROOT_ONLY=$(ROOT_CRON_SH_SCRIPT_FILES) $(ROOT_CRON_PHP_SCRIPT_FILES)

@@ -3166,7 +3166,7 @@ pop3_uidl_format = %08Xu%08Xv
 maildir_copy_with_hardlinks = yes
 disable_plaintext_auth= no
 protocol imap {
-    mail_plugins = quota imap_quota
+    mail_plugins = quota imap_quota $DOVECOT_PLUGINS_IMAP
 }
 protocol pop3 {
     mail_plugins = quota
@@ -3221,10 +3221,27 @@ auth default {
     }
   }
 }
+plugin {
+   ## Quota
+   quota = maildir
+
+   ## antispam
+   #antispam_debug_target = syslog
+   #antispam_verbose_debug = 1
+   antispam_backend = pipe
+   antispam_signature = X-Spam-Status
+   antispam_signature_missing = error
+   antispam_trash_pattern_ignorecase = Trash;INBOX.Trash;Deleted *;INBOX.Deleted *
+   antispam_spam_pattern_ignorecase = SPAM;INBOX.SPAM;Junk*;INBOX.Junk*
+   antispam_pipe_program = /usr/share/dtc/admin/sa-remailer
+   antispam_pipe_program_spam_arg = spam
+   antispam_pipe_program_notspam_arg = ham
+   antispam_pipe_program_args = %u
+   antispam_pipe_tmpdir = /var/tmp
 " >> $PATH_DOVECOT_CONF
+
 if [ ""$conf_use_sieve = "true" ] ; then
-	echo "plugin {
-   ## Sieve
+	echo " ## Sieve
    # custom script:
    sieve=~/.dovecot.sieve
    # default script
@@ -3233,16 +3250,11 @@ if [ ""$conf_use_sieve = "true" ] ; then
    sieve_dir=~/sieve
    # default directory
    #sieve_global_dir =
- 
-   ## Quota
-   quota = maildir
- }" >> $PATH_DOVECOT_CONF
-else echo "plugin {
-   ## Quota
-   quota = maildir
- }" >> $PATH_DOVECOT_CONF
+" >> $PATH_DOVECOT_CONF
 fi
-echo "
+
+echo "}
+
 ${DOVECOT_SSL_CERT_CONF}
 # End of DTC configuration v0.x : please don't touch this line !
 " >> $PATH_DOVECOT_CONF

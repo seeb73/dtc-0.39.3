@@ -124,6 +124,9 @@ fi
 if [ -f /usr/lib/dovecot/managesieve ] ; then
 	PATH_DOVECOT_DELIVER=/usr/lib/dovecot/deliver
 fi
+if [ -f /usr/lib/dovecot/modules/imap/lib*_antispam_plugin.so ]; then
+	DOVECOT_PLUGINS_IMAP="${DOVECOT_PLUGINS_IMAP} antispam"
+fi
 
 PATH_COURIER_CONF_PATH=/etc/courier
 PATH_COURIER_AUTHD_CONF_PATH=/etc/courier
