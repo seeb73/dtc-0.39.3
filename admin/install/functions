@@ -3231,6 +3231,7 @@ plugin {
    antispam_backend = pipe
    antispam_signature = X-Spam-Status
    antispam_signature_missing = error
+   # you can override these patterns in /etc/dovecot/conf.d/*.conf if needed:
    antispam_trash_pattern_ignorecase = Trash;INBOX.Trash;Deleted *;INBOX.Deleted *
    antispam_spam_pattern_ignorecase = SPAM;INBOX.SPAM;Junk*;INBOX.Junk*
    antispam_pipe_program = /usr/share/dtc/admin/sa-remailer
@@ -3256,6 +3257,9 @@ fi
 echo "}
 
 ${DOVECOT_SSL_CERT_CONF}
+
+# put any configuration override files in this dir:
+!include_try /etc/dovecot/conf.d/*.conf
 # End of DTC configuration v0.x : please don't touch this line !
 " >> $PATH_DOVECOT_CONF
 			else
