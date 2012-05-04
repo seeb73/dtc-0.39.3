@@ -978,6 +978,12 @@ function dtcListItemsEdit($dsc){
 		$commit_flag = "yes";
 		$commit_err = "";
 		for($i=0;$i<$nbr_fld;$i++){
+			// assign a "fixup" function to sanitize/alter the value, eg. 'strtolower'
+			if( isset($dsc["cols"][ $keys[$i] ]["fixup"]) ){
+				if( function_exists($dsc["cols"][ $keys[$i] ]["fixup"]) ){
+					$_REQUEST[ $keys[$i] ] = $dsc["cols"][ $keys[$i] ]["fixup"]( $_REQUEST[ $keys[$i] ] );
+				}
+			}
 			switch($dsc["cols"][ $keys[$i] ]["type"]){
 			case "popup":
 			case "radio":

@@ -203,7 +203,7 @@ function drawAdminTools_emailPanel($mailbox){
 		$panel = drawQuarantine($mailbox);
 		break;*/
 	default:
-		$title = _("Welcom to the email panel!");
+		$title = _("Welcome to the email panel!");
 		$panel = _("Login successfull. Please select a menu entry on the left...");
 		break;
 	}
@@ -446,6 +446,7 @@ function drawAdminTools_Emails($domain){
 				"disable_edit" => "yes",
 				"check" => "dtc_login_or_email",
 				"happen" => "@".$domain["name"],
+				"fixup" => 'strtolower',
 				"legend" => _("Login:") ),
 			"memo" => array (
 				"type" => "text",
