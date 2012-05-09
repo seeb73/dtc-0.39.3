@@ -486,12 +486,17 @@ dtcFromOkDraw()."
 			}
 			if($secpayconf_use_maxmind == "yes"){
 				$maxmind = unserialize($a["maxmind_output"]);
-				if($maxmind["riskScore"] >= 20){
+				if(isset($maxmind["riskScore"]) && $maxmind["riskScore"] >= 20){
 					$fnt = "<font color=\"red\">";
 					$fnt2 = "</font>";
 				}else{
 					$fnt = "";
 					$fnt2 = "";
+				}
+				if(isset($maxmind["riskScore"])){
+					$maxmind_riskScore = $maxmind["riskScore"];
+				}else{
+					$maxmind_riskScore = "N/A";
 				}
 				$waiting_new_users .= "<$td>"._("Risk score: ").$fnt.$maxmind["riskScore"].$fnt2."<br>";
 				if($maxmind["ip_isp"] == $maxmind["ip_org"]){
