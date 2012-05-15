@@ -539,6 +539,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 	}
 
 	// Get all domains of the user
+	$b = array();
 	$query = "SELECT * FROM $pro_mysql_domain_table WHERE owner='$adm_login' ORDER BY name;";
 	$result = mysql_query ($query);
 	if (!$result)
