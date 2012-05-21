@@ -183,7 +183,8 @@ function genSasl2PasswdDBStart(){
 function genDotSieveFile($home,$id,$domain_full_name,$spam_mailbox_enable,$spam_mailbox,$localdeliver,$vacation_flag="no",$vacation_text="",$redirection="",$redirection2=""){
 	global $conf_dtc_system_username;
 	global $conf_dtc_system_groupname;
-	$SIEVE_FILE="$home/.dovecot.sieve";
+	$SIEVE_SYM_LINK="$home/.dovecot.sieve";
+	$SIEVE_FILE="$home/sieve/dtc.sieve";
 	$SIEVE_CUSTOM_FILE="$home/sieve/custom.sieve";
 	$recipient="$id@$domain_full_name";
 
@@ -269,26 +270,34 @@ $sieve_custom_content="# Custom sieve rules
         // Write the file and manage rights
         @chmod($SIEVE_FILE,0650);
         @chmod($SIEVE_CUSTOM_FILE,0660);
-	$fp = fopen($SIEVE_FILE,"w+");
-	if (! is_dir("$home/sieve")) {
-		mkdir("$home/sieve", 0755);
-		@chown("$home/sieve",$conf_dtc_system_username);
-		if (! file_exists($SIEVE_CUSTOM_FILE)) {
-			$fp_custom = fopen($SIEVE_CUSTOM_FILE,"w+");
-			fwrite($fp_custom, $sieve_custom_content);
-			fclose($fp_custom);
+		$fp = fopen($SIEVE_FILE,"w+");
+		if (! is_dir("$home/sieve")) {
+			mkdir("$home/sieve", 0755);
+			@chown("$home/sieve",$conf_dtc_system_username);
+			if (! file_exists($SIEVE_CUSTOM_FILE)) {
+				$fp_custom = fopen($SIEVE_CUSTOM_FILE,"w+");
+				fwrite($fp_custom, $sieve_custom_content);
+				fclose($fp_custom);
+			}
 		}
-	}
         if($fp != FALSE){
                 fwrite($fp, $sieve_filter_content);
                 fclose($fp);
         }
         @chmod($SIEVE_FILE,0650);
-	@chown($SIEVE_FILE,$conf_dtc_system_username);
-	@chgrp($SIEVE_FILE,$conf_dtc_system_groupname);
+		@chown($SIEVE_FILE,$conf_dtc_system_username);
+		@chgrp($SIEVE_FILE,$conf_dtc_system_groupname);
         @chmod($SIEVE_CUSTOM_FILE,0750);
-	@chown($SIEVE_CUSTOM_FILE,$conf_dtc_system_username);
-	@chgrp($SIEVE_CUSTOM_FILE,$conf_dtc_system_groupname);
+		@chown($SIEVE_CUSTOM_FILE,$conf_dtc_system_username);
+		@chgrp($SIEVE_CUSTOM_FILE,$conf_dtc_system_groupname);	
+		// point symlink to dtc.sieve if the symlink doesn't exist
+		if (! file_exists($SIEVE_SYM_LINK))
+		{
+			symlink($SIEVE_FILE, $SIEVE_SYM_LINK);
+		}
+		@chown($SIEVE_SYM_LINK,$conf_dtc_system_username);
+		@chgrp($SIEVE_SYM_LINK,$conf_dtc_system_groupname);	
+	
         return true;
 
 }
