@@ -290,11 +290,16 @@ $sieve_custom_content="# Custom sieve rules
         @chmod($SIEVE_CUSTOM_FILE,0750);
 		@chown($SIEVE_CUSTOM_FILE,$conf_dtc_system_username);
 		@chgrp($SIEVE_CUSTOM_FILE,$conf_dtc_system_groupname);	
+		// if a normal file exists here, delete it, and use the symlink
+		if (file_exists($SIEVE_SYM_LINK) && !is_link($SIEVE_SYM_LINK))
+		{
+			unlink($SIEVE_SYM_LINK);
+		}
 		// point symlink to dtc.sieve if the symlink doesn't exist
 		if (! file_exists($SIEVE_SYM_LINK))
 		{
 			symlink($SIEVE_FILE, $SIEVE_SYM_LINK);
-		}
+		} 
 		@chown($SIEVE_SYM_LINK,$conf_dtc_system_username);
 		@chgrp($SIEVE_SYM_LINK,$conf_dtc_system_groupname);	
 	
