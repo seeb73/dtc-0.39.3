@@ -267,9 +267,9 @@ $sieve_custom_content="# Custom sieve rules
 
 ";
 
-        // Write the file and manage rights
-        @chmod($SIEVE_FILE,0650);
-        @chmod($SIEVE_CUSTOM_FILE,0660);
+	// Write the file and manage rights
+	@chmod($SIEVE_FILE,0650);
+	@chmod($SIEVE_CUSTOM_FILE,0660);
 		$fp = fopen($SIEVE_FILE,"w+");
 		if (! is_dir("$home/sieve")) {
 			mkdir("$home/sieve", 0755);
@@ -280,31 +280,28 @@ $sieve_custom_content="# Custom sieve rules
 				fclose($fp_custom);
 			}
 		}
-        if($fp != FALSE){
-                fwrite($fp, $sieve_filter_content);
-                fclose($fp);
-        }
-        @chmod($SIEVE_FILE,0650);
-		@chown($SIEVE_FILE,$conf_dtc_system_username);
-		@chgrp($SIEVE_FILE,$conf_dtc_system_groupname);
-        @chmod($SIEVE_CUSTOM_FILE,0750);
-		@chown($SIEVE_CUSTOM_FILE,$conf_dtc_system_username);
-		@chgrp($SIEVE_CUSTOM_FILE,$conf_dtc_system_groupname);	
-		// if a normal file exists here, delete it, and use the symlink
-		if (file_exists($SIEVE_SYM_LINK) && !is_link($SIEVE_SYM_LINK))
-		{
-			unlink($SIEVE_SYM_LINK);
-		}
-		// point symlink to dtc.sieve if the symlink doesn't exist
-		if (! file_exists($SIEVE_SYM_LINK))
-		{
-			symlink($SIEVE_FILE, $SIEVE_SYM_LINK);
-		} 
-		@chown($SIEVE_SYM_LINK,$conf_dtc_system_username);
-		@chgrp($SIEVE_SYM_LINK,$conf_dtc_system_groupname);	
-	
-        return true;
+	if($fp != FALSE){
+		fwrite($fp, $sieve_filter_content);
+		fclose($fp);
+	}
+	@chmod($SIEVE_FILE,0650);
+	@chown($SIEVE_FILE,$conf_dtc_system_username);
+	@chgrp($SIEVE_FILE,$conf_dtc_system_groupname);
+	@chmod($SIEVE_CUSTOM_FILE,0750);
+	@chown($SIEVE_CUSTOM_FILE,$conf_dtc_system_username);
+	@chgrp($SIEVE_CUSTOM_FILE,$conf_dtc_system_groupname);	
+	// if a normal file exists here, delete it, and use the symlink
+	if(file_exists($SIEVE_SYM_LINK) && !is_link($SIEVE_SYM_LINK)){
+		unlink($SIEVE_SYM_LINK);
+	}
+	// point symlink to dtc.sieve if the symlink doesn't exist
+	if (! file_exists($SIEVE_SYM_LINK)){
+		symlink($SIEVE_FILE, $SIEVE_SYM_LINK);
+	} 
+	@chown($SIEVE_SYM_LINK,$conf_dtc_system_username);
+	@chgrp($SIEVE_SYM_LINK,$conf_dtc_system_groupname);	
 
+	return true;
 }
 
 // This is here so we don't have to do that at each function call
