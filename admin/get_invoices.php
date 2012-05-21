@@ -29,19 +29,20 @@ if($conf_invoice_scp_addr == ""){
 $YEAR = date("Y");
 $MONTH = date("m");
 $DAY = date("d");
+
 if($conf_invoice_scp_when == "day"){
+	$END_INVOICE = $YEAR."-".$MONTH."-".$DAY;
 	$DAY = $DAY - 1;
 	if($DAY == 0){
 		$MONTH = $MONTH - 1;
 		if($MONTH == 0){
 			$MONTH = 12;
 			$YEAR = $YEAR -1;
-			$DAY_IN_MONTH = cal_days_in_month(CAL_GREGORIAN,$MONTH,$YEAR);
-			$DAY = $DAY_IN_MONTH;
 		}
+		$DAY_IN_MONTH = cal_days_in_month(CAL_GREGORIAN,$MONTH,$YEAR);
+		$DAY = $DAY_IN_MONTH;
 	}
 	$START_INVOICE = $YEAR."-".$MONTH."-".$DAY;
-	$END_INVOICE = $START_INVOICE;
 }else{
 	if($DAY != 1){
 		// If we do monthly scp of invoices, then we exit if we aren't the 1st of the month
