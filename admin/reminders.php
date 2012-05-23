@@ -276,7 +276,7 @@ function sendSharedHostingReminderEmail($remaining_days,$file,$send_webmaster_co
 		$r2 = mysql_query($q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 		$n2 = mysql_num_rows($r2);
 		if($n2 != 1){
-			sendAdminWarning("Could not find id client ".$admin["id_client"]." for admin ".$vps["owner"]." line ".__LINE__." file ".__FILE__);
+			sendAdminWarning("Could not find id client ".$admin["id_client"]." for admin ".$admin["adm_login"]." line ".__LINE__." file ".__FILE__);
 			continue;
 		}
 		$client = mysql_fetch_array($r2);
