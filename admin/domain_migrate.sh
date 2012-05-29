@@ -3,7 +3,6 @@
 set -e
 #set -x
 
-
 usage (){
 	echo "Usage: $0 <destination-host> <domain> <destination-admin>"
 }
@@ -26,12 +25,12 @@ get_remote_credentials () {
 	DST_LOGIN=`echo ${DST_ADM_LIST} | awk '{print $1}'`
 	DST_PASS=`echo ${DST_ADM_LIST} | awk '{print $2}'`
 	# Get the destination admin pass
-	DST_ADM_PASS=`ssh ${DST_HOST} "mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute=\"SELECT adm_PASS FROM admin WHERE adm_login='${DST_ADMIN}'\"" | tail -n 2 | head -n 1 | awk '{print $2}'`
+	DST_ADM_PASS=`ssh ${DST_HOST} "mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute=\"SELECT adm_pass FROM admin WHERE adm_login='${DST_ADMIN}'\" | tail -n1"`
 }
 
 get_local_admin_name () {
 	echo "===> Getting local admin name"
-	SRC_ADM_LOGIN=`mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute="SELECT owner FROM domain WHERE name='${SRC_DOMAIN}'"`
+	SRC_ADM_LOGIN=`mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute="SELECT owner FROM domain WHERE name='${SRC_DOMAIN}'" | tail -n 1`
 }
 
 export_domain_local_conf () {
@@ -66,7 +65,7 @@ fix_php_rights_cleanup_and_db_to_localhost () {
 get_my_opt $@
 get_remote_credentials
 get_local_admin_name
-export_adm_local_conf
+export_domain_local_conf
 rsync_all_files
 fix_php_rights_cleanup_and_db_to_localhost
 
