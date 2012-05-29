@@ -1,7 +1,6 @@
 #!/bin/sh
 
 set -e
-set -x
 
 usage (){
 	echo "Usage: $0 <destination-host> <domain> <destination-admin>"
@@ -39,13 +38,13 @@ export_domain_local_conf () {
 	LOCAL_URL=`mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute="SELECT administrative_site FROM config" | tail -n 1`
 	# Get the export config of the admin
 	LOCAL_adm_pass=`mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute="SELECT adm_pass FROM admin WHERE adm_login='${SRC_ADM_LOGIN}'" | tail -n 1`
-	TMP=`mktemp`
-	curl "https://${LOCAL_URL}/dtc/?adm_login=${SRC_ADM_LOGIN}&adm_pass=${LOCAL_adm_pass}&action=export_domain&addrlink=${SRC_DOMAIN}" >${TMP}
+	TMP_EXPORT=`mktemp -t DTC_domain_migrate_export.XXXXXXXXXXXX`
+	curl "https://${LOCAL_URL}/dtc/?adm_login=${SRC_ADM_LOGIN}&adm_pass=${LOCAL_adm_pass}&action=export_domain&addrlink=${SRC_DOMAIN}" >${TMP_EXPORT}
 
 	# Now, send it to destination
-	curl --silent --insecure -o /dev/null -F domain_import_file=@${TMP} -F MAX_FILE_SIZE=30000000 -F rub=adminedit -F action=import_domain -F adm_login=${DST_ADMIN} -F adm_pass=${DST_ADM_PASS} \
+	curl --silent --insecure -o /dev/null -F domain_import_file=@${TMP_EXPORT} -F MAX_FILE_SIZE=30000000 -F rub=adminedit -F action=import_domain -F adm_login=${DST_ADMIN} -F adm_pass=${DST_ADM_PASS} \
 		--user ${DST_LOGIN}:${DST_PASS} https://${DST_HOST}/dtcadmin/
-	# rm ${TMP}
+	rm ${TMP_EXPORT}
 }
 
 rsync_all_files () {
@@ -55,11 +54,16 @@ rsync_all_files () {
 	# Copy of all subdomains
 	for i in /var/www/sites/${SRC_ADM_LOGIN}/${SRC_DOMAIN}/subdomains/* ; do
 		SUBDOMAIN=`basename ${i}`
-		ssh ${DST_HOST} "mkdir -p /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains/${SUBDOMAIN}"
-		nice rsync -e ssh -azvp /var/www/sites/${SRC_ADM_LOGIN}/${SRC_DOMAIN}/${SUBDOMAIN}/ ${DST_HOST}:/var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/${SUBDOMAIN}
+		ssh ${DST_HOST} "mkdir -p /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains/${SUBDOMAIN}/html /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains/${SUBDOMAIN}/logs"
+		if [ -d /var/www/sites/${SRC_ADM_LOGIN}/${SRC_DOMAIN}/subdomains/${SUBDOMAIN}/html ] ; then
+			nice rsync --delete -e ssh -azvp /var/www/sites/${SRC_ADM_LOGIN}/${SRC_DOMAIN}/subdomains/${SUBDOMAIN}/html/ ${DST_HOST}:/var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains/${SUBDOMAIN}/html
+		fi
+		if [ -d /var/www/sites/${SRC_ADM_LOGIN}/${SRC_DOMAIN}/subdomains/${SUBDOMAIN}/logs ] ; then
+			nice rsync -e ssh -azvp /var/www/sites/${SRC_ADM_LOGIN}/${SRC_DOMAIN}/subdomains/${SUBDOMAIN}/logs/ ${DST_HOST}:/var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains/${SUBDOMAIN}/logs
+		fi
 	done
 	# Copy of all lists
-	if [ -e /var/www/sites/${SRC_ADM_LOGIN}/${SRC_DOMAIN}/lists ] ; then
+	if [ -d /var/www/sites/${SRC_ADM_LOGIN}/${SRC_DOMAIN}/lists ] ; then
 		ssh ${DST_HOST} "mkdir -p /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/lists"
 		nice rsync -e ssh -azvp /var/www/sites/${SRC_ADM_LOGIN}/${SRC_DOMAIN}/lists/ ${DST_HOST}:/var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/lists
 	fi
@@ -71,8 +75,8 @@ fix_php_rights_cleanup_and_db_to_localhost () {
 	echo "===> Switching from localhost to 127.0.0.1"
 	ssh ${DST_HOST} "find /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains -iname '*.php' -exec sed -i s/localhost/127.0.0.1/ {} \;"
 	echo "===> Cleaning old chroot copy"
-	#CLEANUP_FOLDERS="bin dev etc lib lib64 libexec sbin var usr/bin usr/libexec usr/share usr/lib/zoneinfo"
-	#ssh ${DST_HOST} "for i in ${CLEANUP_FOLDERS} ; do rm -rf /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains/*/${i} ; done"
+	CLEANUP_FOLDERS="boot home media mnt opt proc root selinux srv sys usr bin dev etc lib lib64 libexec sbin var"
+	ssh ${DST_HOST} "for i in /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains/* ; do cd \$i ; rm -rf ${CLEANUP_FOLDERS} ; done"
 }
 
 get_my_opt $@
