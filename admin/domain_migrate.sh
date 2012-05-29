@@ -1,7 +1,7 @@
 #!/bin/sh
 
 set -e
-#set -x
+set -x
 
 usage (){
 	echo "Usage: $0 <destination-host> <domain> <destination-admin>"
@@ -45,21 +45,34 @@ export_domain_local_conf () {
 	# Now, send it to destination
 	curl --silent --insecure -o /dev/null -F domain_import_file=@${TMP} -F MAX_FILE_SIZE=30000000 -F rub=adminedit -F action=import_domain -F adm_login=${DST_ADMIN} -F adm_pass=${DST_ADM_PASS} \
 		--user ${DST_LOGIN}:${DST_PASS} https://${DST_HOST}/dtcadmin/
-	rm ${TMP}
+	# rm ${TMP}
 }
 
 rsync_all_files () {
-	nice rsync -e ssh -azvp /var/www/sites/${SRC_ADM_LOGIN}/${SRC_DOMAIN}/ ${DST_HOST}:/var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}
+	# Copy of all mailboxes
+	ssh ${DST_HOST} "mkdir -p /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/Mailboxs"
+	nice rsync -e ssh -azvp /var/www/sites/${SRC_ADM_LOGIN}/${SRC_DOMAIN}/Mailboxs/ ${DST_HOST}:/var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/Mailboxs
+	# Copy of all subdomains
+	for i in /var/www/sites/${SRC_ADM_LOGIN}/${SRC_DOMAIN}/subdomains/* ; do
+		SUBDOMAIN=`basename ${i}`
+		ssh ${DST_HOST} "mkdir -p /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains/${SUBDOMAIN}"
+		nice rsync -e ssh -azvp /var/www/sites/${SRC_ADM_LOGIN}/${SRC_DOMAIN}/${SUBDOMAIN}/ ${DST_HOST}:/var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/${SUBDOMAIN}
+	done
+	# Copy of all lists
+	if [ -e /var/www/sites/${SRC_ADM_LOGIN}/${SRC_DOMAIN}/lists ] ; then
+		ssh ${DST_HOST} "mkdir -p /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/lists"
+		nice rsync -e ssh -azvp /var/www/sites/${SRC_ADM_LOGIN}/${SRC_DOMAIN}/lists/ ${DST_HOST}:/var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/lists
+	fi
 }
 
 fix_php_rights_cleanup_and_db_to_localhost () {
 	echo "===> Fixing .php unix rights"
-	ssh ${DST_HOST} "for i in /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains/* ; do find $i/html -iname '*.php' -exec chmod +x {} \; ; done"
+	ssh ${DST_HOST} "find /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains -iname '*.php' -exec chmod +x {} \;"
 	echo "===> Switching from localhost to 127.0.0.1"
-	ssh ${DST_HOST} "for i in /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains/* ; do find $i/html -iname '*.php' -exec sed -i s/localhost/127.0.0.1/ {} \; ; done"
+	ssh ${DST_HOST} "find /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains -iname '*.php' -exec sed -i s/localhost/127.0.0.1/ {} \;"
 	echo "===> Cleaning old chroot copy"
-	CLEANUP_FOLDERS="bin dev etc lib lib64 libexec sbin var usr/bin usr/libexec usr/share usr/lib/zoneinfo"
-	ssh ${DST_HOST} "for i in ${CLEANUP_FOLDERS} ; do -rf /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains/*/${i} ; done"
+	#CLEANUP_FOLDERS="bin dev etc lib lib64 libexec sbin var usr/bin usr/libexec usr/share usr/lib/zoneinfo"
+	#ssh ${DST_HOST} "for i in ${CLEANUP_FOLDERS} ; do rm -rf /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains/*/${i} ; done"
 }
 
 get_my_opt $@
