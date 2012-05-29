@@ -54,9 +54,9 @@ rsync_all_files () {
 
 fix_php_rights_cleanup_and_db_to_localhost () {
 	echo "===> Fixing .php unix rights"
-	ssh ${DST_HOST} "find /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains -iname '*.php' -exec chmod +x {} \;"
+	ssh ${DST_HOST} "for i in /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains/* ; do find $i/html -iname '*.php' -exec chmod +x {} \; ; done"
 	echo "===> Switching from localhost to 127.0.0.1"
-	ssh ${DST_HOST} "find /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains -iname '*.php' -exec sed -i s/localhost/127.0.0.1/ {} \;"
+	ssh ${DST_HOST} "for i in /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains/* ; do find $i/html -iname '*.php' -exec sed -i s/localhost/127.0.0.1/ {} \; ; done"
 	echo "===> Cleaning old chroot copy"
 	CLEANUP_FOLDERS="bin dev etc lib lib64 libexec sbin var usr/bin usr/libexec usr/share usr/lib/zoneinfo"
 	ssh ${DST_HOST} "for i in ${CLEANUP_FOLDERS} ; do -rf /var/www/sites/${DST_ADMIN}/${SRC_DOMAIN}/subdomains/*/${i} ; done"
