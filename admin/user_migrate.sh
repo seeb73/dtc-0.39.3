@@ -3,7 +3,6 @@
 set -e
 #set -x
 
-
 usage (){
 	echo "Usage: $0 <destination-host> <username>"
 }
@@ -37,7 +36,7 @@ copy_adm_login_and_client () {
 	Q="INSERT INTO clients ("
 	V=") VALUES ("
 	for i in ${client_props} ; do
-		VAL=`mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute="SELECT ${i} FROM clients WHERE id='${CLIENT_ID}'" | tail -n 1`
+		VAL=`mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute="SELECT replace(${i} , '\'', ' ') FROM clients WHERE id='${CLIENT_ID}'" | tail -n 1`
 		if ! [ "${i}" = "is_company" ] ; then
 			Q=${Q}","
 			V=${V}","
@@ -116,15 +115,18 @@ export_adm_dbs () {
 }
 
 rsync_all_files () {
-	NBR_ENTRY=`mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute="SELECT name FROM domain WHERE owner='asia-estore'" | wc -l`
+	NBR_ENTRY=`mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute="SELECT name FROM domain WHERE owner='${DTC_USER}'" | wc -l`
 	NBR_ENTRY=$(($NBR_ENTRY - 1 ))
-	DOMAINS=`mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute="SELECT name FROM domain WHERE owner='${DTC_USER}'" | tail -n ${NBR_ENTRY}`
+	DOMAINS=`mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute="SELECT name FROM domain WHERE owner='${DTC_USER}'" | tail -n ${NBR_ENTRY} | tr \\\r\\\n ,\ `
+	echo "Domains are: ${DOMAINS}"
 	for D in ${DOMAINS} ; do
-		echo $D
+		echo "===> Doing rsync of ${D}"
 		ssh ${DST_HOST} "mkdir -p /var/www/sites/${DTC_USER}/${D}/Mailboxs /var/www/sites/${DTC_USER}/${D}/subdomains"
 
 		# Copy of all mailboxes
-		nice rsync -e ssh -azvp /var/www/sites/${DTC_USER}/${D}/Mailboxs/ ${DST_HOST}:/var/www/sites/${DTC_USER}/${D}/Mailboxs
+		if [ -d /var/www/sites/${DTC_USER}/${D}/Mailboxs ] ; then
+			nice rsync -e ssh -azvp /var/www/sites/${DTC_USER}/${D}/Mailboxs/ ${DST_HOST}:/var/www/sites/${DTC_USER}/${D}/Mailboxs
+		fi
 
 		# Copy of all subdomains
 		for i in /var/www/sites/${DTC_USER}/${D}/subdomains/* ; do
@@ -150,13 +152,18 @@ rsync_all_files () {
 
 
 fix_php_rights_cleanup_and_db_to_localhost () {
-	echo "===> Fixing .php unix rights"
-	ssh ${DST_HOST} "find /var/www/sites/${DTC_USER} -iname '*.php' -exec chmod +x {} \;"
-	echo "===> Switching from localhost to 127.0.0.1"
-	ssh ${DST_HOST} "find /var/www/sites/${DTC_USER} -iname '*.php' -exec sed -i s/localhost/127.0.0.1/ {} \;"
-	echo "===> Cleaning old chroot copy"
-	CLEANUP_FOLDERS="boot home media mnt opt proc root selinux srv sys usr bin dev etc lib lib64 libexec sbin var"
-	ssh ${DST_HOST} "for i in /var/www/sites/${DTC_USER}/${SRC_DOMAIN}/subdomains/* ; do cd \$i ; rm -rf ${CLEANUP_FOLDERS} ; done"
+	NBR_ENTRY=`mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute="SELECT name FROM domain WHERE owner='${DTC_USER}'" | wc -l`
+	NBR_ENTRY=$(($NBR_ENTRY - 1 ))
+	DOMAINS=`mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute="SELECT name FROM domain WHERE owner='${DTC_USER}'" | tail -n ${NBR_ENTRY} | tr \\\r\\\n ,\ `
+	for D in ${DOMAINS} ; do
+		echo "===> Fixing .php unix rights"
+		ssh ${DST_HOST} "find /var/www/sites/${DTC_USER}/${D}/subdomains -iname '*.php' -exec chmod +x {} \;"
+		echo "===> Switching from localhost to 127.0.0.1"
+		ssh ${DST_HOST} "find /var/www/sites/${DTC_USER}/${D}/subdomains -iname '*.php' -exec sed -i s/localhost/127.0.0.1/ {} \;"
+		echo "===> Cleaning old chroot copy"
+		CLEANUP_FOLDERS="boot home media mnt opt proc root selinux srv sys usr bin dev etc lib lib64 libexec sbin var"
+		ssh ${DST_HOST} "for i in /var/www/sites/${DTC_USER}/${D}/subdomains/* ; do cd \$i ; rm -rf ${CLEANUP_FOLDERS} ; done"
+	done
 }
 
 get_my_opt $@
