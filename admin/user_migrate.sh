@@ -116,8 +116,38 @@ export_adm_dbs () {
 }
 
 rsync_all_files () {
-	nice rsync -e ssh -azvp /var/www/sites/${DTC_USER}/ ${DST_HOST}:/var/www/sites/${DTC_USER}
+	NBR_ENTRY=`mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute="SELECT name FROM domain WHERE owner='asia-estore'" | wc -l`
+	NBR_ENTRY=$(($NBR_ENTRY - 1 ))
+	DOMAINS=`mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute="SELECT name FROM domain WHERE owner='${DTC_USER}'" | tail -n ${NBR_ENTRY}`
+	for D in ${DOMAINS} ; do
+		echo $D
+		ssh ${DST_HOST} "mkdir -p /var/www/sites/${DTC_USER}/${D}/Mailboxs /var/www/sites/${DTC_USER}/${D}/subdomains"
+
+		# Copy of all mailboxes
+		nice rsync -e ssh -azvp /var/www/sites/${DTC_USER}/${D}/Mailboxs/ ${DST_HOST}:/var/www/sites/${DTC_USER}/${D}/Mailboxs
+
+		# Copy of all subdomains
+		for i in /var/www/sites/${DTC_USER}/${D}/subdomains/* ; do
+			S=`basename ${i}`
+			ssh ${DST_HOST} "mkdir -p /var/www/sites/${DTC_USER}/${D}/subdomains/${S}/html /var/www/sites/${DTC_USER}/${D}/subdomains/${S}/logs"
+			if [ -d /var/www/sites/${DTC_USER}/${D}/subdomains/${S}/html ] ; then
+				nice rsync --delete -e ssh -azvp /var/www/sites/${DTC_USER}/${D}/subdomains/${S}/html/ ${DST_HOST}:/var/www/sites/${DTC_USER}/${D}/subdomains/${S}/html
+			fi
+			if [ -d /var/www/sites/${DTC_USER}/${D}/subdomains/${S}/logs ] ; then
+				nice rsync -e ssh -azvp /var/www/sites/${DTC_USER}/${D}/subdomains/${S}/logs/ ${DST_HOST}:/var/www/sites/${DTC_USER}/${D}/subdomains/${S}/logs
+			fi
+		done
+
+		# Copy of all lists
+		if [ -d /var/www/sites/${DTC_USER}/${D}/lists ] ; then
+			ssh ${DST_HOST} "mkdir -p /var/www/sites/${DTC_USER}/${D}/lists"
+			nice rsync -e ssh -azvp /var/www/sites/${DTC_USER}/${D}/lists/ ${DST_HOST}:/var/www/sites/${DTC_USER}/${D}/lists
+		fi
+	done
 }
+
+
+
 
 fix_php_rights_cleanup_and_db_to_localhost () {
 	echo "===> Fixing .php unix rights"
@@ -125,8 +155,8 @@ fix_php_rights_cleanup_and_db_to_localhost () {
 	echo "===> Switching from localhost to 127.0.0.1"
 	ssh ${DST_HOST} "find /var/www/sites/${DTC_USER} -iname '*.php' -exec sed -i s/localhost/127.0.0.1/ {} \;"
 	echo "===> Cleaning old chroot copy"
-	CLEANUP_FOLDERS="bin dev etc lib lib64 libexec sbin var usr/bin usr/libexec usr/share usr/lib/zoneinfo"
-	ssh ${DST_HOST} "for i in ${CLEANUP_FOLDERS} ; do -rf /var/www/sites/${DTC_USER}/*/subdomains/*/${i} ; done"
+	CLEANUP_FOLDERS="boot home media mnt opt proc root selinux srv sys usr bin dev etc lib lib64 libexec sbin var"
+	ssh ${DST_HOST} "for i in /var/www/sites/${DTC_USER}/${SRC_DOMAIN}/subdomains/* ; do cd \$i ; rm -rf ${CLEANUP_FOLDERS} ; done"
 }
 
 get_my_opt $@
