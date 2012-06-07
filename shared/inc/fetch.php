@@ -539,7 +539,6 @@ function fetchAdminData($adm_login,$adm_input_pass){
 	}
 
 	// Get all domains of the user
-	$b = array();
 	$query = "SELECT * FROM $pro_mysql_domain_table WHERE owner='$adm_login' ORDER BY name;";
 	$result = mysql_query ($query);
 	if (!$result)
@@ -561,9 +560,11 @@ function fetchAdminData($adm_login,$adm_input_pass){
 		$domains[] = $row;
 		$b[$i] = $idn->decode($row["name"]);	
 	}
-	asort($b, SORT_LOCALE_STRING);
-	foreach($b as $key=>$val) {
-		$domains_idnsorted[] = $domains[$key];
+	if (is_array($b)) {
+		asort($b, SORT_LOCALE_STRING);
+		foreach($b as $key=>$val) {
+			$domains_idnsorted[] = $domains[$key];
+		}
 	}
 	for($i=0;$i<$num_rows;$i++){
 		//echo "$i<br>";
