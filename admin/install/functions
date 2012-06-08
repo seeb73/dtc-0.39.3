@@ -3262,7 +3262,7 @@ ${DOVECOT_SSL_CERT_CONF}
 !include_try /etc/dovecot/conf.d/*.conf
 
 # Kick away iPhones who leave imap connections open
-mail_max_userip_connections = 90
+mail_max_userip_connections = 200
 
 # End of DTC configuration v0.x : please don't touch this line !
 " >> $PATH_DOVECOT_CONF
