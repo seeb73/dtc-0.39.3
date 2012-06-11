@@ -560,7 +560,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 		$domains[] = $row;
 		$b[$i] = $idn->decode($row["name"]);	
 	}
-	if (is_array($b)) {
+	if (isset($b) && is_array($b)) {
 		asort($b, SORT_LOCALE_STRING);
 		foreach($b as $key=>$val) {
 			$domains_idnsorted[] = $domains[$key];
