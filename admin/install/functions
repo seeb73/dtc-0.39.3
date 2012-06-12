@@ -786,7 +786,11 @@ createHostingDirAndFiles () {
 			cp -r $PATH_DTC_SHARED/shared/template $PATH_DTC_ETC
 		fi
 		chown -R ${CONF_DTC_SYSTEM_USERNAME}:${CONF_DTC_SYSTEM_GROUPNAME} $PATH_DTC_ETC/template
-		chmod -R 775 $PATH_DTC_ETC/template
+		chmod 755 $PATH_DTC_ETC/template
+		chmod -R 775 $PATH_DTC_ETC/template/*.php
+		chmod -x $PATH_DTC_ETC/template/*.gif
+		chmod -x $PATH_DTC_ETC/template/*.png
+		chmod -x $PATH_DTC_ETC/template/*.ico
 	fi
 
 	chown -R ${CONF_DTC_SYSTEM_USERNAME}:${CONF_DTC_SYSTEM_GROUPNAME} ${PATH_DTC_ETC}
