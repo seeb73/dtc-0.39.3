@@ -2,6 +2,9 @@ dtc (0.35.6-2) experimental; urgency=low
 
   * Fixes the cron job PHP Notice in fetch.php.
   * Added hebrew translation thanks to Shuki Vaknin <shukivaknin@gmail.com>.
+  * Stops configure mysqmail with the (not in use) syslog_file option.
+  * Generate a random password if install/upgrade is made in non-interactive
+  mode.
 
  -- Thomas Goirand <zigo@debian.org>  Mon, 11 Jun 2012 22:57:44 +0800
 
