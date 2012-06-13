@@ -4165,11 +4165,11 @@ modifyMysqmail () {
 			echo "mysql_table_pop_access pop_access" >> $TMP_FILE
 			echo "mysql_table_scoreboard email_accounting" >> $TMP_FILE
 			echo "mysql_table_domain domain" >> $TMP_FILE
-			if [ $UNIX_TYPE = freebsd ] ; then
-				echo "syslog_file /var/log/maillog" >>$TMP_FILE
-			else
-				echo "syslog_file /var/log/syslog" >>$TMP_FILE
-			fi
+			#if [ $UNIX_TYPE = freebsd ] ; then
+			#	echo "syslog_file /var/log/maillog" >>$TMP_FILE
+			#else
+			#	echo "syslog_file /var/log/syslog" >>$TMP_FILE
+			#fi
 			echo "# End of DTC Configuration : please do not touch this line !" >> $TMP_FILE
 			echo "" >> $TMP_FILE
 			cat < $TMP_FILE >>$PATH_MYSQMAIL_CONF
