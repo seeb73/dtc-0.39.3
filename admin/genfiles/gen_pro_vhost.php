@@ -1040,7 +1040,7 @@ $vhost_file .= "
 	// Writing $aufs_list list
 	$filep = fopen("$conf_generated_file_path/aufs_list","w+");
 	if( $filep == NULL){
-		echo("Cannot open $conf_generated_file_path/aufs_lis file for writting");
+		echo("Cannot open $conf_generated_file_path/aufs_list file for writting");
 	}else{
 		fwrite($filep,$aufs_list);
 		fclose($filep);
