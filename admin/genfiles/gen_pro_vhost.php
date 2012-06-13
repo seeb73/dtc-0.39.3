@@ -202,7 +202,10 @@ function pro_vhost_generate(){
 	global $conf_autogen_webmail_alias;
 	global $conf_autogen_webmail_type;
 	global $conf_autogen_webmail_protocol;
-	
+
+	global $conf_dtc_system_username;
+	global $conf_dtc_system_groupname;
+
 	global $conf_use_shared_ssl;
 	$vhost_file = "";
 
@@ -1044,6 +1047,7 @@ $vhost_file .= "
 	}else{
 		fwrite($filep,$aufs_list);
 		fclose($filep);
+		@chown("$conf_generated_file_path/aufs_list","$conf_dtc_system_username:$conf_dtc_system_groupname");
 	}
 	$console .= "aufs_list written !<br>";
 
