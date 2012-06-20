@@ -98,6 +98,10 @@ if [ -f /etc/debian_version ] ; then
 	fi
 	chown -R dtc:dtcgrp ${sbox_copy_disk_path}
 
+	if ! grep dtcgrp ${sbox_copy_disk_path}/etc/group 2>&1 >/dev/null ; then
+		getent group dtcgrp >> ${sbox_copy_disk_path}/etc/group
+	fi
+
 	# Install a dummy web package
 	cd /root
 	if ! [ -f webserver-dummy_1.0_all.deb ] ; then
