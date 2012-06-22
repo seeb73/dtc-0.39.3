@@ -937,36 +937,20 @@ function addDomainToUser($adm_login,$adm_pass,$domain_name,$domain_password=""){
 			mkdir($admin_path, 0755);
 		}
 		make_new_adm_domain_dir("$admin_path/$domain_name");
-		if($admin["shared_hosting_security"] != "mod_php"){
-			if($admin["shared_hosting_security"] == "sbox_copy"){
-				exec("cp -flpRv /var/lib/dtc/sbox_copy/* $admin_path/$domain_name/subdomains/www");
-			}
+		if ($conf_unix_type == "bsd") {			// no -u in freebsd, could blow away custom changes, NEEDFIX: KC
+			$cp_opt = "p";
 		}else{
-			if ($conf_unix_type == "bsd") {			// no -u in freebsd, blows away custom changes, NEEDFIX: KC
-				exec("cp -flpRv $conf_chroot_path/* $admin_path/$domain_name/subdomains/www");
-				createSymLink("subdomains/www/libexec", "$admin_path/$domain_name/libexec");	// also symlink libexec for fbsd while we're here: KC
-				createSymLink("$domain_name/subdomains/www/libexec", "$admin_path/libexec");
-			}else{
-				exec("cp -fulpRv $conf_chroot_path/* $admin_path/$domain_name/subdomains/www");
-			}
-			exec("cp -fulpRv $conf_chroot_path/* $admin_path/$domain_name/subdomains/www");
-			// create a link so that the user can log in via SSH to $admin_path or $admin_path/$domain_name
-			// typo renamed to foreach *steveetm*
-			$folder_list = "bin var lib sbin tmp usr dev etc";
-			$unamestring = exec("uname -m",$unameout,$unameret);
-			$arch = $unameout[0];
-			if($arch == "x86_64"){
-				$folder_list .= " lib64";
-			}
-			foreach ( explode(" " , $folder_list) as $subdir) {
-				createSymLink("subdomains/www/$subdir", "$admin_path/$domain_name/$subdir");
-				createSymLink("$domain_name/subdomains/www/$subdir", "$admin_path/$subdir");
-			}
-		
-			if ($conf_unix_type == "bsd") {			// no -u in freebsd, could blow away custom changes, NEEDFIX: KC
-				$cp_opt = "p";
-			}else{
-				$cp_opt = "up";
+			$cp_opt = "up";
+		}
+		if($admin["shared_hosting_security"] == "sbox_copy"){
+			exec("cp -flpRv /var/lib/dtc/sbox_copy/* $admin_path/$domain_name/subdomains/www");
+		}else{
+		        if($admin["shared_hosting_security"] == "mod_php"){
+				if ($conf_unix_type == "bsd") {			// no -u in freebsd, blows away custom changes, NEEDFIX: KC
+					exec("cp -flpRv $conf_chroot_path/* $admin_path/$domain_name/subdomains/www");
+				}else{
+					exec("cp -fulpRv $conf_chroot_path/* $admin_path/$domain_name/subdomains/www");
+				}
 			}
 		}
 		system ("cp -r$cp_opt $conf_generated_file_path/template/* $admin_path/$domain_name/subdomains/www/html");

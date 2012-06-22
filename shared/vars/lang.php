@@ -19,6 +19,7 @@ $txt_langname = array(
 	"fr" => "UTF-8",
 	"en" => "UTF-8",
 	"hu" => "UTF-8",
+	"he" => "UTF-8",
 	"it" => "UTF-8",
 	"nl" => "UTF-8",
 	"ru" => "UTF-8",
@@ -68,56 +69,59 @@ if($panel_type!="cronjob"){
 	        if($_REQUEST["change_language"] == "fr"){
 	                $lang = "fr";
 	        }
-	        if($_REQUEST["change_language"] == "en"){
-                  $lang = "en";
-                }
-                if($_REQUEST["change_language"] == "hu"){
-		  $lang = "hu";
-                }
-                if($_REQUEST["change_language"] == "it"){
-		  $lang = "it";
-                }
-                if($_REQUEST["change_language"] == "nl"){
-		  $lang = "nl";
-                }
-                if($_REQUEST["change_language"] == "ru"){
-                  $lang = "ru";
-                }
-                if($_REQUEST["change_language"] == "de"){
-		  $lang = "de";
+		if($_REQUEST["change_language"] == "en"){
+			$lang = "en";
+		}
+		if($_REQUEST["change_language"] == "hu"){
+			$lang = "hu";
+		}
+		if($_REQUEST["change_language"] == "he"){
+			$lang = "he";
+		}
+		if($_REQUEST["change_language"] == "it"){
+			$lang = "it";
+		}
+		if($_REQUEST["change_language"] == "nl"){
+			$lang = "nl";
+		}
+		if($_REQUEST["change_language"] == "ru"){
+			$lang = "ru";
+		}
+		if($_REQUEST["change_language"] == "de"){
+			$lang = "de";
 		}
 		if($_REQUEST["change_language"] == "zh"){
-		  $lang = "zh";
+			$lang = "zh";
 		}
 		if($_REQUEST["change_language"] == "zh_TW"){
-		  $lang = "zh_TW";
+			$lang = "zh_TW";
 		}
 		if($_REQUEST["change_language"] == "pl"){
-		  $lang = "pl";
+			$lang = "pl";
 		}
 		if($_REQUEST["change_language"] == "sv"){
-		  $lang = "sv";
+			$lang = "sv";
 		}
 		if($_REQUEST["change_language"] == "es"){
-		  $lang = "es";
+			$lang = "es";
 		}
 		if($_REQUEST["change_language"] == "sr"){
-		  $lang = "sr";
+			$lang = "sr";
 		}
 		if($_REQUEST["change_language"] == "pt"){
-		  $lang = "pt";
+			$lang = "pt";
 		}
 		if($_REQUEST["change_language"] == "pt_BR"){
-		  $lang = "pt_BR";
+			$lang = "pt_BR";
 		}
 		if($_REQUEST["change_language"] == "fi"){
-		  $lang = "fi";
+			$lang = "fi";
 		}
 		if($_REQUEST["change_language"] == "lv"){
-		  $lang = "lv";
+			$lang = "lv";
 		}
 		if($_REQUEST["change_language"] == "cs"){
-		  $lang = "cs";
+			$lang = "cs";
 		}
 	}
 	if(isset($lang)){
@@ -168,6 +172,10 @@ case "fr":
 case "hu_HU":
 case "hu":
 	$gettext_lang = "hu_HU.UTF-8";
+	break;
+case "he_IL":
+case "he":
+	$gettext_lang = "he_IL.UTF-8";
 	break;
 case "it_IT":
 case "it":

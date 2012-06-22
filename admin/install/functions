@@ -786,7 +786,11 @@ createHostingDirAndFiles () {
 			cp -r $PATH_DTC_SHARED/shared/template $PATH_DTC_ETC
 		fi
 		chown -R ${CONF_DTC_SYSTEM_USERNAME}:${CONF_DTC_SYSTEM_GROUPNAME} $PATH_DTC_ETC/template
-		chmod -R 775 $PATH_DTC_ETC/template
+		chmod 755 $PATH_DTC_ETC/template
+		chmod -R 775 $PATH_DTC_ETC/template/*.php
+		chmod -x $PATH_DTC_ETC/template/*.gif
+		chmod -x $PATH_DTC_ETC/template/*.png
+		chmod -x $PATH_DTC_ETC/template/*.ico
 	fi
 
 	chown -R ${CONF_DTC_SYSTEM_USERNAME}:${CONF_DTC_SYSTEM_GROUPNAME} ${PATH_DTC_ETC}
@@ -2529,9 +2533,9 @@ disable_vrfy_command = yes
 
 smtp_tls_security_level = may
 
-smtpd_client_connection_rate_limit=20
-smtpd_client_message_rate_limit=20
-smtpd_client_recipient_rate_limit=20
+smtpd_client_connection_rate_limit=50
+smtpd_client_message_rate_limit=50
+smtpd_client_recipient_rate_limit=50
 anvil_rate_time_unit = 60s
 
 smtpd_recipient_restrictions = permit_mynetworks,${permit_sasl_authenticated}
@@ -3262,7 +3266,7 @@ ${DOVECOT_SSL_CERT_CONF}
 !include_try /etc/dovecot/conf.d/*.conf
 
 # Kick away iPhones who leave imap connections open
-mail_max_userip_connections = 90
+mail_max_userip_connections = 200
 
 # End of DTC configuration v0.x : please don't touch this line !
 " >> $PATH_DOVECOT_CONF
@@ -4161,11 +4165,11 @@ modifyMysqmail () {
 			echo "mysql_table_pop_access pop_access" >> $TMP_FILE
 			echo "mysql_table_scoreboard email_accounting" >> $TMP_FILE
 			echo "mysql_table_domain domain" >> $TMP_FILE
-			if [ $UNIX_TYPE = freebsd ] ; then
-				echo "syslog_file /var/log/maillog" >>$TMP_FILE
-			else
-				echo "syslog_file /var/log/syslog" >>$TMP_FILE
-			fi
+			#if [ $UNIX_TYPE = freebsd ] ; then
+			#	echo "syslog_file /var/log/maillog" >>$TMP_FILE
+			#else
+			#	echo "syslog_file /var/log/syslog" >>$TMP_FILE
+			#fi
 			echo "# End of DTC Configuration : please do not touch this line !" >> $TMP_FILE
 			echo "" >> $TMP_FILE
 			cat < $TMP_FILE >>$PATH_MYSQMAIL_CONF

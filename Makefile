@@ -343,7 +343,7 @@ shared/gfx/skin/paperboard/gfx/treeview shared/gfx/skin/paperboard/gfx/tabs shar
 shared/gfx/toolstitles shared/gfx/skin/paperboard/gfx/css shared/gfx/skin/paperboard/gfx/config-icon shared/gfx/skin/paperboard/gfx/buttons shared/dtcrm/modules/ovh \
 shared/securepay/modules/dineromail shared/dtcrm/modules/internetbs
 
-LOCALE_TRANS=fr_FR hu_HU it_IT nl_NL ru_RU de_DE zh_CN pl_PL sv_SE pt_PT pt_BR es_ES fi_FI zh_TW sr_RS lv_LV cs_CZ
+LOCALE_TRANS=fr_FR hu_HU it_IT nl_NL ru_RU de_DE zh_CN pl_PL sv_SE pt_PT pt_BR es_ES fi_FI zh_TW sr_RS lv_LV cs_CZ he_IL
 
 l12n:
 	@echo "===> Managing localizations binaries"

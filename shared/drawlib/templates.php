@@ -7,7 +7,7 @@ function helpLink($link){
 	}else{
 		$helpimg_src = "gfx/help.png";
 	}
-	$out = "<a target=\"_blank\" href=\"http://dtcsupport.gplhost.com/$link\"><img border=\"0\" src=\"$helpimg_src\"></a>";
+	$out = "<a target=\"_blank\" href=\"http://dtcsupport.gplhost.com/$link\"><img border=\"0\" src=\"$helpimg_src\" alt=\""._("context help")."\"></a>";
 	return $out;
 }
 
@@ -82,10 +82,10 @@ function dtcApplyButton(){
 	global $gfx_icn_path_ok;
 	if(isset($gfx_icn_path_ok)){
 		$apply = "<div class=\"btn_p_container\" onMouseOver=\"this.className='btn_p_container-hover';\" onMouseOut=\"this.className='btn_p_container';\">
-		<input type=\"image\" src=\"".$gfx_icn_path_ok."\"></div>";
+		<input type=\"image\" src=\"".$gfx_icn_path_ok."\" alt=\""._("Ok")."\"></div>";
 //		<img src=\"".$gfx_icn_path_ok."\"></div>";
 	}else{
-		$apply = "<input type=\"image\" src=\"gfx/stock_apply_20.png\">";
+		$apply = "<input type=\"image\" src=\"gfx/stock_apply_20.png\" alt=\""._("Ok")."\">";
 	}
 	return $apply;
 }

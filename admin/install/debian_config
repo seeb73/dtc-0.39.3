@@ -55,7 +55,13 @@ debianGetDebconfValues () {
 	db_get dtc/conf_admlogin
 	conf_adm_login=$RET
 	db_get dtc/conf_admpass
-	conf_adm_pass=$RET
+	# If ran non-interactive, then the password might be blank.
+	# In this case, just generate one...
+	if [ "${RET}" = "" ] ; then
+		conf_adm_pass=`dd if=/dev/random bs=64 count=1 2>|/dev/null | md5sum | cut -d' ' -f1 | awk '{print substr($0,0,16)}'`
+	else
+		conf_adm_pass=$RET
+	fi
 
 	conf_apache_version=2
 
