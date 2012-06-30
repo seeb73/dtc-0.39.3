@@ -476,6 +476,7 @@ $dtc_database = array(
 			"registrar" => "varchar(255) NOT NULL default 'webnic'",
 			"protection" => "enum('unlocked','transferprot','locked') NOT NULL default 'unlocked'",
 			"windows_compat" => "enum('yes','no') NOT NULL default 'no'",
+			"custom_part" => "text"
 		),
 		"primary" => "(id)",
 		"keys" => array(
