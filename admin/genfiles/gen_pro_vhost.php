@@ -181,6 +181,7 @@ function pro_vhost_generate(){
 	global $conf_administrative_site;
 	global $conf_administrative_ssl_port;
 	global $conf_use_ssl;
+	global $conf_force_use_https;
 
 	global $conf_shared_renewal_shutdown;
 
