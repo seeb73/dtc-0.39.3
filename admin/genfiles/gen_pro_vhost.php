@@ -752,7 +752,7 @@ $vhost_file .= "
 			} else {
 				// Generate a permanet redirect for all subdomains of target if using a domain parking
 				if($domain_parking != "no-parking" && ($domain_parking_type == "redirect" || $conf_administrative_site == "$web_subname.$domain_to_get")){
-					if($j == 0){
+					if($web_subname == $web_default_subdomain){
 						$console .= "Making domain parking for $web_name\n";
 						$vhost_file .= "<VirtualHost ".$ip_to_write.":80>
 	ServerName $web_name
