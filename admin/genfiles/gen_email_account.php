@@ -221,15 +221,18 @@ MAILFILTER_EOF;
 	}
 
 	if($spam_mailbox_enable == "yes"){
+		$spambox = str_replace("\\", "\\\\", $spam_mailbox);
+		$spambox = str_replace('"', "\\\"", $spambox);
 		$sieve_filter_content .= <<<MAILFILTER_EOF
 		if header :contains "X-Spam-Flag" "YES" {
-			fileinto "$spam_mailbox";
+			fileinto "$spambox";
 		}
 
 MAILFILTER_EOF;
 	}
 
 	if($vacation_flag == "yes"){
+		$vacation_text = str_replace( "\n.", "\n..", $vacation_text );
 		$sieve_filter_content .= <<<MAILFILTER_EOF
 
 if header :matches "Subject" "*" {
@@ -257,7 +260,11 @@ not allof (
 not header :contains "X-DTC-Support-Ticket" "*",
 not header :contains "X-ClamAV-Notice-Flag" ["YES"],
 not header :contains "X-Spam-Flag" ["YES"] ) {
-vacation :days 2 :addresses ["$recipient"] :subject "Auto Response from $recipient\${oldsub}" "$vacation_text";}
+vacation :days 2 :addresses ["$recipient"] :subject "Auto Response from $recipient\${oldsub}" 
+text:
+$vacation_text
+.
+;}
 
 MAILFILTER_EOF;
 	}
