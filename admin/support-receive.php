@@ -48,7 +48,8 @@ if($flag == 0 || sizeof($matches) != 1){
 $email_from = $matches[0][0];
 
 // Do nothing if there's a mail from an auto-responder
-if( isset($stt->headers["X-AutoReply-From"]) || isset($stt->headers["X-Mail-Autoreply"]) ){
+if( isset($stt->headers["X-AutoReply-From"]) || isset($stt->headers["X-Mail-Autoreply"]) 
+	|| (isset($stt->headers["Auto-Submitted"]) && $stt->headers["Auto-Submitted"] != "no") ){
 	exit(0);
 }
 

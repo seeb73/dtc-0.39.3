@@ -247,6 +247,10 @@ not header :contains "Subject" "*Mail Delivery Subsystem",
 not header :contains "Subject" "*Mail System Error.*Returned Mail",
 not header :contains "X-AutoReply" "*",
 not header :contains "X-Mail-Autoreply" "*",
+not allof (
+        exists "Auto-Submitted",
+        not header :matches "Auto-Submitted" "no"
+	),
 not header :contains "X-DTC-Support-Ticket" "*",
 not header :contains "X-ClamAV-Notice-Flag" ["YES"],
 not header :contains "X-Spam-Flag" ["YES"] ) {
