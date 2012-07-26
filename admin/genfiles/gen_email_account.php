@@ -232,6 +232,9 @@ MAILFILTER_EOF;
 	if($vacation_flag == "yes"){
 		$sieve_filter_content .= <<<MAILFILTER_EOF
 
+if header :matches "Subject" "*" {
+        set "oldsub" ": \${1}";
+}
 if allof (
 not header :contains "Precedence" ["bulk","list","junk"],
 not header :contains "List-Id" ["YES"],
@@ -254,7 +257,7 @@ not allof (
 not header :contains "X-DTC-Support-Ticket" "*",
 not header :contains "X-ClamAV-Notice-Flag" ["YES"],
 not header :contains "X-Spam-Flag" ["YES"] ) {
-vacation :days 2 :addresses ["$recipient"] :subject "Auto Response: from $recipient" "$vacation_text";}
+vacation :days 2 :addresses ["$recipient"] :subject "Auto Response from $recipient\${oldsub}" "$vacation_text";}
 
 MAILFILTER_EOF;
 	}
