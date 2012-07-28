@@ -875,7 +875,7 @@ $vhost_file .= "
 							$vhost_more_conf .= "        ServerAlias ${row_serveralias["name"]}\n";
 						}
 						$vhost_more_conf .= "        ServerAlias $web_subname.${row_serveralias["name"]}\n";
-						if ($domain_wildcard_dns == "yes") {
+						if ($domain_wildcard_dns == "yes" && $web_subname == "$web_default_subdomain") {
 							$vhost_more_conf .= "        ServerAlias *.${row_serveralias["name"]}\n";
 						}
 					}
