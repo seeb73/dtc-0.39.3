@@ -710,7 +710,32 @@ AND $pro_mysql_admin_table.id_client != '0'";
 	Alias /roundcube /var/lib/roundcube
 	Alias /extplorer /usr/share/extplorer
 	AliasMatch ^/autodiscover/autodiscover\.xml\$ $conf_generated_file_path/autodiscover.xml.php
-	php_admin_value sendmail_from webmaster@$web_name
+	php_admin_value sendmail_from webmaster@$web_name";
+
+			$php_more_conf = "\n";
+			if($subdomain["register_globals"] == "yes"){
+				$php_more_conf .= "	php_admin_value register_globals 1\n";
+			}
+			if($subdomain["php_memory_limit"] != ""){
+				$php_more_conf .= "	php_admin_value memory_limit ".$subdomain["php_memory_limit"]."M\n";
+			}
+			if($subdomain["php_max_execution_time"] != ""){
+				$php_more_conf .= "	php_admin_value max_execution_time ".$subdomain["php_max_execution_time"]."\n";
+			}
+			if($subdomain["php_session_auto_start"] == "yes"){
+				$php_more_conf .= "	php_admin_flag session_autostart ".$subdomain["php_session_auto_start"]."\n";
+			}
+			if($subdomain["php_allow_url_fopen"] == "yes"){
+				$php_more_conf .= "	php_admin_flag allow_url_fopen on\n";
+			}
+			if($subdomain["php_post_max_size"] != ""){
+				$php_more_conf .= "	php_admin_value post_max_size ".$subdomain["php_post_max_size"]."M\n";
+			}
+			if($subdomain["php_upload_max_filesize"] != ""){
+				$php_more_conf .= "	php_admin_value upload_max_filesize ".$subdomain["php_upload_max_filesize"]."M\n";
+			}
+
+			$vhost_file .= $php_more_conf . "
 	DocumentRoot $web_path/$web_name/subdomains/$web_subname/html
 	<Directory $web_path/$web_name/subdomains/$web_subname/html>
 		Allow from all
