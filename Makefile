@@ -277,7 +277,8 @@ shared/securepay/modules/cheque/main.php \
 shared/securepay/modules/wiretransfer/main.php \
 shared/securepay/modules/webmoney/main.php \
 shared/securepay/modules/moneybookers/main.php \
-shared/securepay/modules/dineromail/main.php
+shared/securepay/modules/dineromail/main.php \
+shared/securepay/modules/cuentadigital/main.php
 
 REGISTRY_API_PHP_SCRIPT_FILES=shared/dtcrm/modules/webnic/main.php shared/dtcrm/modules/ovh/main.php shared/dtcrm/modules/internetbs/main.php
 
@@ -288,7 +289,7 @@ $(PAYMENT_API_PHP_SCRIPT_FILES) $(REGISTRY_API_PHP_SCRIPT_FILES)
 ################ PICTURES ##################
 NEW_SITES_TEMPLATE_IMG=shared/template/dtc_logo.gif shared/template/dtclogo.png shared/template/favicon.ico shared/template/logo_dtc.gif
 
-CLIENT_PICTURES=client/enets_pay_icon.gif client/favicon.ico client/cheque.gif client/wire.gif client/moneybookers.gif
+CLIENT_PICTURES=client/enets_pay_icon.gif client/favicon.ico client/cheque.gif client/wire.gif client/moneybookers.gif client/logo_cuentadigital.gif
 
 ALL_PICS=$(NEW_SITES_TEMPLATE_IMG) $(CLIENT_PICTURES)
 ################# EXECUTABLE SCRIPTS #################
@@ -341,7 +342,7 @@ shared/securepay/modules/worldpay client email shared/securepay/modules/cheque s
 shared/securepay/modules/moneybookers shared/dtcrm/modules/webnic admin/postfix_checks admin/mod-security shared/gfx/skin/paperboard shared/gfx/skin/paperboard/gfx \
 shared/gfx/skin/paperboard/gfx/treeview shared/gfx/skin/paperboard/gfx/tabs shared/gfx/skin/paperboard/gfx/navbar \
 shared/gfx/toolstitles shared/gfx/skin/paperboard/gfx/css shared/gfx/skin/paperboard/gfx/config-icon shared/gfx/skin/paperboard/gfx/buttons shared/dtcrm/modules/ovh \
-shared/securepay/modules/dineromail shared/dtcrm/modules/internetbs
+shared/securepay/modules/dineromail shared/dtcrm/modules/internetbs shared/securepay/modules/cuentadigital
 
 LOCALE_TRANS=fr_FR hu_HU it_IT nl_NL ru_RU de_DE zh_CN pl_PL sv_SE pt_PT pt_BR es_ES fi_FI zh_TW sr_RS lv_LV cs_CZ he_IL
 

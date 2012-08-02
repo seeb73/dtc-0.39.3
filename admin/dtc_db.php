@@ -779,7 +779,7 @@ $dtc_database = array(
 			"paiement_cost" => "decimal(9,2) NOT NULL default '0.00'",
 			"paiement_total" => "decimal(9,2) NOT NULL default '0.00'",
 			"paiement_type" => "enum('online','cheque','wire','other','free') NOT NULL default 'online'",
-			"secpay_site" => "enum('none','paypal','worldpay','enets','moneybokers','webmoney','dineromail') NOT NULL default 'none'",
+			"secpay_site" => "enum('none','paypal','worldpay','enets','moneybokers','webmoney','dineromail','cuentadigital') NOT NULL default 'none'",
 			"secpay_custom_id" => "int(11) NOT NULL default '0'",
 			"shopper_ip" => "varchar(16) NOT NULL default '0.0.0.0'",
 			"date" => "date NOT NULL default '0000-00-00'",
@@ -1110,7 +1110,15 @@ $dtc_database = array(
 			"dineromail_tipospago" => "varchar(30) NOT NULL default '2,7,13,4,5,6,14,15,16,17,18'",
 			"dineromail_cargocomision" => "decimal(9,2) NOT NULL default '0.00'",
 			"dineromail_porcentajecomision" => "decimal(9,2) NOT NULL default '0.00'",
-			"dineromail_logo_url" => "varchar(255) NOT NULL default ''"
+			"dineromail_logo_url" => "varchar(255) NOT NULL default ''",
+
+			"use_cuentadigital" => "enum('yes','no') NOT NULL default 'no'",
+			"cuentadigital_nrocuenta" => "varchar(20) NOT NULL default ''",
+			"cuentadigital_cargocomision" => "decimal(9,2) NOT NULL default '0.00'",
+			"cuentadigital_porcentajecomision" => "decimal(9,2) NOT NULL default '0.00'",
+			"cuentadigital_language" => "enum('en', 'es', 'pt', 'it', 'fr', 'de') NOT NULL default 'en'",
+			"cuentadigital_country" => "enum('US', 'AR', 'AD', 'AU', 'AT', 'BE', 'BR', 'BG', 'CA', 'CL', 'CN', 'HR', 'CZ', 'DK', 'ES', 'EE', 'FI', 'FR', 'DE', 'GR', 'HK', 'HU', 'IS', 'IN', 'ID', 'IE', 'IT', 'JP', 'KR', 'LV', 'LI', 'LT', 'LU', 'MY', 'MX', 'MC', 'NL', 'NZ', 'NO', 'PH', 'PL', 'PT', 'RO', 'RU', 'SG', 'SK', 'SI', 'ZA', 'SE', 'CH', 'TW', 'TH', 'TR', 'GB', 'VN') NOT NULL default 'US'",
+			"cuentadigital_logo_url" => "varchar(255) NOT NULL default ''"
 		),
 		"keys" => array(
 			"unicrow" => "(unicrow)"

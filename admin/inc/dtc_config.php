@@ -2054,6 +2054,45 @@ be displayed to your users instead of the popup value.")."<br>";
 				));
 	$out .= configEditorTemplate ($dsc,"secpay");
 
+	$dsc = array(
+		"title" => _("Cuenta Digital:"),
+		"action" => "cuentadigital_gateway_dineromail_edit",
+		"forward" => array("rub","sousrub"),
+		"cols" => array(
+			"use_cuentadigital" => array(
+				"legend" => _("Use Cuenta Digital: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"cuentadigital_nrocuenta" => array(
+				"legend" => _("Cuenta Digital Account Number: "),
+				"type" => "text",
+				"size" => "20"),
+			"cuentadigital_cargocomision" => array(
+				"legend" => _("Fixed charge fee: "),
+				"type" => "text",
+				"size" => "6"),
+			"cuentadigital_porcentajecomision" => array(
+				"legend" => _("Percentage fee: "),
+				"type" => "text",
+				"size" => "6"),
+			"cuentadigital_language" => array(
+				"legend" => _("Language: "),
+				"type" => "popup",
+				"values" => array('en', 'es', 'pt', 'it', 'fr', 'de'),
+				"display_replace" => array(_("English"),_("Espa&ntilde;ol"),_("Portugu&ecirc;s"),_("Italiano"),_("Fran&ccedil;ais"),_("Deutch"))),
+			"cuentadigital_country" => array(
+				"legend" => _("Country: "),
+				"type" => "popup",
+				"values" => array('US', 'AR', 'AD', 'AU', 'AT', 'BE', 'BR', 'BG', 'CA', 'CL', 'CN', 'HR', 'CZ', 'DK', 'ES', 'EE', 'FI', 'FR', 'DE', 'GR', 'HK', 'HU', 'IS', 'IN', 'ID', 'IE', 'IT', 'JP', 'KR', 'LV', 'LI', 'LT', 'LU', 'MY', 'MX', 'MC', 'NL', 'NZ', 'NO', 'PH', 'PL', 'PT', 'RO', 'RU', 'SG', 'SK', 'SI', 'ZA', 'SE', 'CH', 'TW', 'TH', 'TR', 'GB', 'VN'),
+				"display_replace" => array(_("United States"),_("Argentina"),_("Andorra"),_("Australia"),_("Austria"),_("Belgium"),_("Brazil"),_("Bulgaria"),_("Canada"),_("Chile"),_("China"),_("Croatia"),_("Czech Republic"),_("Denmark"),_("Espa&ntilde;a"),_("Estonia"),_("Finland"),_("France"),_("Germany"),_("Greece"),_("Hong Kong"),_("Hungary"),_("Iceland"),_("India"),_("Indonesia"),_("Ireland"),_("Italy"),_("Japan"),_("Korea, Republic of"),_("Latvia"),_("Liechtenstein"),_("Lithuania"),_("Luxemburg"),_("Malaysia"),_("Mexico"),_("Monaco"),_("Netherlands"),_("New Zealand"),_("Norway"),_("Philippines"),_("Poland"),_("Portugal"),_("Romania"),_("Russian Federation"),_("Singapore"),_("Slovakia"),_("Slovenia"),_("South Africa"),_("Sweden"),_("Switzerland"),_("Taiwan"),_("Thailand"),_("Turkey"),_("United Kingdom"),_("Viet Nam"))),
+			"cuentadigital_logo_url" => array(
+				"legend" => _("Display payment image url (leave blank for default): "),
+				"type" => "text",
+				"size" => "6")
+				));
+	$out .= configEditorTemplate ($dsc,"secpay");
+
 	return $out;
 }
 
