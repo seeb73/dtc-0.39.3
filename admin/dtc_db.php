@@ -301,7 +301,10 @@ $dtc_database = array(
 			"invoice_scp_when" => "enum('day','month') NOT NULL default 'day'",
 			"autogen_webmail_protocol" => "enum('http:','https:') NOT NULL default 'https:'",
 			"post_or_get" => "enum('GET','POST') NOT NULL default 'POST'",
-			"send_cron_alert" => "enum('yes','no') NOT NULL default 'no'"
+			"send_cron_alert" => "enum('yes','no') NOT NULL default 'no'",
+			"restrict_new_account_form" => "enum('yes','no') NOT NULL default 'no'",
+			"new_account_restrict_action" => "enum('show_all_plans','redirect') NOT NULL default 'show_all_plans'",
+			"new_account_restrict_message" => "varchar(255) NOT NULL default 'http://'"
 		),
 		"keys" => array(
 			"unicrow" => "(unicrow)"

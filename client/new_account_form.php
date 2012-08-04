@@ -519,6 +519,17 @@ function registration_form(){
 
 	global $conf_main_domain;
 	global $conf_provide_own_domain_hosts;
+	global $conf_restrict_new_account_form;
+	global $conf_new_account_restrict_action;
+	global $conf_new_account_restrict_message;
+
+
+
+	if ($conf_restrict_new_account_form == "yes" and ((isset($_REQUEST["product_id"]) && !isRandomNum($_REQUEST["product_id"])) or !isset($_REQUEST["product_id"]))){
+		if ($conf_new_account_restrict_action == 'redirect') {
+			header("Location: $conf_new_account_restrict_message");
+			}
+		}
 
 	get_secpay_conf();
 
@@ -527,7 +538,12 @@ function registration_form(){
 		$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 		$n = mysql_num_rows($r);
 		if($n != 1){
-			die("Product ID not found here line ".__LINE__." file ".__FILE__);
+			if ($conf_restrict_new_account_form == "yes" and $conf_new_account_restrict_action == 'redirect') {
+				header("Location: $conf_new_account_restrict_message");
+			}
+			else {
+				die("Product ID not found here line ".__LINE__." file ".__FILE__);
+			}
 		}
 		$a = mysql_fetch_array($r);
 		$heb_type_condition = " heb_type='".$a["heb_type"]."' ";

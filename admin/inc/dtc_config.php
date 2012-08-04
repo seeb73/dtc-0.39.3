@@ -1216,7 +1216,21 @@ function drawGeneralConfig(){
 				"legend" => _("Send mail to admin when an error occurs in dtc cron:"),
 				"type" => "radio",
 				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No")))));
+				"display_replace" => array(_("Yes"),_("No"))),
+			"restrict_new_account_form" => array(
+				"legend" => _("Force the use product_id in the request of new_account form:"),
+				"type" => "radio",
+				"values" => array("yes","no"),
+                                "display_replace" => array(_("Yes"),_("No"))),
+			"new_account_restrict_action" => array(
+				"legend" => _("wht to do if product_id is not set in the request of new_account form:"),
+				"type" => "radio",
+				"values" => array("show_all_plans","redirect"),
+				"display_replace" => array(_("Show all hosting plans"),_("Redirect to url"))),
+			"new_account_restrict_message" => array(
+				"legend" => _("Url to redirect if product_id is not set in the request of new_account form: "),
+				"type" => "text",
+				"size" => "255")));
 	$out .= configEditorTemplate ($dsc);
 
 	$dsc = array(
