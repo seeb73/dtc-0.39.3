@@ -886,6 +886,15 @@ $vhost_file .= "
 					}else{
 						$safe_mode_value = "1";
 					}
+					if($subdomain["windows_compat"] == "yes"){
+						$windowsx = "	<IfModule mod_speling.c>
+		CheckSpelling on
+		CheckCaseOnly on
+	</IfModule>
+";
+					}else{
+						$windowsx = "";
+					}
 					if($domain_sbox_protect == "no" && $subdomain["sbox_protect"] == "no"){
 						$cgi_directive = "ScriptAlias /cgi-bin $web_path/$domain_to_get/subdomains/$web_subname/cgi-bin";
 					}else{
@@ -955,7 +964,7 @@ $vhost_file .= "
 									$my_open_basedir = "\n\t<Location />
 		php_admin_value open_basedir \"$web_path:$conf_php_library_path:$conf_php_additional_library_path:\"\n\t</Location>";
 								}
-								$vhost_file .= $vhost_more_conf.$php_more_conf.$my_php_safe_mode."
+								$vhost_file .= $vhost_more_conf.$windowsx.$php_more_conf.$my_php_safe_mode."
 	php_admin_value sendmail_from phpmailfunction$web_subname@$web_name
 	php_admin_value sendmail_path \"/usr/sbin/sendmail -t -i -f phpmailfunction$web_subname@$domain_to_get\"
 	php_value session.save_path $web_path/$domain_to_get/subdomains/$web_subname/tmp".$my_open_basedir."

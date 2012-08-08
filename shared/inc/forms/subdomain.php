@@ -285,6 +285,12 @@ function drawAdminTools_Subdomain($admin,$domain){
 				"display_replace" => array(_("Yes"),_("No")),
 				"legend" => _("Sbox cgi-bin protection: ") );
 	}
+	$dsc["cols"]["windows_compat"] = array(
+		"type" => "radio",
+		"help" => _("This wil allow to match filenames in any case disregarding how it is requested and stored on disk ala Windows IIS"),
+		"legend" => _("Windows Compatibility") ,
+		"values" => array("yes","no"),
+		"display_replace" => array(_("No"),_("Yes")) );
 	if($admin["info"]["shared_hosting_security"] == "mod_php"){
 		$dsc["cols"]["shared_hosting_security"] = array(
 				"type" => "radio",

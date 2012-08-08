@@ -452,6 +452,12 @@ function drawDomainConfig($admin){
 					"legend" => _("CGI-BIN protection") ,
 					"values" => array("yes","no"),
 					"display_replace" => array(_("No"),_("Yes"))),
+				"windows_compat" => array(
+					"type" => "checkbox",
+					"help" => _("This wil allow to match filenames in any case disregarding how it is requested and stored on disk ala Windows IIS"),
+					"legend" => _("Windows Compatibility") ,
+					"values" => array("yes","no"),
+					"display_replace" => array(_("No"),_("Yes"))),
 				"quota" => array(
 					"type" => "text",
 					"help" => _("Quota disk in MBytes"),
