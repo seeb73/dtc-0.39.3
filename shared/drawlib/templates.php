@@ -1839,7 +1839,12 @@ function dtcListItemsEdit($dsc){
 							$selected = "";
 						}
 						$ctrl .= " <input type=\"radio\" name=\"".$keys[$j]."\" value=\"".$dsc["cols"][ $keys[$j] ]["values"][$x]."\" $selected> ";
-						$ctrl .= $dsc["cols"][ $keys[$j] ]["values"][$x];
+						if( isset($dsc["cols"][ $keys[$j] ]["display_replace"][$x]) ){
+							$display_val = $dsc["cols"][ $keys[$j] ]["display_replace"][$x];
+						}else{
+							$display_val = $dsc["cols"][ $keys[$j] ]["values"][$x];
+						}
+						$ctrl .= $display_val;
 					}
 					$out .= dtcFormLineDraw($dsc["cols"][ $keys[$j] ]["legend"],$ctrl,$j%2,$help);
 					break;
