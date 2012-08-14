@@ -912,6 +912,7 @@ function dtcDatagrid($dsc){
 
 function dtcListItemsEdit($dsc){
 	global $adm_pass;
+	global $adm_email_pass;
 	global $conf_post_or_get;
 
 	$out = "<h3>".$dsc["title"]."</u></b></h3>";
@@ -925,6 +926,8 @@ function dtcListItemsEdit($dsc){
 	for($i=0;$i<$nbr_forwards;$i++){
 		if($dsc["forward"][$i] == "adm_pass"){
 			$fw .= "<input type=\"hidden\" name=\"".$dsc["forward"][$i]."\" value=\"".$adm_pass."\">";
+		} elseif($dsc["forward"][$i] == "adm_email_pass"){
+			$fw .= "<input type=\"hidden\" name=\"".$dsc["forward"][$i]."\" value=\"".$adm_email_pass."\">";
 		}else{
 			$fw .= "<input type=\"hidden\" name=\"".$dsc["forward"][$i]."\" value=\"".$_REQUEST[ $dsc["forward"][$i] ]."\">";
 		}
@@ -933,6 +936,8 @@ function dtcListItemsEdit($dsc){
 		}
 		if($dsc["forward"][$i] == "adm_pass"){
 			$fw_link .= $dsc["forward"][$i]."=$adm_pass";
+		}elseif($dsc["forward"][$i] == "adm_email_pass"){
+			$fw_link .= $dsc["forward"][$i]."=$adm_email_pass";
 		}else{
 			$fw_link .= $dsc["forward"][$i]."=".$_REQUEST[ $dsc["forward"][$i] ];
 		}
