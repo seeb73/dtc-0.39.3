@@ -1842,6 +1842,10 @@ be displayed to your users instead of the popup value.")."<br>";
 				"cols" => "60",
 				"rows" => "7",
 				"type" => "textarea"),
+			"cheques_logo_url" => array(
+				"legend" => _("Display payment image url (leave blank for default): "),
+				"type" => "text",
+				"size" => "6"),
 			"accept_wiretransfers" => array (
 				"legend" => _("Accept wire transfers to bank: "),
 				"type" => "radio",
@@ -1855,7 +1859,11 @@ be displayed to your users instead of the popup value.")."<br>";
 				"legend" => _("Bank account details: "),
 				"cols" => "60",
 				"rows" => "12",
-				"type" => "textarea")
+				"type" => "textarea"),
+			"wiretransfers_logo_url" => array(
+				"legend" => _("Display payment image url (leave blank for default): "),
+				"type" => "text",
+				"size" => "6")
 			)
 		);
 	$out .= configEditorTemplate ($dsc,"secpay");

@@ -14,6 +14,7 @@ function wire_display_icon($pay_id,$amount,$item_name,$return_url,$use_recurring
 	global $pro_mysql_pay_table;
 
 	global $secpayconf_currency_letters;
+	global $secpayconf_wiretransfers_logo_url;
 	global $conf_use_ssl;
 
 	if($conf_use_ssl == "yes"){
@@ -42,7 +43,16 @@ function wire_display_icon($pay_id,$amount,$item_name,$return_url,$use_recurring
 <input type="hidden" name="payment_type" value="wire_transfer">
 <input type="hidden" name="currency_code" value="'.$secpayconf_currency_letters.'">
 '.$add_to_form.'
-<input type="image" src="/dtc/wire.gif" border="0"
+<input type="image" src="';
+	if (empty($secpayconf_wiretransfers_logo_url))
+		{
+		$out .= '/dtc/wire.gif';
+		}
+	else
+		{
+		$out .= $secpayconf_wiretransfers_logo_url;
+		}
+	$out .= '" border="0"
 name="submit" alt="'. _("Pay by wire transfer") .'">
 </form>';
 	return $out;

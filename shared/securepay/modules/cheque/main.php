@@ -12,6 +12,7 @@ function cheque_display_icon($pay_id,$amount,$item_name,$return_url,$use_recurri
 	global $paypal_account;
 	global $conf_administrative_site;
 	global $pro_mysql_pay_table;
+	global $secpayconf_cheques_logo_url;
 
 	global $secpayconf_currency_letters;
 	global $conf_use_ssl;
@@ -42,7 +43,16 @@ function cheque_display_icon($pay_id,$amount,$item_name,$return_url,$use_recurri
 <input type="hidden" name="payment_type" value="cheque">
 <input type="hidden" name="currency_code" value="'.$secpayconf_currency_letters.'">
 '.$add_to_form.'
-<input type="image" src="/dtc/cheque.gif" border="0"
+<input type="image" src="';
+	if (empty($secpayconf_cheques_logo_url))
+		{
+		$out .= '/dtc/cheque.gif';
+		}
+	else
+		{
+		$out .= $secpayconf_cheques_logo_url;
+		}
+	$out .= '" border="0"
 name="submit" alt="'. _("Pay by cheque") .'">
 </form>';
 	return $out;

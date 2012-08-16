@@ -1103,10 +1103,12 @@ $dtc_database = array(
 			"cheques_flat_fees" => "decimal(9,2) NOT NULL default '0.00'",
 			"cheques_to_label" => "varchar(255) NOT NULL default ''",
 			"cheques_send_address" => "text",
+			"cheques_logo_url" => "varchar(255) NOT NULL default ''",
 
 			"accept_wiretransfers" => "enum('yes','no') NOT NULL default 'no'",
 			"wiretransfers_flat_fees" => "decimal(9,2) NOT NULL default '0.00'",
 			"wiretransfers_bank_details" => "text",
+			"wiretransfers_logo_url" => "varchar(255) NOT NULL default ''",
 
 			"use_dineromail" => "enum('yes','no') NOT NULL default 'no'",
 			"dineromail_nrocuenta" => "varchar(20) NOT NULL default ''",
