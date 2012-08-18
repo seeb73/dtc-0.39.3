@@ -304,6 +304,7 @@ $dtc_database = array(
 			"send_cron_alert" => "enum('yes','no') NOT NULL default 'no'",
 			"restrict_new_account_form" => "enum('yes','no') NOT NULL default 'no'",
 			"new_account_restrict_action" => "enum('show_all_plans','redirect') NOT NULL default 'show_all_plans'",
+                        "new_account_restrict_hide_products" => "enum('yes','no') NOT NULL default 'no'",
 			"new_account_restrict_message" => "varchar(255) NOT NULL default 'http://'"
 		),
 		"keys" => array(
