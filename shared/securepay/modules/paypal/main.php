@@ -22,6 +22,7 @@ function paypal_display_icon($product_id,$amount,$item_name,$return_url,$use_rec
 	global $secpayconf_currency_letters;
 	global $secpayconf_use_paypal_recurring;
 	global $conf_use_ssl;
+	global $secpayconf_paypal_logo_url;
 
 	if($secpayconf_paypal_sandbox == "yes"){
 		// This is test sandbox site
@@ -64,7 +65,16 @@ function paypal_display_icon($product_id,$amount,$item_name,$return_url,$use_rec
 '.$add_to_form.'
 <input type="hidden" name="return" value="'.$goback_start.$conf_administrative_site.$return_url.'">
 <input type="hidden" name="notify_url" value="'.$goback_start.$conf_administrative_site.'/dtc/paypal.php">
-<input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but01.gif" border="0"
+<input type="image" src="';
+	if (empty($secpayconf_paypal_logo_url))
+		{
+		$out .= 'https://www.paypal.com/en_US/i/btn/x-click-but01.gif';
+		}
+	else
+		{
+		$out .= $secpayconf_paypal_logo_url;
+		}
+	$out .= '" border="0"
 name="submit" alt="'. "Make payments with PayPal - it's fast, free and secure!" .'">
 </form>';
 	return $out;

@@ -1073,6 +1073,7 @@ $dtc_database = array(
 			"paypal_sandbox_email" => "varchar(255) NOT NULL default ''",
 			"paypal_validate_with" => "enum('total','mc_gross') NOT NULL default 'total'",
 			"use_paypal_recurring" => "enum('yes','no') NOT NULL default 'no'",
+                        "paypal_logo_url" => "varchar(255) NOT NULL default ''",
 
 			"use_moneybookers" => "enum('yes','no') NOT NULL default 'no'",
 			"moneybookers_rate" => "decimal(9,2) NOT NULL default '0.00'",

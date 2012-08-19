@@ -1935,7 +1935,12 @@ be displayed to your users instead of the popup value.")."<br>";
 			"paypal_sandbox_email" => array(
 				"legend" => _("PayPal test account email (sandbox): "),
 				"type" => "text",
-				"size" => "6")));
+				"size" => "6"),
+                        "paypal_logo_url" => array(
+				"legend" => _("Display payment image url (leave blank for default): "),
+				"type" => "text",
+				"size" => "6")
+                    ));
 	$out .= configEditorTemplate ($dsc,"secpay");
 
 	$dsc = array(
