@@ -2188,6 +2188,60 @@ be displayed to your users instead of the popup value.")."<br>";
 		);
 	$out .= configEditorTemplate ($dsc,"secpay");
 
+	$dsc = array(
+		"title" => _("Western Union:"),
+		"action" => "westernunion_edit",
+		"forward" => array("rub","sousrub"),
+		"cols" => array(
+			"accept_westernunion" => array (
+				"legend" => _("Accept Western Union payments: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"westernunion_flat_fees" => array (
+				"legend" => _("Flat fee for accepting Western Union payments: "),
+				"size" => "6",
+				"type" => "text"),
+			"westernunion_details" => array (
+				"legend" => _("Payment details: "),
+				"cols" => "60",
+				"rows" => "12",
+				"type" => "textarea"),
+			"westernunion_logo_url" => array(
+				"legend" => _("Display payment image url (leave blank for default): "),
+				"type" => "text",
+				"size" => "15")
+			)
+		);
+	$out .= configEditorTemplate ($dsc,"secpay");
+
+	$dsc = array(
+		"title" => _("Abitab:"),
+		"action" => "abitab_edit",
+		"forward" => array("rub","sousrub"),
+		"cols" => array(
+			"accept_abitab" => array (
+				"legend" => _("Accept Abitab payments: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"abitab_flat_fees" => array (
+				"legend" => _("Flat fee for accepting Abitab payments: "),
+				"size" => "6",
+				"type" => "text"),
+			"abitab_details" => array (
+				"legend" => _("Payment details: "),
+				"cols" => "60",
+				"rows" => "12",
+				"type" => "textarea"),
+			"abitab_logo_url" => array(
+				"legend" => _("Display payment image url (leave blank for default): "),
+				"type" => "text",
+				"size" => "15")
+			)
+		);
+	$out .= configEditorTemplate ($dsc,"secpay");
+
 	return $out;
 }
 

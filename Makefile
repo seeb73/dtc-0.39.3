@@ -231,7 +231,8 @@ CLIENT_PHP_SCRIPT_FILES=client/bw_per_month.php client/dynip.php client/enets-no
 client/invoice.php client/list_domains.php client/login.php client/new_account_form.php client/new_account.php \
 client/new_account_renewal.php client/paypal.php client/secpaycallback_worldpay.php client/webmoney.php \
 client/get_vps_location_status.php client/moneybookers.php client/affiliation.php \
-client/logPushlet.php client/xanjaxXHR.js client/cheques_and_transfers.php client/recover_pass.php
+client/logPushlet.php client/xanjaxXHR.js client/cheques_and_transfers.php client/recover_pass.php \
+client/westernunion_and_abitab.php
 
 EMAIL_PHP_SCRIPT_FILES=email/api.php email/index.php email/login.php email/submit_to_sql_dtcemail.php
 
@@ -278,7 +279,9 @@ shared/securepay/modules/wiretransfer/main.php \
 shared/securepay/modules/webmoney/main.php \
 shared/securepay/modules/moneybookers/main.php \
 shared/securepay/modules/dineromail/main.php \
-shared/securepay/modules/cuentadigital/main.php
+shared/securepay/modules/cuentadigital/main.php \
+shared/securepay/modules/westernunion/main.php \
+shared/securepay/modules/abitab/main.php
 
 REGISTRY_API_PHP_SCRIPT_FILES=shared/dtcrm/modules/webnic/main.php shared/dtcrm/modules/ovh/main.php shared/dtcrm/modules/internetbs/main.php
 
@@ -289,7 +292,8 @@ $(PAYMENT_API_PHP_SCRIPT_FILES) $(REGISTRY_API_PHP_SCRIPT_FILES)
 ################ PICTURES ##################
 NEW_SITES_TEMPLATE_IMG=shared/template/dtc_logo.gif shared/template/dtclogo.png shared/template/favicon.ico shared/template/logo_dtc.gif
 
-CLIENT_PICTURES=client/enets_pay_icon.gif client/favicon.ico client/cheque.gif client/wire.gif client/moneybookers.gif client/logo_cuentadigital.gif
+CLIENT_PICTURES=client/enets_pay_icon.gif client/favicon.ico client/cheque.gif client/wire.gif client/moneybookers.gif \
+client/logo_cuentadigital.gif client/logo_western_union.gif client/abitab.jpg
 
 ALL_PICS=$(NEW_SITES_TEMPLATE_IMG) $(CLIENT_PICTURES)
 ################# EXECUTABLE SCRIPTS #################
@@ -342,7 +346,8 @@ shared/securepay/modules/worldpay client email shared/securepay/modules/cheque s
 shared/securepay/modules/moneybookers shared/dtcrm/modules/webnic admin/postfix_checks admin/mod-security shared/gfx/skin/paperboard shared/gfx/skin/paperboard/gfx \
 shared/gfx/skin/paperboard/gfx/treeview shared/gfx/skin/paperboard/gfx/tabs shared/gfx/skin/paperboard/gfx/navbar \
 shared/gfx/toolstitles shared/gfx/skin/paperboard/gfx/css shared/gfx/skin/paperboard/gfx/config-icon shared/gfx/skin/paperboard/gfx/buttons shared/dtcrm/modules/ovh \
-shared/securepay/modules/dineromail shared/dtcrm/modules/internetbs shared/securepay/modules/cuentadigital
+shared/securepay/modules/dineromail shared/dtcrm/modules/internetbs shared/securepay/modules/cuentadigital \
+shared/securepay/modules/westernunion shared/securepay/modules/abitab
 
 LOCALE_TRANS=fr_FR hu_HU it_IT nl_NL ru_RU de_DE zh_CN pl_PL sv_SE pt_PT pt_BR es_ES fi_FI zh_TW sr_RS lv_LV cs_CZ he_IL
 

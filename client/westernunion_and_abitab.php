@@ -37,27 +37,27 @@ if( $proceed == "yes"){
 }
 
 if( $proceed == "yes"){
-	if( isset($_REQUEST["payment_type"]) && $_REQUEST["payment_type"] == "cheque"){
-		$payment_type = 'cheque';
-		$pending_reason = "Cheque";
+	if( isset($_REQUEST["payment_type"]) && $_REQUEST["payment_type"] == "westernunion"){
+		$payment_type = 'westernunion';
+		$pending_reason = "Western Union";
 	}else{
-		$payment_type = 'wire';
-		$pending_reason = "Wire transfer";
+		$payment_type = 'abitab';
+		$pending_reason = "Abitab";
 	}
 	$q = "UPDATE $pro_mysql_pay_table SET paiement_type='$payment_type',valid='pending',pending_reason='$pending_reason' WHERE hash_check_key='" .
-		mysql_real_escape_string($_REQUEST["hash_check"]) . "' AND id='" . mysql_real_escape_string($_REQUEST["item_id"]) . "'";
+	mysql_real_escape_string($_REQUEST["hash_check"]) . "' AND id='" . mysql_real_escape_string($_REQUEST["item_id"]) . "'";
 	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 }
 
 // Display the payment infos
 if( $proceed == "yes"){
-	if( isset($_REQUEST["payment_type"]) && $_REQUEST["payment_type"] == "cheque"){
-		$form = "<u>" . _("Cheques shall be written to be paid only to:") . "</u><br>" . $secpayconf_cheques_to_label . "<br><br>";
-		$form .= "<u>" ._("Cheques shall be sent to:") . "</u><br><pre>" . $secpayconf_cheques_send_address . "</pre><br><br>";
+	$form = "<pre>";
+	if( isset($_REQUEST["payment_type"]) && $_REQUEST["payment_type"] == "westernunion"){
+		$form .= $secpayconf_westernunion_details;
 	}else{
-		$form = "<u>" . _("Wire transfers shall be made to: ") . "</u><br><pre>" . $secpayconf_wiretransfers_bank_details . "</pre><br><br>";
+		$form .= $secpayconf_abitab_details;
 	}
-	$form .= "<b>" . _("Thanks for your order. Your order has been placed on hold until your payment is verified.") . "</b>  <a href=\"/\">" . _("Continue") . "</a><br><br>";
+	$form .= "</pre><br><br><b>" . _("Thanks for your order. Your order has been placed on hold until your payment is verified.") . "</b>  <a href=\"/\">" . _("Continue") . "</a><br><br>";
 }
 
 $login_skined = skin($conf_skin,$form, _("Register a new account") );

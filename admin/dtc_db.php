@@ -784,7 +784,7 @@ $dtc_database = array(
 			"paiement_cost" => "decimal(9,2) NOT NULL default '0.00'",
 			"paiement_total" => "decimal(9,2) NOT NULL default '0.00'",
 			"paiement_type" => "enum('online','cheque','wire','other','free') NOT NULL default 'online'",
-			"secpay_site" => "enum('none','paypal','worldpay','enets','moneybokers','webmoney','dineromail','cuentadigital') NOT NULL default 'none'",
+			"secpay_site" => "enum('none','paypal','worldpay','enets','moneybokers','webmoney','dineromail','cuentadigital','westernunion','abitab') NOT NULL default 'none'",
 			"secpay_custom_id" => "int(11) NOT NULL default '0'",
 			"shopper_ip" => "varchar(16) NOT NULL default '0.0.0.0'",
 			"date" => "date NOT NULL default '0000-00-00'",
@@ -1112,6 +1112,16 @@ $dtc_database = array(
 			"wiretransfers_flat_fees" => "decimal(9,2) NOT NULL default '0.00'",
 			"wiretransfers_bank_details" => "text",
 			"wiretransfers_logo_url" => "varchar(255) NOT NULL default ''",
+
+			"accept_westernunion" => "enum('yes','no') NOT NULL default 'no'",
+			"westernunion_flat_fees" => "decimal(9,2) NOT NULL default '0.00'",
+			"westernunion_details" => "text",
+			"westernunion_logo_url" => "varchar(255) NOT NULL default ''",
+
+			"accept_abitab" => "enum('yes','no') NOT NULL default 'no'",
+			"abitab_flat_fees" => "decimal(9,2) NOT NULL default '0.00'",
+			"abitab_details" => "text",
+			"abitab_logo_url" => "varchar(255) NOT NULL default ''",
 
 			"use_dineromail" => "enum('yes','no') NOT NULL default 'no'",
 			"dineromail_nrocuenta" => "varchar(20) NOT NULL default ''",
