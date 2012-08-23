@@ -284,16 +284,16 @@ $sieve_custom_content="# Custom sieve rules
 	// Write the file and manage rights
 	@chmod($SIEVE_FILE,0650);
 	@chmod($SIEVE_CUSTOM_FILE,0660);
-		$fp = fopen($SIEVE_FILE,"w+");
-		if (! is_dir("$home/sieve")) {
-			mkdir("$home/sieve", 0755);
-			@chown("$home/sieve",$conf_dtc_system_username);
-			if (! file_exists($SIEVE_CUSTOM_FILE)) {
-				$fp_custom = fopen($SIEVE_CUSTOM_FILE,"w+");
-				fwrite($fp_custom, $sieve_custom_content);
-				fclose($fp_custom);
-			}
+	if (! is_dir("$home/sieve")) {
+		mkdir("$home/sieve", 0755);
+		@chown("$home/sieve",$conf_dtc_system_username);
+		if (! file_exists($SIEVE_CUSTOM_FILE)) {
+			$fp_custom = fopen($SIEVE_CUSTOM_FILE,"w+");
+			fwrite($fp_custom, $sieve_custom_content);
+			fclose($fp_custom);
 		}
+	}
+	$fp = fopen($SIEVE_FILE,"w+");
 	if($fp != FALSE){
 		fwrite($fp, $sieve_filter_content);
 		fclose($fp);
