@@ -475,6 +475,7 @@ $dtc_database = array(
 			"expiration_date" => "date NOT NULL default '0000-00-00'",
 			"registrar" => "varchar(255) NOT NULL default 'webnic'",
 			"protection" => "enum('unlocked','transferprot','locked') NOT NULL default 'unlocked'",
+			"windows_compat" => "enum('yes','no') NOT NULL default 'no'",
 		),
 		"primary" => "(id)",
 		"keys" => array(
