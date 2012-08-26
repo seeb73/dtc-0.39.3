@@ -2112,7 +2112,7 @@ be displayed to your users instead of the popup value.")."<br>";
 				"legend" => _("Language: "),
 				"type" => "popup",
 				"values" => array('en', 'es', 'pt', 'it', 'fr', 'de'),
-				"display_replace" => array(_("English"),_("Espa&ntilde;ol"),_("Portugu&ecirc;s"),_("Italiano"),_("Fran&ccedil;ais"),_("Deutch"))),
+				"display_replace" => array(_("English"),_("Espa&ntilde;ol"),_("Portugu&ecirc;s"),_("Italiano"),_("Fran&ccedil;ais"),_("Deutsch"))),
 			"cuentadigital_country" => array(
 				"legend" => _("Country: "),
 				"type" => "popup",
