@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.35.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-07 20:37+0800\n"
-"PO-Revision-Date: 2012-07-07 15:14+0100\n"
+"PO-Revision-Date: 2012-08-27 13:23+0100\n"
 "Last-Translator: Martin Thomas Schrott <www.mtsonline.at> <martin@mtsonline.at>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -18,7 +18,7 @@ msgstr ""
 
 #: admin/dtcrm/product_manager.php:531
 msgid " (Custom Heb Types)"
-msgstr ""
+msgstr " (Benutzerdefinierte Hosting Typen)"
 
 #: admin/dtcrm/product_manager.php:456
 msgid " (Custom)"
@@ -488,15 +488,15 @@ msgstr "Aktion"
 
 #: admin/dtcrm/product_manager.php:574
 msgid "Action to execute when a custom product of this type is renewed. It can be none (no action is done), URL (a web url is opened in background), Ue PHP eval funtion (php code is executed with eval) or Send an email to admin (ends an email to the dtc administrator)"
-msgstr ""
+msgstr "Aktion, die ausgeführt werden soll, wenn ein benutzerdefiniertes Produkt dieses Typs erneuert wird. Möglich sind kein (Keine Aktion wird ausgeführt), URL (Eine Webseite wird im Hintergrund geöffnet), verwende PHP eval Funktion (php code wird mit eval ausgeführt) oder Sende eine Email an den Admin (Eine Email an den DTC Admin wird gesendet)"
 
 #: admin/dtcrm/product_manager.php:552
 msgid "Action to execute when a new account of this type is created. It can be none (no action is done), URL (a web url is opened in background), Ue PHP eval funtion (php code is executed with eval) or Send an email to admin (ends an email to the dtc administrator)"
-msgstr ""
+msgstr "Aktion, die ausgeführt werden soll, wenn ein neues Benutzerkonto dieses Typs erstellt wird. Möglich sind kein (Keine Aktion wird ausgeführt), URL (Eine Webseite wird im Hintergrund geöffnet), verwende PHP eval Funktion (php code wird mit eval ausgeführt) oder Sende eine Email an den Admin (Eine Email an den DTC Admin wird gesendet)"
 
 #: admin/dtcrm/product_manager.php:563
 msgid "Action to execute when an account of this type expires. It can be none (no action is done), URL (a web url is opened in background), Ue PHP eval funtion (php code is executed with eval) or Send an email to admin (ends an email to the dtc administrator)"
-msgstr ""
+msgstr "Aktion, die ausgeführt werden soll, wenn ein Benutzerkonto dieses Typs abgelaufen ist. Möglich sind kein (Keine Aktion wird ausgeführt), URL (Eine Webseite wird im Hintergrund geöffnet), verwende PHP eval Funktion (php code wird mit eval ausgeführt) oder Sende eine Email an den Admin (Eine Email an den DTC Admin wird gesendet)"
 
 #: admin/inc/dtc_config.php:786
 msgid "Activate 7z compression instead of gzip:"
@@ -813,9 +813,8 @@ msgid "An administrator will examine your request shortly, and validate the addi
 msgstr "Ein Administrator wird Ihre Anfrage in Kürze bearbeiten und das Hinzufügen der Domain zu Ihrem Konto überprüfen. Gegenwärtig haben Sie nicht genügend Rechte, selbst Domains hinzuzufügen. Wenn Sie dies häufiger benötigen, so können Sie den Administrator um die Freigabe zur automatischen Registrierung bitten. Schreiben Sie dafür bitte an:"
 
 #: client/recover_pass.php:97
-#, fuzzy
 msgid "An email with the password recovery procedure has been sent to your address."
-msgstr "Ihnen wurde eine E-Mail mit Ihrem Passwort zugeschickt."
+msgstr "Sie haben eine Email mit Instruktionen erhalten, wie Sie Ihr Passwort zurücksetzen können."
 
 #: shared/drawlib/cc_code_popup.php:109
 msgid "Andorra"
@@ -1075,6 +1074,8 @@ msgid ""
 "Base path to DTC-generated daemon configuration files.<br>\n"
 "All of the DTC daemon config files defined on this page will be saved here:"
 msgstr ""
+"Pfad zu Daemon Konfigurationsdateien, die von DTC erstellt werden.<br>\n"
+"Alle Dateien, die auf dieser Seite definiert werden, sind in diesem Verzeichnis zu finden:"
 
 #: shared/drawlib/cc_code_popup.php:125
 msgid "Belarus"
@@ -2300,6 +2301,10 @@ msgid ""
 "such a password recovery request, simply ignore this message. Otherwise, to\n"
 "recover your password, please visit the following web address:"
 msgstr ""
+"Sehr geehrter Kunde,\n"
+"\n"
+"Sie haben kürzlich angefordert, dass Ihre Zugangsdaten zurückgesetzt werden. Sollten Sie dies nicht veranlasst haben, so können Sie diese Nachricht einfach ignorieren.\n"
+" Um Ihr Passwort neu zu setzen gehen Sie bitte zu folgender Webseite:"
 
 #: admin/inc/dtc_config.php:413
 msgid "Dedicated Server Hostname"
@@ -3005,7 +3010,7 @@ msgstr "Fehler: Sie haben kein ausreichendes Guthaben auf Ihrem Konto."
 
 #: client/new_account_renewal.php:155
 msgid "Error: only the renewal of multiple VPS and dedicated servers is supported."
-msgstr ""
+msgstr "Fehler: Nur mehrere VPS und Dedizierte Server gemeinsam können verlängert werden."
 
 #: client/new_account_renewal.php:337
 msgid "Error: wrong login or password."
@@ -7707,7 +7712,6 @@ msgid "Successfully added your domain name to the hosting database"
 msgstr "Ihre Domain wurde erfolgreich in die Hosting-Datenbank eingetragen"
 
 #: shared/dtcrm/draw_renewdomain.php:127
-#, fuzzy
 msgid "Successfully renewed your domain name"
 msgstr "Die Domain wurde erfolgreich verlängert"
 
@@ -7860,12 +7864,10 @@ msgid "Technical contact:"
 msgstr "Tech-C:"
 
 #: client/new_account_form.php:784
-#, fuzzy
 msgid "Terms and Conditions"
 msgstr "AGB"
 
 #: admin/inc/dtc_config.php:1212
-#, fuzzy
 msgid "Terms and Conditions URL: "
 msgstr "URL der AGB: "
 
@@ -7899,7 +7901,6 @@ msgid "The Dedicated Server is not owned by you or don't have an already assigne
 msgstr "Dieser dedizierte Server gehört Ihnen nicht, oder er hat keinen zugeordneten Radius-Benutzer."
 
 #: shared/inc/sql/vps.php:304
-#, fuzzy
 msgid "The ISO file is not in the server."
 msgstr "Diese ISO-Datei befindet sich nicht auf dem Server!"
 
@@ -7912,14 +7913,13 @@ msgid "The Radius Username is not correct."
 msgstr "Der Radius-Benutzername ist nicht korrekt."
 
 #: shared/dtcrm/draw_whois.php:114
-#, fuzzy
 msgid "The current whois for this domain is as follows:"
 msgstr "Die aktuellen Whois-Informationen für diese Domain sind:"
 
 #: admin/dtcrm/product_manager.php:502
 #: admin/dtcrm/product_manager.php:623
 msgid "The custom product types (set in custom heb types)."
-msgstr ""
+msgstr "Die benutzerdefinierten Produkttypen (Definiert in den benutzerdefinierten Hosting Typen)."
 
 #: shared/inc/sql/dedicated.php:48
 msgid "The dedicated server parameter is not correct."
@@ -8004,7 +8004,6 @@ msgid "There is no default invoincing company set: impossible to show invoices. 
 msgstr "Es ist keine Standard-Firma ausgewählt, daher können keine Rechnungen angezeigt werden. Bitte informieren Sie den Support."
 
 #: shared/dtcrm/draw.php:116
-#, fuzzy
 msgid "There is no product with greater capacity available, please contact Customer Support."
 msgstr "Es ist kein Standard-Produkt mit höherer Leistung verfügbar, bitte kontaktieren Sie den Support."
 
@@ -8048,7 +8047,6 @@ msgid "This domain name already hosted here, please enter another name."
 msgstr "Diese Domain wird bereits auf diesem Server gehostet, bitte wählen Sie einen anderen Namen."
 
 #: shared/inc/forms/domain_info.php:213
-#, fuzzy
 msgid "This domain will be an alias of the following domain (domain parking):"
 msgstr "Diese Domain als Alias folgender Domain benutzen (Domain Parking):"
 
@@ -8102,7 +8100,7 @@ msgstr "Dieser Monat: "
 #: shared/drawlib/templates.php:1115
 #: shared/drawlib/templates.php:1432
 msgid "This password is one of the 500 most used passwords on the internet. Please choose a stronger one."
-msgstr ""
+msgstr "Dieses Passwort ist eines der 500 am häufigsten verwendeten im Internet. Bitte wählen Sie ein anderes Passwort!"
 
 #: admin/inc/dtc_config.php:1204
 msgid "This server location: "
@@ -8212,7 +8210,6 @@ msgid "Total"
 msgstr "Gesamt"
 
 #: admin/inc/renewals.php:224
-#, fuzzy
 msgid "Total Cost"
 msgstr "Gesamtkosten"
 
@@ -8309,7 +8306,6 @@ msgid "Transfer and disk usage:"
 msgstr "Transfer und Disk-Nutzung:"
 
 #: shared/dtcrm/draw_transferdomain.php:199
-#, fuzzy
 msgid "Transfer failed"
 msgstr "Transfer fehlgeschlagen"
 
@@ -8318,7 +8314,6 @@ msgid "Transfer from another registrar to this server:"
 msgstr "Von einem anderen Registrar auf diesen Server übertragen:"
 
 #: admin/inc/monitor.php:18
-#, fuzzy
 msgid "Transfer per Month"
 msgstr "Transfer pro Monat"
 
@@ -8369,12 +8364,10 @@ msgstr "Typ"
 
 #: admin/inc/draw_user_admin.php:227
 #: admin/inc/draw_user_admin.php:745
-#, fuzzy
 msgid "Type not found."
 msgstr "Typ nicht gefunden!"
 
 #: admin/inc/renewals.php:327
-#, fuzzy
 msgid "Type of Payment"
 msgstr "Zahlungsart"
 
@@ -8421,15 +8414,15 @@ msgstr "URL"
 
 #: admin/dtcrm/product_manager.php:569
 msgid "URL or command or mail body to execute or send when a custom product of this type expires. To pass custom fields of the product to this, put them as %%%var%%% to be replaced by that custom field."
-msgstr ""
+msgstr "Webadresse, Befehl oder Emailinhalt der ausgeführt oder verwendet werden soll wenn ein benutzerdefiniertes Produkt dieses Typs abgelaufen ist. Um benutzerdefinierte Felder des Produktes zu verwenden geben Sie den Variablennamen wie folgt an: %%%var%%% "
 
 #: admin/dtcrm/product_manager.php:580
 msgid "URL or command or mail body to execute or send when a custom product of this type is renewed.  To pass custom fields of the product to this, put them as %%%var%%% to be replaced by that custom field."
-msgstr ""
+msgstr "Webadresse, Befehl oder Emailinhalt der ausgeführt oder verwendet werden soll wenn ein benutzerdefiniertes Produkt dieses Typs erneuert wird. Um benutzerdefinierte Felder des Produktes zu verwenden geben Sie den Variablennamen wie folgt an: %%%var%%% "
 
 #: admin/dtcrm/product_manager.php:558
 msgid "URL or command or mail body to execute or send when a new account of this type is created. To pass custom fields of the product to this, put them as %%%var%%% to be replaced by that custom field."
-msgstr ""
+msgstr "Webadresse, Befehl oder Emailinhalt der ausgeführt oder verwendet werden soll wenn ein Benutzerkonto dieses Typs erstellt wird. Um benutzerdefinierte Felder des Produktes zu verwenden geben Sie den Variablennamen wie folgt an: %%%var%%% "
 
 #: shared/drawlib/cc_code_popup.php:335
 msgid "Uganda"
@@ -8441,7 +8434,7 @@ msgstr "Ukraine"
 
 #: admin/inc/dtc_config.php:794
 msgid "Ultra"
-msgstr ""
+msgstr "Ultra"
 
 #: shared/drawlib/cc_code_popup.php:337
 msgid "United Arab Emirates"
@@ -8481,7 +8474,6 @@ msgid "Update of whois contact informations failed"
 msgstr "Die Aktualisierung der Whois-Informationen ist fehlgeschlagen"
 
 #: shared/dtcrm/draw_whois.php:89
-#, fuzzy
 msgid "Update of whois contact informations succesful"
 msgstr "Die Aktualisierung der Whois-Informationen war erfolgreich"
 
@@ -8535,7 +8527,7 @@ msgstr "MoneyBookers verwenden: "
 #: admin/dtcrm/product_manager.php:565
 #: admin/dtcrm/product_manager.php:576
 msgid "Use PHP eval function"
-msgstr ""
+msgstr "verwende PHP eval Funktion"
 
 #: admin/dtcrm/product_manager.php:331
 msgid "Use Radius"
@@ -8640,11 +8632,11 @@ msgstr "Visitors verwenden: "
 
 #: admin/inc/dtc_config.php:1699
 msgid "Use vps, dedicated and custom productd as renewall products"
-msgstr ""
+msgstr "verwende VPS, Dedizierte Server und benutzerdefinierte Produkte als verlängerbare Produkte"
 
 #: admin/inc/dtc_config.php:1704
 msgid "Use vps, dedicated and custom productd as renewall products: "
-msgstr ""
+msgstr "verwende VPS, Dedizierte Server und benutzerdefinierte Produkte als verlängerbare Produkte:"
 
 #: admin/inc/dtc_config.php:1244
 msgid "Use webalizer: "
@@ -8753,7 +8745,6 @@ msgstr "Steuernr.: "
 
 #: admin/inc/renewals.php:588
 #: admin/inc/renewals.php:801
-#, fuzzy
 msgid "VAT Collected"
 msgstr "eingenommene MwSt."
 
@@ -8840,12 +8831,10 @@ msgid "VPS Server list:"
 msgstr "Liste der VPS-Server:"
 
 #: admin/inc/dtc_config.php:59
-#, fuzzy
 msgid "VPS Servers"
 msgstr "VPS-Server"
 
 #: admin/inc/dtc_config.php:964
-#, fuzzy
 msgid "VPS Servers and IP addresses"
 msgstr "VPS-Server und IP-Adressen"
 
@@ -8855,7 +8844,6 @@ msgid "VPS State: "
 msgstr "VPS Status: "
 
 #: client/new_account_form.php:142
-#, fuzzy
 msgid "VPS location not selected."
 msgstr "Kein VPS-Standort ausgewählt!"
 
@@ -9037,12 +9025,10 @@ msgid "Warning: incorrect password format, DTC will disable VNC console."
 msgstr "Warnung: Das Passwort hat kein gültiges Format, daher wurde die VNC-Konsole deaktiviert!"
 
 #: admin/inc/dtc_config.php:374
-#, fuzzy
 msgid "Warning: no IP pool in the database"
 msgstr "Warnung: kein IP-Pool in der Datenbank hinterlegt!"
 
 #: admin/inc/dtc_config.php:1020
-#, fuzzy
 msgid "Warning: no IP pools in the database."
 msgstr "Warnung: kein IP-Pool in der Datenbank hinterlegt!"
 
@@ -9167,7 +9153,7 @@ msgid ""
 "When this option is Yes, the client can renew his vps, \n"
 "\t\tdedicated or custom product with the plan that already has, allowing\n"
 "\t\trenewall of products that don't have renewal products"
-msgstr ""
+msgstr "Wenn diese Option ausgewählt ist, kann der Kunde seine VPS, dedizierten Server und benutzerdefinierten Produkte mit seinem bestehenden Plan verlängern. "
 
 #: shared/dtcrm/draw_handle.php:46
 #, fuzzy
@@ -9223,7 +9209,6 @@ msgid "Wire"
 msgstr "Überweisung"
 
 #: admin/inc/renewals.php:219
-#, fuzzy
 msgid "Wire Transfer"
 msgstr "Überweisung"
 
@@ -9241,7 +9226,7 @@ msgstr "Parameter speichern"
 
 #: client/affiliation.php:70
 msgid "Wrong affiliation return URL format: will not proceed."
-msgstr ""
+msgstr "Falsches Affiliate Antwort Webadressen Format: Aktion wird nicht fortgesetzt!"
 
 #: shared/inc/sql/vps.php:40
 msgid "Wrong email format for the monitoring email address"
@@ -9527,7 +9512,6 @@ msgid "You have sufficient funds in your account. Press the confirm button and y
 msgstr "Ihr Guthaben ist ausreichend, um die Konten-Verlängerung durchzuführen. Bitte klicken Sie auf den Bestätigungs-Knopf, und Ihr Auftrag wird durchgeführt."
 
 #: shared/dtcrm/draw_adddomain.php:216
-#, fuzzy
 msgid "You may add another domain name:"
 msgstr "Sie können eine weitere Domain hinzufügen:"
 
@@ -9546,7 +9530,7 @@ msgstr "Das Upgrade Ihres Produkts war erfolgreich."
 
 #: shared/inc/forms/vps_installation.php:193
 msgid "Your VPS has been locked administratively, so you cannot start it (this may have happened because your VPS used too much network bandwidth, or because of an action from the administrator). File a support ticket to get in touch with the administrators to solve this issue."
-msgstr ""
+msgstr "Ihr VPS wurde gesperrt und kann nicht gestartet werden. Eventuell haben Sie das Transfervolumen überschritten, oder ein Administrator hat diese Sperre veranlasst. Wenden Sie sich bitte an den Support."
 
 #: shared/inc/forms/vps.php:93
 msgid "Your VPS has expired on the: "
@@ -9884,7 +9868,7 @@ msgstr "markierte Felder sind erforderlich"
 
 #: admin/dtcrm/product_manager.php:137
 msgid "mod_php: considered unsafe as a customer has access to all files hosted as dtc:dtcgrp in /var/www/sites."
-msgstr ""
+msgstr "mod_php: Als unsicher eingestuft, da der Nutzer Zugriff auf alle Dateien des Benutzers dtc:dtcgrp in /var/www/sites erhält."
 
 #: shared/drawlib/dtc_functions.php:1078
 msgid "month"
@@ -9967,15 +9951,15 @@ msgstr "läuft auf"
 
 #: shared/inc/forms/subdomain.php:71
 msgid "sbox_aufs not implemented yet!"
-msgstr ""
+msgstr "sbox_aufs Noch nicht implimentiert!"
 
 #: admin/dtcrm/product_manager.php:139
 msgid "sbox_aufs: uses aufs and autofs so that customer uses a unionfs in his chrooted disk"
-msgstr ""
+msgstr "sbox_aufs: Verwendet aufs und autofs damit der Benutzer sich über unionfs nur innerhalb einer chroot befindet."
 
 #: admin/dtcrm/product_manager.php:138
 msgid "sbox_copy: make a copy of /var/lib/dtc/full_chroot."
-msgstr ""
+msgstr "sbox_copy: Erstelle eine Kopie von /var/lib/dtc/full_chroot."
 
 #: admin/inc/dtc_config.php:1750
 msgid "scp address: "
