@@ -1165,6 +1165,36 @@ function dtcListItemsEdit($dsc){
 						}
 					}
 					break;
+				case "ExtendedPassword":
+					if( !isExtendedPassword($_REQUEST[ $keys[$i] ]) ){
+						if( !isset($dsc["cols"][ $keys[$i] ]["can_be_empty"])
+									|| $dsc["cols"][ $keys[$i] ]["can_be_empty"] != "yes"
+									|| $_REQUEST[ $keys[$i] ] != ""){
+						$commit_flag = "no";
+						$commit_err .= $keys[$i]._(": contains wrong characters. Only the following characters are allowed: a-z A-Z 0-9 * ( ) [ ]")."<br>";
+}
+					}
+					break;
+				case "IMAPMailbox":
+					if( !isIMAPMailbox($_REQUEST[ $keys[$i] ]) ){
+						if( !isset($dsc["cols"][ $keys[$i] ]["can_be_empty"])
+									|| $dsc["cols"][ $keys[$i] ]["can_be_empty"] != "yes"
+									|| $_REQUEST[ $keys[$i] ] != ""){
+						$commit_flag = "no";
+						$commit_err .= $keys[$i]._(": not a valid IMAP mailbox name!")."<br>";
+}
+					}
+					break;
+				case "numeric":
+					if( !isnumeric($_REQUEST[ $keys[$i] ]) ){
+						if( !isset($dsc["cols"][ $keys[$i] ]["can_be_empty"])
+									|| $dsc["cols"][ $keys[$i] ]["can_be_empty"] != "yes"
+									|| $_REQUEST[ $keys[$i] ] != ""){
+						$commit_flag = "no";
+						$commit_err .= $keys[$i]._(": is not numeric!")."<br>";
+}
+					}
+					break;
 				default:
 					$commit_flag = "no";
 					$commit_err .= $keys[$i].": unknown field checking type (".$dsc["cols"][ $keys[$i] ]["check"].").<br>";
@@ -1480,6 +1510,36 @@ function dtcListItemsEdit($dsc){
 							$commit_flag = "no";
 							$commit_err .= $keys[$i]._(": is greater or equal than the max value 2096")."<br>";
 						}
+					}
+					break;
+				case "ExtendedPassword":
+					if( !isExtendedPassword($_REQUEST[ $keys[$i] ]) ){
+						if( !isset($dsc["cols"][ $keys[$i] ]["can_be_empty"])
+									|| $dsc["cols"][ $keys[$i] ]["can_be_empty"] != "yes"
+									|| $_REQUEST[ $keys[$i] ] != ""){
+						$commit_flag = "no";
+						$commit_err .= $keys[$i]._(": contains wrong characters. Only the following characters are allowed: a-z A-Z 0-9 * ( ) [ ]")."<br>";
+}
+					}
+					break;
+				case "IMAPMailbox":
+					if( !isIMAPMailbox($_REQUEST[ $keys[$i] ]) ){
+						if( !isset($dsc["cols"][ $keys[$i] ]["can_be_empty"])
+									|| $dsc["cols"][ $keys[$i] ]["can_be_empty"] != "yes"
+									|| $_REQUEST[ $keys[$i] ] != ""){
+						$commit_flag = "no";
+						$commit_err .= $keys[$i]._(": not a valid IMAP mailbox name!")."<br>";
+}
+					}
+					break;
+				case "numeric":
+					if( !isnumeric($_REQUEST[ $keys[$i] ]) ){
+						if( !isset($dsc["cols"][ $keys[$i] ]["can_be_empty"])
+									|| $dsc["cols"][ $keys[$i] ]["can_be_empty"] != "yes"
+									|| $_REQUEST[ $keys[$i] ] != ""){
+						$commit_flag = "no";
+						$commit_err .= $keys[$i]._(": is not numeric!")."<br>";
+}
 					}
 					break;
 				default:
