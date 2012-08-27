@@ -790,10 +790,10 @@ createHostingDirAndFiles () {
 		fi
 		chown -R ${CONF_DTC_SYSTEM_USERNAME}:${CONF_DTC_SYSTEM_GROUPNAME} $PATH_DTC_ETC/template
 		chmod 755 $PATH_DTC_ETC/template
- 		chmod -f -R 775 $PATH_DTC_ETC/template/*.php && true
-		chmod -f -x $PATH_DTC_ETC/template/*.gif && true
-		chmod -f -x $PATH_DTC_ETC/template/*.png && true
-		chmod -f -x $PATH_DTC_ETC/template/*.ico && true
+ 		chmod -f -R 775 $PATH_DTC_ETC/template/*.php || true
+		chmod -f -x $PATH_DTC_ETC/template/*.gif || true
+		chmod -f -x $PATH_DTC_ETC/template/*.png || true
+		chmod -f -x $PATH_DTC_ETC/template/*.ico || true
 	fi
 
 	chown -R ${CONF_DTC_SYSTEM_USERNAME}:${CONF_DTC_SYSTEM_GROUPNAME} ${PATH_DTC_ETC}
