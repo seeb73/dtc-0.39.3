@@ -1831,7 +1831,7 @@ function dtcListItemsEdit($dsc){
 						$happen = $retArray["happen"];
 					}
 
-					$ctrl = "<input type=\"$input_disp_type\" $size name=\"".$keys[$j]."\" value=\"".stripslashes($input_disp_value)."\" $disabled>$genpass$happen";
+					$ctrl = "<input type=\"$input_disp_type\" $size name=\"".$keys[$j]."\" value=\"".htmlspecialchars(stripslashes($input_disp_value))."\" $disabled>$genpass$happen";
 					$out .= dtcFormLineDraw($dsc["cols"][ $keys[$j] ]["legend"],$ctrl,$j%2,$help);
 					break;
 				case "radio":
