@@ -15,15 +15,36 @@ function cuentadigital_display_icon($product_id,$amount,$item_name,$return_url,$
 	global $secpayconf_cuentadigital_language;
 	global $secpayconf_cuentadigital_country;
 	global $secpayconf_cuentadigital_logo_url;
+	global $secpayconf_cuentadigital_replacelogin;
+	global $lang;
 
 	$amount = round(floatval(str_replace(",",".",$amount)), 2);
+
+	switch( substr($lang,0,2) ){
+		case "en":
+		case "pt":
+		case "it":
+		case "fr":
+		case "de":
+				$cuenta_lang = $lang;
+				break;
+		default:
+				$cuenta_lang = "en";
+		}
+
+	$finder = array(':', '\"', '\"', '(', ')', '.', ',');
+	if ($secpayconf_cuentadigital_replacelogin == "yes") {
+		$finder[] = ' login';
+		}
+	$item_name_joned = str_replace($finder,'',$item_name);
+	$desccode = str_replace(' ',$secpayconf_cuentadigital_separator,$item_name_joned);
 
 	$out = '<form action="https://www.CuentaDigital.com/api.php" method="get">'."\n";
 	$out .= '<input type="hidden" name="id" value="'.$secpayconf_cuentadigital_nrocuenta.'">'."\n"; // account number
 	$out .= '<input type="hidden" name="concepto" value="'.$item_name.'">'."\n"; // description of the phurchased service
 	$out .= '<input type="hidden" name="precio" value="'.str_replace(',','.',$amount).'">'."\n"; // payment ammount
-	$out .= '<input type="hidden" name="codigo" value="'.$product_id.'">'."\n"; // item id
-	$out .= '<input type="hidden" name="l" value="'.$secpayconf_cuentadigital_language.'">'."\n"; // language
+	$out .= '<input type="hidden" name="codigo" value="'.$desccode.'">'."\n"; // item id
+	$out .= '<input type="hidden" name="l" value="'.$cuenta_lang.'">'."\n"; // language
 	$out .= '<input type="hidden" name="cuntry" value="'.$secpayconf_cuentadigital_country.'">'."\n"; // country id
 	$out .= '<input type="image" src="';
 	if (empty($secpayconf_cuentadigital_logo_url))

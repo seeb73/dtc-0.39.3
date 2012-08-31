@@ -1124,7 +1124,7 @@ $dtc_database = array(
 			"cuentadigital_nrocuenta" => "varchar(20) NOT NULL default ''",
 			"cuentadigital_cargocomision" => "decimal(9,2) NOT NULL default '0.00'",
 			"cuentadigital_porcentajecomision" => "decimal(9,2) NOT NULL default '0.00'",
-			"cuentadigital_language" => "enum('en', 'es', 'pt', 'it', 'fr', 'de') NOT NULL default 'en'",
+			"cuentadigital_replacelogin" => "enum('yes','no') NOT NULL default 'no'",
 			"cuentadigital_country" => "enum('US', 'AR', 'AD', 'AU', 'AT', 'BE', 'BR', 'BG', 'CA', 'CL', 'CN', 'HR', 'CZ', 'DK', 'ES', 'EE', 'FI', 'FR', 'DE', 'GR', 'HK', 'HU', 'IS', 'IN', 'ID', 'IE', 'IT', 'JP', 'KR', 'LV', 'LI', 'LT', 'LU', 'MY', 'MX', 'MC', 'NL', 'NZ', 'NO', 'PH', 'PL', 'PT', 'RO', 'RU', 'SG', 'SK', 'SI', 'ZA', 'SE', 'CH', 'TW', 'TH', 'TR', 'GB', 'VN') NOT NULL default 'US'",
 			"cuentadigital_logo_url" => "varchar(255) NOT NULL default ''"
 		),
