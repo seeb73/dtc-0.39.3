@@ -753,7 +753,11 @@ dtcFromOkDraw()."
 				$cat = $a2["catname"];
 			}
 			$age = calculateAge($a["date"],$a["time"]);
-			$waiting_new_users .= "<$td style=\"white-space:nowrap;\">$age</td><$td>$cat</td><$td style=\"white-space:nowrap;\"><a href=\"?subaction=resolv_ticket&tik_id=".$a["id"]."\">".htmlspecialchars(stripslashes($a["subject"]))."</a></td>";
+			$subject = $a["subject"];
+			if($subject == ""){
+				$subject = "---"._("No subject")."---";
+			}
+			$waiting_new_users .= "<$td style=\"white-space:nowrap;\">$age</td><$td>$cat</td><$td style=\"white-space:nowrap;\"><a href=\"?subaction=resolv_ticket&tik_id=".$a["id"]."\">".htmlspecialchars(stripslashes($subject))."</a></td>";
 			$next_reply_id = $a["reply_id"];
 			$last_reply_text = "<font color=\"green\">". _("Admin"). "</font>";
 			$last_message_date = $a["date"];
