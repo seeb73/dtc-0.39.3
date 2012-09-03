@@ -339,7 +339,7 @@ cc_code_popup($row["country"])."</select>",0);
 <input type=\"hidden\" name=\"del\" value=\"Del\">
 <div class=\"input_btn_container\" onMouseOver=\"this.className='input_btn_container-hover';\" onMouseOut=\"this.className='input_btn_container';\">
  <div class=\"input_btn_left\"></div>
- <div class=\"input_btn_mid\"><input class=\"input_btn\" type=\"submit\" value=\""._("Delete client")."\"></div>
+ <div class=\"input_btn_mid\"><input class=\"input_btn\" type=\"submit\" value=\""._("Delete client")."\" onClick=\"return confirm('"._("Are you sure to delete this client?")."')\"></div>
  <div class=\"input_btn_right\"></div>
 </div></td></tr>
 </table>
