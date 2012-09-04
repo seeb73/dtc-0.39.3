@@ -2541,6 +2541,7 @@ function drawDTCpathConfig(){
 	global $conf_named_slavefile_path;
 	global $conf_named_slavezonefiles_path;
 	global $conf_named_zonefiles_path;
+	global $conf_named_reversezonefiles_path;
 
 	global $conf_backup_script_path;
 	global $conf_bakcup_path;
@@ -2637,6 +2638,10 @@ All of the DTC daemon config files defined on this page will be saved here:"),
 				"size" => "30"),
 			"named_zonefiles_path" => array(
 				"legend" => _("Named main zonefiles folder:"),
+				"type" => "text",
+				"size" => "30"),
+			"named_reversezonefiles_path" => array(
+				"legend" => _("Named main reverse zonefiles folder:"),
 				"type" => "text",
 				"size" => "30")));
 	$out .= configEditorTemplate ($dsc);

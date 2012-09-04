@@ -46,16 +46,14 @@ case "list_dns":
 	}
 	$out .= "// End of DTC generated slave zone file for backuping $conf_administrative_site\n";
 	break;
-case "list_mx":
-	$q = "SELECT * FROM $pro_mysql_domain_table WHERE other_mx='default' AND primary_mx='default';";
-	$r = mysql_query($q)or die("Cannot query $q ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
-	$out .= "<dtc_backup_mx_domain_list>\n";
-	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
-		$out .= $a["name"]."\n";
-	}
-	$out .= "</dtc_backup_mx_domain_list>\n";
+case "list_reverse_dns":
+        $filep = fopen("$conf_generated_file_path/named.conf.slave.reverse", "r");
+        if( $filep == NULL){
+                die("Cannot open file \"$conf_generated_file_path/named.conf.slave.reverse\" for reading");
+        }
+        $out=fread($filep,filesize("$conf_generated_file_path/named.conf.slave.reverse"));
+        fclose($filep);
+
 	break;
 case "update_request":
 	$q = "UPDATE $pro_mysql_cronjob_table SET gen_qmail='yes',restart_qmail='yes',gen_named='yes',reload_named='yes' WHERE 1;";

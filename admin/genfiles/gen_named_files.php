@@ -334,6 +334,7 @@ function rnds_generate(){
 	global $conf_named_soa_default_ttl;
 
 	global $conf_ip_slavezone_dns_server;
+	global $conf_named_reversezonefiles_path;
 
         $todays_serial = date("YmdH");
 	// Calculate the: allow-transfer { 203.174.86.120; 203.174.86.121; };
@@ -449,7 +450,7 @@ function rnds_generate(){
 				}
 /*				$reverse_dns_file .= "zone \"$zone_name\" in {
 	type master;
-	file \"$conf_generated_file_path/reverse_zones/$the_ip_addr\";
+	file \"$conf_generated_file_path/$conf_named_reversezonefiles_path/$the_ip_addr\";
 $allow_trans_str	allow-query { any; };
 };
 
@@ -467,9 +468,9 @@ $the_at	$conf_default_zones_ttl	IN	SOA	".$conf_addr_primary_dns.". ".$bind_forma
 	IN	NS	".$conf_addr_secondary_dns.".
 	PTR	".$the_reverse.".
 ";
-				$filep = fopen("$conf_generated_file_path/reverse_zones/$the_ip_addr", "w+");
+				$filep = fopen("$conf_generated_file_path/$conf_named_reversezonefiles_path/$the_ip_addr", "w+");
 				if( $filep == NULL){
-					die("Cannot open file \"$conf_generated_file_path/reverse_zones/$the_ip_addr\" for writting");
+					die("Cannot open file \"$conf_generated_file_path/$conf_named_reversezonefiles_path/$the_ip_addr\" for writting");
 				}
 				fwrite($filep,$zonefile_content);
 				fclose($filep);
@@ -479,7 +480,7 @@ $the_at	$conf_default_zones_ttl	IN	SOA	".$conf_addr_primary_dns.". ".$bind_forma
 			$zone_name = calculate_reverse_end($pool_ip_addr,$pool_netmask);
 /*			$reverse_dns_file .= "zone \"$zone_name\" in {
 	type master;
-	file \"$conf_generated_file_path/reverse_zones/$pool_ip_addr\";
+	file \"$conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr\";
 $allow_trans_str	allow-query { any; };
 };
 
@@ -542,10 +543,10 @@ $allow_trans_str	allow-query { any; };
 				$zonefile_content .= "$ip_to_reverse	IN	PTR	".$the_reverse.".\n";
 			}
 			$zonefile_content .= $custom_part;
-			// Write $conf_generated_file_path/reverse_zones/$pool_ip_addr
-			$filep = fopen("$conf_generated_file_path/reverse_zones/$pool_ip_addr", "w+");
+			// Write $conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr
+			$filep = fopen("$conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr", "w+");
 			if( $filep == NULL){
-				die("Cannot open file \"$conf_generated_file_path/reverse_zones/$pool_ip_addr\" for writting");
+				die("Cannot open file \"$conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr\" for writting");
 			}
 			fwrite($filep,$zonefile_content);
 			fclose($filep);
@@ -554,7 +555,7 @@ $allow_trans_str	allow-query { any; };
 			$zone_name = calculate_reverse_mask_and_cidr($pool_ip_addr,$pool_netmask);
 /*			$reverse_dns_file .= "zone \"$zone_name\" conmenos in {
 	type master;
-	file \"$conf_generated_file_path/reverse_zones/$pool_ip_addr\";
+	file \"$conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr\";
 $allow_trans_str	allow-query { any; };
 };
 
@@ -617,10 +618,10 @@ $allow_trans_str	allow-query { any; };
 				$zonefile_content .= "$ip_to_reverse	IN	PTR	".$the_reverse.".\n";
 			}
 			$zonefile_content .= $custom_part;
-			// Write $conf_generated_file_path/reverse_zones/$pool_ip_addr
-			$filep = fopen("$conf_generated_file_path/reverse_zones/$pool_ip_addr", "w+");
+			// Write $conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr
+			$filep = fopen("$conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr", "w+");
 			if( $filep == NULL){
-				die("Cannot open file \"$conf_generated_file_path/reverse_zones/$pool_ip_addr\" for writting");
+				die("Cannot open file \"$conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr\" for writting");
 			}
 			fwrite($filep,$zonefile_content);
 			fclose($filep);
@@ -629,7 +630,7 @@ $allow_trans_str	allow-query { any; };
 			$zone_name = $a["location"].".".calculate_reverse_end($pool_ip_addr,$pool_netmask);
 /*			$reverse_dns_file .= "zone \"$zone_name\" con nombre in {
 	type master;
-	file \"$conf_generated_file_path/reverse_zones/$pool_ip_addr\";
+	file \"$conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr\";
 $allow_trans_str	allow-query { any; };
 };
 
@@ -692,10 +693,10 @@ $allow_trans_str	allow-query { any; };
 				$zonefile_content .= "$ip_to_reverse	IN	PTR	".$the_reverse.".\n";
 			}
 			$zonefile_content .= $custom_part;
-			// Write $conf_generated_file_path/reverse_zones/$pool_ip_addr
-			$filep = fopen("$conf_generated_file_path/reverse_zones/$pool_ip_addr", "w+");
+			// Write $conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr
+			$filep = fopen("$conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr", "w+");
 			if( $filep == NULL){
-				die("Cannot open file \"$conf_generated_file_path/reverse_zones/$pool_ip_addr\" for writting");
+				die("Cannot open file \"$conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr\" for writting");
 			}
 			fwrite($filep,$zonefile_content);
 			fclose($filep);
@@ -704,7 +705,7 @@ $allow_trans_str	allow-query { any; };
 			$zone_name = calculate_reverse_mask_and_cidr($pool_ip_addr,$pool_netmask);
 /*			$reverse_dns_file .= "zone \"$zone_name\" con slahs in {
 	type master;
-	file \"$conf_generated_file_path/reverse_zones/$pool_ip_addr\";
+	file \"$conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr\";
 $allow_trans_str	allow-query { any; };
 };
 
@@ -767,10 +768,10 @@ $allow_trans_str	allow-query { any; };
 				$zonefile_content .= "$ip_to_reverse	IN	PTR	".$the_reverse.".\n";
 			}
 			$zonefile_content .= $custom_part;
-			// Write $conf_generated_file_path/reverse_zones/$pool_ip_addr
-			$filep = fopen("$conf_generated_file_path/reverse_zones/$pool_ip_addr", "w+");
+			// Write $conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr
+			$filep = fopen("$conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr", "w+");
 			if( $filep == NULL){
-				die("Cannot open file \"$conf_generated_file_path/reverse_zones/$pool_ip_addr\" for writting");
+				die("Cannot open file \"$conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr\" for writting");
 			}
 			fwrite($filep,$zonefile_content);
 			fclose($filep);
@@ -828,7 +829,7 @@ $allow_trans_str	allow-query { any; };
 				}
 				$reverse_dns_file .= "zone \"$zone_name\" in {
 	type master;
-	file \"$conf_generated_file_path/reverse_zones/$the_ip_addr\";
+	file \"$conf_generated_file_path/$conf_named_reversezonefiles_path/$the_ip_addr\";
 $allow_trans_str	allow-query { any; };
 };
 
@@ -847,7 +848,7 @@ $allow_trans_str	allow-query { any; };
 			$zone_name = calculate_reverse_end($pool_ip_addr,$pool_netmask);
 			$reverse_dns_file .= "zone \"$zone_name\" in {
 	type master;
-	file \"$conf_generated_file_path/reverse_zones/$pool_ip_addr\";
+	file \"$conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr\";
 $allow_trans_str	allow-query { any; };
 };
 
@@ -867,7 +868,7 @@ $allow_trans_str	allow-query { any; };
 			$zone_name = preg_replace('/^\./','',$zone_name);
 			$reverse_dns_file .= "zone \"$zone_name\" in {
 	type master;
-	file \"$conf_generated_file_path/reverse_zones/$pool_ip_addr\";
+	file \"$conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr\";
 $allow_trans_str	allow-query { any; };
 };
 
@@ -885,7 +886,7 @@ $allow_trans_str	allow-query { any; };
 			$zone_name = $a["location"].".".calculate_reverse_end($pool_ip_addr,$pool_netmask);
 			$reverse_dns_file .= "zone \"$zone_name\" in {
 	type master;
-	file \"$conf_generated_file_path/reverse_zones/$pool_ip_addr\";
+	file \"$conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr\";
 $allow_trans_str	allow-query { any; };
 };
 
@@ -904,7 +905,7 @@ $allow_trans_str	allow-query { any; };
 			$zone_name = preg_replace('/^\./','',$zone_name);
 			$reverse_dns_file .= "zone \"$zone_name\" in {
 	type master;
-	file \"$conf_generated_file_path/reverse_zones/$pool_ip_addr\";
+	file \"$conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr\";
 $allow_trans_str	allow-query { any; };
 };
 
@@ -1082,6 +1083,7 @@ function named_generate(){
 
 	global $conf_named_path;
 	global $conf_named_zonefiles_path;
+	global $conf_named_reversezonefiles_path;
 	global $conf_named_slavefile_path;
 	global $conf_named_slavezonefiles_path;
 	global $conf_ip_allowed_dns_transfer;

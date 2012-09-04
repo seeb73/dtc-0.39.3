@@ -179,6 +179,7 @@ $dtc_database = array(
 			"named_slavefile_path" => "varchar(255) NOT NULL default 'named.slavezones.conf'",
 			"named_slavezonefiles_path" => "varchar(255) NOT NULL default 'slave_zones'",
 			"named_zonefiles_path" => "varchar(255) NOT NULL default 'zones'",
+			"named_reversezonefiles_path" => "varchar(255) NOT NULL default 'reverse_zones'",
 			"send_passwords_in_emails" => "enum('yes','no') NOT NULL default 'no'",
 			"enforce_adm_encryption" => "enum('yes','no') NOT NULL default 'yes'",
 			"autogen_default_subdomains" => "enum('yes','no') NOT NULL default 'yes'",
