@@ -82,7 +82,7 @@ export_adm_local_conf () {
 	# Get the export config of the admin
 	LOCAL_adm_pass=`mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute="SELECT adm_pass FROM admin WHERE adm_login='${DTC_USER}'" | tail -n 1`
 	TMP=`mktemp`
-	curl "https://${LOCAL_URL}/dtc/?adm_login=${DTC_USER}&adm_pass=${LOCAL_adm_pass}&action=export_my_account&addrlink=myaccount" >${TMP}
+	curl --insecure "https://${LOCAL_URL}/dtc/?adm_login=${DTC_USER}&adm_pass=${LOCAL_adm_pass}&action=export_my_account&addrlink=myaccount" >${TMP}
 
 	# Now, send it to destination
 	curl --silent --insecure -o /dev/null -F domain_import_file=@${TMP} -F MAX_FILE_SIZE=30000000 -F rub=adminedit -F action=import_domain -F adm_login=${DTC_USER} -F adm_pass=${LOCAL_adm_pass} \

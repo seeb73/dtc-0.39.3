@@ -912,6 +912,7 @@ function dtcDatagrid($dsc){
 
 function dtcListItemsEdit($dsc){
 	global $adm_pass;
+	global $adm_email_pass;
 	global $conf_post_or_get;
 
 	$out = "<h3>".$dsc["title"]."</u></b></h3>";
@@ -925,6 +926,8 @@ function dtcListItemsEdit($dsc){
 	for($i=0;$i<$nbr_forwards;$i++){
 		if($dsc["forward"][$i] == "adm_pass"){
 			$fw .= "<input type=\"hidden\" name=\"".$dsc["forward"][$i]."\" value=\"".$adm_pass."\">";
+		} elseif($dsc["forward"][$i] == "adm_email_pass"){
+			$fw .= "<input type=\"hidden\" name=\"".$dsc["forward"][$i]."\" value=\"".$adm_email_pass."\">";
 		}else{
 			$fw .= "<input type=\"hidden\" name=\"".$dsc["forward"][$i]."\" value=\"".$_REQUEST[ $dsc["forward"][$i] ]."\">";
 		}
@@ -933,6 +936,8 @@ function dtcListItemsEdit($dsc){
 		}
 		if($dsc["forward"][$i] == "adm_pass"){
 			$fw_link .= $dsc["forward"][$i]."=$adm_pass";
+		}elseif($dsc["forward"][$i] == "adm_email_pass"){
+			$fw_link .= $dsc["forward"][$i]."=$adm_email_pass";
 		}else{
 			$fw_link .= $dsc["forward"][$i]."=".$_REQUEST[ $dsc["forward"][$i] ];
 		}
@@ -1826,7 +1831,7 @@ function dtcListItemsEdit($dsc){
 						$happen = $retArray["happen"];
 					}
 
-					$ctrl = "<input type=\"$input_disp_type\" $size name=\"".$keys[$j]."\" value=\"".stripslashes($input_disp_value)."\" $disabled>$genpass$happen";
+					$ctrl = "<input type=\"$input_disp_type\" $size name=\"".$keys[$j]."\" value=\"".htmlspecialchars(stripslashes($input_disp_value))."\" $disabled>$genpass$happen";
 					$out .= dtcFormLineDraw($dsc["cols"][ $keys[$j] ]["legend"],$ctrl,$j%2,$help);
 					break;
 				case "radio":
@@ -1839,7 +1844,12 @@ function dtcListItemsEdit($dsc){
 							$selected = "";
 						}
 						$ctrl .= " <input type=\"radio\" name=\"".$keys[$j]."\" value=\"".$dsc["cols"][ $keys[$j] ]["values"][$x]."\" $selected> ";
-						$ctrl .= $dsc["cols"][ $keys[$j] ]["values"][$x];
+						if( isset($dsc["cols"][ $keys[$j] ]["display_replace"][$x]) ){
+							$display_val = $dsc["cols"][ $keys[$j] ]["display_replace"][$x];
+						}else{
+							$display_val = $dsc["cols"][ $keys[$j] ]["values"][$x];
+						}
+						$ctrl .= $display_val;
 					}
 					$out .= dtcFormLineDraw($dsc["cols"][ $keys[$j] ]["legend"],$ctrl,$j%2,$help);
 					break;

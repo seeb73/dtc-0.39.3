@@ -1211,12 +1211,31 @@ function drawGeneralConfig(){
 			"selling_conditions_url" => array(
 				"legend" => _("Terms and Conditions URL: "),
 				"type" => "text",
-				"size" => "40")),
+				"size" => "40"),
 			"send_cron_alert" => array(
 				"legend" => _("Send mail to admin when an error occurs in dtc cron:"),
 				"type" => "radio",
 				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))));
+				"display_replace" => array(_("Yes"),_("No"))),
+			"restrict_new_account_form" => array(
+				"legend" => _("Force the use product_id in the request of new_account form:"),
+				"type" => "radio",
+				"values" => array("yes","no"),
+                                "display_replace" => array(_("Yes"),_("No"))),
+			"new_account_restrict_action" => array(
+				"legend" => _("what to do if product_id is not set in the request of new_account form:"),
+				"type" => "radio",
+				"values" => array("show_all_plans","redirect"),
+				"display_replace" => array(_("Show all hosting plans"),_("Redirect to url"))),
+                        "new_account_restrict_hide_products" => array(
+				"legend" => _("Hide non selected products if the product_id is forced in the new_account form:"),
+				"type" => "radio",
+				"values" => array("yes","no"),
+                                "display_replace" => array(_("Yes"),_("No"))),
+			"new_account_restrict_message" => array(
+				"legend" => _("Url to redirect if product_id is not set in the request of new_account form: "),
+				"type" => "text",
+				"size" => "255")));
 	$out .= configEditorTemplate ($dsc);
 
 	$dsc = array(
@@ -1828,6 +1847,10 @@ be displayed to your users instead of the popup value.")."<br>";
 				"cols" => "60",
 				"rows" => "7",
 				"type" => "textarea"),
+			"cheques_logo_url" => array(
+				"legend" => _("Display payment image url (leave blank for default): "),
+				"type" => "text",
+				"size" => "6"),
 			"accept_wiretransfers" => array (
 				"legend" => _("Accept wire transfers to bank: "),
 				"type" => "radio",
@@ -1841,7 +1864,11 @@ be displayed to your users instead of the popup value.")."<br>";
 				"legend" => _("Bank account details: "),
 				"cols" => "60",
 				"rows" => "12",
-				"type" => "textarea")
+				"type" => "textarea"),
+			"wiretransfers_logo_url" => array(
+				"legend" => _("Display payment image url (leave blank for default): "),
+				"type" => "text",
+				"size" => "6")
 			)
 		);
 	$out .= configEditorTemplate ($dsc,"secpay");
@@ -1913,7 +1940,12 @@ be displayed to your users instead of the popup value.")."<br>";
 			"paypal_sandbox_email" => array(
 				"legend" => _("PayPal test account email (sandbox): "),
 				"type" => "text",
-				"size" => "6")));
+				"size" => "6"),
+                        "paypal_logo_url" => array(
+				"legend" => _("Display payment image url (leave blank for default): "),
+				"type" => "text",
+				"size" => "6")
+                    ));
 	$out .= configEditorTemplate ($dsc,"secpay");
 
 	$dsc = array(
@@ -2052,6 +2084,162 @@ be displayed to your users instead of the popup value.")."<br>";
 				"type" => "text",
 				"size" => "6")
 				));
+	$out .= configEditorTemplate ($dsc,"secpay");
+
+	$dsc = array(
+		"title" => _("Cuenta Digital:"),
+		"action" => "cuentadigital_gateway_dineromail_edit",
+		"forward" => array("rub","sousrub"),
+		"cols" => array(
+			"use_cuentadigital" => array(
+				"legend" => _("Use Cuenta Digital: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"cuentadigital_nrocuenta" => array(
+				"legend" => _("Cuenta Digital Account Number: "),
+				"type" => "text",
+				"size" => "20"),
+			"cuentadigital_cargocomision" => array(
+				"legend" => _("Fixed charge fee: "),
+				"type" => "text",
+				"size" => "6"),
+			"cuentadigital_porcentajecomision" => array(
+				"legend" => _("Percentage fee: "),
+				"type" => "text",
+				"size" => "6"),
+			"cuentadigital_replacelogin" => array(
+				"legend" => _("Extract login word from code: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"cuentadigital_country" => array(
+				"legend" => _("Country: "),
+				"type" => "popup",
+				"values" => array('US', 'AR', 'AD', 'AU', 'AT', 'BE', 'BR', 'BG', 'CA', 'CL', 'CN', 'HR', 'CZ', 'DK', 'ES', 'EE', 'FI', 'FR', 'DE', 'GR', 'HK', 'HU', 'IS', 'IN', 'ID', 'IE', 'IT', 'JP', 'KR', 'LV', 'LI', 'LT', 'LU', 'MY', 'MX', 'MC', 'NL', 'NZ', 'NO', 'PH', 'PL', 'PT', 'RO', 'RU', 'SG', 'SK', 'SI', 'ZA', 'SE', 'CH', 'TW', 'TH', 'TR', 'GB', 'VN'),
+				"display_replace" => array(_("United States"),_("Argentina"),_("Andorra"),_("Australia"),_("Austria"),_("Belgium"),_("Brazil"),_("Bulgaria"),_("Canada"),_("Chile"),_("China"),_("Croatia"),_("Czech Republic"),_("Denmark"),_("Espa&ntilde;a"),_("Estonia"),_("Finland"),_("France"),_("Germany"),_("Greece"),_("Hong Kong"),_("Hungary"),_("Iceland"),_("India"),_("Indonesia"),_("Ireland"),_("Italy"),_("Japan"),_("Korea, Republic of"),_("Latvia"),_("Liechtenstein"),_("Lithuania"),_("Luxemburg"),_("Malaysia"),_("Mexico"),_("Monaco"),_("Netherlands"),_("New Zealand"),_("Norway"),_("Philippines"),_("Poland"),_("Portugal"),_("Romania"),_("Russian Federation"),_("Singapore"),_("Slovakia"),_("Slovenia"),_("South Africa"),_("Sweden"),_("Switzerland"),_("Taiwan"),_("Thailand"),_("Turkey"),_("United Kingdom"),_("Viet Nam"))),
+			"cuentadigital_logo_url" => array(
+				"legend" => _("Display payment image url (leave blank for default): "),
+				"type" => "text",
+				"size" => "6")
+				));
+	$out .= configEditorTemplate ($dsc,"secpay");
+	$out .= _("When generating the payslip, dtc sends a code to CuentaDigital to identify
+		the payment. The automatically generated code has the plan, the amount and login,
+		separated by what ud enter in the Code Separator field because the CuentaDigital code
+		can only have letters and numbers. Remember that in that field
+		you can enter letters and numbers only. If the Extract login word from code is Yes,
+		the the word login will be erased from the code. For example if we set the separator
+		to a space and the product is Product1 with a price of 25 and the login is mydomain.com
+		you will have the code 'Product1 2500 login mydomaincom' if the extract login option is no
+		and you have the login 'Product1 2500 mydomaincom' if the extract login option is yes.")."<br>";
+
+	$dsc = array(
+		"title" => _("Western Union:"),
+		"action" => "westernunion_edit",
+		"forward" => array("rub","sousrub"),
+		"cols" => array(
+			"accept_westernunion" => array (
+				"legend" => _("Accept Western Union payments: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"westernunion_flat_fees" => array (
+				"legend" => _("Flat fee for accepting Western Union payments: "),
+				"size" => "6",
+				"type" => "text"),
+			"westernunion_details" => array (
+				"legend" => _("Payment details: "),
+				"cols" => "60",
+				"rows" => "12",
+				"type" => "textarea"),
+			"westernunion_logo_url" => array(
+				"legend" => _("Display payment image url (leave blank for default): "),
+				"type" => "text",
+				"size" => "15")
+			)
+		);
+	$out .= configEditorTemplate ($dsc,"secpay");
+
+	$dsc = array(
+		"title" => _("Abitab:"),
+		"action" => "abitab_edit",
+		"forward" => array("rub","sousrub"),
+		"cols" => array(
+			"accept_abitab" => array (
+				"legend" => _("Accept Abitab payments: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"abitab_flat_fees" => array (
+				"legend" => _("Flat fee for accepting Abitab payments: "),
+				"size" => "6",
+				"type" => "text"),
+			"abitab_details" => array (
+				"legend" => _("Payment details: "),
+				"cols" => "60",
+				"rows" => "12",
+				"type" => "textarea"),
+			"abitab_logo_url" => array(
+				"legend" => _("Display payment image url (leave blank for default): "),
+				"type" => "text",
+				"size" => "15")
+			)
+		);
+	$out .= configEditorTemplate ($dsc,"secpay");
+
+	$dsc = array(
+		"title" => _("Western Union:"),
+		"action" => "westernunion_edit",
+		"forward" => array("rub","sousrub"),
+		"cols" => array(
+			"accept_westernunion" => array (
+				"legend" => _("Accept Western Union payments: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"westernunion_flat_fees" => array (
+				"legend" => _("Flat fee for accepting Western Union payments: "),
+				"size" => "6",
+				"type" => "text"),
+			"westernunion_details" => array (
+				"legend" => _("Payment details: "),
+				"cols" => "60",
+				"rows" => "12",
+				"type" => "textarea"),
+			"westernunion_logo_url" => array(
+				"legend" => _("Display payment image url (leave blank for default): "),
+				"type" => "text",
+				"size" => "15")
+			)
+		);
+	$out .= configEditorTemplate ($dsc,"secpay");
+
+	$dsc = array(
+		"title" => _("Abitab:"),
+		"action" => "abitab_edit",
+		"forward" => array("rub","sousrub"),
+		"cols" => array(
+			"accept_abitab" => array (
+				"legend" => _("Accept Abitab payments: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"abitab_flat_fees" => array (
+				"legend" => _("Flat fee for accepting Abitab payments: "),
+				"size" => "6",
+				"type" => "text"),
+			"abitab_details" => array (
+				"legend" => _("Payment details: "),
+				"cols" => "60",
+				"rows" => "12",
+				"type" => "textarea"),
+			"abitab_logo_url" => array(
+				"legend" => _("Display payment image url (leave blank for default): "),
+				"type" => "text",
+				"size" => "15")
+			)
+		);
 	$out .= configEditorTemplate ($dsc,"secpay");
 
 	return $out;

@@ -174,6 +174,9 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 			}
 			$backup_net .= "echo \" deleting archive\"\n";
 			$backup_net .= "rm -f $owner.$webname.tar.gz\n";
+			if ($z7_mode==1) {
+				$backup_net .= "rm -f $owner.$webname.tar\n";
+			}
 			$num_generated_vhosts++;
 		}
 		$backup_net .= "echo \"===> Backuping all dabatases for user $owner:\"\n";
@@ -219,6 +222,9 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 
 			$backup_net .= "echo \" deleting archive\"\n";
 			$backup_net .= "rm -f ".$dbfilename.".gz\n";
+			if ($z7_mode==1) {
+				$backup_net .= "rm -f ".$dbfilename."\n";
+			}
 			$num_generated_db++;
 		}
 		mysql_select_db($conf_mysql_db);
@@ -242,6 +248,9 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 	}
 	$backup_net .= "echo \" deleting archive\"\n";
 	$backup_net .= "rm -f ".$dbfilename.".gz\n";
+	if ($z7_mode==1) {
+		$backup_net .= "rm -f ".$dbfilename."\n";
+	}
 
 	$restor_net .= "echo \"Getting file ".$dbfilename.".gz\"\n";
 	if ($ftp_mode==1) {
@@ -280,7 +289,10 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 	}
 	$backup_net .= "echo \" deleting archive\"\n";
 	$backup_net .= "rm -f ".$dbfilename.".gz\n";
-
+	if ($z7_mode==1) {
+		$backup_net .= "rm -f ".$dbfilename."\n";
+	}
+	
 	$restor_net .= "echo \"Getting file ".$dbfilename.".gz\"\n";
 	if ($ftp_mode==1) {
 		$restor_net .= "ncftpget -f $conf_generated_file_path/ncftpput_login.cfg $ncftp_mode . $conf_ftp_backup_dest_folder/".$dbfilename.".gz\n";
@@ -302,7 +314,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 		$backup_net .= "ncftpput -f $conf_generated_file_path/ncftpput_login.cfg -V -T tmp. $ncftp_mode $conf_ftp_backup_dest_folder $conf_generated_file_path/net_restor.sh\n";
 	}
 	if ($ssh_mode==1) {
-		$backup_net .= "scp net_restor.sh $conf_ftp_backup_host_ssh:$conf_ftp_backup_dest_folder_ssh/net_restor.sh\n";
+		$backup_net .= "scp $conf_generated_file_path/net_restor.sh $conf_ftp_backup_host_ssh:$conf_ftp_backup_dest_folder_ssh/net_restor.sh\n";
 	}
 	$backup_net .= "if [ -e /etc/apache/httpd.conf ] ; then\n";
 	if ($ftp_mode==1) {

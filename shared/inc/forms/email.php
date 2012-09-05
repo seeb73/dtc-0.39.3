@@ -444,7 +444,7 @@ function drawAdminTools_Emails($domain){
 			"id" => array(
 				"type" => "text",
 				"disable_edit" => "yes",
-				"check" => "dtc_login_or_email",
+				"check" => "dtc_login",
 				"happen" => "@".$domain["name"],
 				"fixup" => 'strtolower',
 				"legend" => _("Login:") ),

@@ -49,6 +49,9 @@ function paynowButton($pay_id,$amount,$item_name,$return_url,$vat_rate=0,$use_re
 	global $secpayconf_currency_symbol;
 	global $secpayconf_currency_letters;
 	global $secpayconf_use_dineromail;
+	global $secpayconf_use_cuentadigital;
+	global $secpayconf_use_westernunion;
+	global $secpayconf_use_abitab;
 
 	global $secpay_modules;
 

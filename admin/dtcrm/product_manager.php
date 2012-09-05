@@ -10,6 +10,23 @@ function productManager(){
         	get_secpay_conf();
         }
 
+		$qp = "SELECT id,name FROM $pro_mysql_product_table WHERE renew_prod_id='0' AND heb_type='shared'";
+		$rp = mysql_query($qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$np = mysql_num_rows($rp);
+		$renew_id_popup = array();
+		$renew_id_popup[] = 0;
+		$renew_id_replace = array();
+		$renew_id_replace[] = _("Not a renewal product");
+		for($j=0;$j<$np;$j++){
+			$ap = mysql_fetch_array($rp);
+			$renew_id_popup[] = $ap["id"];
+			if(strlen($ap["name"]) > 20){
+				$renew_id_replace[] = $ap["id"]. ": " .substr($ap["name"],0,17)."...";
+			}else{
+				$renew_id_replace[] = $ap["id"]. ": " .$ap["name"];
+			}
+		}
+
 		$dsc = array(
 			"table_name" => $pro_mysql_product_table,
 			"title" => _("Product list editor") . _(" (shared)"),
@@ -21,6 +38,13 @@ function productManager(){
 				"type" => "id",
 				"display" => "yes",
 				"legend" => "Id"
+				),
+			"renew_prod_id" => array(
+				"type" => "popup",
+				"help" => _("If you set the renewal ID, then this entry will be considered as a renewal product for the matching ID."),
+				"legend" => _("Renewal-ID") ,
+				"values" => $renew_id_popup,
+				"display_replace" => $renew_id_replace
 				),
 			"name" => array(
 				"type" => "text",

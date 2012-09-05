@@ -181,6 +181,7 @@ function pro_vhost_generate(){
 	global $conf_administrative_site;
 	global $conf_administrative_ssl_port;
 	global $conf_use_ssl;
+	global $conf_force_use_https;
 
 	global $conf_shared_renewal_shutdown;
 
@@ -709,7 +710,32 @@ AND $pro_mysql_admin_table.id_client != '0'";
 	Alias /roundcube /var/lib/roundcube
 	Alias /extplorer /usr/share/extplorer
 	AliasMatch ^/autodiscover/autodiscover\.xml\$ $conf_generated_file_path/autodiscover.xml.php
-	php_admin_value sendmail_from webmaster@$web_name
+	php_admin_value sendmail_from webmaster@$web_name";
+
+			$php_more_conf = "\n";
+			if($subdomain["register_globals"] == "yes"){
+				$php_more_conf .= "	php_admin_value register_globals 1\n";
+			}
+			if($subdomain["php_memory_limit"] != ""){
+				$php_more_conf .= "	php_admin_value memory_limit ".$subdomain["php_memory_limit"]."M\n";
+			}
+			if($subdomain["php_max_execution_time"] != ""){
+				$php_more_conf .= "	php_admin_value max_execution_time ".$subdomain["php_max_execution_time"]."\n";
+			}
+			if($subdomain["php_session_auto_start"] == "yes"){
+				$php_more_conf .= "	php_admin_flag session_autostart ".$subdomain["php_session_auto_start"]."\n";
+			}
+			if($subdomain["php_allow_url_fopen"] == "yes"){
+				$php_more_conf .= "	php_admin_flag allow_url_fopen on\n";
+			}
+			if($subdomain["php_post_max_size"] != ""){
+				$php_more_conf .= "	php_admin_value post_max_size ".$subdomain["php_post_max_size"]."M\n";
+			}
+			if($subdomain["php_upload_max_filesize"] != ""){
+				$php_more_conf .= "	php_admin_value upload_max_filesize ".$subdomain["php_upload_max_filesize"]."M\n";
+			}
+
+			$vhost_file .= $php_more_conf . "
 	DocumentRoot $web_path/$web_name/subdomains/$web_subname/html
 	<Directory $web_path/$web_name/subdomains/$web_subname/html>
 		Allow from all
@@ -751,7 +777,7 @@ $vhost_file .= "
 			} else {
 				// Generate a permanet redirect for all subdomains of target if using a domain parking
 				if($domain_parking != "no-parking" && ($domain_parking_type == "redirect" || $conf_administrative_site == "$web_subname.$domain_to_get")){
-					if($j == 0){
+					if($web_subname == $web_default_subdomain){
 						$console .= "Making domain parking for $web_name\n";
 						$vhost_file .= "<VirtualHost ".$ip_to_write.":80>
 	ServerName $web_name
@@ -874,7 +900,7 @@ $vhost_file .= "
 							$vhost_more_conf .= "        ServerAlias ${row_serveralias["name"]}\n";
 						}
 						$vhost_more_conf .= "        ServerAlias $web_subname.${row_serveralias["name"]}\n";
-						if ($domain_wildcard_dns == "yes") {
+						if ($domain_wildcard_dns == "yes" && $web_subname == "$web_default_subdomain") {
 							$vhost_more_conf .= "        ServerAlias *.${row_serveralias["name"]}\n";
 						}
 					}
@@ -884,6 +910,15 @@ $vhost_file .= "
 						$safe_mode_value = "0";
 					}else{
 						$safe_mode_value = "1";
+					}
+					if($subdomain["windows_compat"] == "yes"){
+						$windowsx = "	<IfModule mod_speling.c>
+		CheckSpelling on
+		CheckCaseOnly on
+	</IfModule>
+";
+					}else{
+						$windowsx = "";
 					}
 					if($domain_sbox_protect == "no" && $subdomain["sbox_protect"] == "no"){
 						$cgi_directive = "ScriptAlias /cgi-bin $web_path/$domain_to_get/subdomains/$web_subname/cgi-bin";
@@ -954,7 +989,7 @@ $vhost_file .= "
 									$my_open_basedir = "\n\t<Location />
 		php_admin_value open_basedir \"$web_path:$conf_php_library_path:$conf_php_additional_library_path:\"\n\t</Location>";
 								}
-								$vhost_file .= $vhost_more_conf.$php_more_conf.$my_php_safe_mode."
+								$vhost_file .= $vhost_more_conf.$windowsx.$php_more_conf.$my_php_safe_mode."
 	php_admin_value sendmail_from phpmailfunction$web_subname@$web_name
 	php_admin_value sendmail_path \"/usr/sbin/sendmail -t -i -f phpmailfunction$web_subname@$domain_to_get\"
 	php_value session.save_path $web_path/$domain_to_get/subdomains/$web_subname/tmp".$my_open_basedir."

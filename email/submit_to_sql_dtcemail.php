@@ -161,7 +161,7 @@ case "dtcemail_set_deliver_local":
 		$q = "UPDATE $pro_mysql_pop_table SET localdeliver='yes' WHERE id='$user' AND mbox_host='$host';";
 	}
 	$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-	writeDotQmailFile($user,$host);
+	updateUsingCron("gen_qmail='yes'");
 	break;
 
 // action=dtcemail_edit_redirect&redirect1=&redirect2=&submit=Ok
@@ -171,7 +171,7 @@ case "dtcemail_edit_redirect":
 
 	$q = "UPDATE $pro_mysql_pop_table SET redirect1='$redir1',redirect2='$redir2' WHERE id='$user' AND mbox_host='$host' LIMIT 1;";
 	$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-	writeDotQmailFile($user,$host);
+	updateUsingCron("gen_qmail='yes'");
 	break;
 case "dtcemail_vacation_msg":
 	if($_REQUEST["use_vacation_msg"] == "yes"){

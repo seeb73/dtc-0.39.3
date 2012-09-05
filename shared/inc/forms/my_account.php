@@ -13,6 +13,7 @@ function drawAdminTools_MyAccount($admin){
 	global $pro_mysql_pending_renewal_table;
 	global $secpayconf_currency_letters;
 	global $conf_post_or_get;
+	global $secpayconf_use_products_for_renewal;
 
 	global $cc_code_array;
 
@@ -123,17 +124,40 @@ function drawAdminTools_MyAccount($admin){
 				$out .= "<br><center>$frm_start<input type=\"hidden\" name=\"action\" value=\"upgrade_myaccount\">
 <input type=\"submit\" value=\"". _("Upgrade my account") ."\">
 </form>";
-				$out .= "<form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
-<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
-<input type=\"hidden\" name=\"renew_type\" value=\"shared\">
-<input type=\"hidden\" name=\"product_id\" value=\"".$admin["info"]["prod_id"]."\">
-<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
-<input type=\"hidden\" name=\"client_id\" value=\"$id_client\">
-<input type=\"submit\" value=\"". _("Renew my account") ."\">
-</form></center><br>";
+				if ($secpayconf_use_products_for_renewal == 'yes'){
+					$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$admin["info"]["prod_id"]."';";
+					$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+					$n = mysql_num_rows($r);
+					if($n == 1){
+						$a = mysql_fetch_array($r);
+						$out .= "<form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
+	<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
+	<input type=\"hidden\" name=\"renew_type\" value=\"shared\">
+	<input type=\"hidden\" name=\"product_id\" value=\"".$admin["info"]["prod_id"]."\">
+	<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
+	<input type=\"hidden\" name=\"client_id\" value=\"$id_client\">
+	<input type=\"submit\" value=\"".$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)"."\">
+	</form><br />";
+					}
+				}
+
+				$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$admin["info"]["prod_id"]."';";
+				$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n = mysql_num_rows($r);
+				for($i=0;$i<$n;$i++){
+					$a = mysql_fetch_array($r);
+					$out .= "<br /><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
+					<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
+					<input type=\"hidden\" name=\"renew_type\" value=\"shared\">
+					<input type=\"hidden\" name=\"product_id\" value=\"".$a["id"]."\">
+					<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
+					<input type=\"hidden\" name=\"client_id\" value=\"$id_client\">
+					<input type=\"submit\" value=\"".$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)"."\">
+					</form><br />";
+				}
 			}
 
-			$out .= "<h3>". _("SSL tokens") ."</h3><br>";
+			$out .= "</center><br /><h3>". _("SSL tokens") ."</h3><br />";
 			$q = "SELECT * FROM $pro_mysql_ssl_ips_table WHERE adm_login='$adm_login' AND available='no';";
 			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 			$n = mysql_num_rows($r);

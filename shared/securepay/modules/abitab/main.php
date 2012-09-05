@@ -1,20 +1,19 @@
 <?php
 
 // Should return a decimal with added gateway fees.
-function wire_calculate_fee($amount){
-	global $secpayconf_wiretransfers_flat_fees;
-	$total = $amount + $secpayconf_wiretransfers_flat_fees;
+function abitab_calculate_fee($amount){
+	global $secpayconf_abitab_flat_fees;
+	$total = $amount + $secpayconf_abitab_flat_fees;
 	return $total;
 }
 
 // Display the payment link option
-function wire_display_icon($pay_id,$amount,$item_name,$return_url,$use_recurring = "no"){
-	global $paypal_account;
+function abitab_display_icon($pay_id,$amount,$item_name,$return_url,$use_recurring = "no"){
 	global $conf_administrative_site;
 	global $pro_mysql_pay_table;
 
 	global $secpayconf_currency_letters;
-	global $secpayconf_wiretransfers_logo_url;
+	global $secpayconf_abitab_logo_url;
 	global $conf_use_ssl;
 
 	if($conf_use_ssl == "yes"){
@@ -36,33 +35,33 @@ function wire_display_icon($pay_id,$amount,$item_name,$return_url,$use_recurring
 	$hash = $a["hash_check_key"];
 
 	$add_to_form = '<input type="hidden" name="amount" value="'.str_replace(",",".",$amount).'">';
-	$out = '<form action="'.$goback_start.$conf_administrative_site."/dtc/cheques_and_transfers.php".'" method="post" target="_top">
+	$out = '<form action="'.$goback_start.$conf_administrative_site."/dtc/westernunion_and_abitab.php".'" method="post" target="_top">
 <input type="hidden" name="item_name" value="'.$item_name.'">
 <input type="hidden" name="hash_check" value="'.$hash.'">
 <input type="hidden" name="item_id" value="'.$pay_id.'">
-<input type="hidden" name="payment_type" value="wire_transfer">
+<input type="hidden" name="payment_type" value="abitab">
 <input type="hidden" name="currency_code" value="'.$secpayconf_currency_letters.'">
 '.$add_to_form.'
 <input type="image" src="';
-	if (empty($secpayconf_wiretransfers_logo_url))
+	if (empty($secpayconf_abitab_logo_url))
 		{
-		$out .= '/dtc/wire.gif';
+		$out .= '/dtc/abitab.jpg';
 		}
 	else
 		{
-		$out .= $secpayconf_wiretransfers_logo_url;
+		$out .= $secpayconf_abitab_logo_url;
 		}
 	$out .= '" border="0"
-name="submit" alt="'. _("Pay by wire transfer") .'">
+name="submit" alt="'. _("Pay by Abitab") .'">
 </form>';
 	return $out;
 
 }
 
 $secpay_modules[] = array(
-	"display_icon" => "wire_display_icon",
-	"use_module" => $secpayconf_accept_wiretransfers,
-	"calculate_fee" => "wire_calculate_fee",
+	"display_icon" => "abitab_display_icon",
+	"use_module" => $secpayconf_accept_abitab,
+	"calculate_fee" => "abitab_calculate_fee",
 	"instant_account" => _("No")
 );
 

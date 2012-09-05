@@ -44,6 +44,9 @@ general-6out () {
 	# Allow localhost
 	${IP6TABLES} -A ${GENERAL_IP6_OUT_CHAIN} -o lo -j ACCEPT
 
+	# Allow icmpv6
+	${IP6TABLES} -A ${GENERAL_IP6_OUT_CHAIN} -o ${INTERFACE} -p icmpv6 -j ACCEPT
+
 	# Allow all except invalid state
 	${IP6TABLES} -A ${GENERAL_IP6_OUT_CHAIN} -o ${INTERFACE} -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
 

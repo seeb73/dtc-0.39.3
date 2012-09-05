@@ -68,7 +68,7 @@ if(isset($addrlink) && $addrlink != ""){
         $check = str_replace(":","",$addrlink);
         $check = str_replace("/","",$check);
         if(!preg_match("/^([a-z0-9]+)([.a-z0-9-]+)([a-z0-9])\$/",$check)){
-                die("Parameter incorect in addrlink.");
+                die("Parameter incorrect in addrlink.");
         }
 
 	$vps_exploded = explode(":",$addrlink);

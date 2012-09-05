@@ -1,0 +1,98 @@
+DTC Scripting Client
+====================
+The DTC Scripting Client makes the scripting of the DTC Hosting Panel a lot easier. It consists of three classes and a testscript:
+- DtcScriptingRequest (in DtcScriptingRequest.php)
+  Makes a script request using curl. Handles the http-auth for /dtcadmin, certificate verification and login-params for /dtc interface.
+  It also determines if a request was successful or not.
+- DtcAdminScriptingClient (in DtcAdminScriptingClient.php)
+  Is the scripting client for /dtcadmin, thus configures the DtcScriptingRequest to handle http auth. This class has two other methods
+  used to add a new account (same as the form) and confirm the waiting account, add new hosting product, add a domain to an existing user,
+  add an email account to an existing domain, add database users and add databases.
+- DtcScriptingClient (in DtcScriptingClient.php)
+  Is the scripting client for /dtc, this class has no special methods at this time requests have to be formed like this:
+  $client->doRequest(array('param1' => 'value'));
+- testadmin.php: A test-script for the DtcScriptingRequest and DtcAdminScriptingClient
+
+Requirements
+------------
+- PHP 5 with cURL extension
+- An SSL-Cert for your DTC-installation, DtcScriptingRequest ONLY works with SSL for sec-reasons. (CA-Check is configurable, so no CA-Cert needed)
+
+Version & User Agents
+---------------------
+This is version 0.1
+User Agent for DtcAdminScriptingClient: "DTC Admin Scripting Client 0.1"
+User Agent for DtcScriptingClient: 	"DTC Scripting Client 0.1"
+
+Usage Example for DtcAdminScriptingClient
+=========================================
+// Create your instance
+$sclient = new DtcAdminScriptingClient( 'dtc.example.com', 'dtcuser', 'password' );
+
+// Add a new user account
+$ret = $sclient->addNewAccountRequest( 1, $login, 'testpass', 'Mustername', 'Vorname', 'yes', 'Musterfirma AG', '1111', 'muster@example.com', 2222, 3333, 'Adresse1', 'Adresse2', 'Adresse3', 9999, 'Musterstadt', 'NA', 'Notizen');
+
+// confirm the account
+$ret .= $sclient->confirmWaitingAccount( $login );
+
+// this is what a custom request would look like
+$ret = $sclient->doRequest(array( 'para1' => 'value', 'para2' => 'val');
+
+// add another hosting product
+$ret .= $sclient->AddHostingProduct('myHostingPlan', '0001-00-00', 38, 0, 0, 125,
+	10, 5, 1000, 'no', 1, '', 'yes', '', '', 'yes', '', 'sbox_aufs', '');
+// allow_add_domain should be 'yes' or 'no'
+// leave blank the checkbox options that should have a no value: $ftp_login_flag, $restricted_ftp_path, $allow_mailing_list_edit, $allow_subdomain_edit, $pkg_install_flag
+
+// add another domain to the current user
+$ret .= $sclient->addNewDomainToUser($login, 'asdf1234', 'newdomain.com');
+// the admin and password are from the user that you want to add the domain (the ones that the client has), not from the dtc administrator
+
+// add a new email to the last domain
+$ret .= $sclient->addNewEmailAccount($login, 'asdf1234', 'me', 'hello', 'asdf4321', '', '',
+		'', 'SPAM', 10, 1024, '', '', '');
+// leave blank the checkbox options that should have a no value: $spam_mailbox_enable $localdeliver $vacation_flag
+
+// add a new database user
+$ret .= $sclient->AddNewDatabaseUser($login, 'asdf1234', 'asd', 'asdf12345');
+
+// add the database for the last user created
+$ret .= $sclient->AddNewDatabase($login, 'asdf1234', 'mydb', $login.'-asd');
+
+Class documentation
+===================
+There's no phpdoc at this time, so here is what you need. Generally all methods below return true if successfull and a string containing an error if failed.
+So you can use this line to check: if( !$returnvar === true ) { echo 'Error: '.$returnvar }
+
+DtcAdminScriptingClient
+-----------------------
+Constructor:
+new DtcAdminScriptingClient( $dtcadmin_host, $dtcadmin_login, $dtcadmin_pass, $verify_cert = false )
+
+Methods:
+doRequest( $params = array(), $url = null ) - The $url param let's you redirect the request to a custom url. Used only for new account setup over new_account.php at this time
+
+addNewAccountRequest($product_id, $login, $password, $name, $firstname, $is_company, $company_name, $vat_num, $email, $phone, $fax, $address1, $address2, $address3, $zipcode, $city, $country, $notes, $domain_name = '', $vps_server_hostname = '-1', $vps_os = 'debian' )
+
+confirmWaitingAccount( $account )
+
+AddHostingProduct($name, $period, $price_dollar, $setup_fee, $affiliate_kickback, $quota_disk, $nbr_email,
+  	$nbr_database, $bandwidth, $allow_add_domain, $max_domain, $allow_dns_and_mx_change, $ftp_login_flag, $restricted_ftp_path,
+	$allow_mailing_list_edit, $allow_subdomain_edit, $pkg_install_flag, $shared_hosting_security = 'sbox_aufs', $private = '')
+
+addNewDomainToUser($admin, $adminpassword, $newdomain)
+
+addNewEmailAccount($admin, $adminpassword, $mailname, $memo, $passwd, $spam_mailbox_enable, $localdeliver,
+	$vacation_flag, $spam_mailbox, $quota_size, $quota_files, $redirect1, $redirect2, $vacation_text)
+
+AddNewDatabaseUser($admin, $adminpassword, $dbuser, $dbpass)
+
+AddNewDatabase($admin, $adminpassword, $dbname, $dbuser)
+
+DtcScriptingClient
+------------------
+Constructor:
+new DtcScriptingClient( $dtc_host, $dtc_login, $dtc_pass, $verify_cert = false )
+
+Methods:
+doRequest( $params = array() )

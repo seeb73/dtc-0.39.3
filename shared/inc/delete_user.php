@@ -47,6 +47,7 @@ function deleteUserDomain($adm_login,$adm_pass,$deluserdomain,$delete_directorie
 	global $pro_mysql_fetchmail_table;
 	global $pro_mysql_cronjob_table;
 	global $conf_demo_version;
+	global $conf_generated_file_path;
 
 	global $conf_root_admin_random_pass;
 	global $conf_pass_expire;
@@ -86,9 +87,10 @@ function deleteUserDomain($adm_login,$adm_pass,$deluserdomain,$delete_directorie
 	$adm_query = "DELETE FROM $pro_mysql_list_table WHERE domain='$deluserdomain';";
 	mysql_query($adm_query)or die("Cannot execute query \"$adm_query\" !!!");
 
-	// Delete the files of the domain name
+	// Delete the files of the domain name and the DNS zone files
 	if($delete_directories == true && $conf_demo_version == "no"){
 		system("rm -rf $the_admin_path/$deluserdomain");
+		system("rm -rf $conf_generated_file_path/zones/$deluserdomain");
 	}
 
 	// We now check if there are still some domains in the admin account

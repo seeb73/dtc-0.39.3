@@ -301,7 +301,11 @@ $dtc_database = array(
 			"invoice_scp_when" => "enum('day','month') NOT NULL default 'day'",
 			"autogen_webmail_protocol" => "enum('http:','https:') NOT NULL default 'https:'",
 			"post_or_get" => "enum('GET','POST') NOT NULL default 'POST'",
-			"send_cron_alert" => "enum('yes','no') NOT NULL default 'no'"
+			"send_cron_alert" => "enum('yes','no') NOT NULL default 'no'",
+			"restrict_new_account_form" => "enum('yes','no') NOT NULL default 'no'",
+			"new_account_restrict_action" => "enum('show_all_plans','redirect') NOT NULL default 'show_all_plans'",
+                        "new_account_restrict_hide_products" => "enum('yes','no') NOT NULL default 'no'",
+			"new_account_restrict_message" => "varchar(255) NOT NULL default 'http://'"
 		),
 		"keys" => array(
 			"unicrow" => "(unicrow)"
@@ -471,6 +475,7 @@ $dtc_database = array(
 			"expiration_date" => "date NOT NULL default '0000-00-00'",
 			"registrar" => "varchar(255) NOT NULL default 'webnic'",
 			"protection" => "enum('unlocked','transferprot','locked') NOT NULL default 'unlocked'",
+			"windows_compat" => "enum('yes','no') NOT NULL default 'no'",
 		),
 		"primary" => "(id)",
 		"keys" => array(
@@ -561,7 +566,7 @@ $dtc_database = array(
 		"vars" => array(
 			"id" => "int(14) NOT NULL auto_increment",
 			"sub_domain" => "varchar(50) NOT NULL default ''",
-			"transfer" => "int(14) NOT NULL default '0'",
+			"transfer" => "bigint(14) NOT NULL default '0'",
 			"last_run" => "int(14) NOT NULL default '0'",
 			"month" => "int(4) NOT NULL default '0'",
 			"year" => "int(4) NOT NULL default '0'",
@@ -779,7 +784,7 @@ $dtc_database = array(
 			"paiement_cost" => "decimal(9,2) NOT NULL default '0.00'",
 			"paiement_total" => "decimal(9,2) NOT NULL default '0.00'",
 			"paiement_type" => "enum('online','cheque','wire','other','free') NOT NULL default 'online'",
-			"secpay_site" => "enum('none','paypal','worldpay','enets','moneybokers','webmoney','dineromail') NOT NULL default 'none'",
+			"secpay_site" => "enum('none','paypal','worldpay','enets','moneybokers','webmoney','dineromail','cuentadigital','westernunion','abitab') NOT NULL default 'none'",
 			"secpay_custom_id" => "int(11) NOT NULL default '0'",
 			"shopper_ip" => "varchar(16) NOT NULL default '0.0.0.0'",
 			"date" => "date NOT NULL default '0000-00-00'",
@@ -1070,6 +1075,7 @@ $dtc_database = array(
 			"paypal_sandbox_email" => "varchar(255) NOT NULL default ''",
 			"paypal_validate_with" => "enum('total','mc_gross') NOT NULL default 'total'",
 			"use_paypal_recurring" => "enum('yes','no') NOT NULL default 'no'",
+                        "paypal_logo_url" => "varchar(255) NOT NULL default ''",
 
 			"use_moneybookers" => "enum('yes','no') NOT NULL default 'no'",
 			"moneybookers_rate" => "decimal(9,2) NOT NULL default '0.00'",
@@ -1100,17 +1106,37 @@ $dtc_database = array(
 			"cheques_flat_fees" => "decimal(9,2) NOT NULL default '0.00'",
 			"cheques_to_label" => "varchar(255) NOT NULL default ''",
 			"cheques_send_address" => "text",
+			"cheques_logo_url" => "varchar(255) NOT NULL default ''",
 
 			"accept_wiretransfers" => "enum('yes','no') NOT NULL default 'no'",
 			"wiretransfers_flat_fees" => "decimal(9,2) NOT NULL default '0.00'",
 			"wiretransfers_bank_details" => "text",
+			"wiretransfers_logo_url" => "varchar(255) NOT NULL default ''",
+
+			"accept_westernunion" => "enum('yes','no') NOT NULL default 'no'",
+			"westernunion_flat_fees" => "decimal(9,2) NOT NULL default '0.00'",
+			"westernunion_details" => "text",
+			"westernunion_logo_url" => "varchar(255) NOT NULL default ''",
+
+			"accept_abitab" => "enum('yes','no') NOT NULL default 'no'",
+			"abitab_flat_fees" => "decimal(9,2) NOT NULL default '0.00'",
+			"abitab_details" => "text",
+			"abitab_logo_url" => "varchar(255) NOT NULL default ''",
 
 			"use_dineromail" => "enum('yes','no') NOT NULL default 'no'",
 			"dineromail_nrocuenta" => "varchar(20) NOT NULL default ''",
 			"dineromail_tipospago" => "varchar(30) NOT NULL default '2,7,13,4,5,6,14,15,16,17,18'",
 			"dineromail_cargocomision" => "decimal(9,2) NOT NULL default '0.00'",
 			"dineromail_porcentajecomision" => "decimal(9,2) NOT NULL default '0.00'",
-			"dineromail_logo_url" => "varchar(255) NOT NULL default ''"
+			"dineromail_logo_url" => "varchar(255) NOT NULL default ''",
+
+			"use_cuentadigital" => "enum('yes','no') NOT NULL default 'no'",
+			"cuentadigital_nrocuenta" => "varchar(20) NOT NULL default ''",
+			"cuentadigital_cargocomision" => "decimal(9,2) NOT NULL default '0.00'",
+			"cuentadigital_porcentajecomision" => "decimal(9,2) NOT NULL default '0.00'",
+			"cuentadigital_replacelogin" => "enum('yes','no') NOT NULL default 'no'",
+			"cuentadigital_country" => "enum('US', 'AR', 'AD', 'AU', 'AT', 'BE', 'BR', 'BG', 'CA', 'CL', 'CN', 'HR', 'CZ', 'DK', 'ES', 'EE', 'FI', 'FR', 'DE', 'GR', 'HK', 'HU', 'IS', 'IN', 'ID', 'IE', 'IT', 'JP', 'KR', 'LV', 'LI', 'LT', 'LU', 'MY', 'MX', 'MC', 'NL', 'NZ', 'NO', 'PH', 'PL', 'PT', 'RO', 'RU', 'SG', 'SK', 'SI', 'ZA', 'SE', 'CH', 'TW', 'TH', 'TR', 'GB', 'VN') NOT NULL default 'US'",
+			"cuentadigital_logo_url" => "varchar(255) NOT NULL default ''"
 		),
 		"keys" => array(
 			"unicrow" => "(unicrow)"
@@ -1305,6 +1331,7 @@ $dtc_database = array(
 			"php_upload_max_filesize"=> "int(11) NOT NULL default '2'",
 			"use_shared_ssl" => "enum('yes','no') NOT NULL default 'no'",
 			"redirect_url" => "varchar(512) NOT NULL default ''",
+			"windows_compat" => "enum('yes','no') NOT NULL default 'no'",
 			"srv_record_protocol" => "enum('tcp','udp','sctp') NOT NULL default 'tcp'"
 		),
 		"primary" => "(id)",

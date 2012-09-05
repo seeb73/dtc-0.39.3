@@ -11,6 +11,7 @@ set_time_limit($_timelimit);
 chdir(dirname(__FILE__));
 
 $start_stamps = gmmktime(date("H"), date("i"), date("s"), date("m"), date("d"), date("Y"));
+$panel_type="cronjob";
 
 require("../shared/autoSQLconfig.php"); // Our main configuration file
 require_once("$dtcshared_path/dtc_lib.php");

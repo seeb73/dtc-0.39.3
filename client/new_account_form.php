@@ -519,6 +519,18 @@ function registration_form(){
 
 	global $conf_main_domain;
 	global $conf_provide_own_domain_hosts;
+	global $conf_restrict_new_account_form;
+	global $conf_new_account_restrict_action;
+        global $conf_new_account_restrict_hide_products;
+	global $conf_new_account_restrict_message;
+
+
+
+	if ($conf_restrict_new_account_form == "yes" and ((isset($_REQUEST["product_id"]) && !isRandomNum($_REQUEST["product_id"])) or !isset($_REQUEST["product_id"]))){
+		if ($conf_new_account_restrict_action == 'redirect') {
+			header("Location: $conf_new_account_restrict_message");
+			}
+		}
 
 	get_secpay_conf();
 
@@ -527,7 +539,12 @@ function registration_form(){
 		$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 		$n = mysql_num_rows($r);
 		if($n != 1){
-			die("Product ID not found here line ".__LINE__." file ".__FILE__);
+			if ($conf_restrict_new_account_form == "yes" and $conf_new_account_restrict_action == 'redirect') {
+				header("Location: $conf_new_account_restrict_message");
+			}
+			else {
+				die("Product ID not found here line ".__LINE__." file ".__FILE__);
+			}
 		}
 		$a = mysql_fetch_array($r);
 		$heb_type_condition = " heb_type='".$a["heb_type"]."' ";
@@ -555,8 +572,14 @@ function registration_form(){
 
 	$prod_popup = "";
 	$p_jscript = " prod_popup_htype = new Array();";
-	$q = "SELECT $pro_mysql_product_table.*, $pro_mysql_custom_heb_types_table.reqdomain FROM $pro_mysql_product_table LEFT JOIN $pro_mysql_custom_heb_types_table ON $pro_mysql_product_table.custom_heb_type = $pro_mysql_custom_heb_types_table.id WHERE $heb_type_condition AND renew_prod_id='0' AND private='no' ORDER BY id";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+        $q = "SELECT $pro_mysql_product_table.*, $pro_mysql_custom_heb_types_table.reqdomain FROM $pro_mysql_product_table
+            LEFT JOIN $pro_mysql_custom_heb_types_table ON $pro_mysql_product_table.custom_heb_type = $pro_mysql_custom_heb_types_table.id
+            WHERE $heb_type_condition AND renew_prod_id='0' AND private='no' ";
+        if ($conf_restrict_new_account_form == "yes" and $conf_new_account_restrict_hide_products == 'yes') {
+            $q .= "AND $pro_mysql_product_table.id='".$_REQUEST["product_id"]."' ";
+        }
+        $q .= "ORDER BY id";
+        $r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 	$n = mysql_num_rows($r);
 	$prod_popup .= "<option value=\"-1\">"._("Please select.")."</optioon>";
 	for($i=0;$i<$n;$i++){

@@ -221,17 +221,23 @@ MAILFILTER_EOF;
 	}
 
 	if($spam_mailbox_enable == "yes"){
+		$spambox = str_replace("\\", "\\\\", $spam_mailbox);
+		$spambox = str_replace('"', "\\\"", $spambox);
 		$sieve_filter_content .= <<<MAILFILTER_EOF
 		if header :contains "X-Spam-Flag" "YES" {
-			fileinto "$spam_mailbox";
+			fileinto "$spambox";
 		}
 
 MAILFILTER_EOF;
 	}
 
 	if($vacation_flag == "yes"){
+		$vacation_text = str_replace( "\n.", "\n..", $vacation_text );
 		$sieve_filter_content .= <<<MAILFILTER_EOF
 
+if header :matches "Subject" "*" {
+        set "oldsub" ": \${1}";
+}
 if allof (
 not header :contains "Precedence" ["bulk","list","junk"],
 not header :contains "List-Id" ["YES"],
@@ -247,10 +253,18 @@ not header :contains "Subject" "*Mail Delivery Subsystem",
 not header :contains "Subject" "*Mail System Error.*Returned Mail",
 not header :contains "X-AutoReply" "*",
 not header :contains "X-Mail-Autoreply" "*",
+not allof (
+        exists "Auto-Submitted",
+        not header :matches "Auto-Submitted" "no"
+	),
 not header :contains "X-DTC-Support-Ticket" "*",
 not header :contains "X-ClamAV-Notice-Flag" ["YES"],
 not header :contains "X-Spam-Flag" ["YES"] ) {
-vacation :days 2 :addresses ["$recipient"] :subject "Auto Response: from $recipient" "$vacation_text";}
+vacation :days 2 :addresses ["$recipient"] :subject "Auto Response from $recipient\${oldsub}" 
+text:
+$vacation_text
+.
+;}
 
 MAILFILTER_EOF;
 	}
@@ -270,16 +284,16 @@ $sieve_custom_content="# Custom sieve rules
 	// Write the file and manage rights
 	@chmod($SIEVE_FILE,0650);
 	@chmod($SIEVE_CUSTOM_FILE,0660);
-		$fp = fopen($SIEVE_FILE,"w+");
-		if (! is_dir("$home/sieve")) {
-			mkdir("$home/sieve", 0755);
-			@chown("$home/sieve",$conf_dtc_system_username);
-			if (! file_exists($SIEVE_CUSTOM_FILE)) {
-				$fp_custom = fopen($SIEVE_CUSTOM_FILE,"w+");
-				fwrite($fp_custom, $sieve_custom_content);
-				fclose($fp_custom);
-			}
+	if (! is_dir("$home/sieve")) {
+		mkdir("$home/sieve", 0755);
+		@chown("$home/sieve",$conf_dtc_system_username);
+		if (! file_exists($SIEVE_CUSTOM_FILE)) {
+			$fp_custom = fopen($SIEVE_CUSTOM_FILE,"w+");
+			fwrite($fp_custom, $sieve_custom_content);
+			fclose($fp_custom);
 		}
+	}
+	$fp = fopen($SIEVE_FILE,"w+");
 	if($fp != FALSE){
 		fwrite($fp, $sieve_filter_content);
 		fclose($fp);
