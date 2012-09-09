@@ -1289,7 +1289,7 @@ function named_generate(){
 				$todays_serial = $serial_prefix . "01";
 			}
 
-			$this_site_file = "\$TTL $domain_ttl
+			$this_site_file = "\$TTL $conf_default_zones_ttl
 @               IN      SOA     $thisdomain_dns1. $bind_formated_webmaster_email_addr (
 			$todays_serial; serial
                         $conf_named_soa_refresh ; refresh
