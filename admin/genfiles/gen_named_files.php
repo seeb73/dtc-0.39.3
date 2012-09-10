@@ -627,7 +627,10 @@ $allow_trans_str	allow-query { any; };
 			fclose($filep);
 			break;
 		case "one_zonefile_with_name":
-			$zone_name = $a["location"].".".calculate_reverse_end($pool_ip_addr,$pool_netmask);
+                        $zone_name = calculate_reverse_end($pool_ip_addr,$pool_netmask);
+                        $ip_pool_ip_exploded = explode(".",$zone_name);
+                        $zone_name = $a["location"].".".$ip_pool_ip_exploded[1].".".$ip_pool_ip_exploded[2].".".$ip_pool_ip_exploded[3].".in-addr.arpa";
+
 /*			$reverse_dns_file .= "zone \"$zone_name\" con nombre in {
 	type master;
 	file \"$conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr\";
@@ -883,7 +886,10 @@ $allow_trans_str	allow-query { any; };
 ";
 			break;
 		case "one_zonefile_with_name":
-			$zone_name = $a["location"].".".calculate_reverse_end($pool_ip_addr,$pool_netmask);
+                        $zone_name = calculate_reverse_end($pool_ip_addr,$pool_netmask);
+                        $ip_pool_ip_exploded = explode(".",$zone_name);
+                        $zone_name = $a["location"].".".$ip_pool_ip_exploded[1].".".$ip_pool_ip_exploded[2].".".$ip_pool_ip_exploded[3].".in-addr.arpa";
+
 			$reverse_dns_file .= "zone \"$zone_name\" in {
 	type master;
 	file \"$conf_generated_file_path/$conf_named_reversezonefiles_path/$pool_ip_addr\";
