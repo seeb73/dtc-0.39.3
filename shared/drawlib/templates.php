@@ -878,6 +878,7 @@ function dtcDatagrid($dsc){
 // cols => "field1"
 //         "field2"
 //         ...
+// [no_delete] => true || false -> if is set to true then the delete button will not be displayed
 // Properties of each fields:
 // "type" => "id" -> This is the auto_increment ID of the table
 // "display" => "no" -> Display it or not in the list (currently only "no" is working, and is used only when type=id)
@@ -1946,10 +1947,14 @@ function dtcListItemsEdit($dsc){
 					break;
 				}
 			}
-			$delete_button = "<form method=\"$conf_post_or_get\" action=\"?\">$fw
-			<input type=\"hidden\" name=\"action\" value=\"".$dsc["action"]."_delete_item"."\">
-			<input type=\"hidden\" name=\"$id_fldname\" value=\"$id_fld_value\">
-			".dtcDeleteButton()."</form>";
+			if( isset($dsc["no_delete"]) && $dsc["no_delete"] == true){
+				$delete_button = "";
+			}else{
+				$delete_button = "<form method=\"$conf_post_or_get\" action=\"?\">$fw
+				<input type=\"hidden\" name=\"action\" value=\"".$dsc["action"]."_delete_item"."\">
+				<input type=\"hidden\" name=\"$id_fldname\" value=\"$id_fld_value\">
+				".dtcDeleteButton()."</form>";
+			}
 
 			$out .= "<tr><td>&nbsp;</td><td><table cellspacing=\"0\" cellpadding=\"0\" border=\"0\">
 			<tr><td>".dtcApplyButton()."</form></td><td>$delete_button</td></tr></table></td></tr>";

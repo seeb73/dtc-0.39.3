@@ -146,10 +146,12 @@ function drawAdminTools_Subdomain($admin,$domain){
 	$subdomains = $domain["subdomains"];
 	$txt .= "<table><tr><td align=\"right\">";
 	$txt .= _("Default subdomain: ") ."</td><td><select name=\"subdomaindefault_name\">";
+	$default_subdomain_id = 0;
 	for($i=0;$i<$nbr_subdomain;$i++){
 		$sub = $subdomains[$i]["name"];
 		if($domain["default_subdomain"] == "$sub"){
 			$txt .= "<option value=\"$sub\" selected>$sub</option>";
+			$default_subdomain_id = $subdomains[$i]["id"];
 		}else{
 			$txt .= "<option value=\"$sub\">$sub</option>";
 		}
@@ -351,6 +353,11 @@ function drawAdminTools_Subdomain($admin,$domain){
 				"empty_makes_sql_null" => "yes",
 				"can_be_empty" => "yes",
 				"legend" => _("Dynamic IP update password: ") );
+
+	if(isset($_REQUEST["item"]) && isset($_REQUEST["subaction"]) && $_REQUEST["subaction"] == "subdomain_editor_edit_item"
+		&& ($_REQUEST["item"] == $default_subdomain_id or $nbr_subdomain == 1)){
+		$dsc["no_delete"] = true;
+	}
 
 	$txt .= dtcListItemsEdit($dsc);
 	$txt .= "<br>" . _("Windows users (and UNIX users running WINE) can update their IP address dynamically by downloading and installing the following open source DTC client:") . "<br>" .
