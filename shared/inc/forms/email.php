@@ -504,214 +504,188 @@ function drawAdminTools_Emails($domain){
 				"help" => _("Name of the SPAM folder (the above option has to be activated)."),
 				"default" => "SPAM",
 				"check" => "IMAPMailbox",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("SPAM mailbox destination: ") ),
 			"virus_lover" => array(
 				"type" => "checkbox",
 				"help" => _("If selected, virus infected messages will be delivered to your inbox"),
 				"values" => array( "Y","N"),
 				"legend" => _("Receive virus infected messages: ") ),
-
 			"spam_lover" => array(
 				"type" => "checkbox",
 				"help" => _("If selected, spam  messages will be delivered to your inbox even if they where tagged above the kill level, which normally would discart them. Keep in mind, that you still can move them to a separate folder by activating that option."),
 				"values" => array( "Y","N"),
 				"legend" => _("Receive spam messages: ") ),
-
 			"banned_files_lover" => array(
 				"type" => "checkbox",
 				"help" => _("If selected, messages containing banned_files will be delivered to your inbox."),
 				"values" => array( "Y","N"),
 				"legend" => _("Receive messages containing banned_files: ") ),
-
 			"bad_header_lover" => array(
 				"type" => "checkbox",
 				"help" => _("If selected, messages containing bad_headers will be delivered to your inbox."),
 				"values" => array( "Y","N"),
 				"legend" => _("Receive messages containing bad_headers: ") ),
-
 			"spam_tag_level" => array(
 				"type" => "text",
 				"help" => _("Tag mails above this level as possible spam. (No further actions taken - you can define a subject tag that should be added to the messages though.)"),
 				"default" => "",
 				"check" => "numeric",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Spam tag level: ") ),
-
 			"spam_tag2_level" => array(
 				"type" => "text",
 				"help" => _("Tag mails above this level as spam. (defined spam actions apply. e.g. Mails will be tagged as spam or be forwarded... You can also define a subject tag that should be added to the messages.)"),
 				"default" => "",
 				"check" => "numeric",
-			"can_be_empty" => "yes",
+        			"can_be_empty" => "yes",
 				"legend" => _("Spam tag2 level: ") ),
-
 			"spam_tag3_level" => array(
 				"type" => "text",
 				"help" => _("Tag mails above this level as extreme spam. (The same actions apply as the ones for tag2 level mails. You can define a separate subject tag that should be added to the messages.) !Only works with Amavis-New above 2.7 otherwise this level and subject are ignored!"),
 				"default" => "",
 				"check" => "numeric",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Spam tag3 level: ") ),
-
 			"spam_kill_level" => array(
 				"type" => "text",
 				"help" => _("discart or bounce mails above this level. (If you did not check the option to receive spam mails, these mails will be deleted or bounced following your dsn-cutoff-level.)"),
 				"default" => "",
 				"check" => "numeric",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Spam kill level: ") ),
-
 			"spam_dsn_cutoff_level" => array(
 				"type" => "text",
 				"help" => _("Up to this level bounce messages will be send. If you do not want to inform spammers that  their mails where tagged as spam, set this level to the kill level."),
 				"default" => "",
 				"check" => "numeric",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("DSN cutoff level: ") ),
-
 			"quarantine_cutoff_level" => array(
 				"type" => "text",
 				"help" => _("Up to this level mails will be put into quarantine due to your settings."),
 				"default" => "",
 				"check" => "numeric",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Quarantine cutoff level: ") ),
-
 			"spam_subject_tag" => array(
 				"type" => "text",
 				"help" => _("Add this tag to the subject of mails above tag level."),
 				"default" => "",
 				"check" => "ExtendedPassword",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Spam subject tag: ") ),
-
 			"spam_subject_tag2" => array(
 				"type" => "text",
 				"help" => _("Add this tag to the subject of mails above tag2 level."),
 				"default" => "",
 				"check" => "ExtendedPassword",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Spam subject tag2: ") ),
-
 			"spam_subject_tag3" => array(
 				"type" => "text",
 				"help" => _("Add this tag to the subject of mails above tag3 level. (Only works with Amavis-New above 2.7)"),
 				"default" => "",
 				"check" => "ExtendedPassword",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Spam subject tag3: ") ),
-
 			"newvirus_admin" => array(
 				"type" => "text",
 				"help" => _("Email address of an admin to inform about new viruses."),
 				"default" => "",
 				"check" => "email",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("New virus admin email: ") ),
-
 			"virus_admin" => array(
 				"type" => "text",
 				"help" => _("Email address of an admin to inform about viruses."),
 				"default" => "",
 				"check" => "email",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Virus admin email: ") ),
-
 			"spam_admin" => array(
 				"type" => "text",
 				"help" => _("Email address of an admin to inform about spam."),
 				"default" => "",
 				"check" => "email",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Spam admin email: ") ),
-
 			"banned_admin" => array(
 				"type" => "text",
 				"help" => _("Email address of an admin to inform about mails containing banned_files."),
 				"default" => "",
 				"check" => "email",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Banned_files admin email: ") ),
-
 			"bad_header_admin" => array(
 				"type" => "text",
 				"help" => _("Email address of an admin to inform about mails containing bad_headers."),
 				"default" => "",
 				"check" => "email",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Bad header admin email: ") ),
-
 			"virus_quarantine_to" => array(
 				"type" => "text",
 				"help" => _("Quarantine virus mails to this email address."),
 				"default" => "",
 				"check" => "email",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Quarantine viruses to email: ") ),
-
 			"spam_quarantine_to" => array(
 				"type" => "text",
 				"help" => _("Quarantine spam mails to this email address."),
 				"default" => "",
 				"check" => "email",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Quarantine spam to email: ") ),
-
 			"banned_quarantine_to" => array(
 				"type" => "text",
 				"help" => _("Quarantine mails containing banned_files to this email address."),
 				"default" => "",
 				"check" => "email",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Quarantine banned_files to email: ") ),
-
 			"bad_header_quarantine_to" => array(
 				"type" => "text",
 				"help" => _("Quarantine mails containing bad_headers to this email address."),
 				"default" => "",
 				"check" => "email",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Quarantine bad_headers to email: ") ),
-
 			"message_size_limit" => array(
 				"type" => "text",
 				"help" => _("Only process filters on mails up to this size."),
 				"default" => "",
 				"check" => "number",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Message size limit for filters: ") ),
-
 			"addr_extension_virus" => array(
 				"type" => "text",
 				"help" => _("Add this extension to the receivers email address of virus mails."),
 				"default" => "",
 				"check" => "IMAPMailbox",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Virus address extension: ") ),
-
 			"addr_extension_spam" => array(
 				"type" => "text",
 				"help" => _("Add this extension to the receivers email address of spam mails."),
 				"default" => "",
 				"check" => "IMAPMailbox",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Spam address extension: ") ),
-
 			"addr_extension_banned" => array(
 				"type" => "text",
 				"help" => _("Add this extension to the receivers email address of mails containing banned_files."),
 				"default" => "",
 				"check" => "IMAPMailbox",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Banned_files address extension: ") ),
-
 			"addr_extension_bad_header" => array(
 				"type" => "text",
 				"help" => _("Add this extension to the receivers email address of mails containing bad_headers."),
 				"default" => "",
 				"check" => "IMAPMailbox",
-			"can_be_empty" => "yes",
+				"can_be_empty" => "yes",
 				"legend" => _("Bad_headers address extension: ") ),
 			)
 		);
