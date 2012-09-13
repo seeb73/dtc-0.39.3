@@ -577,6 +577,7 @@ function drawAdminTools_Emails($domain){
 				"default" => "",
 				"check" => "ExtendedPassword",
 				"can_be_empty" => "yes",
+				"placeholder" => "[possible spam]",
 				"legend" => _("Spam subject tag: ") ),
 			"spam_subject_tag2" => array(
 				"type" => "text",
@@ -584,6 +585,7 @@ function drawAdminTools_Emails($domain){
 				"default" => "",
 				"check" => "ExtendedPassword",
 				"can_be_empty" => "yes",
+				"placeholder" => "[spam]",
 				"legend" => _("Spam subject tag2: ") ),
 			"spam_subject_tag3" => array(
 				"type" => "text",
@@ -591,6 +593,7 @@ function drawAdminTools_Emails($domain){
 				"default" => "",
 				"check" => "ExtendedPassword",
 				"can_be_empty" => "yes",
+				"placeholder" => "[extreme spam]",
 				"legend" => _("Spam subject tag3: ") ),
 			"newvirus_admin" => array(
 				"type" => "text",
@@ -672,6 +675,7 @@ function drawAdminTools_Emails($domain){
 				"default" => "",
 				"check" => "IMAPMailbox",
 				"can_be_empty" => "yes",
+                                "placeholder" => "virus",
 				"legend" => _("Virus address extension: ") ),
 			"addr_extension_spam" => array(
 				"type" => "text",
@@ -679,6 +683,7 @@ function drawAdminTools_Emails($domain){
 				"default" => "",
 				"check" => "IMAPMailbox",
 				"can_be_empty" => "yes",
+                                "placeholder" => "spam",
 				"legend" => _("Spam address extension: ") ),
 			"addr_extension_banned" => array(
 				"type" => "text",
@@ -686,6 +691,7 @@ function drawAdminTools_Emails($domain){
 				"default" => "",
 				"check" => "IMAPMailbox",
 				"can_be_empty" => "yes",
+                                "placeholder" => "banned-files-extention",
 				"legend" => _("Banned_files address extension: ") ),
 			"addr_extension_bad_header" => array(
 				"type" => "text",
@@ -693,6 +699,7 @@ function drawAdminTools_Emails($domain){
 				"default" => "",
 				"check" => "IMAPMailbox",
 				"can_be_empty" => "yes",
+                                "placeholder" => "bad-header",
 				"legend" => _("Bad_headers address extension: ") ),
 			)
 		);
@@ -727,12 +734,14 @@ function drawAdminTools_Emails($domain){
 			"check" => "email",
 			"can_be_empty" => "yes",
 			"empty_makes_sql_null" => "yes",
+			"placeholder" => "mailbox@example.com",
 			"legend" => _("Redirection 1: ") );
 		$dsc["cols"]["redirect2"] = array(
 			"type" => "text",
 			"check" => "email",
 			"can_be_empty" => "yes",
 			"empty_makes_sql_null" => "yes",
+			"placeholder" => "mailbox2@example.com",
 			"legend" => _("Redirection 2: ") );
 		$dsc["cols"]["localdeliver"] = array(
 			"type" => "checkbox",
