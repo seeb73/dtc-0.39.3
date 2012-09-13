@@ -23,6 +23,16 @@ a:visited{color:#105278;text-decoration: none;}
 a:hover{color:#000000;text-decoration: underline;}
 a:active{color:#000000;text-decoration: none;}
 
+/* placeholders */
+::-webkit-input-placeholder	{
+	color:#CCC;
+	font-weight: bold;
+}
+input:-moz-placeholder {
+	color:#CCC;
+	font-weight: bold;
+}
+
 /* No extention on the size of forms */
 form { margin: 0px; }
 

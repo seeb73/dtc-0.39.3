@@ -1714,14 +1714,18 @@ function dtcListItemsEdit($dsc){
 					}else{
 						$ctrl_value = "";
 					}
-					if ($dsc["cols"][ $keys[$i] ]["type"]=="readonly")
-					{
-						$ctrl = "<input type=\"text\" name=\"".$keys[$i]."\" value=\"$ctrl_value\" READONLY>$happen";
+					if ($dsc["cols"][ $keys[$i] ]["type"]=="readonly"){
+						$my_read_only = " READONLY";
+					}else{
+						$my_read_only = "";
 					}
-					else
-					{
-						$ctrl = "<input type=\"text\" name=\"".$keys[$i]."\" value=\"$ctrl_value\">$happen";
+					if( isset($dsc["cols"][ $keys[$i] ]["placeholder"]) ){
+						$placeholder = " placeholder=\"".$dsc["cols"][ $keys[$i] ]["placeholder"]."\"";
+					}else{
+						$placeholder = "";
 					}
+					$ctrl = "<input type=\"text\"$placeholder name=\"".$keys[$i]."\" value=\"$ctrl_value\"$my_read_only>$happen";
+
 					$out .= dtcFormLineDraw($dsc["cols"][ $keys[$i] ]["legend"],$ctrl,$i%2,$help);
 					break;
 				case "textarea":

@@ -485,14 +485,17 @@ function drawAdminTools_Emails($domain){
 				"check" => "dtc_login",
 				"happen" => "@".$domain["name"],
 				"fixup" => 'strtolower',
+				"placeholder" => "mailboxname",
 				"legend" => _("Login:") ),
 			"memo" => array (
 				"type" => "text",
 				"help" => _("This text is just a memo for yourself, and will not really be used."),
+				"placeholder" => "John Doe",
 				"legend" => _("Name:") ),
 			"passwd" => array(
 				"type" => "password",
 				"check" => "dtc_pass",
+				"placeholder" => "2yktswg4xt5a",
 				"legend" => _("Password:") ),
 			"spam_mailbox_enable" => array(
 				"type" => "checkbox",
@@ -630,6 +633,7 @@ function drawAdminTools_Emails($domain){
 				"default" => "",
 				"check" => "email",
 				"can_be_empty" => "yes",
+				"placeholder" => _("mailbox@example.com"),
 				"legend" => _("Quarantine viruses to email: ") ),
 			"spam_quarantine_to" => array(
 				"type" => "text",
@@ -637,6 +641,7 @@ function drawAdminTools_Emails($domain){
 				"default" => "",
 				"check" => "email",
 				"can_be_empty" => "yes",
+				"placeholder" => _("mailbox@example.com"),
 				"legend" => _("Quarantine spam to email: ") ),
 			"banned_quarantine_to" => array(
 				"type" => "text",
@@ -644,6 +649,7 @@ function drawAdminTools_Emails($domain){
 				"default" => "",
 				"check" => "email",
 				"can_be_empty" => "yes",
+				"placeholder" => _("mailbox@example.com"),
 				"legend" => _("Quarantine banned_files to email: ") ),
 			"bad_header_quarantine_to" => array(
 				"type" => "text",
@@ -651,6 +657,7 @@ function drawAdminTools_Emails($domain){
 				"default" => "",
 				"check" => "email",
 				"can_be_empty" => "yes",
+				"placeholder" => _("mailbox@example.com"),
 				"legend" => _("Quarantine bad_headers to email: ") ),
 			"message_size_limit" => array(
 				"type" => "text",
