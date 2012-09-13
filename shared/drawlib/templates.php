@@ -1171,9 +1171,9 @@ function dtcListItemsEdit($dsc){
 						if( !isset($dsc["cols"][ $keys[$i] ]["can_be_empty"])
 									|| $dsc["cols"][ $keys[$i] ]["can_be_empty"] != "yes"
 									|| $_REQUEST[ $keys[$i] ] != ""){
-						$commit_flag = "no";
-						$commit_err .= $keys[$i]._(": contains wrong characters. Only the following characters are allowed: a-z A-Z 0-9 * ( ) [ ]")."<br>";
-}
+							$commit_flag = "no";
+							$commit_err .= $keys[$i]._(": contains wrong characters. Only the following characters are allowed: a-z A-Z 0-9 * ( ) [ ]")."<br>";
+						}
 					}
 					break;
 				case "IMAPMailbox":
@@ -1181,9 +1181,9 @@ function dtcListItemsEdit($dsc){
 						if( !isset($dsc["cols"][ $keys[$i] ]["can_be_empty"])
 									|| $dsc["cols"][ $keys[$i] ]["can_be_empty"] != "yes"
 									|| $_REQUEST[ $keys[$i] ] != ""){
-						$commit_flag = "no";
-						$commit_err .= $keys[$i]._(": not a valid IMAP mailbox name!")."<br>";
-}
+							$commit_flag = "no";
+							$commit_err .= $keys[$i]._(": not a valid IMAP mailbox name!")."<br>";
+						}
 					}
 					break;
 				case "numeric":
@@ -1191,9 +1191,9 @@ function dtcListItemsEdit($dsc){
 						if( !isset($dsc["cols"][ $keys[$i] ]["can_be_empty"])
 									|| $dsc["cols"][ $keys[$i] ]["can_be_empty"] != "yes"
 									|| $_REQUEST[ $keys[$i] ] != ""){
-						$commit_flag = "no";
-						$commit_err .= $keys[$i]._(": is not numeric!")."<br>";
-}
+							$commit_flag = "no";
+							$commit_err .= $keys[$i]._(": is not numeric!")."<br>";
+						}
 					}
 					break;
 				default:
@@ -1518,9 +1518,9 @@ function dtcListItemsEdit($dsc){
 						if( !isset($dsc["cols"][ $keys[$i] ]["can_be_empty"])
 									|| $dsc["cols"][ $keys[$i] ]["can_be_empty"] != "yes"
 									|| $_REQUEST[ $keys[$i] ] != ""){
-						$commit_flag = "no";
-						$commit_err .= $keys[$i]._(": contains wrong characters. Only the following characters are allowed: a-z A-Z 0-9 * ( ) [ ]")."<br>";
-}
+							$commit_flag = "no";
+							$commit_err .= $keys[$i]._(": contains wrong characters. Only the following characters are allowed: a-z A-Z 0-9 * ( ) [ ]")."<br>";
+						}
 					}
 					break;
 				case "IMAPMailbox":
@@ -1528,9 +1528,9 @@ function dtcListItemsEdit($dsc){
 						if( !isset($dsc["cols"][ $keys[$i] ]["can_be_empty"])
 									|| $dsc["cols"][ $keys[$i] ]["can_be_empty"] != "yes"
 									|| $_REQUEST[ $keys[$i] ] != ""){
-						$commit_flag = "no";
-						$commit_err .= $keys[$i]._(": not a valid IMAP mailbox name!")."<br>";
-}
+							$commit_flag = "no";
+							$commit_err .= $keys[$i]._(": not a valid IMAP mailbox name!")."<br>";
+						}
 					}
 					break;
 				case "numeric":
@@ -1538,9 +1538,9 @@ function dtcListItemsEdit($dsc){
 						if( !isset($dsc["cols"][ $keys[$i] ]["can_be_empty"])
 									|| $dsc["cols"][ $keys[$i] ]["can_be_empty"] != "yes"
 									|| $_REQUEST[ $keys[$i] ] != ""){
-						$commit_flag = "no";
-						$commit_err .= $keys[$i]._(": is not numeric!")."<br>";
-}
+							$commit_flag = "no";
+							$commit_err .= $keys[$i]._(": is not numeric!")."<br>";
+						}
 					}
 					break;
 				default:
