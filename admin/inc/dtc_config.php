@@ -259,8 +259,8 @@ function drawRenewalsConfig(){
 Warnings before and after expiration can be listed separated by |,
 while single warnings accept one value. The message templates
 are stored in /etc/dtc, and if not present in: ").$conf_dtcadmin_path."/reminders_msg/
-<br />For custom product types the file format is for example custom_1_expired_already.txt 
-for custom product type with id 1 for the expired reminder",
+<br />"._("For custom product types the file format is for example custom_1_expired_already.txt 
+for custom product type with id 1 for the expired reminder"),
 		"cols" => array(
 			"vps_renewal_before" => array(
 				"legend" => _("Warning before expiration for VPS: "),
@@ -294,6 +294,15 @@ for custom product type with id 1 for the expired reminder",
 				"legend" => _("Shutdown warning for Shared Hosting: "),
                                 "type" => "text",
                                 "size" => "16"),
+			"shared_renewal_disable_admin" => array(
+				"legend" => _("Disable Admin after Shutdown warning for Shared Hosting: "),
+                                "type" => "text",
+                                "size" => "16"),
+                        "auto_enable_admin_on_expire_change" => array(
+                                "type" => "radio",
+                                "legend" => _("Automatically Re-enable Admin on Expire Date change to the future:"),
+                                "values" => array("yes","no"),
+                                "display_replace" => array(_("Yes"),_("No"))),
 			"custom_renewal_before" => array(
 				"legend" => _("Warning before expiration for Custom Products: "),
 				"type" => "text",

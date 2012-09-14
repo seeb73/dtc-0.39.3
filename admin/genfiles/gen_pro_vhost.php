@@ -544,6 +544,9 @@ AND $pro_mysql_admin_table.id_client != '0'";
 			}else{
 				$site_expired = "no";
 			}
+			if ($webadmin["disabled"] == "yes" or $webadmin["disabled"] == "always-yes"){
+				$site_expired = "yes";
+			}
 		}
 
 		if($domain_parking != "no-parking" && $web_name != $conf_main_domain){

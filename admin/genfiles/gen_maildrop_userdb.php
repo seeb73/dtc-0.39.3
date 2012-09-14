@@ -87,6 +87,7 @@ function mail_account_generate_maildrop(){
 		WHERE $pro_mysql_admin_table.adm_login=$pro_mysql_domain_table.owner
 		AND $pro_mysql_domain_table.name=$pro_mysql_pop_table.mbox_host
 		AND $pro_mysql_domain_table.name='$query_dom_name'
+		AND ($pro_mysql_admin_table.disabled='no' or $pro_mysql_admin_table.disabled='always-no' or $pro_mysql_admin_table.disabled='')
 		ORDER BY $pro_mysql_pop_table.id";
 		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 		$n = mysql_num_rows($r);

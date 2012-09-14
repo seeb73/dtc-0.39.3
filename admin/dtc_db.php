@@ -48,7 +48,10 @@ $dtc_database = array(
 			"ob_next" => "varchar(64) NOT NULL default ''",
 			"last_used_lang" => "varchar(32) NOT NULL default 'en_US.UTF-8'",
 			"recovery_token" => "varchar(64) NOT NULL default ''",
-			"recovery_timestamp" => "int(12) NOT NULL default '0'"
+			"recovery_timestamp" => "int(12) NOT NULL default '0'",
+			"disabled" => "enum('yes','no','always-yes','always-no') NOT NULL default 'no'",
+			"permanent_extend" => "int(12) NOT NULL default '0'",
+			"temporary_extend" => "int(12) NOT NULL default '0'"
 		),
 		"primary" => "(adm_login)",
 		"index" => array(
@@ -319,6 +322,8 @@ $dtc_database = array(
 			"autogen_webmail_hostname" => "varchar(40) NOT NULL default 'webmail'",
 			"autogen_admin_host" => "enum('yes','no') NOT NULL default 'no'",
 			"autogen_admin_hostname" => "varchar(40) NOT NULL default 'admin'",
+			"shared_renewal_disable_admin" => "varchar(64) NOT NULL default '30'",
+			"auto_enable_admin_on_expire_change" => "enum('yes','no') NOT NULL default 'yes'"
 		),
 		"keys" => array(
 			"unicrow" => "(unicrow)"

@@ -101,7 +101,7 @@ function mail_account_generate_postfix(){
 //		genSasl2PasswdDBStart();
 //	}
 	// go through each admin login and find the domains associated 
-	$query = "SELECT * FROM $pro_mysql_admin_table ORDER BY adm_login;";
+	$query = "SELECT * FROM $pro_mysql_admin_table where disabled='no' or disabled='always-no' or disabled='' ORDER BY adm_login;";
 	$result = mysql_query ($query)or die("Cannot execute query : \"$query\"");
 	$num_rows = mysql_num_rows($result);
 

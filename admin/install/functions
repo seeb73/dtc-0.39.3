@@ -1061,6 +1061,10 @@ setupDTCDatabase () {
 	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'domain', '', NOW(NULL), 'Select', 'Select')"
 	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'email_accounting', '', NOW(NULL), 'Select,Insert,Update,Delete,References,Index', 'Select')"
 
+	# grant select to admin
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'admin', '', NOW(NULL), 'Select', 'Select')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'admin', '', NOW(NULL), 'Select', 'Select')"
+
 	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="FLUSH PRIVILEGES"
 
 	# Setup good values depending on Unix distribution
@@ -2886,10 +2890,7 @@ maildrop_destination_recipient_limit = 1" >> $TMP_FILE
   sql_user: dtcdaemons
   sql_passwd: ${MYSQL_DTCDAEMONS_PASS}
   sql_database: ${conf_mysql_db}
-  #password_format: crypt
-  #sql_select: SELECT crypt FROM pop_access WHERE fullemail = '%u@%r'
-  #sql_update: UPDATE pop_access SET crypt = '%v' WHERE fullemail = '%u@%r'
-  sql_select: SELECT passwd FROM pop_access WHERE fullemail = '%u@%r'
+  sql_select: SELECT passwd FROM pop_access,domain,admin WHERE mbox_host=name AND owner=adm_login AND (disabled='no' or disabled='always-no' or disabled='') AND pop_access.id = '%u' AND (mbox_host='%r' or mbox_host in (select domain_parking from domain where name='%r' and domain_parking_type='redirect'))
   sql_update: UPDATE pop_access SET passwd = '%v' WHERE fullemail = '%u@%r'
   sql_verbose: yes
   # End of DTC configuration v0.25 : please don't touch this line !" >${PATH_AUTH_SMTP}
@@ -3351,8 +3352,8 @@ mail_max_userip_connections = 200
 connect = host=$DOVECOT_MYSQL dbname=$conf_mysql_db user=dtcdaemons password=${MYSQL_DTCDAEMONS_PASS} client_flags=0
 driver = mysql
 default_pass_scheme = PLAIN
-password_query = SELECT passwd as password FROM pop_access WHERE id = '%n' AND (mbox_host='%d' or mbox_host in (select domain_parking from domain where name='%d' and domain_parking_type='redirect'))
-user_query = SELECT home, uid, gid FROM pop_access WHERE id = '%n' AND (mbox_host='%d' or mbox_host in (select domain_parking from domain where name='%d' and domain_parking_type='redirect'))
+password_query = SELECT passwd as password FROM pop_access,domain,admin WHERE mbox_host=name AND owner=adm_login AND (disabled='no' or disabled='always-no' or disabled='') AND pop_access.id = '%n' AND (mbox_host='%d' or mbox_host in (select domain_parking from domain where name='%d' and domain_parking_type='redirect'))
+user_query = SELECT home, uid, gid FROM pop_access,domain,admin WHERE mbox_host=name AND owner=adm_login AND (disabled='no' or disabled='always-no' or disabled='') AND pop_access.id = '%n' AND (mbox_host='%d' or mbox_host in (select domain_parking from domain where name='%d' and domain_parking_type='redirect'))
 " > $PATH_DTC_ETC/dovecot-mysql.conf
 			else
 				echo "
@@ -3431,10 +3432,10 @@ MYSQLUser dtcdaemons
 MYSQLPassword ${MYSQL_DTCDAEMONS_PASS}
 MYSQLDatabase $conf_mysql_db
 MYSQLCrypt cleartext
-MYSQLGetPW      SELECT password FROM ftp_access WHERE login=\"\L\"
-MYSQLGetUID     SELECT uid FROM ftp_access WHERE login=\"\L\"
-MYSQLGetGID     SELECT gid FROM ftp_access WHERE login=\"\L\"
-MYSQLGetDir     SELECT homedir FROM ftp_access WHERE login=\"\L\"
+MYSQLGetPW      SELECT password FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login=\"\L\"
+MYSQLGetUID     SELECT uid FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login=\"\L\"
+MYSQLGetGID     SELECT gid FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login=\"\L\"
+MYSQLGetDir     SELECT homedir FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login=\"\L\"
 
 " >/usr/local/etc/pureftpd-mysql.conf;
 		fi
@@ -3478,10 +3479,10 @@ MYSQLUser dtcdaemons
 MYSQLPassword ${MYSQL_DTCDAEMONS_PASS}
 MYSQLDatabase $conf_mysql_db
 MYSQLCrypt cleartext
-MYSQLGetPW      SELECT password FROM ftp_access WHERE login=\"\L\"
-MYSQLGetUID     SELECT uid FROM ftp_access WHERE login=\"\L\"
-MYSQLGetGID     SELECT gid FROM ftp_access WHERE login=\"\L\"
-MYSQLGetDir     SELECT homedir FROM ftp_access WHERE login=\"\L\"
+MYSQLGetPW      SELECT password FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login=\"\L\"
+MYSQLGetUID     SELECT uid FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login=\"\L\"
+MYSQLGetGID     SELECT gid FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login=\"\L\"
+MYSQLGetDir     SELECT homedir FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login=\"\L\"
 
 " >${PURE_DBCONFIG_FILE}
 			# If running in Debian, try to determine if using standalone or daemon
@@ -3593,10 +3594,16 @@ configProftpd () {
 			fi
 			TMP_FILE_SQL=`${MKTEMP} DTC_install.proftp.conf.sql.XXXXXX` || exit 1
 			echo "<IfModule mod_sql.c>" > $TMP_FILE_SQL
-			echo "SQLAuthenticate	on" >> $TMP_FILE_SQL
+			echo "SQLAuthenticate	users groups usersetfast" >> $TMP_FILE_SQL
 			echo "SQLConnectInfo	"$conf_mysql_db"@"$conf_mysql_host" dtcdaemons "${MYSQL_DTCDAEMONS_PASS} >> $TMP_FILE_SQL
 			echo "SQLAuthTypes	Plaintext Crypt" >> $TMP_FILE_SQL
-			echo "SQLUserInfo	ftp_access login password uid gid homedir shell" >> $TMP_FILE_SQL
+#			echo "SQLUserInfo	ftp_access login password uid gid homedir shell" >> $TMP_FILE_SQL
+			echo "SQLUserInfo custom:/get-user-by-name/get-user-by-id/get-user-names/get-all-users
+SQLNamedQuery get-user-by-name SELECT \"login, password, uid, gid, homedir, shell FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login = '%U'\"
+SQLNamedQuery get-user-by-id SELECT \"login, password, uid, gid, homedir, shell FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and uid = %{0}\"
+SQLNamedQuery get-user-names SELECT \"login FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='')\"
+SQLNamedQuery get-all-users SELECT \"login, password, uid, gid, homedir, shell FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='')\"
+"
 			echo "# // Transfer Log to Proftpd
 SQLLog RETR,STOR transfer1
 SQLNamedQuery transfer1 INSERT \"'%u', '%f', '%b', '%h', '%a', '%m', '%T',now(), 'c', NULL\" ftp_logs
@@ -4062,16 +4069,16 @@ groups.member_groupid_column = ssh_user_group.group_id;
 				if [ "$UNIX_TYPE" = "freebsd" ] ; then
 					echo "
 [queries]
-getpwnam    SELECT login,crypt,uid,gid,'','default','DTC User',homedir,shell,2145916000 FROM ssh_access WHERE login='%1\$s' LIMIT 1
-getpwuid    SELECT login,'*',uid,gid,'DTC User',homedir,shell FROM ssh_access WHERE uid='%1\$u' LIMIT 1
-getpwent    SELECT login,'*',uid,gid,'DTC User',homedir,shell FROM ssh_access
+getpwnam    SELECT login,crypt,uid,gid,'','default','DTC User',homedir,shell,2145916000 FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login='%1\$s' LIMIT 1
+getpwuid    SELECT login,'*',uid,gid,'DTC User',homedir,shell FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and uid='%1\$u' LIMIT 1
+getpwent    SELECT login,'*',uid,gid,'DTC User',homedir,shell FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') 
 getgrnam    SELECT group_name,group_password,group_id FROM ssh_groups WHERE group_name='%1\$s' LIMIT 1
 getgrgid    SELECT group_name,group_password,group_id FROM ssh_groups WHERE group_id='%1\$u' LIMIT 1
 getgrent    SELECT group_name,group_password,group_id FROM ssh_groups
-memsbygid   SELECT login FROM ssh_access WHERE gid='%1\$u'
-gidsbymem   SELECT gid  FROM ssh_access WHERE login='%1\$s'
-getspnam    SELECT login,crypt,UNIX_TIMESTAMP() - 10,1,2,7,-1,-1,0 FROM ssh_access WHERE ssh_access.login='%1\$s' LIMIT 1
-getspent    SELECT login,crypt,UNIX_TIMESTAMP() - 10,1,2,7,-1,-1,0 FROM ssh_access
+memsbygid   SELECT login FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and gid='%1\$u'
+gidsbymem   SELECT gid  FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login='%1\$s'
+getspnam    SELECT login,crypt,UNIX_TIMESTAMP() - 10,1,2,7,-1,-1,0 FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and ssh_access.login='%1\$s' LIMIT 1
+getspent    SELECT login,crypt,UNIX_TIMESTAMP() - 10,1,2,7,-1,-1,0 FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='')
 
 [server]
 host ${conf_mysql_host}
@@ -4083,16 +4090,16 @@ password ${MYSQL_DTCDAEMONS_PASS}
 				else
 					echo "
 [queries]
-getpwnam    SELECT login,crypt,uid,gid,'DTC User',homedir,shell FROM ssh_access WHERE login='%1\$s' LIMIT 1 
-getpwuid    SELECT login,'*',uid,gid,'DTC User',homedir,shell FROM ssh_access WHERE uid='%1\$u' LIMIT 1
-getpwent    SELECT login,'*',uid,gid,'DTC User',homedir,shell FROM ssh_access
+getpwnam    SELECT login,crypt,uid,gid,'DTC User',homedir,shell FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login='%1\$s' LIMIT 1 
+getpwuid    SELECT login,'*',uid,gid,'DTC User',homedir,shell FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and uid='%1\$u' LIMIT 1
+getpwent    SELECT login,'*',uid,gid,'DTC User',homedir,shell FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='')
 getgrnam    SELECT group_name,group_password,group_id FROM ssh_groups WHERE group_name='%1\$s' LIMIT 1
 getgrgid    SELECT group_name,group_password,group_id FROM ssh_groups WHERE group_id='%1\$u' LIMIT 1
 getgrent    SELECT group_name,group_password,group_id FROM ssh_groups
-memsbygid   SELECT login FROM ssh_access WHERE gid='%1\$u'
-gidsbymem   SELECT gid  FROM ssh_access WHERE login='%1\$s'
-getspnam    SELECT login,crypt,UNIX_TIMESTAMP() - 10,1,2,7,-1,-1,0 FROM ssh_access WHERE ssh_access.login='%1\$s' LIMIT 1
-getspent    SELECT login,crypt,UNIX_TIMESTAMP() - 10,1,2,7,-1,-1,0 FROM ssh_access
+memsbygid   SELECT login FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and gid='%1\$u'
+gidsbymem   SELECT gid  FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login='%1\$s'
+getspnam    SELECT login,crypt,UNIX_TIMESTAMP() - 10,1,2,7,-1,-1,0 FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and ssh_access.login='%1\$s' LIMIT 1
+getspent    SELECT login,crypt,UNIX_TIMESTAMP() - 10,1,2,7,-1,-1,0 FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='')
 
 [server]
 host ${conf_mysql_host}

@@ -1114,7 +1114,7 @@ function named_generate(){
 	$djb_file = "";
 	$named_file = "";
 
-	$query = "SELECT * FROM $pro_mysql_domain_table WHERE primary_dns='default' OR other_dns='default' ORDER BY name;";
+	$query = "SELECT * FROM $pro_mysql_domain_table,$pro_mysql_admin_table WHERE adm_login=owner and (disabled='no' or disabled='always-no' or disabled='') and (primary_dns='default' OR other_dns='default') ORDER BY name;";
 	$result = mysql_query ($query)or die("Cannot execute query \"$query\"");
 	$num_rows = mysql_num_rows($result);
 

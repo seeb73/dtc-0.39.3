@@ -60,6 +60,9 @@ function drawEditAdminData($admin){
 	$ftp_login_flag = $info["ftp_login_flag"];
 	$pkg_install_flag = $info["pkg_install_flag"];
 	$shared_hosting_security = $info["shared_hosting_security"];
+	$admin_disabled = $info["disabled"];
+	$permanent_extend = $info["permanent_extend"];
+	$temporary_extend = $info["temporary_extend"];
 
 	if($resseller_flag == "yes"){
 		$resflag_yes = " checked='checked' ";
@@ -155,6 +158,33 @@ function drawEditAdminData($admin){
 	$allow_subdomain_edit_selector = "<input type=\"radio\" name=\"allow_subdomain_edit\" value=\"yes\"$allow_subdomain_edit_yes> "._("Yes")."
 <input type=\"radio\" name=\"allow_subdomain_edit\" value=\"no\"$allow_subdomain_edit_no> "._("No");
 
+	// Admin Enabled??
+	if($admin_disabled == "yes"){
+		$admin_enabled_no = " checked='checked' ";
+		$admin_enabled_yes = "";
+		$admin_enabled_always_yes = "";
+		$admin_enabled_always_no = "";
+	}elseif($admin_disabled == "no"){
+		$admin_enabled_yes = " checked='checked' ";
+		$admin_enabled_no = "";
+		$admin_enabled_always_yes = "";
+		$admin_enabled_always_no = "";
+	}elseif($admin_disabled == "always-yes"){
+		$admin_enabled_always_no = " checked='checked' ";
+		$admin_enabled_no = "";
+		$admin_enabled_yes = "";
+		$admin_enabled_always_yes = "";
+	}else{
+		$admin_enabled_always_yes = " checked='checked' ";
+		$admin_enabled_always_no = "";
+		$admin_enabled_no = "";
+		$admin_enabled_yes = "";
+	}
+	$admin_enabled_selector = "<input type=\"radio\" name=\"admin_enabled\" value=\"no\"$admin_enabled_yes> "._("Yes")."
+<input type=\"radio\" name=\"admin_enabled\" value=\"yes\"$admin_enabled_no> "._("No")."
+<input type=\"radio\" name=\"admin_enabled\" value=\"always-no\"$admin_enabled_always_yes> "._("Always Yes")."
+<input type=\"radio\" name=\"admin_enabled\" value=\"always-yes\"$admin_enabled_always_no> "._("Always No");
+
 	// The shared hosting security popup
 	switch($shared_hosting_security){
 	case "mod_php":
@@ -220,6 +250,8 @@ function drawEditAdminData($admin){
 	$user_data .= dtcFormLineDraw( _("Disk quota (MB):") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"adm_quota\" value=\"$adm_quota\">",0);
 	$user_data .= dtcFormLineDraw( _("Allowed bandwidth per month (MB):") ,"<input class=\"dtcDatagrid_input_color\" type=\"text\" name=\"bandwidth_per_month\" value=\"$bandwidth_per_month_mb\">");
 	$user_data .= dtcFormLineDraw( _("Expiry date:") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"expire\" value=\"$expire\">",0);
+	$user_data .= dtcFormLineDraw( _("Permanent Extension:") ,"<input class=\"dtcDatagrid_input_color\" type=\"text\" name=\"permanent_extend\" value=\"".$info["permanent_extend"]."\">",0);
+	$user_data .= dtcFormLineDraw( _("Temporary Extension:") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"temporary_extend\" value=\"".$info["temporary_extend"]."\">",0);
 	$user_data .= dtcFormLineDraw( _("Product ID:") ,$prodsid);
 	$user_data .= dtcFormLineDraw( _("Number of databases:") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"nbrdb\" value=\"".$info["nbrdb"]."\">",0);
 	$user_data .= dtcFormLineDraw( _("Allow to add domains:") ,$aldom_popup);
@@ -233,6 +265,7 @@ function drawEditAdminData($admin){
 	$user_data .= dtcFormLineDraw( _("Allow edition of subdomains:") ,$allow_subdomain_edit_selector);
 	$user_data .= dtcFormLineDraw( _("Allow the use of the package installer:") ,$pkg_install_selector,0);
 	$user_data .= dtcFormLineDraw( _("Shared hosting security:"),$shared_hosting_security_popup);
+	$user_data .= dtcFormLineDraw( _("Is this administrator ENABLED:"),$admin_enabled_selector,0);
 	$user_data .= dtcFromOkDraw()."</table></form>";
 
 	$out=$user_data;

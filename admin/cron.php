@@ -669,7 +669,42 @@ function printEndTime () {
 	echo date("Y m d / H:i:s T")." DTC cron job finished (exec time=".$ex_min.":".$ex_sec.")\n\n";
 }
 
+function checkDisableAdmins() {
+//	
+        global $pro_mysql_admin_table;
+        global $pro_mysql_domain_table;
+        global $pro_mysql_client_table;
 
+        global $conf_webmaster_email_addr;
+        global $conf_shared_renewal_disable_admin;
+	global $conf_auto_enable_admin_on_expire_change;
+        global $dtcshared_path;
+
+        global $send_email_header;
+
+        $now_timestamp = mktime();
+        $one_day = 3600 * 24;
+        $q = "SELECT * FROM $pro_mysql_admin_table WHERE adddate(expire,permanent_extend+temporary_extend)<='".date("Y-m-d",$now_timestamp - $one_day*($conf_shared_renewal_disable_admin+permanent_extend+temporary_extend))."' and disabled='no';";
+        $r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+        $n = mysql_num_rows($r);
+        for($i=0;$i<$n;$i++){
+		$admin=mysql_fetch_array($r) or die("Cannot fetch record line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		echo "Disabling ".$admin["adm_login"]."\n";
+        	$s = "UPDATE $pro_mysql_admin_table SET disabled='yes' WHERE adm_login='".$admin["adm_login"]."';";
+        	$t = mysql_query($s)or die("Cannot query $s line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	}
+	if ($conf_auto_enable_admin_on_expire_change == 'yes') {
+        	$q = "SELECT * FROM $pro_mysql_admin_table WHERE expire>='".date("Y-m-d",$now_timestamp)."' and disabled='yes';";
+        	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+        	$n = mysql_num_rows($r);
+        	for($i=0;$i<$n;$i++){
+			$admin=mysql_fetch_array($r) or die("Cannot fetch record line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			echo "Enabling ".$admin["adm_login"]."\n";
+        		$s = "UPDATE $pro_mysql_admin_table SET disabled='no' WHERE adm_login='".$admin["adm_login"]."';";
+        		$t = mysql_query($s)or die("Cannot query $s line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		}
+	}
+}
 
 // Edit the following if you want to disable some services...
 checkLockFlag();
@@ -680,6 +715,7 @@ checkPop3dStarted();
 checkSSHCronService();
 checkApacheCronService();
 checkNagiosCronService();
+checkDisableAdmins();
 $cronjob_table_content = getCronFlags();
 if($cronjob_table_content["gen_backup"] == "yes"){
 	echo "Generating backup script\n";
