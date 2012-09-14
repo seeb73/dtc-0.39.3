@@ -360,7 +360,7 @@ function userEditForms($adm_login,$adm_pass){
 		}
 
 		$iface_select = "<table height=\"1\" border=\"0\" width=\"100%\">";
-		$iface_select .= "<tr><td width=\"33%\" valign=\"top\"><center>";
+		$iface_select .= "<tr><td width=\"25%\" valign=\"top\"><center>";
 		if($rub != "user" && $rub != ""){
 			$iface_select .= "<a href=\"?rub=user&adm_login=$adm_login&adm_pass=$pass\">";
 		}
@@ -369,7 +369,7 @@ function userEditForms($adm_login,$adm_pass){
 		if($rub != "user" && $rub != ""){
 			$iface_select .= "</a>";
 		}
-		$iface_select .= "</center></td><td width=\"33%\" valign=\"top\"><center>";
+		$iface_select .= "</center></td><td width=\"25%\" valign=\"top\"><center>";
 		if($rub != "domain_config"){
 			$iface_select .= "<a href=\"?rub=domain_config&adm_login=$adm_login&adm_pass=$pass\">";
 		}
@@ -378,7 +378,16 @@ function userEditForms($adm_login,$adm_pass){
 		if($rub != "domain_config"){
 			$iface_select .= "</a>";
 		}
-		$iface_select .= "</center></td><td width=\"33%\" valign=\"top\"><center>";
+		$iface_select .= "</center></td><td width=\"25%\" valign=\"top\"><center>";
+		if($rub != "adddelservice"){
+			$iface_select .= "<a href=\"?rub=adddelservice&adm_login=$adm_login&adm_pass=$pass\">";
+		}
+		$iface_select .= "<img src=\"gfx/menu/user-editor.png\" width=\"48\" height=\"48\" border=\"0\"><br>
+". _("Add/Delete Services") ;
+		if($rub != "adddelservice"){
+			$iface_select .= "</a>";
+		}
+		$iface_select .= "</center></td><td width=\"25%\" valign=\"top\"><center>";
 		if($rub != "adminedit"){
 			$iface_select .= "<a href=\"?rub=adminedit&adm_login=$adm_login&adm_pass=$pass\">";
 		}
@@ -397,12 +406,15 @@ function userEditForms($adm_login,$adm_pass){
 
 		// Draw the html forms
 		if(isset($rub) && $rub == "adminedit"){
-			$HTML_admin_edit_info = drawEditAdmin($admin);
+			$HTML_admin_edit_info = drawEditAdminData($admin);
 			$user_config = skin($conf_skin,$HTML_admin_edit_info, _("Configuration of the virtual administrator") ."<i>\"$adm_login\"</i>");
 //			return $user_config;
 		}else if(isset($rub) && $rub == "domain_config"){
 			$HTML_admin_domain_config = drawDomainConfig($admin);
 			$user_config = skin($conf_skin,$HTML_admin_domain_config, _("Configuration of domains for") ." <i>\"$adm_login\"</i>");
+		}else if(isset($rub) && $rub == "addelservice"){
+			$HTML_admin_domain_config = drawEditAdminDomains($admin);
+			$user_config = skin($conf_skin,$HTML_admin_domain_config, _("Add or Delete Services for") ." <i>\"$adm_login\"</i>");
 		}else{
 			$HTML_admin_edit_data = drawAdminTools($admin);
 			$user_config = skin($conf_skin,$HTML_admin_edit_data, _("Domains for") ." ".$adm_login);
