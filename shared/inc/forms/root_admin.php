@@ -1,9 +1,25 @@
 <?php
 
+////////////////////////////////////////////////////////////////////////////////////
+// Draw the form for configuring current global admin account info (path, etc...) //
+////////////////////////////////////////////////////////////////////////////////////
+function drawEditAdmin($admin){
+
+	$out = "<font size=\"-1\">
+<table>
+ <tr>
+  <td>".drawEditAdminDomains($admin)."</td><td background=\"gfx/border_2.gif\">&nbsp;</td>
+  <td>".drawEditAdminData($admin)."</td>
+ </tr>
+</table>
+</font>
+";
+	return $out;
+}
 ////////////////////////////////////////////////////////////////////////////
 // Draw the form for configuring global admin account info (path, etc...) //
 ////////////////////////////////////////////////////////////////////////////
-function drawEditAdmin($admin){
+function drawEditAdminData($admin){
 	global $pro_mysql_vps_server_table;
 	global $pro_mysql_vps_ip_table;
 	global $pro_mysql_vps_table;
@@ -218,6 +234,174 @@ function drawEditAdmin($admin){
 	$user_data .= dtcFormLineDraw( _("Allow the use of the package installer:") ,$pkg_install_selector,0);
 	$user_data .= dtcFormLineDraw( _("Shared hosting security:"),$shared_hosting_security_popup);
 	$user_data .= dtcFromOkDraw()."</table></form>";
+
+	$out=$user_data;
+	return $out;
+}
+////////////////////////////////////////////////////////////////////////////
+// Draw the form for configuring global admin account info (path, etc...) //
+////////////////////////////////////////////////////////////////////////////
+function drawEditAdminDomains($admin){
+	global $pro_mysql_vps_server_table;
+	global $pro_mysql_vps_ip_table;
+	global $pro_mysql_vps_table;
+	global $pro_mysql_product_table;
+	global $pro_mysql_dedicated_table;
+	global $cc_code_popup;
+
+	global $adm_login;
+	global $adm_pass;
+	global $rub;
+	global $conf_hide_password;
+	global $conf_post_or_get;
+	global $idn;
+	
+	$info = $admin["info"];
+	if(isset($admin["data"])){
+		$data = $admin["data"];
+	}
+
+	$adm_cur_pass = $info["adm_pass"];
+	$adm_path = $info["path"];
+	$adm_max_email = $info["max_email"];
+	$adm_max_ftp = $info["max_ftp"];
+	$adm_quota = $info["quota"];
+	$bandwidth_per_month_mb = $info["bandwidth_per_month_mb"];
+	$adm_id_client = $info["id_client"];
+	$expire = $info["expire"];
+	$prod_id = $info["prod_id"];
+
+	$allow_add_domain = $info["allow_add_domain"];
+	$max_domain = $info["max_domain"];
+	$restricted_ftp_path = $info["restricted_ftp_path"];
+	$allow_dns_and_mx_change = $info["allow_dns_and_mx_change"];
+	$allow_mailing_list_edit = $info["allow_mailing_list_edit"];
+	$allow_subdomain_edit = $info["allow_subdomain_edit"];
+	$resseller_flag = $info["resseller_flag"];
+	$ssh_login_flag = $info["ssh_login_flag"];
+	$ftp_login_flag = $info["ftp_login_flag"];
+	$pkg_install_flag = $info["pkg_install_flag"];
+	$shared_hosting_security = $info["shared_hosting_security"];
+
+//	if($resseller_flag == "yes"){
+//		$resflag_yes = " checked='checked' ";
+//		$resflag_no = "";
+//	}else{
+//		$resflag_yes = " ";
+//		$resflag_no = " checked='checked' ";
+//	}
+//	$res_selector = "<input type=\"radio\" name=\"resseller_flag\" value=\"yes\"$resflag_yes> "._("Yes")."
+//	<input type=\"radio\" name=\"resseller_flag\" value=\"no\"$resflag_no> "._("No")."</div>";
+//
+//	if($ssh_login_flag == "yes"){
+//		$sshlogin_yes = " checked='checked' ";
+//		$sshlogin_no = "";
+//	}else{
+//		$sshlogin_yes = "";
+//		$sshlogin_no = " checked='checked' ";
+//	}
+//	$sshlog_selector = "<input type=\"radio\" name=\"ssh_login_flag\" value=\"yes\"$sshlogin_yes> "._("Yes")."
+//	<input type=\"radio\" name=\"ssh_login_flag\" value=\"no\"$sshlogin_no> "._("No");
+//
+//	if($ftp_login_flag == "yes"){
+//		$ftplogin_yes = " checked='checked' ";
+//		$ftplogin_no = "";
+//	}else{
+//		$ftplogin_yes = "";
+//		$ftplogin_no = " checked='checked' ";
+//	}
+//	$ftplog_selector = "<input type=\"radio\" name=\"ftp_login_flag\" value=\"yes\"$ftplogin_yes> "._("Yes")."
+//	<input type=\"radio\" name=\"ftp_login_flag\" value=\"no\"$ftplogin_no> "._("No");
+//
+//	if($pkg_install_flag == "yes"){
+//		$pkg_install_yes = " checked='checked' ";
+//		$pkg_install_no = "";
+//	}else{
+//		$pkg_install_yes = "";
+//		$pkg_install_no = " checked='checked' ";
+//	}
+//	$pkg_install_selector = "<input type=\"radio\" name=\"pkg_install_flag\" value=\"yes\"$pkg_install_yes> "._("Yes")."
+//	<input type=\"radio\" name=\"pkg_install_flag\" value=\"no\"$pkg_install_no> "._("No");
+//
+//	if($allow_add_domain == "yes")	$adyes = "selected='selected'";	else $adyes = "";
+//	if($allow_add_domain == "check")$adcheck = "selected='selected'";	else $adcheck = "";
+//	if($allow_add_domain == "no")	$adno = "selected='selected'";	else $adno = "";
+//	$aldom_popup = "<select class=\"dtcDatagrid_input_color\" name=\"allow_add_domain\">
+//<option value=\"yes\" $adyes>" . _("Yes") ."</option>
+//<option value=\"check\" $adcheck>" . _("Check") . "</option>
+//<option value=\"no\" $adno>". _("No") . "</option>
+//</select>
+//";
+//
+//	// Restriction of FTP path selection
+//	if($restricted_ftp_path == "yes"){
+//		$restricted_ftp_path_yes = " checked='checked' ";
+//		$restricted_ftp_path_no = "";
+//	}else{
+//		$restricted_ftp_path_yes = "";
+//		$restricted_ftp_path_no = " checked='checked' ";
+//	}
+//	$restricted_ftp_path_selector = "<input type=\"radio\" name=\"restricted_ftp_path\" value=\"yes\"$restricted_ftp_path_yes> "._("Yes")."
+//<input type=\"radio\" name=\"restricted_ftp_path\" value=\"no\"$restricted_ftp_path_no> "._("No");
+//
+//	// Allowing change of DNS and MX
+//	if($allow_dns_and_mx_change == "yes"){
+//		$allow_dns_and_mx_change_yes = " checked='checked' ";
+//		$allow_dns_and_mx_change_no = "";
+//	}else{
+//		$allow_dns_and_mx_change_yes = "";
+//		$allow_dns_and_mx_change_no = " checked='checked' ";
+//	}
+//	$allow_dns_and_mx_change_selector = "<input type=\"radio\" name=\"allow_dns_and_mx_change\" value=\"yes\"$allow_dns_and_mx_change_yes> "._("Yes")."
+//<input type=\"radio\" name=\"allow_dns_and_mx_change\" value=\"no\"$allow_dns_and_mx_change_no> "._("No");
+//
+//	// Allow users to edit mailing lists
+//	if($allow_mailing_list_edit == "yes"){
+//		$allow_mailing_list_edit_yes = " checked='checked' ";
+//		$allow_mailing_list_edit_no = "";
+//	}else{
+//		$allow_mailing_list_edit_yes = "";
+//		$allow_mailing_list_edit_no = " checked='checked' ";
+//	}
+//	$allow_mailing_list_edit_selector = "<input type=\"radio\" name=\"allow_mailing_list_edit\" value=\"yes\"$allow_mailing_list_edit_yes> "._("Yes")."
+//<input type=\"radio\" name=\"allow_mailing_list_edit\" value=\"no\"$allow_mailing_list_edit_no> "._("No");
+//
+//	// Allow users to edit subdomains
+//	if($allow_subdomain_edit == "yes"){
+//		$allow_subdomain_edit_yes = " checked='checked' ";
+//		$allow_subdomain_edit_no = "";
+//	}else{
+//		$allow_subdomain_edit_yes = "";
+//		$allow_subdomain_edit_no = " checked='checked' ";
+//	}
+//	$allow_subdomain_edit_selector = "<input type=\"radio\" name=\"allow_subdomain_edit\" value=\"yes\"$allow_subdomain_edit_yes> "._("Yes")."
+//<input type=\"radio\" name=\"allow_subdomain_edit\" value=\"no\"$allow_subdomain_edit_no> "._("No");
+//
+//	// The shared hosting security popup
+//	switch($shared_hosting_security){
+//	case "mod_php":
+//		$shared_hosting_security_mod_php_sel = " selected ";
+//		$shared_hosting_security_sbox_copy_sel = "";
+//		$shared_hosting_security_sbox_aufs_sel = "";
+//		break;
+//	case "sbox_copy":
+//		$shared_hosting_security_mod_php_sel = "";
+//		$shared_hosting_security_sbox_copy_sel = " selected ";
+//		$shared_hosting_security_sbox_aufs_sel = "";
+//		break;
+//	case "sbox_aufs":
+//		$shared_hosting_security_mod_php_sel = "";
+//		$shared_hosting_security_sbox_copy_sel = "";
+//		$shared_hosting_security_sbox_aufs_sel = "selected";
+//		break;
+//	default:
+//		break;
+//	}
+//	$shared_hosting_security_popup = "<select name=\"shared_hosting_security\">
+//	<option value=\"mod_php\"$shared_hosting_security_mod_php_sel>mod_php</option>
+//	<option value=\"sbox_copy\"$shared_hosting_security_sbox_copy_sel>sbox_copy</option>
+//	<option value=\"sbox_aufs\"$shared_hosting_security_sbox_aufs_sel>sbox_aufs</option>
+//	</select>";
 
 	// Generate the admin tool configuration module
 	// Deletion of domains :
