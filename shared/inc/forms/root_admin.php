@@ -247,6 +247,7 @@ function drawEditAdminDomains($admin){
 	global $pro_mysql_vps_table;
 	global $pro_mysql_product_table;
 	global $pro_mysql_dedicated_table;
+	global $pro_mysql_custom_product_table;
 	global $cc_code_popup;
 
 	global $adm_login;
@@ -432,6 +433,21 @@ function drawEditAdminDomains($admin){
 	<tr><td style=\"text-align: right; white-space: nowrap;\">". _("Country: ") ."</td>
 		<td><select name=\"country\">$cc_code_popup</select></td>
 	<tr><td></td><td>".dtcApplyButton()."</td></tr></table></form>";
+
+	// Deletion of custom products
+	$q = "SELECT *,$pro_mysql_custom_product_table.id as delid FROM $pro_mysql_custom_product_table,$pro_mysql_product_table WHERE product_id=$pro_mysql_product_table.id and owner='$adm_login';";
+	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysql_num_rows($r);
+	if($n > 0){
+		$domain_conf .= "<br><br><h3>". _("Delete one of the admin custom products:") ."</h3><br>";
+		for($i=0;$i<$n;$i++){
+			$a = mysql_fetch_array($r);
+			if($i > 0){
+				$domain_conf .= " - ";
+			}
+			$domain_conf .= "<a href=\"?adm_login=$adm_login&adm_pass=$adm_pass&rub=$rub&action=delete_a_custom_product&id=".$a["delid"]."\"><b>".$a["name"].".".$a["domain"]."</b></a>";
+		}
+	}
 
 	return $domain_conf;
 }

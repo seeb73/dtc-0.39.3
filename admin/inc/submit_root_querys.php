@@ -12,6 +12,11 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "delete_a_dedicated"){
 	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 }
 
+if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "delete_a_custom_product"){
+	$q = "DELETE FROM $pro_mysql_custom_product_table WHERE id='".$_REQUEST["id"]."';";
+	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+}
+
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_dedicated_to_user"){
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$_REQUEST["product_id"]."';";
 	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
