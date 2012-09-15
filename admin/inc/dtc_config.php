@@ -294,7 +294,7 @@ for custom product type with id 1 for the expired reminder",
 				"legend" => _("Shutdown warning for Shared Hosting: "),
                                 "type" => "text",
                                 "size" => "16"),
-            "custom_renewal_before" => array(
+			"custom_renewal_before" => array(
 				"legend" => _("Warning before expiration for Custom Products: "),
 				"type" => "text",
 				"size" => "16"),
@@ -1238,7 +1238,17 @@ function drawGeneralConfig(){
 			"new_account_restrict_message" => array(
 				"legend" => _("Url to redirect if product_id is not set in the request of new_account form: "),
 				"type" => "text",
-				"size" => "255")));
+				"size" => "255"),
+			"require_valid_tld_on_dedicated" => array(
+				"legend" => _("Require a valid TLD for the hostname on Dedicated Servers:"),
+				"type" => "radio",
+				"values" => array("yes","no"),
+                                "display_replace" => array(_("Yes"),_("No"))),
+			"require_valid_tld_on_custom" => array(
+				"legend" => _("Require a valid TLD for the domain on Custom Products:"),
+				"type" => "radio",
+				"values" => array("yes","no"),
+                                "display_replace" => array(_("Yes"),_("No")))));
 	$out .= configEditorTemplate ($dsc);
 
 	$dsc = array(

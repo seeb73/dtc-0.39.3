@@ -25,6 +25,9 @@ function register_user($adding_service="no"){
 	global $pro_mysql_dedicated_table;
 	global $pro_mysql_custom_product_table;
 
+	global $conf_require_valid_tld_on_dedicated;
+	global $conf_require_valid_tld_on_custom;
+
 	get_secpay_conf();
 
 	// Check if all fields are blank, in wich case don't display error
@@ -91,6 +94,10 @@ function register_user($adding_service="no"){
 		$domain_tld = "";
 	}else{
 		$domain_tld = $_REQUEST["domain_tld"];
+	}
+
+	if($db_product["heb_type"] == "server" || $db_product["heb_type"] == "custom"){
+		$domain_tld = "";
 	}
 
 	// If shared or ssl hosting or custom with domain, we MUST do type checkings
@@ -524,6 +531,9 @@ function registration_form(){
         global $conf_new_account_restrict_hide_products;
 	global $conf_new_account_restrict_message;
 
+	global $conf_require_valid_tld_on_dedicated;
+	global $conf_require_valid_tld_on_custom;
+
 
 
 	if ($conf_restrict_new_account_form == "yes" and ((isset($_REQUEST["product_id"]) && !isRandomNum($_REQUEST["product_id"])) or !isset($_REQUEST["product_id"]))){
@@ -584,11 +594,21 @@ function registration_form(){
 	$prod_popup .= "<option value=\"-1\">"._("Please select.")."</optioon>";
 	for($i=0;$i<$n;$i++){
 		$a = mysql_fetch_array($r);
-				if ($a["heb_type"] == "custom"){
+		if ($a["heb_type"] == "custom"){
 			if($a["reqdomain"] == "yes"){
-				$p_jscript .= " prod_popup_htype[".$a["id"]."] = 'custom_domain';\n";
+				if($conf_require_valid_tld_on_custom == "yes"){
+					$p_jscript .= " prod_popup_htype[".$a["id"]."] = 'custom_domain';\n";
+				}else{
+					$p_jscript .= " prod_popup_htype[".$a["id"]."] = 'custom_notld';\n";
+				}
 			}else{
 				$p_jscript .= " prod_popup_htype[".$a["id"]."] = 'custom_nodomain';\n";
+			}
+		}elseif($a["heb_type"] == "server"){
+			if($conf_require_valid_tld_on_dedicated == "yes"){
+				$p_jscript .= " prod_popup_htype[".$a["id"]."] = 'server';\n";
+			}else{
+				$p_jscript .= " prod_popup_htype[".$a["id"]."] = 'server_notld';\n";
 			}
 		}else{
 			$p_jscript .= " prod_popup_htype[".$a["id"]."] = '".$a["heb_type"]."';\n";
@@ -674,13 +694,15 @@ function registration_form(){
 	if(isset($_REQUEST["custom_notes"]))	$frm_custom_notes = htmlspecialchars($_REQUEST["custom_notes"]);
 	else	$frm_custom_notes = "";
 
-	if($heb_type == "all" || $heb_type == "shared" || $heb_type == "server" || $heb_type == "ssl"){
+	if($heb_type == "all" || $heb_type == "shared" || $heb_type == "ssl" || $heb_type == "server"){
 		$domname_hidden = " style=\"white-space:nowrap;\" ";
+		$domext_hidden = " style=\"white-space:nowrap;\" ";
 	}else{
 		$domname_hidden = " style=\"display:none;visibility:hidden;white-space:nowrap;\" ";
+		$domext_hidden = " style=\"display:none;visibility:hidden;white-space:nowrap;\" ";
 	}
 
-	if($heb_type == "all" || $heb_type == "vps"){
+	if($heb_type == "vps"){
 		$vps_hidden = " ";
 	}else{
 		$vps_hidden = " style=\"display:none;visibility:hidden;\" ";
@@ -706,10 +728,10 @@ function registration_form(){
 
 	$prod_popup = "<table>
 <tr>
-	<td style=\"white-space: nowrap;text-align: right;\">". _("Product") .": </td><td>".$prod_popup."</td>
+	<td style=\"white-space: nowrap;text-align: right;\">". _("Product") .": </td><td colspan=\"2\">".$prod_popup."</td>
 </td><tr>
-	<td style=\"white-space: nowrap;text-align: right;\"><div name=\"domname_text\" id=\"domname_text\" $domname_hidden>". _("Desired domain name") .":</div></td>
-	<td><div name=\"domname_field\" id=\"domname_field\" $domname_hidden>www.<input type=\"text\" name=\"domain_name\" value=\"$frm_domain_name\"><select name=\"domain_tld\">".$tld_popup."</select></div></td>
+	<td style=\"white-space: nowrap;text-align: right;\"><div name=\"domname_text\" id=\"domname_text\" $domname_hidden>". _("Desired domain<BR>or user name<BR>(No leading www.)") .":</div></td>
+	<td><div name=\"domname_field\" id=\"domname_field\" $domname_hidden><input type=\"text\" name=\"domain_name\" value=\"$frm_domain_name\"></div></td><td><div name=\"domext_field\" id=\"domext_field\" $domext_hidden><select name=\"domain_tld\">".$tld_popup."</select></div></td>
 </tr><tr>
 	<td style=\"white-space: nowrap;text-align: right;\"><div name=\"vps_popup_text\" id=\"vps_popup_text\" $vps_hidden>". _("VPS location: ") ."</div></td>
 	<td><div name=\"vps_popup_field\" id=\"vps_popup_field\" $vps_hidden><select name=\"vps_server_hostname\">$vps_location_popup</select></div></td>
@@ -907,11 +929,14 @@ function hostingProductChanged(){
 	var d = new getObj('vps_popup_text');
 	var e = new getObj('vps_ospopup_text');
 	var f = new getObj('vps_ospopup_field');
+	var g = new getObj('domext_field');
 	if(hosting_type == 'vps'){
 		a.style.visibility = 'hidden';
 		a.style.display = 'none';
 		b.style.visibility = 'hidden';
 		b.style.display = 'none';
+		g.style.visibility = 'hidden';
+		g.style.display = 'none';
 
 		c.style.visibility = 'visible';
 		c.style.display = 'block';
@@ -921,11 +946,29 @@ function hostingProductChanged(){
 		e.style.display = 'block';
 		f.style.visibility = 'visible';
 		f.style.display = 'block';
-		}else if(hosting_type == 'custom_nodomain'){
+	}else if(hosting_type == 'custom_nodomain'){
 		a.style.visibility = 'hidden';
 		a.style.display = 'none';
 		b.style.visibility = 'hidden';
 		b.style.display = 'none';
+		g.style.visibility = 'hidden';
+		g.style.display = 'none';
+
+		c.style.visibility = 'hidden';
+		c.style.display = 'none';
+		d.style.visibility = 'hidden';
+		d.style.display = 'none';
+		e.style.visibility = 'hidden';
+		e.style.display = 'none';
+		f.style.visibility = 'hidden';
+		f.style.display = 'none';
+	}else if(hosting_type == 'custom_domain' || hosting_type == 'server' || hosting_type == 'shared'){
+		a.style.visibility = 'visible';
+		a.style.display = 'block';
+		b.style.visibility = 'visible';
+		b.style.display = 'block';
+		g.style.visibility = 'visible';
+		g.style.display = 'block';
 
 		c.style.visibility = 'hidden';
 		c.style.display = 'none';
@@ -940,6 +983,8 @@ function hostingProductChanged(){
 		a.style.display = 'block';
 		b.style.visibility = 'visible';
 		b.style.display = 'block';
+		g.style.visibility = 'hidden';
+		g.style.display = 'none';
 
 		c.style.visibility = 'hidden';
 		c.style.display = 'none';

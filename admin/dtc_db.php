@@ -306,7 +306,9 @@ $dtc_database = array(
 			"restrict_new_account_form" => "enum('yes','no') NOT NULL default 'no'",
 			"new_account_restrict_action" => "enum('show_all_plans','redirect') NOT NULL default 'show_all_plans'",
                         "new_account_restrict_hide_products" => "enum('yes','no') NOT NULL default 'no'",
-			"new_account_restrict_message" => "varchar(255) NOT NULL default 'http://'"
+			"new_account_restrict_message" => "varchar(255) NOT NULL default 'http://'",
+			"require_valid_tld_on_dedicated" => "enum('yes','no') NOT NULL default 'yes'",
+			"require_valid_tld_on_custom" => "enum('yes','no') NOT NULL default 'yes'"
 		),
 		"keys" => array(
 			"unicrow" => "(unicrow)"
