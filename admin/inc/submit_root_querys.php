@@ -17,6 +17,23 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "delete_a_custom_product
 	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 }
 
+if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_custom_to_user"){
+	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$_REQUEST["product_id"]."';";
+	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysql_num_rows($r);
+	if($n != 1){
+		die("Didn't find the product you want to add line ".__LINE__." file ".__FILE__);
+	}
+	$prod = mysql_fetch_array($r);
+
+	$exp_date = calculateExpirationDate(date("Y-m-d"),$prod["period"]);
+
+	$q = "INSERT INTO $pro_mysql_custom_product_table (id,owner,domain,start_date,expire_date,product_id,country_code,custom_heb_type,custom_heb_type_fld)
+	VALUES('','$adm_login','".$_REQUEST["server_hostname"]."','".date("Y-m-d")."','$exp_date',".$_REQUEST["product_id"].",'".$_REQUEST["country"]."',".$prod["custom_heb_type"].",'".$prod["custom_heb_type_fld"]."');";
+	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+}
+
+////////////////////
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_dedicated_to_user"){
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$_REQUEST["product_id"]."';";
 	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());

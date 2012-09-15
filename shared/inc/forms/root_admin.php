@@ -449,6 +449,29 @@ function drawEditAdminDomains($admin){
 		}
 	}
 
+	// Creation of Custom Products
+	$q = "SELECT * FROM $pro_mysql_product_table WHERE heb_type='custom' AND renew_prod_id='0';";
+	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysql_num_rows($r);
+	$num_prods_vps = $n;
+	$server_prods = "";
+	for($i=0;$i<$n;$i++){
+		$a = mysql_fetch_array($r);
+		$server_prods .= "<option value=\"".$a["id"]."\">".$a["name"]."</option>";
+	}
+	$domain_conf .= "<br><br><h3>". _("Add a custom product for this admin:") ."</h3>
+	<form method=\"$conf_post_or_get\" action=\"?\">
+	<input type=\"hidden\" name=\"rub\" value=\"$rub\">
+	<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
+	<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
+	<input type=\"hidden\" name=\"action\" value=\"add_custom_to_user\">
+	<table border=\"0\">
+	<tr><td style=\"text-align: right; white-space: nowrap;\">". _("Product: ")."</td>
+		<td><select name=\"product_id\">$server_prods</select></td></tr>
+	<tr><td style=\"text-align: right; white-space: nowrap;\">". _("Domain: ") ."</td>
+		<td><input type=\"text\" name=\"server_hostname\" value=\"\"></td>
+	<tr><td></td><td>".dtcApplyButton()."</td></tr></table></form>";
+
 	return $domain_conf;
 }
 /////////////////////////////////////////////////////////////////
