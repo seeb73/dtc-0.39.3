@@ -535,6 +535,7 @@ function drawAdminTools_Emails($domain){
 				"default" => "",
 				"check" => "numeric",
 				"can_be_empty" => "yes",
+				"placeholder" => "4.3",
 				"legend" => _("Spam tag level: ") ),
 			"spam_tag2_level" => array(
 				"type" => "text",
@@ -542,6 +543,7 @@ function drawAdminTools_Emails($domain){
 				"default" => "",
 				"check" => "numeric",
         			"can_be_empty" => "yes",
+        			"placeholder" => "6.0",
 				"legend" => _("Spam tag2 level: ") ),
 			"spam_tag3_level" => array(
 				"type" => "text",
@@ -549,6 +551,7 @@ function drawAdminTools_Emails($domain){
 				"default" => "",
 				"check" => "numeric",
 				"can_be_empty" => "yes",
+				"placeholder" => "7.5",
 				"legend" => _("Spam tag3 level: ") ),
 			"spam_kill_level" => array(
 				"type" => "text",
@@ -556,6 +559,7 @@ function drawAdminTools_Emails($domain){
 				"default" => "",
 				"check" => "numeric",
 				"can_be_empty" => "yes",
+				"placeholder" => "9",
 				"legend" => _("Spam kill level: ") ),
 			"spam_dsn_cutoff_level" => array(
 				"type" => "text",
@@ -563,6 +567,7 @@ function drawAdminTools_Emails($domain){
 				"default" => "",
 				"check" => "numeric",
 				"can_be_empty" => "yes",
+				"placeholder" => "11",
 				"legend" => _("DSN cutoff level: ") ),
 			"quarantine_cutoff_level" => array(
 				"type" => "text",
@@ -668,6 +673,8 @@ function drawAdminTools_Emails($domain){
 				"default" => "",
 				"check" => "number",
 				"can_be_empty" => "yes",
+				"placeholder" => "256000",
+				"happen" => _("Bytes"),
 				"legend" => _("Message size limit for filters: ") ),
 			"addr_extension_virus" => array(
 				"type" => "text",
@@ -691,7 +698,7 @@ function drawAdminTools_Emails($domain){
 				"default" => "",
 				"check" => "IMAPMailbox",
 				"can_be_empty" => "yes",
-                                "placeholder" => "banned-files-extention",
+                                "placeholder" => "banned-files",
 				"legend" => _("Banned_files address extension: ") ),
 			"addr_extension_bad_header" => array(
 				"type" => "text",
