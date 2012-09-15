@@ -1353,6 +1353,7 @@ foreach($cant_dedicated_plans as $plan => $arr)
 			<td class=\"dtcDatagrid_table_titles\">". _("Expiration Date") ."</td>
 			<td class=\"dtcDatagrid_table_titles\">". _("Days Past Expiration") ."</td>
 			<td class=\"dtcDatagrid_table_titles\">". _("Action") ."</td>
+			<td class=\"dtcDatagrid_table_titles\">". _("Status") ."</td>
 			</tr>";
 			for($i=0;$i<$n;$i++){
 				if($i % 2){
@@ -1419,7 +1420,8 @@ foreach($cant_dedicated_plans as $plan => $arr)
 				<$td>".$a2["email"]."</td>
 				<$td $bgcolor>".$a["expire_date"]."</td>
 				<$td $bgcolor>". calculateAge($a["expire_date"],"00:00:00") ."</td>
-				<$td><a href=\"?rub=$rub&action=shutdown_expired_vps&server_hostname=".$a["vps_server_hostname"]."&vps_name=".$a["vps_xen_name"]."\">"._("Shutdown")."</a> - $kill_owner_txt</td></tr>";
+				<$td><a href=\"?rub=$rub&action=shutdown_expired_vps&server_hostname=".$a["vps_server_hostname"]."&vps_name=".$a["vps_xen_name"]."\">"._("Shutdown")."</a> - $kill_owner_txt</td>
+				<$td><iframe frameborder=\"0\" scrolling=\"no\" width=\"128\" marginheight=\"0\" marginwidth=\"0\" height=\"14\" src=\"vps_status.php?server_hostname=".$a["vps_server_hostname"]."&vps_name=".$a["vps_xen_name"]."\"></iframe></td></tr>";
 			}
 			$out .= "</table>";
 		}
