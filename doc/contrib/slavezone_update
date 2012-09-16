@@ -12,6 +12,7 @@
 # then add an include directive in your bind configuration:
 #
 # echo "include \"/etc/bind/named.slavezones.conf\";" >>/etc/bind/named.conf.local
+# echo "include \"/etc/bind/named.reverse.slavezones.conf\";" >>/etc/bind/named.conf.local
 #
 # then edit the following 3 parameters, and maybe your
 # /etc/hosts file to make sure your backup DNS can resolve
@@ -25,17 +26,52 @@ BACKUP_PASSWORD=changeme
 TEMP_OUTFILE=`mktemp -t -u`
 TEMP_OUTFILE2=`mktemp -t`
 
+mkdir -p /var/lib/dtc/etc/slave_zones
+mkdir -p /var/lib/dtc/etc/slave_reverse_zones
+
 /usr/bin/wget --no-check-certificate -O ${TEMP_OUTFILE} "https://${DTC_PANEL_URL}/dtc/list_domains.php?login=${BACKUP_LOGIN}&pass=${BACKUP_PASSWORD}&action=list_dns"
+
+if [ $? -ne 0 ]
+then
+	echo WGET list_dns error
+	exit 1
+fi
 
 /bin/cat ${TEMP_OUTFILE} | /bin/sed -e 's/\(type slave;\)/\1\n\tallow-query { any; };/' > ${TEMP_OUTFILE2}
 
-/bin/cp /etc/bind/named.slavezones.conf /etc/bind/named.slavezones.conf.bak
+if [ -f /etc/namedb/named.slavezones.conf ] ; then
+	/bin/cp /etc/bind/named.slavezones.conf /etc/bind/named.slavezones.conf.bak
+fi
+
 FILESIZE=0
 FILESIZE=$(/usr//bin/stat -c%s "${TEMP_OUTFILE2}")
 # don't overwrite the working slavezones.conf if the generated one is zero bytes
 if [ $FILESIZE -gt 0 ]; then
         /bin/mv ${TEMP_OUTFILE2} /etc/bind/named.slavezones.conf
 	chown bind.bind /etc/bind/named.slavezones.conf
+        /usr/sbin/rndc reload
+fi
+
+/usr/bin/wget --no-check-certificate -O ${TEMP_OUTFILE} "https://${DTC_PANEL_URL}/dtc/list_domains.php?login=${BACKUP_LOGIN}&pass=${BACKUP_PASSWORD}&action=list_reverse_dns"
+
+if [ $? -ne 0 ]
+then
+	echo WGET list_reverse_dns error
+	exit 1
+fi
+
+/bin/cat ${TEMP_OUTFILE} | /bin/sed -e 's/\(type slave;\)/\1\n\tallow-query { any; };/' > ${TEMP_OUTFILE2}
+
+if [ -f /etc/namedb/named.reverse.slavezones.conf ] ; then
+	/bin/cp /etc/bind/named.reverse.slavezones.conf /etc/bind/named.reverse.slavezones.conf.bak
+fi
+
+FILESIZE=0
+FILESIZE=$(/usr//bin/stat -c%s "${TEMP_OUTFILE2}")
+# don't overwrite the working slavezones.conf if the generated one is zero bytes
+if [ $FILESIZE -gt 0 ]; then
+        /bin/mv ${TEMP_OUTFILE2} /etc/bind/named.reverse.slavezones.conf
+	chown bind.bind /etc/bind/named.reverse.slavezones.conf
         /usr/sbin/rndc reload
 fi
 
