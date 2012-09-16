@@ -39,7 +39,7 @@ function drawAdminTools_Custom($admin,$custom_id){
 		$server_prod = mysql_fetch_array($r);
 		$contract = $server_prod["name"];
 	}else{
-		$contact = _("Not found!");
+		$contract = _("Not found!");
 	}
 
 	$additiona_info = "";
@@ -50,7 +50,7 @@ function drawAdminTools_Custom($admin,$custom_id){
 		if($n == 1){
 			$custom_heb_types = mysql_fetch_array($r);
 			if($custom_heb_types["reqdomain"] == "yes"){
-				$additiona_info .= "<br>"._("Domain name:")." ".$custom_prod["domain"];
+				$additiona_info .= "<br>"._("Domain or user name:")." ".$custom_prod["domain"];
 			}
 		}else{
 			$additiona_info .= "<br>"._("Warning: no custom type found")." line ".__LINE__." file ".__FILE__;

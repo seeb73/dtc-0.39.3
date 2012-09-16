@@ -267,8 +267,9 @@ function drawAdminTools($admin){
 			if($n != 1){
 				$custprod_name = _("Error 2 while retriving custom product name");
 			}else{
+				$domainname = $a["domain"];
 				$a = mysql_fetch_array($r);
-				$custprod_name = $a["name"];
+				$custprod_name = $a["name"].": ".$domainname;
 			}
 		}
 		$user_menu[] = array(
@@ -499,7 +500,7 @@ function drawAdminTools($admin){
 			$title = _("Dedicated server") .": $dedicated_server_hostname";
 		}else if(substr($addrlink,0,7) == "custom:"){
 			$web_editor .= drawAdminTools_Custom($admin,$custom_id);
-			$title = _("Dedicated server") .": $dedicated_server_hostname";
+			$title = _("Custom Product") .": $dedicated_server_hostname";
 		}else if(@$add_array[1] == "mailboxs"){
                         $web_editor .= "<img src=\"gfx/toolstitles/mailboxs.png\" align=\"left\"><font size=\"+2\"><b><u>". _("Mailboxes:") ."</u></b><br></font>";
                         $web_editor .= drawAdminTools_Emails($eddomain);
