@@ -218,7 +218,7 @@ function drawRenewalTables (){
 					"type" => "popup",
 					"values" => array("none", "credit_card", "wire_transfer", "paypal", "check", "cash"),
 					"display_replace" => array( _("Unknown"), _("Credit cCrd"), _("Wire Transfer"),
-									_("Paypal"), _("Check"), _("Cash") ) ),
+									_("Paypal"), _("Cheque"), _("Cash") ) ),
 				"payment_total" => array(
 					"type" => "text",
 					"size" => 6,
