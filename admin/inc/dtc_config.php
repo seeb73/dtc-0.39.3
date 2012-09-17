@@ -1134,7 +1134,7 @@ function generalDaemonCallback(){
         global $pro_mysql_cronjob_table;
         #$q = "UPDATE $pro_mysql_domain_table SET generate_flag='yes';";
         #$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-        $q = "UPDATE $pro_mysql_cronjob_table SET restart_apache='yes', gen_vhosts='yes';";
+        $q = "UPDATE $pro_mysql_cronjob_table SET restart_apache='yes', gen_vhosts='yes', gen_named='yes', reload_named='yes';";
         $r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 }
 
@@ -1329,6 +1329,14 @@ function drawGeneralConfig(){
 				"legend" => _("Protocol to use for the /webmail alias: "),
 				"type" => "radio",
 				"values" => array("http:","https:")),
+			"autogen_webmail_host" => array(
+				"legend" => _("Generate a global webmail subdomain: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"autogen_webmail_hostname" => array(
+				"legend" => _("Subdomain for webmail access: "),
+				"type" => "text"),
 			"apache_directoryindex" => array(
 				"legend" => _("Apache DirectoryIndex Config: "),
 				"size" => "50",

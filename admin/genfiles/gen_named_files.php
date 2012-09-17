@@ -1103,6 +1103,8 @@ function named_generate(){
 	global $conf_named_soa_retry;
 	global $conf_named_soa_expire;
 	global $conf_named_soa_default_ttl;
+	global $conf_autogen_webmail_host;
+	global $conf_autogen_webmail_hostname;
 
 	$slave_file = "";
 	$serial_prefix = date("Ymd");
@@ -1361,6 +1363,18 @@ $more_mx_server
 				$list_autogen[] = 'autodiscover';
 			}
 			$n_autogen = sizeof($list_autogen);
+			if ($conf_autogen_webmail_host == "yes" ) {
+				$autogen_webmail_host = "yes";
+				for($autog=0;$autog<$n_autogen;$autog++){
+					if ($list_autogen[$autog] == $conf_autogen_webmail_hostname) {
+						$autogen_webmail_host = "no";
+					}
+				}
+				if ($autogen_webmail_host == "yes") {
+					$list_autogen[] = $conf_autogen_webmail_hostname;
+					$n_autogen++;
+				}
+			}
 			for($autog=0;$autog<$n_autogen;$autog++){
 				$autosubs[$list_autogen[$autog]] = "no";
 			}

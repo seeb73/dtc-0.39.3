@@ -203,6 +203,8 @@ function pro_vhost_generate(){
 	global $conf_autogen_webmail_alias;
 	global $conf_autogen_webmail_type;
 	global $conf_autogen_webmail_protocol;
+	global $conf_autogen_webmail_host;
+	global $conf_autogen_webmail_hostname;
 
 	global $conf_dtc_system_username;
 	global $conf_dtc_system_groupname;
@@ -556,10 +558,14 @@ AND $pro_mysql_admin_table.id_client != '0'";
 		$result2 = mysql_query ($query2)or die("Cannot execute query \"$query2\"");
 		$num_rows2 = mysql_num_rows($result2);
 
+		$webmail_hostname_exists = "no";
 		unset($temp_array_subs);
 		$temp_array_subs = array();
 		for($j=0;$j<$num_rows2;$j++){
 			$temp_array_subs[] = mysql_fetch_array($result2) or die ("Cannot fetch user line ".__LINE__." file ".__FILE__);
+			if ($temp_array_subs[$j] == $conf_autogen_webmail_hostname) {
+				$webmail_hostname_exists = "yes";
+			}
 		}
 
 		// We get the default subdomain and we add it at the end of the array. The goal is to have the
@@ -569,6 +575,16 @@ AND $pro_mysql_admin_table.id_client != '0'";
 		$my_num_rows = mysql_num_rows($result2);
 		if($my_num_rows == 1){
 			$temp_array_subs[] = mysql_fetch_array($result2) or die ("Cannot fetch user".__LINE__." file ".__FILE__);
+			$num_rows2++;
+		}
+
+		if ($conf_autogen_webmail_host == "yes" and $webmail_hostname_exists == "no") {
+			$temp_array_subs[] = $temp_array_subs[0];
+			$temp_array_subs[$num_rows2]["subdomain_name"] = $conf_autogen_webmail_hostname;
+			$temp_array_subs[$num_rows2]["redirect_url"] = "$conf_autogen_webmail_protocol//$conf_administrative_site/$conf_autogen_webmail_type";
+			$temp_array_subs[$num_rows2]["generate_vhost"] = "yes";
+			$temp_array_subs[$num_rows2]["ip"] = "default";
+			$temp_array_subs[$num_rows2]["ssl_ip"] = "none";
 			$num_rows2++;
 		}
 
