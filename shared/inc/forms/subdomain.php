@@ -291,7 +291,7 @@ function drawAdminTools_Subdomain($admin,$domain){
 		"type" => "radio",
 		"help" => _("This wil allow to match filenames in any case disregarding how it is requested and stored on disk ala Windows IIS"),
 		"legend" => _("Windows Compatibility") ,
-		"values" => array("yes","no"),
+		"values" => array("no","yes"),
 		"display_replace" => array(_("No"),_("Yes")) );
 	if($admin["info"]["shared_hosting_security"] == "mod_php"){
 		$dsc["cols"]["shared_hosting_security"] = array(
