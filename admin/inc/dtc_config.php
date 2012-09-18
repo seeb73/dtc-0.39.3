@@ -732,6 +732,9 @@ function drawTicketConfig(){
 			"realname" => array(
 				"type" => "text",
 				"legend" => _("Real Name")),
+			"last_used_lang" => array(
+				"type" => "text",
+				"legend" => _("Language")),
 			"email" => array(
 				"type" => "text",
 				"legend" => _("Email Address")),

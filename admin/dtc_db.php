@@ -1394,6 +1394,7 @@ $dtc_database = array(
 			"id" => "int(11) NOT NULL auto_increment",
 			"pseudo" => "varchar(64) NOT NULL default ''",
 			"realname" => "varchar(64) NOT NULL default ''",
+			"last_used_lang" => "varchar(32) NOT NULL default 'en_US.UTF-8'",
 			"email" => "varchar(128) NOT NULL default ''",
 			"available" => "enum('yes','no') NOT NULL default 'yes'",
 			"tikadm_pass" => "varchar(255) NOT NULL default ''",
