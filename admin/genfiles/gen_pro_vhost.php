@@ -206,6 +206,9 @@ function pro_vhost_generate(){
 	global $conf_autogen_webmail_host;
 	global $conf_autogen_webmail_hostname;
 
+	global $conf_autogen_admin_host;
+	global $conf_autogen_admin_hostname;
+
 	global $conf_dtc_system_username;
 	global $conf_dtc_system_groupname;
 
@@ -559,12 +562,16 @@ AND $pro_mysql_admin_table.id_client != '0'";
 		$num_rows2 = mysql_num_rows($result2);
 
 		$webmail_hostname_exists = "no";
+		$admin_hostname_exists = "no";
 		unset($temp_array_subs);
 		$temp_array_subs = array();
 		for($j=0;$j<$num_rows2;$j++){
 			$temp_array_subs[] = mysql_fetch_array($result2) or die ("Cannot fetch user line ".__LINE__." file ".__FILE__);
 			if ($temp_array_subs[$j] == $conf_autogen_webmail_hostname) {
 				$webmail_hostname_exists = "yes";
+			}
+			if ($temp_array_subs[$j] == $conf_autogen_admin_hostname) {
+				$admin_hostname_exists = "yes";
 			}
 		}
 
@@ -582,6 +589,16 @@ AND $pro_mysql_admin_table.id_client != '0'";
 			$temp_array_subs[] = $temp_array_subs[0];
 			$temp_array_subs[$num_rows2]["subdomain_name"] = $conf_autogen_webmail_hostname;
 			$temp_array_subs[$num_rows2]["redirect_url"] = "$conf_autogen_webmail_protocol//$conf_administrative_site/$conf_autogen_webmail_type";
+			$temp_array_subs[$num_rows2]["generate_vhost"] = "yes";
+			$temp_array_subs[$num_rows2]["ip"] = "default";
+			$temp_array_subs[$num_rows2]["ssl_ip"] = "none";
+			$num_rows2++;
+		}
+
+		if ($conf_autogen_admin_host == "yes" and $admin_hostname_exists == "no") {
+			$temp_array_subs[] = $temp_array_subs[0];
+			$temp_array_subs[$num_rows2]["subdomain_name"] = $conf_autogen_admin_hostname;
+			$temp_array_subs[$num_rows2]["redirect_url"] = "http://".$conf_administrative_site."/dtc";
 			$temp_array_subs[$num_rows2]["generate_vhost"] = "yes";
 			$temp_array_subs[$num_rows2]["ip"] = "default";
 			$temp_array_subs[$num_rows2]["ssl_ip"] = "none";

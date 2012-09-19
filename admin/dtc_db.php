@@ -310,7 +310,9 @@ $dtc_database = array(
 			"require_valid_tld_on_dedicated" => "enum('yes','no') NOT NULL default 'yes'",
 			"require_valid_tld_on_custom" => "enum('yes','no') NOT NULL default 'yes'",
 			"autogen_webmail_host" => "enum('yes','no') NOT NULL default 'no'", 
-			"autogen_webmail_hostname" => "varchar(40) NOT NULL default 'webmail'"
+			"autogen_webmail_hostname" => "varchar(40) NOT NULL default 'webmail'",
+			"autogen_admin_host" => "enum('yes','no') NOT NULL default 'no'",
+			"autogen_admin_hostname" => "varchar(40) NOT NULL default 'admin'",
 		),
 		"keys" => array(
 			"unicrow" => "(unicrow)"

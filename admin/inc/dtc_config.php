@@ -1337,6 +1337,14 @@ function drawGeneralConfig(){
 			"autogen_webmail_hostname" => array(
 				"legend" => _("Subdomain for webmail access: "),
 				"type" => "text"),
+                        "autogen_admin_host" => array(
+                                "legend" => _("Auto generate an admin subdomain to acces DTC panel: "),
+                                "type" => "radio",
+                                "values" => array("yes","no"),
+                                "display_replace" => array(_("Yes"),_("No"))),
+                        "autogen_admin_hostname" => array(
+                                "legend" => _("Subdomain for panel access: "),
+                                "type" => "text"),
 			"apache_directoryindex" => array(
 				"legend" => _("Apache DirectoryIndex Config: "),
 				"size" => "50",

@@ -1105,6 +1105,8 @@ function named_generate(){
 	global $conf_named_soa_default_ttl;
 	global $conf_autogen_webmail_host;
 	global $conf_autogen_webmail_hostname;
+	global $conf_autogen_admin_host;
+	global $conf_autogen_admin_hostname;
 
 	$slave_file = "";
 	$serial_prefix = date("Ymd");
@@ -1375,6 +1377,18 @@ $more_mx_server
 					$n_autogen++;
 				}
 			}
+                        if ($conf_autogen_admin_host == "yes" ) {
+                                $autogen_admin_host = "yes";
+                                for($autog=0;$autog<$n_autogen;$autog++){
+                                        if ($list_autogen[$autog] == $conf_autogen_admin_hostname) {
+                                                $autogen_admin_host = "no";
+                                        }
+                                }
+                                if ($autogen_admin_host == "yes") {
+                                        $list_autogen[] = $conf_autogen_admin_hostname;
+                                        $n_autogen++;
+                                }
+                        }
 			for($autog=0;$autog<$n_autogen;$autog++){
 				$autosubs[$list_autogen[$autog]] = "no";
 			}
