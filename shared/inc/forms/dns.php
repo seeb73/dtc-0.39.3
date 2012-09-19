@@ -58,6 +58,7 @@ dtcFormLineDraw( _("IP address of the primary DNS server:") ,"<input type=\"text
 		$domain_dns_mx_conf_form .= dtcFormLineDraw("","<input type=\"text\" name=\"new_mx_$new_mx_num\" value=\"\">");
 	}
 
+	$domain_dns_mx_conf_form .= dtcFormLineDraw( _("Domain SPF record: ") ,"<input type=\"text\" name=\"spf_txt_entry\" value=\"".htmlspecialchars($eddomain["spf_txt_entry"])."\">");
 	$domain_dns_mx_conf_form .= dtcFormLineDraw( _("Domain root TXT record: ") ,"<input type=\"text\" name=\"txt_root_entry\" value=\"".htmlspecialchars($eddomain["txt_root_entry"])."\">");
 	$domain_dns_mx_conf_form .= dtcFormLineDraw( _("Domain root TXT record2: ") ,"<input type=\"text\" name=\"txt_root_entry2\" value=\"".htmlspecialchars($eddomain["txt_root_entry2"])."\">");
 	$domain_dns_mx_conf_form .= dtcFromOkDraw();

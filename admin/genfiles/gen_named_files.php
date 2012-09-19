@@ -1208,9 +1208,17 @@ function named_generate(){
 			}
 		}
 		
+		$spf_txt_record = $row["spf_txt_entry"];
 		$root_txt_record = $row["txt_root_entry"];
 		$root_txt_record2 = $row["txt_root_entry2"];
-
+		//Protect Existing SPF records not putting the new one if already exists in TXT or TXT2
+		//If we end with two SPF records in the zone, we get an error on all servers doing SPF checks.
+		if (substr($root_txt_record,0,6) == "v=spf1") {
+			$spf_txt_record = "";
+		}
+		if (substr($root_txt_record2,0,6) == "v=spf1") {
+			$spf_txt_record = "";
+		}
 
 		$web_extention = substr($web_name,-strpos(strrev($web_name),'.'));
 
@@ -1314,6 +1322,7 @@ function named_generate(){
 $more_dns_server
 @	IN	MX	5	$thisdomain_mx1.
 $more_mx_server
+@	IN	TXT	\"$spf_txt_record\"
 @	IN	TXT	\"$root_txt_record\"
 @	IN	TXT	\"$root_txt_record2\"\n";
 

@@ -489,7 +489,8 @@ $dtc_database = array(
 			"registrar" => "varchar(255) NOT NULL default 'webnic'",
 			"protection" => "enum('unlocked','transferprot','locked') NOT NULL default 'unlocked'",
 			"windows_compat" => "enum('yes','no') NOT NULL default 'no'",
-			"custom_part" => "text"
+			"custom_part" => "text",
+			"spf_txt_entry" => "varchar(128) NOT NULL default 'v=spf1 mx -all'"
 		),
 		"primary" => "(id)",
 		"keys" => array(
