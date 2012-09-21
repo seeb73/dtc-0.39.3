@@ -28,6 +28,11 @@ function dtcFormTableAttrs(){
 	return $out;
 }
 
+function dtcFromTitleDraw($title_text){
+	$out = "<tr><th class=\"dtcDatagrid_table_titles\" colspan=\"2\">$title_text<th></tr>";
+	return $out;
+}
+
 function dtcFormLineDraw($text,$control,$alternate_color=1,$help_text=""){
 	global $gfx_form_entry_label_background;
 	global $gfx_form_entry_label_control_background;
