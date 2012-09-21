@@ -154,18 +154,46 @@ function subscribers_list($list_path){
 		}
 		$out .= "<a href=\"?adm_login=$adm_login&adm_pass=$adm_pass&addrlink=$addrlink&edit_domain=$edit_domain&whatdoiedit=mails&edit_mailbox=".$_REQUEST["edit_mailbox"]."&action=unsubscribe_user&subscriber_email=".$subs[$i]."\">".$subs[$i]."</a>";
 	}
-	$out .= "<br><br><h3>". _("Subscribe a new user") .":</h3><br><br>";
-	$out .= "<form method=\"$conf_post_or_get\" action=\"?\" method=\"post\">
-	<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
-	<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
-	<input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">
-	<input type=\"hidden\" name=\"edit_domain\" value=\"$edit_domain\">
-	<input type=\"hidden\" name=\"whatdoiedit\" value=\"mails\">
-	<input type=\"hidden\" name=\"edit_mailbox\" value=\"".htmlspecialchars($_REQUEST["edit_mailbox"])."\">
-	<input type=\"hidden\" name=\"action\" value=\"subscribe_new_user\">
-	<input type=\"text\" size=\"40\" name=\"subscriber_email\" value=\"\">
-	<input type=\"submit\" value=\"Ok\">
-	</form>";
+	$out .= "<br><br><h3>". _("Subscribe a new user") .":</h3>";
+	$out .= dtcFormTableAttrs();
+	$out .= dtcFormLineDraw(_("New subscriber email address:"),"<form method=\"$conf_post_or_get\" action=\"?\" method=\"post\">
+		<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
+		<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
+		<input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">
+		<input type=\"hidden\" name=\"edit_domain\" value=\"$edit_domain\">
+		<input type=\"hidden\" name=\"whatdoiedit\" value=\"mails\">
+		<input type=\"hidden\" name=\"edit_mailbox\" value=\"".htmlspecialchars($_REQUEST["edit_mailbox"])."\">
+		<input type=\"hidden\" name=\"action\" value=\"subscribe_new_user\">
+		<input type=\"text\" size=\"40\" name=\"subscriber_email\" value=\"\">",1);
+	$out .= dtcFormLineDraw("","<input type=\"hidden\" value=\"Ok\">".submitButtonStart()._("Ok").submitButtonEnd()."</form>",0);
+	$out .= "</table>";
+
+	$options = "";
+	$dir = "/usr/share/mlmmj/text.skel/";
+	if (is_dir($dir)) {
+		if ($dh = opendir($dir)) {
+			while (($file = readdir($dh)) !== false) {
+				if($file != "." && $file != ".."){
+					$options .= "<option value=\"$file\">$file</option>";
+				}
+			}
+			closedir($dh);
+		}
+	}
+
+	$out .= "<br><br><h3>". _("Language of the list:") .":</h3>";
+	$out .= dtcFormTableAttrs();
+	$out .= dtcFormLineDraw(_("Language:"),"<form method=\"$conf_post_or_get\" action=\"?\" method=\"post\">
+		<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
+		<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
+		<input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">
+		<input type=\"hidden\" name=\"edit_domain\" value=\"$edit_domain\">
+		<input type=\"hidden\" name=\"whatdoiedit\" value=\"mails\">
+		<input type=\"hidden\" name=\"edit_mailbox\" value=\"".htmlspecialchars($_REQUEST["edit_mailbox"])."\">
+		<input type=\"hidden\" name=\"action\" value=\"copy_list_text_language\">
+		<select name=\"list_text_lang\">$options</select>",1,_("Select the language of the template to copy in the list folder"));
+	$out .= dtcFormLineDraw("","<input type=\"hidden\" value=\"Ok\">".submitButtonStart()._("Ok").submitButtonEnd()."</form>",0);
+	$out .= "</table>";
 	return $out;
 }
 
