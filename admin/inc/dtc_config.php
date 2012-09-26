@@ -1299,6 +1299,11 @@ function drawGeneralConfig(){
 				"legend" => "MTA <a href=\"http://www.wikipedia.org/wiki/Mail_transfer_agent\" target=\"_blank\">*</a> : ",
 				"type" => "radio",
 				"values" => array("qmail","postfix")),
+			"main_domain_mail_without_domain" => array(
+				"type" => "radio",
+				"legend" => _("Permit mail accounts from main DTC domain login without @domain: "),
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
 			"use_cyrus" => array(
 				"type" => "radio",
 				"legend" => _("Use cyrus: "),
