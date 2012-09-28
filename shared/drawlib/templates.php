@@ -33,7 +33,7 @@ function dtcFromTitleDraw($title_text){
 	return $out;
 }
 
-function dtcFormLineDraw($text,$control,$alternate_color=1,$help_text=""){
+function dtcFormLineDraw($text,$control,$alternate_color=1,$help_text="",$tbl_jscript=""){
 	global $gfx_form_entry_label_background;
 	global $gfx_form_entry_label_control_background;
 	global $gfx_form_entry_label_alt_background;
@@ -70,7 +70,7 @@ function dtcFormLineDraw($text,$control,$alternate_color=1,$help_text=""){
 	}
 
 	$out = "
-  <tr>
+  <tr $tbl_jscript>
     <th $bgcolor $jshelp style=\"text-align:right;white-space:nowrap;\">$text</th>
     <td $bgcolor>
       <table border=\"0\" cellspacing=\"0\" cellpadding=\"2\" width=\"100%\" height=\"100%\">
@@ -147,6 +147,87 @@ function dtcFromOkDraw($delete_form=""){
 	$out = "<tr><td>&nbsp;</td><td>".dtcApplyButton()."$delete_form</td></tr>";
 	return $out;
 }
+
+function dtcFoldingForm($dsc){
+	global $conf_post_or_get;
+	$lines_cnt=0;
+
+	$jscript = "<script language=\"javascript\">
+		var DHTML = (document.getElementById || document.all || document.layers); 
+		function getObj(name){
+			if (document.getElementById){
+				this.obj = document.getElementById(name);
+				this.style = document.getElementById(name).style;
+			}else if(document.all){
+				this.obj = document.all[name];
+				this.style = document.all[name].style;
+			}else{
+				this.obj = document.layers[name];
+				this.style = document.layers[name];
+			}
+		}\n";
+
+	$out = "";
+	$out .= dtcFormTableAttrs();
+	$out .= "<form method=\"$conf_post_or_get\" action=\"?\">";
+	$forward_keys = array_keys($dsc["forward"]);
+	$nbr_forward = sizeof($dsc["forward"]);
+	$forw = "";
+	for($i=0;$i<$nbr_forward;$i++){
+		$forward = $forward_keys[$i];
+		$val = $dsc["forward"][$forward];
+		$forw .= "<input type=\"hidden\" name=\"$forward\" value=\"$val\">";
+	}
+	$out .= $forw;
+
+	$title_keys = array_keys($dsc["titles"]);
+	$nbr_titles = sizeof($dsc["titles"]);
+	for($i=0;$i<$nbr_titles;$i++){
+		$title = $title_keys[$i];
+		$form_lines = $dsc["titles"][$title]["form_lines"];
+
+		$form_lines_keys = array_keys($form_lines);
+		$nbr_lines = sizeof($form_lines);
+		$lines_txt = "";
+		for($j=0;$j<$nbr_lines;$j++){
+			$line = $form_lines[ $form_lines_keys[$j] ];
+			$lines_txt .= dtcFormLineDraw($form_lines_keys[$j],$line["widget"],$j%2,$line["help"],"id=\"dtc_frml$lines_cnt\"");
+			$lines_cnt++;
+		}
+		if(isset($dsc["titles"][$title]["default_close"]) && $dsc["titles"][$title]["default_close"] == "yes"){
+			$hidden_style = " style=\"visibility:hidden;display:none;\" ";
+			$showit_val = "no";
+		}else{
+			$hidden_style = "";
+			$showit_val = "yes";
+		}
+		$out .= "<tr><th class=\"dtcDatagrid_table_titles\" colspan=\"2\" onClick=\"dtc_hide_or_show_$i();\" style=\"text-align:left;\">".$title_keys[$i]."<th></tr>";
+		$out .= "<tr><td colspan=\"2\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"title_elements_$i\" $hidden_style>".$lines_txt."</table></td></tr>";
+		$jscript .= "var dtc_showit = '$showit_val';
+			function dtc_hide_or_show_$i(){
+				var a;
+				if(dtc_showit == 'yes'){
+					a = new getObj('title_elements_$i');
+					a.style.visibility = 'visible';
+					a.style.display = 'block';
+					dtc_showit = 'no';
+				}else{
+					a = new getObj('title_elements_$i');
+					a.style.visibility = 'hidden';
+					a.style.display = 'none';
+					dtc_showit = 'yes';
+				}
+				return 0;
+			}\n";
+	}
+	$jscript .= "</script>";
+	$out .= dtcFromOkDraw();
+//	$out .= dtcFormLineDraw("",submitButtonStart()._("Ok").submitButtonEnd(),0);
+	$out .= "</table>";
+	return $jscript.$out;
+
+}
+
 
 // Properties for this grid_display stuff is an object of that kind:
 // array(
@@ -1201,6 +1282,8 @@ function dtcListItemsEdit($dsc){
 						}
 					}
 					break;
+				case "title":
+					break;
 				default:
 					$commit_flag = "no";
 					$commit_err .= $keys[$i].": unknown field checking type (".$dsc["cols"][ $keys[$i] ]["check"].").<br>";
@@ -1316,6 +1399,8 @@ function dtcListItemsEdit($dsc){
 				$fld_names .= $keys[$i];
 				$values .= "'".mysql_real_escape_string($_REQUEST[ $keys[$i] ])."'";
 				$added_one = "yes";
+				break;
+			case "title":
 				break;
 			}
 		}
@@ -1564,6 +1649,7 @@ function dtcListItemsEdit($dsc){
 				$id_fldname = $keys[$i];
 				$id_fld_value = mysql_real_escape_string($_REQUEST[ $keys[$i] ]);
 				break;
+			case "title":
 			case "readonly":
 				break;
 			case "text":
@@ -1804,6 +1890,9 @@ function dtcListItemsEdit($dsc){
 					}
 					$out .= dtcFormLineDraw($dsc["cols"][ $keys[$i] ]["legend"],$ctrl,$i%2,$help);
 					break;
+				case "title":
+					$out .= dtcFromTitleDraw($dsc["cols"][ $keys[$i] ]["legend"]);
+					break;
 				default:
 					$ctrl = "Not implemented yet!!!";
 					$out .= dtcFormLineDraw($dsc["cols"][ $keys[$i] ]["legend"],$ctrl,$i%2,$help);
@@ -1949,6 +2038,9 @@ function dtcListItemsEdit($dsc){
 						$ctrl .= " <option value=\"".$dsc["cols"][ $keys[$j] ]["values"][$x]."\" $selected>$display_val</option>";
 					}
 					$out .= dtcFormLineDraw($dsc["cols"][ $keys[$j] ]["legend"],$ctrl,$j%2,$help);
+					break;
+				case "title":
+					$out .= dtcFromTitleDraw($dsc["cols"][ $keys[$j] ]["legend"]);
 					break;
 				default:
 					$ctrl = "Not implemented yet!!!";
