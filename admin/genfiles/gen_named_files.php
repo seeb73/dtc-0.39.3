@@ -1322,9 +1322,17 @@ function named_generate(){
 $more_dns_server
 @	IN	MX	5	$thisdomain_mx1.
 $more_mx_server
-@	IN	TXT	\"$spf_txt_record\"
-@	IN	TXT	\"$root_txt_record\"
-@	IN	TXT	\"$root_txt_record2\"\n";
+";
+			if ($spf_txt_record <> '' ){
+				$this_site_file .= "@	IN	SPF	\"$spf_txt_record\"\n";
+				$this_site_file .= "@	IN	TXT	\"$spf_txt_record\"\n";
+			}
+			if ($root_txt_record <> '' ){
+				$this_site_file .= "@	IN	TXT	\"$root_txt_record\"\n";
+			}
+			if ($root_txt_record2 <> '' ){
+				$this_site_file .= "@	IN	TXT	\"$root_txt_record2\"\n";
+			}
 
 			// Set the "root subdomain" IP as the same as the "default subdomain" IP
 			$qd = "SELECT ip FROM $pro_mysql_subdomain_table WHERE subdomain_name='$web_default_subdomain' AND domain_name='$domain_to_get';";
