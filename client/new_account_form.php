@@ -1077,4 +1077,99 @@ function layout_login_and_languages($login_skined,$language_selection_skined){
 </tr></table>";
 }
 
+function new_account_payment($reguser){
+	global $pro_mysql_new_admin_table;
+	global $pro_mysql_product_table;
+	global $pro_mysql_vps_server_table;
+	global $conf_this_server_country_code;
+	global $secpayconf_currency_letters;
+	global $secpayconf_use_paypal_recurring;
+	global $pro_mysql_companies_table;
+
+	$form = "";
+	$print_form = "yes";
+	$q = "SELECT * FROM $pro_mysql_new_admin_table WHERE id='".$reguser["id"]."';";
+	$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$n = mysql_num_rows($r);
+	if($n != 1){
+		$form .= _("Cannot reselect user: registration failed.") ;//"Cannot reselect user: registration failed.";
+	}else{
+		// Get the recorded new admin in the new_admin table, and process the display of payment buttons
+		$newadmin = mysql_fetch_array($r);
+		$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$newadmin["product_id"]."';";
+		$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$n = mysql_num_rows($r);
+		if($n != 1){
+			$form = _("Cannot reselect product: registration failed.") ;//"Cannot reselect product: registration failed.";
+			$print_form = "no";
+			$service_location = $conf_this_server_country_code;
+		}else{
+			$product = mysql_fetch_array($r);
+		}
+		switch($product["heb_type"]){
+		default:
+		case "shared":	// -> Something has to be done to select dedicated servers location in the form !!!
+		case "server":
+			$service_location = $conf_this_server_country_code;
+			break;
+		case "vps":
+			$q = "SELECT * FROM $pro_mysql_vps_server_table WHERE hostname='".$newadmin["vps_location"]."'";
+			$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+			if($n != 1){
+				$form = _("Cannot reselect product: registration failed.") ;//"Cannot reselect product: registration failed!";
+				$print_form = "no";
+				$service_location = $conf_this_server_country_code;
+			}else{
+				$vps_server = mysql_fetch_array($r);
+				$service_location = $vps_server["country_code"];
+			}
+			break;
+		}
+		if($print_form == "yes"){
+			$company_invoicing_id = findInvoicingCompany ($service_location,$newadmin["country"]);
+			$q = "SELECT * FROM $pro_mysql_companies_table WHERE id='$company_invoicing_id';";
+			$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+			if($n != 1){
+				$form = "Cannot find company invoicing line ".__LINE__." file ".__FILE__;
+				$print_form = "no";
+			}else{
+				$company_invoicing = mysql_fetch_array($r);
+				// If VAT is set, use it.
+				if($company_invoicing["vat_rate"] == 0 || $company_invoicing["vat_number"] == ""){
+					$vat_rate = 0;
+					$use_vat = "no";
+				}else{
+						// Both companies are in europe, in different countries, and customer as a VAT number,
+						// then there is no VAT and the customer shall pay the VAT in it's own country
+					// These are the VAT rules in the European Union...
+					if($newadmin["iscomp"] == "yes" && $newadmin["vat_num"] != ""
+							&& isset($cc_europe[ $newadmin["country"] ]) && isset($cc_europe[ $company_invoicing["country"] ])
+							&& $newadmin["country"] != $company_invoicing["country"]){
+						$vat_rate = 0;
+						$use_vat = "no";
+					}else{
+								$use_vat = "yes";
+						$vat_rate = $company_invoicing["vat_rate"];
+					}
+				}
+				$payid = createCreditCardPaiementID($product["price_dollar"] + $product["setup_fee"],$reguser["id"],$product["name"]." (login: ".$newadmin["reqadm_login"].")","yes",$product["id"],$vat_rate);
+				$q = "UPDATE $pro_mysql_new_admin_table SET paiement_id='$payid' WHERE id='".$reguser["id"]."';";
+				$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$return_url = htmlentities($_SERVER["PHP_SELF"])."?action=return_from_pay&regid=$payid";
+				$paybutton =paynowButton($payid,$product["price_dollar"] + $product["setup_fee"],$product["name"]." (login: ".$newadmin["reqadm_login"].")",$return_url,$vat_rate,$secpayconf_use_paypal_recurring);
+			}
+			if($print_form == "yes"){
+				$master_total = $product["price_dollar"] + $product["setup_fee"];
+				$form = $reguser["mesg"]."<br><h4>". _("Registration successful.") ."<!--Registration successfull!--></h4>
+<u>". _("Product name:") . "</u> " . $product["name"] ."<br>
+<u>". _("Product price:") . "</u> " . $product["price_dollar"] ." $secpayconf_currency_letters<br>
+<u>". _("Setup fees:") . "</u> " . $product["setup_fee"] ." $secpayconf_currency_letters<br>
+<u>". _("Product net price before VAT and payment gateway:") . "</u> " . $master_total . " $secpayconf_currency_letters<br><br><br>
+<b>". _("Please now click on the following button to go for payment:") . "</b><br>
+<br>$paybutton";
+			}
+		}
+	}
+	return $form;
+}
 ?>

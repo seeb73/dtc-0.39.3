@@ -232,7 +232,7 @@ client/invoice.php client/list_domains.php client/login.php client/new_account_f
 client/new_account_renewal.php client/paypal.php client/secpaycallback_worldpay.php client/webmoney.php \
 client/get_vps_location_status.php client/moneybookers.php client/affiliation.php \
 client/logPushlet.php client/xanjaxXHR.js client/cheques_and_transfers.php client/recover_pass.php \
-client/westernunion_and_abitab.php
+client/westernunion_and_abitab.php client/new_account_payment.php
 
 EMAIL_PHP_SCRIPT_FILES=email/api.php email/index.php email/login.php email/submit_to_sql_dtcemail.php
 
