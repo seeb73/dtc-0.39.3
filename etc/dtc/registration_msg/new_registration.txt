@@ -1,0 +1,30 @@
+New account registered. Here are the details of the new user:
+
+Login: %%%DTC_CUSTOMER_USERNAME%%%
+Password: %%%DTC_CUSTOMER_PASSWORD%%%
+Domain: %%%DTC_CUSTOMER_DOMAIN%%%
+Company name: %%%DTC_CUSTOMER_COMPANYNAME%%%
+First name: %%%DTC_CUSTOMER_FIRSTNAME%%%
+Family name: %%%DTC_CUSTOMER_FAMILYNAME%%%
+Email: %%%DTC_CUSTOMER_EMAIL%%%
+Phone: %%%DTC_CUSTOMER_PHONE%%%
+Fax: %%%DTC_CUSTOMER_FAX%%%
+Address: %%%DTC_CUSTOMER_ADDRESS%%%
+Zipcode: %%%DTC_CUSTOMER_ZIPCODE%%%
+City: %%%DTC_CUSTOMER_CITY%%%
+State: %%%DTC_CUSTOMER_STATE%%%
+Country: %%%DTC_CUSTOMER_COUNTRY%%%
+Shopper ip: %%%DTC_CUSTOMER_IP%%%
+Product Name: %%%DTC_CUSTOMER_PRODUCT%%%
+Customer note: %%%DTC_CUSTOMER_NOTE%%%
+%%%VPS_ADD%%%
+
+If your product is not paid, go to %%%DTC_NEW_PAYMENT_PANEL_URL%%% and login with user %%%DTC_CUSTOMER_USERNAME%%% and your password to pay it for the first time.
+
+Once the payment is confirmed, you will be able to login to the control panel using the following informations:
+
+URL: %%%DTC_CLIENT_URL%%%
+User: %%%DTC_CUSTOMER_USERNAME%%%
+Password: %%%DTC_CUSTOMER_PASSWORD%%%
+
+%%%SIGNATURE%%%

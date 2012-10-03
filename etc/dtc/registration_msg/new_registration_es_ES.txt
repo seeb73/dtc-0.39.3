@@ -1,0 +1,30 @@
+Se ha registrado una nueva cuenta. A continuación le dejamos los datos del nuevo usuario:
+
+Usario: %%%DTC_CUSTOMER_USERNAME%%%
+Contraseña: %%%DTC_CUSTOMER_PASSWORD%%%
+Dominio: %%%DTC_CUSTOMER_DOMAIN%%%
+Empresa: %%%DTC_CUSTOMER_COMPANYNAME%%%
+Nombre: %%%DTC_CUSTOMER_FIRSTNAME%%%
+Apellido: %%%DTC_CUSTOMER_FAMILYNAME%%%
+Email: %%%DTC_CUSTOMER_EMAIL%%%
+Telefono: %%%DTC_CUSTOMER_PHONE%%%
+Fax: %%%DTC_CUSTOMER_FAX%%%
+Dirección: %%%DTC_CUSTOMER_ADDRESS%%%
+Código Postal: %%%DTC_CUSTOMER_ZIPCODE%%%
+Ciudad: %%%DTC_CUSTOMER_CITY%%%
+Provincia: %%%DTC_CUSTOMER_STATE%%%
+Pais: %%%DTC_CUSTOMER_COUNTRY%%%
+IP del cliente: %%%DTC_CUSTOMER_IP%%%
+Plan: %%%DTC_CUSTOMER_PRODUCT%%%
+Notas: %%%DTC_CUSTOMER_NOTE%%%
+%%%VPS_ADD%%%
+
+Si todavía no ha abonado el producto, ingrese a %%%DTC_NEW_PAYMENT_PANEL_URL%%% con el usuario %%%DTC_CUSTOMER_USERNAME%%% y su contraseña para abonarlo por primera vez.
+
+Una vez que el pago se encuentre confirmado, podrá ingresar al panel de control con la siguiente información:
+
+URL: %%%DTC_CLIENT_URL%%%
+Usuario: %%%DTC_CUSTOMER_USERNAME%%%
+Contraseña: %%%DTC_CUSTOMER_PASSWORD%%%
+
+%%%SIGNATURE%%%

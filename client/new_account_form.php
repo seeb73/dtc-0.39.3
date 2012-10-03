@@ -24,6 +24,12 @@ function register_user($adding_service="no"){
 	global $pro_mysql_domain_table;
 	global $pro_mysql_dedicated_table;
 	global $pro_mysql_custom_product_table;
+	global $conf_send_registration_mail_to_customer;
+	global $conf_registration_mail_subject;
+	global $conf_include_payment_on_reg_mail;
+	global $conf_registration_mail_payment_text;
+	global $conf_use_ssl;
+	global $conf_administrative_site;
 
 	global $conf_require_valid_tld_on_dedicated;
 	global $conf_require_valid_tld_on_custom;
@@ -505,6 +511,38 @@ $vps_mail_add1
 
 	$headers = "From: DTC Robot <$conf_webmaster_email_addr>";
 	mail($conf_webmaster_email_addr, "$conf_message_subject_header Somebody tried to register an account", $mail_content, $headers);
+
+	if ($conf_send_registration_mail_to_customer == 'yes'){
+		$mail_content = readCustomizedMessage("messages_header",$_REQUEST["reqadm_login"]);
+		$mail_content .= readCustomizedMessage("registration_msg/new_registration",$_REQUEST["reqadm_login"]);
+		if($conf_use_ssl == "yes"){
+			$surl = "s";
+		}else{
+			$surl = "";
+		}
+		$client_panel = "http".$surl."://".$conf_administrative_site."/dtc/";
+		$search = array('%%%DTC_NEW_PAYMENT_PANEL_URL%%%','%%%DTC_CLIENT_URL%%%',
+			'%%%DTC_CUSTOMER_USERNAME%%%','%%%DTC_CUSTOMER_PASSWORD%%%','%%%DTC_CUSTOMER_DOMAIN%%%',
+			'%%%DTC_CUSTOMER_COMPANYNAME%%%','%%%DTC_CUSTOMER_FIRSTNAME%%%','%%%DTC_CUSTOMER_FAMILYNAME%%%',
+			'%%%DTC_CUSTOMER_EMAIL%%%','%%%DTC_CUSTOMER_PHONE%%%','%%%DTC_CUSTOMER_FAX%%%',
+			'%%%DTC_CUSTOMER_ADDRESS%%%','%%%DTC_CUSTOMER_ZIPCODE%%%','%%%DTC_CUSTOMER_CITY%%%',
+			'%%%DTC_CUSTOMER_STATE%%%','%%%DTC_CUSTOMER_COUNTRY%%%','%%%DTC_CUSTOMER_IP%%%',
+			'%%%DTC_CUSTOMER_PRODUCT%%%','%%%DTC_CUSTOMER_NOTE%%%','%%%VPS_ADD%%%');
+		$replace = array($client_panel."new_account_payment.php", $client_panel,
+			$_REQUEST["reqadm_login"],$pass_for_email,$_REQUEST["domain_name"].$domain_tld,
+			$esc_compname,$esc_firstname,$esc_familyname,
+			$_REQUEST["email"],$esc_phone,$esc_fax,
+			$esc_address1." ".$esc_address2." ".$esc_address3,$esc_zipcode,$esc_city,
+			$esc_state,$_REQUEST["country"],$_SERVER["REMOTE_ADDR"],
+			$the_prod,$esc_custom_notes,$vps_mail_add1);
+		$mail_content = str_replace($search, $replace, $mail_content);
+
+		// Manage the signature of all registration messages
+		$signature = readCustomizedMessage("signature",$_REQUEST["reqadm_login"]);
+		$mail_content = str_replace("%%%SIGNATURE%%%",$signature,$mail_content);
+
+	    mail($_REQUEST["email"], $conf_registration_mail_subject, $mail_content, $headers);
+	}
 
 	return $ret;
 }

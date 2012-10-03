@@ -1239,6 +1239,15 @@ function drawGeneralConfig(){
 				"legend" => _("Url to redirect if product_id is not set in the request of new_account form: "),
 				"type" => "text",
 				"size" => "255"),
+			"send_registration_mail_to_customer" => array (
+				"legend" => _("Send registration mail to the customer: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"registration_mail_subject" => array(
+				"legend" => _("Subject of the registration mail sent to the customer: "),
+				"type" => "text",
+				"size" => "30"),
 			"require_valid_tld_on_dedicated" => array(
 				"legend" => _("Require a valid TLD for the hostname on Dedicated Servers:"),
 				"type" => "radio",
@@ -1733,6 +1742,7 @@ function drawRegistryApiConfig(){
 function drawDTCpayConfig(){
 	global $pro_mysql_secpayconf_table;
 	global $pro_mysql_custom_fld_table;
+	global $pro_mysql_config_table;
 
 	$out = "";
 
