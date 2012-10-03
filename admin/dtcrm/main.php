@@ -329,7 +329,7 @@ cc_code_popup($row["country"])."</select>",0);
 	$text .= "
 <tr><td align=\"right\"></td><td><div class=\"input_btn_container\" onMouseOver=\"this.className='input_btn_container-hover';\" onMouseOut=\"this.className='input_btn_container';\">
  <div class=\"input_btn_left\"></div>
- <div class=\"input_btn_mid\"><input class=\"input_btn\" type=\"submit\" value=\"Save\"></div>
+ <div class=\"input_btn_mid\"><input class=\"input_btn\" type=\"submit\" value=\""._("Save")."\"></div>
  <div class=\"input_btn_right\"></div>
 </div></form>
 <form method=\"$conf_post_or_get\" action=\"?\">
