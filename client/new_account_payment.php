@@ -53,45 +53,41 @@ if(function_exists("skin_NewAccountPage")){
 	echo anotherPage("Client:","","",makePreloads(),$anotherTopBanner,"",$mypage,anotherFooter(""));
 }
 
+// Uppon success, $ret["id"] contains the ID in the new_admin table, and $ret["err"] == 0
+// Uppon error, $ret["form"] contains the select_user form and $ret["err"] == 1, plus $ret["mesg"] contains an error message
 function select_user(){
 	global $pro_mysql_new_admin_table;
-	if (isset($_REQUEST['username'])){
-		$username = mysql_real_escape_string($_REQUEST['username']);
-	}else{
-		$username = "";
+	$ret = array( "err" => 0, "mesg" => "Query ok!", "form" => "");
+
+	if(!isset($_REQUEST['username']) && !isset($_REQUEST['password']) ){
+		$ret["form"] = select_user_form("");
+		$ret["err"] = 1;
+		return $ret;
 	}
-	if (isset($_REQUEST['password'])){
-		$password = mysql_real_escape_string($_REQUEST['password']);
-	}else{
-		$password = "";
+	if( !isDTCLogin($_REQUEST['username']) ){
+		$ret["mesg"] = _("User or password invalid.");
+		$ret["err"] = 1;
+		return $ret;
+	}
+	if( !isDTCPassword($_REQUEST['password']) ){
+		$ret["mesg"] = _("User or password invalid.");
+		$ret["err"] = 1;
+		return $ret;
 	}
 
-	if ($username == "" and $password == ""){
-		$form = select_user_form("");
-	}else{
-		if ($username == ""){
-			$error = _("Please complete the username.");
-		}elseif ($password == ""){
-			$error = _("Please complete the password.");
-		}else{
-			$q = "SELECT id FROM $pro_mysql_new_admin_table
-			WHERE reqadm_login='".$username."' and reqadm_pass='".$password."';";
-		$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
-		if($n != 1){
-			$error = _("User or password invalid.");
-		}else{
-			$adm = mysql_fetch_array($r);
-			$ret["err"] = 0;
-			$ret["mesg"] = "Query ok!";
-			$ret["id"] = $adm["id"];
-			return $ret;
-		}
-		}
-		$form = select_user_form($error);
+	$sqls_username = mysql_real_escape_string($_REQUEST['username']);
+	$sqls_password = mysql_real_escape_string($_REQUEST['password']);
+	$q = "SELECT id FROM $pro_mysql_new_admin_table WHERE reqadm_login='".$sqls_username."' AND reqadm_pass='".$sqls_password."';";
+	$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$n = mysql_num_rows($r);
+	if($n != 1){
+		$ret["mesg"] = _("User or password invalid.");
+		$ret["err"] = 1;
+		$ret["form"] = select_user_form($ret["mesg"]);
+		return $ret;
 	}
-	$ret["err"] = 1;
-	$ret['form'] = $form;
+	$adm = mysql_fetch_array($r);
+	$ret["id"] = $adm["id"];
 	return $ret;
 }
 
@@ -103,25 +99,18 @@ function select_user_form($error = ""){
 	}else{
 		$surl = "";
 	}
-	$HTML_admin_edit_data = _("This form is for the first payment only, if you are already a client go to ")
-."<a href=\"http".$surl."://".$conf_administrative_site."/dtc/\">http"
-.$surl."://".$conf_administrative_site."/dtc/</a><br /><form action=\"?\" method=\"post\">
-<table>
-<tr>\n";
-if ($error != ""){
-	$HTML_admin_edit_data .= "	<td align=\"right\">". _("Error") ."</td>
-	<td>$error</td>
-</tr><tr>\n";
-}
-$HTML_admin_edit_data .= "	<td align=\"right\">". _("Login: ") ."</td>
-	<td><input type=\"text\" name=\"username\" value=\"\"></td>
-</tr><tr>
-	<td align=\"right\">". _("Password:") ."</td>
-	<td><input type=\"password\" name=\"password\" value=\"\"></td>
-</tr><tr>
-	<td></td><td><input type=\"submit\" name=\"Login\" value=\"login\">
-</td></tr>
-</table></form>";
-	return $HTML_admin_edit_data;
+	$out = _("This form is for the first payment only, if you are already a client go to: ");
+	$out .= "<a href=\"http".$surl."://".$conf_administrative_site."/dtc/\">http".$surl."://".$conf_administrative_site."/dtc/</a><br />";
+
+	if ($error != ""){
+		$out .= _("Error:") " $error<br />";
 	}
+	$out .= dtcFormTableAttrs();
+	$out .= "<form action=\"?\" method=\"post\"><input type=\"hidden\" name=\"Login\" value=\"login\">";
+	$out .= dtcFormLineDraw(_("Login:"), "<input type=\"text\" name=\"username\" value=\"\">", 0);
+	$out .= dtcFormLineDraw(_("Password:"), "<input type=\"password\" name=\"password\" value=\"\">", 1);
+	$out .= dtcFormLineDraw("", submitButtonStart() . _("Login") . submitButtonEnd(), 0);
+	$out .= "</table></form>";
+	return $out;
+}
 ?>
