@@ -490,7 +490,7 @@ $dtc_database = array(
 			"protection" => "enum('unlocked','transferprot','locked') NOT NULL default 'unlocked'",
 			"windows_compat" => "enum('yes','no') NOT NULL default 'no'",
 			"custom_part" => "text",
-			"spf_txt_entry" => "varchar(128) NOT NULL default 'v=spf1 mx -all'"
+			"spf_txt_entry" => "varchar(128) NOT NULL default 'v=spf1 mx ~all'"
 		),
 		"primary" => "(id)",
 		"keys" => array(
