@@ -1247,7 +1247,7 @@ function drawGeneralConfig(){
 			"new_account_restrict_message" => array(
 				"legend" => _("Url to redirect if product_id is not set in the request of new_account form: "),
 				"type" => "text",
-				"size" => "255"),
+				"size" => "60"),
 			"send_registration_mail_to_customer" => array (
 				"legend" => _("Send registration mail to the customer: "),
 				"type" => "radio",
