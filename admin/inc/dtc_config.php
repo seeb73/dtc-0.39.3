@@ -1158,8 +1158,8 @@ function drawGeneralConfig(){
 	$out = "";
 
 	$dsc = array(
-		"title" => _("General"),
-		"action" => "general_config_editor",
+		"title" => _("Web interface"),
+		"action" => "web_interface_config_editor",
 		"forward" => array("rub"),
 		"cols" => array(
 			"use_javascript" => array(
@@ -1167,38 +1167,13 @@ function drawGeneralConfig(){
 				"type" => "radio",
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
-                        "send_passwords_in_emails" => array(
-                                "legend" => _("Send passwords in registration emails: "),
-                                "type" => "radio",
-                                "values" => array("yes","no"),
-                                "display_replace" => array(_("Yes"),_("No"))),
 			"use_ssl" => array(
 				"legend" => _("Use SSL: "),
 				"type" => "radio",
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
-			"enforce_adm_encryption" => array(
-				"legend" => _("Enforce admin passwords encryption: "),
-				"type" => "radio",
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
-			"use_shared_ssl" => array(
-				"legend" => _("(<a href=\"http://dtcsupport.gplhost.com/PmWiki/Name-based-shared-SSL-vhosts\">Shared SSL warnings</a>) Allow use of name based shared SSL vhosts: "),
-				"type" => "radio",
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
 			"force_use_https" => array(
 				"legend" => _("Force HTTPS use for contol panel: "),
-				"type" => "radio",
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
-			"domain_based_ftp_logins" => array(
-				"legend" => _("Use @domain.com ftp logins: "),
-				"type" => "radio",
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
-			"domain_based_ssh_logins" => array(
-				"legend" => _("Use @domain.com ssh logins: "),
 				"type" => "radio",
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
@@ -1210,12 +1185,21 @@ function drawGeneralConfig(){
 			"session_expir_minute" => array(
 				"legend" => _("User session expire time (min): "),
 				"type" => "text",
-				"size" => "10"),
-			"this_server_country_code" => array(
-				"type" => "popup",
-				"legend" => _("This server location: "),
-				"values" => array_keys($cc_code_array),
-				"display_replace" => array_values($cc_code_array)),
+				"size" => "10")
+                        )
+                );
+	$out .= configEditorTemplate ($dsc);
+
+	$dsc = array(
+		"title" => _("New account registration"),
+		"action" => "new_account_registration_config_editor",
+		"forward" => array("rub"),
+		"cols" => array(
+                        "send_passwords_in_emails" => array(
+                                "legend" => _("Send passwords in registration emails: "),
+                                "type" => "radio",
+                                "values" => array("yes","no"),
+                                "display_replace" => array(_("Yes"),_("No"))),
 			"this_server_default_tld" => array(
 				"type" => "popup",
 				"legend" => _("Registration default TLD: "),
@@ -1224,11 +1208,6 @@ function drawGeneralConfig(){
 				"legend" => _("Terms and Conditions URL: "),
 				"type" => "text",
 				"size" => "40"),
-			"send_cron_alert" => array(
-				"legend" => _("Send mail to admin when an error occurs in dtc cron:"),
-				"type" => "radio",
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
 			"restrict_new_account_form" => array(
 				"legend" => _("Force the use product_id in the request of new_account form:"),
 				"type" => "radio",
@@ -1257,6 +1236,40 @@ function drawGeneralConfig(){
 				"legend" => _("Subject of the registration mail sent to the customer: "),
 				"type" => "text",
 				"size" => "30"),
+			"require_valid_tld_on_dedicated" => array(
+				"legend" => _("Require a valid TLD for the hostname on Dedicated Servers:"),
+				"type" => "radio",
+				"values" => array("yes","no"),
+                                "display_replace" => array(_("Yes"),_("No"))),
+			"require_valid_tld_on_custom" => array(
+				"legend" => _("Require a valid TLD for the domain on Custom Products:"),
+				"type" => "radio",
+				"values" => array("yes","no"),
+                                "display_replace" => array(_("Yes"),_("No")))
+                        )
+                );
+	$out .= configEditorTemplate ($dsc);
+
+	$dsc = array(
+		"title" => _("Account behavior"),
+		"action" => "account_behavior_config_editor",
+		"forward" => array("rub"),
+		"cols" => array(
+			"enforce_adm_encryption" => array(
+				"legend" => _("Enforce admin passwords encryption: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"domain_based_ftp_logins" => array(
+				"legend" => _("Use @domain.com ftp logins: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"domain_based_ssh_logins" => array(
+				"legend" => _("Use @domain.com ssh logins: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
 			"show_affiliation" => array (
 				"legend" => _("Show affiliation on my account: "),
 				"type" => "radio",
@@ -1277,87 +1290,39 @@ function drawGeneralConfig(){
 				"type" => "radio",
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
-			"require_valid_tld_on_dedicated" => array(
-				"legend" => _("Require a valid TLD for the hostname on Dedicated Servers:"),
-				"type" => "radio",
-				"values" => array("yes","no"),
-                                "display_replace" => array(_("Yes"),_("No"))),
-			"require_valid_tld_on_custom" => array(
-				"legend" => _("Require a valid TLD for the domain on Custom Products:"),
-				"type" => "radio",
-				"values" => array("yes","no"),
-                                "display_replace" => array(_("Yes"),_("No")))));
+		        )
+                );
 	$out .= configEditorTemplate ($dsc);
 
 	$dsc = array(
-		"title" => _("Daemon"),
-		"action" => "general_config_daemon",
+		"title" => _("Other misc options"),
+		"action" => "other_misc_options_editor",
 		"forward" => array("rub"),
-                "edit_callback" => "generalDaemonCallback",
+		"cols" => array(
+			"use_shared_ssl" => array(
+				"legend" => _("(<a href=\"http://dtcsupport.gplhost.com/PmWiki/Name-based-shared-SSL-vhosts\">Shared SSL warnings</a>) Allow use of name based shared SSL vhosts: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"this_server_country_code" => array(
+				"type" => "popup",
+				"legend" => _("This server location: "),
+				"values" => array_keys($cc_code_array),
+				"display_replace" => array_values($cc_code_array)),
+			"send_cron_alert" => array(
+				"legend" => _("Send mail to admin when an error occurs in dtc cron:"),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No")))
+                        )
+                );
+	$out .= configEditorTemplate ($dsc);
+
+	$dsc = array(
+		"title" => _("Shared hosting vhost generation setup"),
+		"action" => "shared_hosting_setup_config",
+		"forward" => array("rub"),
 		"cols" => array (
-			"mta_type" => array(
-				"legend" => "MTA <a href=\"http://www.wikipedia.org/wiki/Mail_transfer_agent\" target=\"_blank\">*</a> : ",
-				"type" => "radio",
-				"values" => array("qmail","postfix")),
-			"main_domain_mail_without_domain" => array(
-				"type" => "radio",
-				"legend" => _("Permit mail accounts from main DTC domain login without @domain: "),
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
-			"use_cyrus" => array(
-				"type" => "radio",
-				"legend" => _("Use cyrus: "),
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
-			"use_sieve" => array(
-				"type" => "radio",
-				"legend" => _("Use sieve: "),
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
-			"use_advanced_lists_tunables" => array(
-				"type" => "radio",
-				"legend" => _("Show advanced mailing list options: "),
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
-			"use_webalizer" => array(
-				"type" => "radio",
-				"legend" => _("Use webalizer: "),
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
-			"webalizer_country_graph" => array(
-				"legend" => _("Webalizer country graph: "),
-				"type" => "radio",
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
-			"use_awstats" => array(
-				"type" => "radio",
-				"legend" => "(<a href=\"http://dtcsupport.gplhost.com/PmWiki/Why-not-using-awstats\">"._("AWStats harmful")."?</a>) " . _("Use awstats: "),
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
-			"use_visitors" => array(
-				"type" => "radio",
-				"legend" => _("Use visitors: "),
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
-			"user_mysql_prepend_admin_name" => array(
-				"type" => "radio",
-				"legend" => _("Prepend admin name to db names: "),
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
-			"user_mysql_type" => array(
-				"legend" => _("Location of user's database: "),
-				"type" => "radio",
-				"values" => array("localhost","distant"),
-				"display_replace" => array(_("Same as for DTC"),_("Another location"))),
-			"user_mysql_host" => array(
-				"legend" => _("User MySQL host: "),
-				"type" => "text"),
-			"user_mysql_root_login" => array(
-				"legend" => _("User MySQL root login: "),
-				"type" => "text"),
-			"user_mysql_root_pass" => array(
-				"legend" => _("User MySQL root password: "),
-				"type" => "text"),
 			"autogen_webmail_alias" => array(
 				"legend" => _("Generate a global /webmail alias: "),
 				"type" => "radio",
@@ -1392,6 +1357,97 @@ function drawGeneralConfig(){
 				"legend" => _("Apache DirectoryIndex Config: "),
 				"size" => "50",
 				"type" => "text"),
+		        )
+		);
+	$out .= configEditorTemplate ($dsc);
+
+	$dsc = array(
+		"title" => _("User database server"),
+		"action" => "user_database_config_options",
+		"forward" => array("rub"),
+		"cols" => array (
+			"user_mysql_type" => array(
+				"legend" => _("Location of user's database: "),
+				"type" => "radio",
+				"values" => array("localhost","distant"),
+				"display_replace" => array(_("Same as for DTC"),_("Another location"))),
+			"user_mysql_host" => array(
+				"legend" => _("User MySQL host: "),
+				"type" => "text"),
+			"user_mysql_root_login" => array(
+				"legend" => _("User MySQL root login: "),
+				"type" => "text"),
+			"user_mysql_root_pass" => array(
+				"legend" => _("User MySQL root password: "),
+				"type" => "text"),
+			"user_mysql_prepend_admin_name" => array(
+				"type" => "radio",
+				"legend" => _("Prepend admin name to db names: "),
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+		        )
+                );
+	$out .= configEditorTemplate ($dsc);
+
+	$dsc = array(
+		"title" => _("Shared hosting statistic calculation"),
+		"action" => "shared_hosting_stats_config",
+		"forward" => array("rub"),
+		"cols" => array (
+			"use_webalizer" => array(
+				"type" => "radio",
+				"legend" => _("Use webalizer: "),
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"webalizer_country_graph" => array(
+				"legend" => _("Webalizer country graph: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"use_awstats" => array(
+				"type" => "radio",
+				"legend" => "(<a href=\"http://dtcsupport.gplhost.com/PmWiki/Why-not-using-awstats\">"._("AWStats harmful")."?</a>) " . _("Use awstats: "),
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"use_visitors" => array(
+				"type" => "radio",
+				"legend" => _("Use visitors: "),
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+		        )
+                );
+	$out .= configEditorTemplate ($dsc);
+
+	$dsc = array(
+		"title" => _("Mail system setup"),
+		"action" => "mail_system_setup_config",
+		"forward" => array("rub"),
+                "edit_callback" => "generalDaemonCallback",
+		"cols" => array (
+			"mta_type" => array(
+				"legend" => "MTA <a href=\"http://www.wikipedia.org/wiki/Mail_transfer_agent\" target=\"_blank\">*</a> : ",
+				"type" => "radio",
+				"values" => array("qmail","postfix")),
+			"main_domain_mail_without_domain" => array(
+				"type" => "radio",
+				"legend" => _("Permit mail accounts from main DTC domain login without @domain: "),
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"use_cyrus" => array(
+				"type" => "radio",
+				"legend" => _("Use cyrus: "),
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"use_sieve" => array(
+				"type" => "radio",
+				"legend" => _("Use sieve: "),
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"use_advanced_lists_tunables" => array(
+				"type" => "radio",
+				"legend" => _("Show advanced mailing list options: "),
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
 			"spam_keep_days" => array(
 				"legend" => _("Keep spam email for n days"),
 				"type"	=> "text")));
