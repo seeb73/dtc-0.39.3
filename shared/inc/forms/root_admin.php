@@ -839,8 +839,8 @@ function drawDomainConfig($admin){
 
 		$dsc = array(
 			"table_name" => $pro_mysql_dedicated_table,
-			"title" => "",
-			"action" => _("Configuration of the dedicated servers") ,
+			"title" => _("Configuration of the dedicated servers") ,
+			"action" => "change_dedicated_config",
 			"forward" => array("rub","adm_login","adm_pass"),
 			"skip_deletion" => "yes",
 			"skip_creation" => "yes",
