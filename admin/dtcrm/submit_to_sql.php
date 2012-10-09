@@ -73,6 +73,34 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "remove_admin_from_clien
 //id=0&action=new_client&ed_familyname=&ed_christname=&ed_is_copany=yes&ed_company_name=&ed_addr1=&ed_addr2=&ed_addr3=
 //&ed_city=&ed_zipcode=&ed_state=&ed_country=AF&ed_phone=&ed_fax=&ed_email=&ed_special_note=&ed_dollar=&
 //ed_disk_quota_mb=&ed_gw_quota_per_month_gb=
+
+$q = "SELECT * FROM $pro_mysql_custom_fld_table ORDER BY widgetorder;";
+$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+$n = mysql_num_rows($r);
+if($n > 0){
+	$cust_fld_val = "";
+	for($i=0;$i<$n;$i++){
+		$a = mysql_fetch_array($r);
+		if( !isset($_REQUEST[ $a["varname"] ]) || $_REQUEST[ $a["varname"] ] == ""){
+			if($a["mandatory"] == "yes"){
+				$ret["err"] = 2;
+				$ret["mesg"] = _("Mandatory field")." ".$a["varname"]." "._("is empty or incorrect.") ;
+				return $ret;
+			}else{
+				$val = "";
+			}
+		}else{
+			$val = $_REQUEST[ $a["varname"] ];
+		}
+		if($i>0){
+			$cust_fld_val .= "|";
+		}
+		$cust_fld_val .= $a["varname"].":".mysql_real_escape_string($_REQUEST[ $a["varname"] ]);
+	}
+}else{
+	$cust_fld_val = "";
+}
+
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "new_client"){
 	$q = "INSERT INTO $pro_mysql_client_table(
 id,is_company,company_name,vat_num,
@@ -81,7 +109,7 @@ addr1,addr2,addr3,
 city,zipcode,state,
 country,phone,fax,
 email,special_note,dollar,
-disk_quota_mb,bw_quota_per_month_gb
+disk_quota_mb,bw_quota_per_month_gb,customfld
 )VALUES(
 '','".$_REQUEST["ed_is_company"]."','".mysql_real_escape_string($_REQUEST["ed_company_name"])."','".mysql_real_escape_string($_REQUEST["ed_vat_num"])."',
 '".mysql_real_escape_string($_REQUEST["ed_familyname"])."','".mysql_real_escape_string($_REQUEST["ed_christname"])."',
@@ -89,7 +117,7 @@ disk_quota_mb,bw_quota_per_month_gb
 '".mysql_real_escape_string($_REQUEST["ed_city"])."','".mysql_real_escape_string($_REQUEST["ed_zipcode"])."','".mysql_real_escape_string($_REQUEST["ed_state"])."',
 '".mysql_real_escape_string($_REQUEST["ed_country"])."','".mysql_real_escape_string($_REQUEST["ed_phone"])."','".mysql_real_escape_string($_REQUEST["ed_fax"])."',
 '".mysql_real_escape_string($_REQUEST["ed_email"])."','".mysql_real_escape_string($_REQUEST["ed_special_note"])."','".mysql_real_escape_string($_REQUEST["ed_dollar"])."',
-'".mysql_real_escape_string($_REQUEST["ed_disk_quota_mb"])."','".mysql_real_escape_string($_REQUEST["ed_bw_quota_per_month_gb"])."');";
+'".mysql_real_escape_string($_REQUEST["ed_disk_quota_mb"])."','".mysql_real_escape_string($_REQUEST["ed_bw_quota_per_month_gb"])."','".$cust_fld_val."');";
 	$r = mysql_query($q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysql_error());
 }
 
@@ -129,7 +157,8 @@ email='".$_REQUEST["ed_email"]."',
 special_note='".mysql_real_escape_string($_REQUEST["ed_special_note"])."',
 dollar='".$_REQUEST["ed_dollar"]."',
 disk_quota_mb='".$_REQUEST["ed_disk_quota_mb"]."',
-bw_quota_per_month_gb='".$_REQUEST["ed_bw_quota_per_month_gb"]."'
+bw_quota_per_month_gb='".$_REQUEST["ed_bw_quota_per_month_gb"]."',
+customfld='".$cust_fld_val."'
 WHERE id='".$_REQUEST["id"]."' LIMIT 1;";
 		$r = mysql_query($q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysql_error());
 	}
