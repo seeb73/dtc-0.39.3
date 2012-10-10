@@ -684,7 +684,7 @@ function checkDisableAdmins() {
 
         $now_timestamp = mktime();
         $one_day = 3600 * 24;
-        $q = "SELECT * FROM $pro_mysql_admin_table WHERE adddate(expire,permanent_extend+temporary_extend)<='".date("Y-m-d",$now_timestamp - $one_day*($conf_shared_renewal_disable_admin+permanent_extend+temporary_extend))."' and disabled='no';";
+        $q = "SELECT * FROM $pro_mysql_admin_table WHERE adddate(expire,permanent_extend+temporary_extend)<='".date("Y-m-d",$now_timestamp - $one_day*$conf_shared_renewal_disable_admin)."' and disabled='no';";
         $r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
         $n = mysql_num_rows($r);
         for($i=0;$i<$n;$i++){
