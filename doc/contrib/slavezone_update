@@ -23,8 +23,8 @@
 # 
 
 DTC_PANEL_URL=dtc.example.com
-BACKUP_LOGIN=bla
-BACKUP_PASSWORD=changeme
+BACKUP_LOGIN=whatever
+BACKUP_PASSWORD=thepass
 UPDATE_FORWARD=1
 UPDATE_REVERSE=0
 
@@ -48,7 +48,7 @@ then
 
 	/bin/cat ${TEMP_OUTFILE} | /bin/sed -e 's/\(type slave;\)/\1\n\tallow-query { any; };/' > ${TEMP_OUTFILE2}
 
-	if [ -f /etc/namedb/named.slavezones.conf ] ; then
+	if [ -f /etc/bind/named.slavezones.conf ] ; then
 		/bin/cp /etc/bind/named.slavezones.conf /etc/bind/named.slavezones.conf.bak
 	fi
 
@@ -74,9 +74,10 @@ then
 		exit 1
 	fi
 
-	/bin/cat ${TEMP_OUTFILE} | /bin/sed -e 's/\(type slave;\)/\1\n\tallow-query { any; };/' > ${TEMP_OUTFILE2}
+#	/bin/cat ${TEMP_OUTFILE} | /bin/sed -e 's/\(type slave;\)/\1\n\tallow-query { any; };/' > ${TEMP_OUTFILE2}
+	/bin/cat ${TEMP_OUTFILE} > ${TEMP_OUTFILE2}
 
-	if [ -f /etc/namedb/named.reverse.slavezones.conf ] ; then
+	if [ -f /etc/bind/named.reverse.slavezones.conf ] ; then
 		/bin/cp /etc/bind/named.reverse.slavezones.conf /etc/bind/named.reverse.slavezones.conf.bak
 	fi
 
