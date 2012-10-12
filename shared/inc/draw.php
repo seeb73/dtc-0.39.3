@@ -109,6 +109,7 @@ function drawAdminTools($admin){
 	global $conf_skin;
 	global $conf_use_registrar_api;
 	global $conf_use_mail_alias_group;
+	global $conf_addr_mail_server;
 
 	global $vps_node;
 	global $vps_name;
@@ -351,7 +352,7 @@ function drawAdminTools($admin){
 			}
                   }
 		}
-		if($admin_data[$i]["primary_mx"] == "default" && $domain_parking == "no-parking"){
+		if(($admin_data[$i]["primary_mx"] == "default" && $domain_parking == "no-parking") || ($admin_data[$i]["primary_mx"] == $conf_addr_mail_server && $domain_parking == 'no-parking')){
 			$domain_conf_submenu[] = array(
 				"text" => _("Mailboxes"),
 				"icon" => "box_wnb_nb_picto-mailboxes.gif",

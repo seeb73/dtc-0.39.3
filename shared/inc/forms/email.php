@@ -450,6 +450,7 @@ function drawAdminTools_Emails($domain){
 	global $conf_hide_password;
 	global $pro_mysql_pop_table;
 	global $conf_post_or_get;
+	global $conf_addr_mail_server;
 
 	checkLoginPassAndDomain($adm_login,$adm_pass,$domain["name"]);
 
@@ -787,6 +788,9 @@ function drawAdminTools_Emails($domain){
 		}
 		$catch_popup .= "<option value=\"".$a["id"]."\" $selected>".$a["id"]."</option>";
         }
+	if ( $domain["primary_mx"] == $conf_addr_mail_server ) {
+		$out .= "<font color=\"#FF0000\"><br><br><b>". _("WARNING! You are in SMTP relay mode, the mails received will not be stored in these mailboxes. Use this screen only to set anti-SPAM and anti-VIRUS preferences.") ."</b><br><br></font>";
+	}
 	$out .= "<b><u>". _("Catch-all email set to deliver to") .":</u></b><br>";
 	$out .= "<form method=\"$conf_post_or_get\" action=\"?\" method=\"post\">
 	<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">

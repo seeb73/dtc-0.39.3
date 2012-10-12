@@ -2638,7 +2638,7 @@ ham.ham         sa-ham:
 " >$PATH_POSTFIX_ETC/transport
 				postmap $PATH_POSTFIX_ETC/transport
 				echo "# spam learning transport maps
-transport_maps = hash:$PATH_POSTFIX_ETC/transport
+transport_maps = hash:$PATH_POSTFIX_ETC/transport hash:$PATH_DTC_ETC/postfix_transport
 " >> $TMP_FILE
 			fi
 
