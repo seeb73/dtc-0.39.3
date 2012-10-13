@@ -103,7 +103,7 @@ function select_user_form($error = ""){
 	$out .= "<a href=\"http".$surl."://".$conf_administrative_site."/dtc/\">http".$surl."://".$conf_administrative_site."/dtc/</a><br />";
 
 	if ($error != ""){
-		$out .= _("Error:") " $error<br />";
+		$out .= _("Error:") . " $error<br />";
 	}
 	$out .= dtcFormTableAttrs();
 	$out .= "<form action=\"?\" method=\"post\"><input type=\"hidden\" name=\"Login\" value=\"login\">";
