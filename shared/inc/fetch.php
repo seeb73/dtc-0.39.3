@@ -474,9 +474,13 @@ function fetchAdminData($adm_login,$adm_input_pass){
 
 	$adm_path = $row["path"];
 	$adm_max_ftp = $row["max_ftp"];
+	$ret["max_ftp"] = $adm_max_ftp;
 	$adm_max_ssh = $row["max_ssh"];
+	$ret["max_ssh"] = $adm_max_ssh;
 	$adm_max_email = $row["max_email"];
+	$total_email = 0;
 	$adm_quota = $row["quota"];
+	$total_quota = 0;
 
 	// Get all the VPS of the user
 	$q = "SELECT * FROM $pro_mysql_vps_table WHERE owner='$adm_login' ORDER BY vps_server_hostname,vps_xen_name;";
@@ -574,11 +578,13 @@ function fetchAdminData($adm_login,$adm_input_pass){
 		$domain["safe_mode"] = $row["safe_mode"];
 		$domain["sbox_protect"] = $row["sbox_protect"];
 		$domain["max_email"] = $row["max_email"];
+		$total_email += $row["max_email"];
 		$domain["max_lists"] = $row["max_lists"];
 		$domain["max_ftp"] = $row["max_ftp"];
 		$domain["max_ssh"] = $row["max_ssh"];
 		$domain["max_subdomain"] = $row["max_subdomain"];
 		$domain["quota"] = $row["quota"];
+		$total_quota += $row["quota"];
 		$domain["ip_addr"] = $row["ip_addr"];
 		$domain["backup_ip_addr"] = $row["backup_ip_addr"];
 		$domain["generate_flag"] = $row["generate_flag"];
@@ -892,6 +898,10 @@ function fetchAdminData($adm_login,$adm_input_pass){
 		$user_domains[] = $domain;
 	}
 	if(isset($user_domains)){
+		$user_domains[0]["total_email"] = $total_email;
+		$user_domains[0]["total_quota"] = $total_quota;
+		$user_domains[0]["adm_email"] = $adm_max_email;
+		$user_domains[0]["adm_quota"] = $adm_quota;
 		$ret["data"] = $user_domains;
 	}
 	if(isset($user_vps)){

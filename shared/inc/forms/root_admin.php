@@ -63,6 +63,9 @@ function drawEditAdminData($admin){
 	$admin_disabled = $info["disabled"];
 	$permanent_extend = $info["permanent_extend"];
 	$temporary_extend = $info["temporary_extend"];
+	$max_ftp = $info["max_ftp"];
+	$max_email = $info["max_email"];
+	$max_ssh = $info["max_ssh"];
 
 	if($resseller_flag == "yes"){
 		$resflag_yes = " checked='checked' ";
@@ -256,6 +259,9 @@ function drawEditAdminData($admin){
 	$user_data .= dtcFormLineDraw( _("Number of databases:") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"nbrdb\" value=\"".$info["nbrdb"]."\">",0);
 	$user_data .= dtcFormLineDraw( _("Allow to add domains:") ,$aldom_popup);
 	$user_data .= dtcFormLineDraw( _("Max domain:") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"max_domain\" value=\"$max_domain\">",0);
+	$user_data .= dtcFormLineDraw( _("Max Emails:") ,"<input class=\"dtcDatagrid_input_color\" type=\"text\" name=\"max_email\" value=\"$max_email\">",0);
+	$user_data .= dtcFormLineDraw( _("Max FTP:") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"max_ftp\" value=\"$max_ftp\">",0);
+	$user_data .= dtcFormLineDraw( _("Max SSH:") ,"<input class=\"dtcDatagrid_input_color\" type=\"text\" name=\"max_ssh\" value=\"$max_ssh\">",0);
 	$user_data .= dtcFormLineDraw( _("Grant sub-account addition rights (reseller):") ,$res_selector);
 	$user_data .= dtcFormLineDraw( _("Allow addition of SSH logins:") ,$sshlog_selector,0);
 	$user_data .= dtcFormLineDraw( _("Allow addition of FTP logins:") ,$ftplog_selector);
@@ -550,10 +556,25 @@ function drawDomainConfig($admin){
 			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 			updateUsingCron("gen_vhosts='yes',restart_apache='yes',gen_named='yes',reload_named ='yes'");
 		}
+		$title = " ";
+		if ( $domains[0]["total_quota"] > $domains[0]["adm_quota"]){
+			$title .= "<font color=\"FF0000\">";
+		}
+		$title .= _("Quota:")." ".$domains[0]["total_quota"]."/".$domains[0]["adm_quota"];
+		if ( $domains[0]["total_quota"] > $domains[0]["adm_quota"]){
+			$title .= "</font>";
+		}
+		if ( $domains[0]["total_email"] > $domains[0]["adm_email"]){
+			$title .= "<font color=\"FF0000\">";
+		}
+		$title .= " "._("Emails:")." ".$domains[0]["total_email"]."/".$domains[0]["adm_email"];
+		if ( $domains[0]["total_email"] > $domains[0]["adm_email"]){
+			$title .= "</font>";
+		}
 		$dsc = array(
 			"table_name" => $pro_mysql_domain_table,
-			"title" => _("Domain Configuration"),
 			"action" => "change_domain_config",
+			"title" => _("Domain Configuration").$title,
 			"forward" => array("rub","adm_login","adm_pass"),
 			"skip_deletion" => "yes",
 			"skip_creation" => "yes",

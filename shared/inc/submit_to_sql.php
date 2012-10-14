@@ -170,7 +170,7 @@ login: ";
 
 		$old_expire = date("Y-m-d");
 		$date_expire = calculateExpirationDate(date("Y-m-d"),$product["period"]);
-		$q = "UPDATE $pro_mysql_admin_table SET expire='$date_expire',temporary_extend=0,prod_id='".$renew_entry["product_id"]."',max_email=".$product["nbr_email"].",nbrdb=".$product["nbr_database"].",quota=".$product["quota_disk"].",bandwidth_per_month_mb=".$product["bandwidth"].",allow_add_domain='".$product["allow_add_domain"]."',max_domain=".$product["max_domain"]." WHERE adm_login='".$renew_entry["adm_login"]."'";
+		$q = "UPDATE $pro_mysql_admin_table SET expire='$date_expire',temporary_extend=0,prod_id='".$renew_entry["product_id"]."',max_email=".$product["nbr_email"].",nbrdb=".$product["nbr_database"].",quota=".$product["quota_disk"].",bandwidth_per_month_mb=".$product["bandwidth"].",allow_add_domain='".$product["allow_add_domain"]."',max_domain=".$product["max_domain"].",max_ftp=".$product["max_ftp"].",max_ssh=".$product["max_ssh"]." WHERE adm_login='".$renew_entry["adm_login"]."'";
 		$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 		$txt_renewal_approved = "
 

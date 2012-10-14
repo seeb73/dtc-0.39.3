@@ -305,7 +305,10 @@ if(isset($_REQUEST["updateuserinfo"]) && $_REQUEST["updateuserinfo"] == "Ok"){
 			shared_hosting_security='".$_REQUEST["shared_hosting_security"]."',
 			disabled='".$_REQUEST["admin_enabled"]."',
 			permanent_extend=".$_REQUEST["permanent_extend"].",
-			temporary_extend=".$_REQUEST["temporary_extend"]."
+			temporary_extend=".$_REQUEST["temporary_extend"].",
+			max_ftp=".$_REQUEST["max_ftp"].",
+			max_ssh=".$_REQUEST["max_ssh"].",
+			max_email=".$_REQUEST["max_email"]."
 			WHERE adm_login='$adm_login';";
 		mysql_query($adm_query)or die("Cannot execute query \"$adm_query\" line ".__LINE__." file ".__FILE__." ".mysql_error());
 
