@@ -1462,7 +1462,9 @@ $more_mx_server
 						if($web_subname == $web_default_subdomain && $wildcard_dns == "yes"){
 							$wildcard_dns_txt = "*        $sub_ttl        IN      $the_ip_writed\n";
 						}
-						$this_site_file .= "$web_subname	$sub_ttl	IN	$the_ip_writed\n";
+						if( substr($web_subname,0,1) != "_" ){
+							$this_site_file .= "$web_subname	$sub_ttl	IN	$the_ip_writed\n";
+						}
 					}
 				}
 				if ($subdomain["ipv4_round_robin"] != ""){
