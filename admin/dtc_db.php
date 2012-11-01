@@ -920,7 +920,9 @@ $dtc_database = array(
 			"pass_next_req" => "varchar(128) NOT NULL default ''",
 			"pass_expire" => "int(12) NOT NULL default '0'",
 			"vacation_flag" => "enum('yes','no') NOT NULL default 'no'",
-			"vacation_text" => "text"
+			"vacation_text" => "text",
+			"permit_redir" => "enum('yes','no') NOT NULL default 'yes'",
+                        "permit_spam" => "enum('yes','no') NOT NULL default 'yes'"
 		),
 		"primary" => "(autoinc)",
 		"keys" => array(

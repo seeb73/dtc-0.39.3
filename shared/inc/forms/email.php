@@ -97,29 +97,28 @@ function drawAdminTools_emailAccount($mailbox){
 </tr></table>
 <br><br>";
 
-	if($mailbox["data"]["vacation_flag"] == "yes"){
-		$use_vacation_msg_yes_checked = " checked ";
-		$use_vacation_msg_no_checked = " ";
-	}else{
-		$use_vacation_msg_yes_checked = " ";
-		$use_vacation_msg_no_checked = " checked ";
-	}
+	if($mailbox["data"]["permit_redir"] == "yes"){
+		if($mailbox["data"]["vacation_flag"] == "yes"){
+			$use_vacation_msg_yes_checked = " checked ";
+			$use_vacation_msg_no_checked = " ";
+		}else{
+			$use_vacation_msg_yes_checked = " ";
+			$use_vacation_msg_no_checked = " checked ";
+		}
 
-	if (!$cyrus_used){
-  	$left .= "<h3>" . _("Vacation message") . "</h3>
-  	".$form_start."<input type=\"hidden\" name=\"action\" value=\"dtcemail_vacation_msg\">
-  <input type=\"radio\" name=\"use_vacation_msg\" value=\"yes\" $use_vacation_msg_yes_checked>"._("Yes")."<input type=\"radio\" name=\"use_vacation_msg\" value=\"no\" $use_vacation_msg_no_checked>"._("No")."
+		if (!$cyrus_used){
+	  		$left .= "<h3>" . _("Vacation message") . "</h3>
+  		".$form_start."<input type=\"hidden\" name=\"action\" value=\"dtcemail_vacation_msg\">
+  	<input type=\"radio\" name=\"use_vacation_msg\" value=\"yes\" $use_vacation_msg_yes_checked>"._("Yes")."<input type=\"radio\" name=\"use_vacation_msg\" value=\"no\" $use_vacation_msg_no_checked>"._("No")."
   <br>
   <textarea cols=\"40\" rows=\"7\" name=\"vacation_msg_txt\">".$mailbox["data"]["vacation_text"]."</textarea><br>
   ". drawSubmitButton( _("Ok") ) ."</form>";
-  }
-	if($mailbox["data"]["localdeliver"] == "yes"){
-		$deliverUrl = "$url_start&action=dtcemail_set_deliver_local&setval=no\"><font color=\"green\">"._("Yes")."</font></a>";
-	}else{
-		$deliverUrl = "$url_start&action=dtcemail_set_deliver_local&setval=yes\"><font color=\"red\">"._("No")."</font></a>";
-	}
-	if (!$cyrus_used){
-    	$right = "<h3>". _("Edit your mailbox redirections:") ."</h3>
+			if($mailbox["data"]["localdeliver"] == "yes"){
+				$deliverUrl = "$url_start&action=dtcemail_set_deliver_local&setval=no\"><font color=\"green\">"._("Yes")."</font></a>";
+			}else{
+				$deliverUrl = "$url_start&action=dtcemail_set_deliver_local&setval=yes\"><font color=\"red\">"._("No")."</font></a>";
+			}
+    			$right = "<h3>". _("Edit your mailbox redirections:") ."</h3>
     ". _("Deliver messages locally in INBOX: ") ." $deliverUrl
     <table cellpadding=\"0\" cellspacing=\"0\">
     <tr>
@@ -131,23 +130,28 @@ function drawAdminTools_emailAccount($mailbox){
     </tr><tr>
     	<td></td><td>". drawSubmitButton( _("Ok") ) ."</form></td>
     </tr></table><br><br>";
+		}else{
+			$right ="";
+		}
+	}
 
-    	if($mailbox["data"]["spam_mailbox_enable"] == "yes"){
-    		$spambox_yes_checked = " checked ";
-    		$spambox_no_checked = " ";
-    	}else{
-    		$spambox_yes_checked = " ";
-    		$spambox_no_checked = " checked ";
-    	}
-    	if($mailbox["data"]["spam_lover"] == "Y"){
-    		$spam_lover_yes_checked = " checked ";
-    		$spam_lover_no_checked = " ";
-    	}else{
-    		$spam_lover_yes_checked = " ";
-    		$spam_lover_no_checked = " checked ";
-    	}
-
-    	$right .= "<h3>" . _("Anti-SPAM control") . "</h3>
+    	if($mailbox["data"]["permit_spam"] == "yes" ) {
+		if($mailbox["data"]["spam_mailbox_enable"] == "yes"){
+    			$spambox_yes_checked = " checked ";
+    			$spambox_no_checked = " ";
+    		}else{
+    			$spambox_yes_checked = " ";
+    			$spambox_no_checked = " checked ";
+    		}
+    		if($mailbox["data"]["spam_lover"] == "Y"){
+    			$spam_lover_yes_checked = " checked ";
+    			$spam_lover_no_checked = " ";
+    		}else{
+    			$spam_lover_yes_checked = " ";
+    			$spam_lover_no_checked = " checked ";
+    		}
+	
+    		$right .= "<h3>" . _("Anti-SPAM control") . "</h3>
     <table cellpadding=\"0\" cellspacing=\"0\">
     <tr>
     	<td align=\"right\">" . _("Enable SPAM filtering: ") . "</td><td>".$form_start."<input type=\"hidden\" name=\"action\" value=\"dtcemail_spambox\">
@@ -188,7 +192,7 @@ function drawAdminTools_emailAccount($mailbox){
     </tr><tr>
     	<td></td><td>". drawSubmitButton( _("Ok") ) ."</form></td></tr></table>";
 	}
-	else { $right=""; }
+	else { $right.=""; }
 		
 	// Output the form
 	$out = "<table width=\"100%\" height=\"1\">
@@ -530,6 +534,10 @@ function drawAdminTools_Emails($domain){
 			"happen" => _("files"),
 			"legend" => _("Mailbox max files quota: ") );
                 $dsc["cols"]["delivery_title"] = array( "type" => "title", "legend" => _("Delivery configuration") );
+		$dsc["cols"]["permit_redir"] = array(
+			"type" => "checkbox",
+			"values" => array("yes","no"),
+			"legend" => _("Allow Users to edit Redirection Information: ") );
 		$dsc["cols"]["localdeliver"] = array(
 			"type" => "checkbox",
 			"values" => array( "yes","no"),
@@ -561,6 +569,10 @@ function drawAdminTools_Emails($domain){
 			"rows" => "7");
 	}
 	$dsc["cols"]["spam_title"] = array("type" => "title","legend" => _("SPAM control"));
+	$dsc["cols"]["permit_spam"] = array(
+		"type" => "checkbox",
+		"values" => array("yes","no"),
+		"legend" => _("Allow Users to edit SPAM Configuration Information: ") );
 	$dsc["cols"]["spam_mailbox_enable"] = array(
 		"type" => "checkbox",
 		"help" => _("If selected, spam will be saved in a SPAM folder and won't reach your inbox. Later you may check this folder with webmail or an IMAP client."),
@@ -636,6 +648,10 @@ function drawAdminTools_Emails($domain){
 		"check" => "numeric",
 		"can_be_empty" => "yes",
 		"legend" => _("Quarantine cutoff level: ") );
+	$dsc["cols"]["spam_modifies_subj"] = array(
+		"type" => "checkbox",
+		"values" => array("Y","N"),
+		"legend" => _("Allows to modify mail subject with SPAM information: ") );
 	$dsc["cols"]["spam_subject_tag"] = array(
 		"type" => "text",
 		"help" => _("Add this tag to the subject of mails above tag level."),
@@ -735,7 +751,7 @@ function drawAdminTools_Emails($domain){
 	$dsc["cols"]["message_size_limit"] = array(
 		"type" => "text",
 		"help" => _("Only process filters on mails up to this size."),
-		"default" => "256000",
+		"default" => "0",
 		"check" => "number",
 		"can_be_empty" => "yes",
 		"happen" => _("Bytes"),

@@ -734,6 +734,9 @@ function fetchAdminData($adm_login,$adm_input_pass){
 			$email["spam_mailbox_enable"] = $row4["spam_mailbox_enable"];
 			$email["vacation_flag"] = $row4["vacation_flag"];
 			$email["vacation_text"] = $row4["vacation_text"];
+			$email["permit_redir"] = $row4["permit_redir"];
+			$email["permit_spam"] = $row4["permit_spam"];
+			$email["spam_modifies_subj"] = $row4["spam_modifies_subj"];
 			$emails[] = $email;
 		}	
 		if(isset($emails)){
