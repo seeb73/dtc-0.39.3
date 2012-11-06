@@ -205,7 +205,7 @@ function genDotSieveFile($home,$id,$domain_full_name,$spam_mailbox_enable,$spam_
 # do not edit by hand, it will be overwritten each
 # time the cron job generates the mail accounts
 
-require ["fileinto", "include", "variables", "vacation", "envelope", "imap4flags", "subaddress", "copy"];
+require ["fileinto", "include", "variables", "vacation", "envelope", "imap4flags", "subaddress", "copy", "mailbox"];
 include "custom.sieve";
 
 MAILFILTER_EOF;
@@ -225,7 +225,7 @@ MAILFILTER_EOF;
 		$spambox = str_replace('"', "\\\"", $spambox);
 		$sieve_filter_content .= <<<MAILFILTER_EOF
 		if header :contains "X-Spam-Flag" "YES" {
-			fileinto "$spambox";
+			fileinto :create "$spambox";
 		}
 
 MAILFILTER_EOF;
