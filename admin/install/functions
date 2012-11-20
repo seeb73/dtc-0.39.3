@@ -2802,7 +2802,7 @@ pickup fifo n - n 60 1 pickup
 				# if we also have sieve, we should use it too!
 				if [ ""$conf_use_sieve = "true" ] ; then
 					echo "dovecot unix    -       n       n       -       -      pipe
-    flags=DRhu user=${CONF_DTC_SYSTEM_USERNAME} argv=$PATH_DOVECOT_DELIVER -f \${sender} -d \${user}@\${nexthop} -n -m \${extension} -a \${recipient}
+    flags=DRhu user=${CONF_DTC_SYSTEM_USERNAME} argv=$PATH_DOVECOT_DELIVER -f \${sender} -d \${user}@\${nexthop} -n -s -m \${extension} -a \${recipient}
 
 " >> $TMP_FILE2
 					touch /var/log/sieve.log
