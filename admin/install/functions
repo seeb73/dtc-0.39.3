@@ -2430,6 +2430,11 @@ mailbox_size_limit = 0
 				cp -f ${PATH_DTC_ADMIN}/postfix_checks/relaying_stoplist ${PATH_POSTFIX_ETC}/maps
 			fi
 
+			FOUND_LOOPPREVENT=0;
+			if [ -x /usr/sbin/smtpprox-loopprevent -o -x /usr/bin/smtpprox-loopprevent -o -x /usr/local/sbin/smtpprox-loopprevent -o -x /usr/local/bin/smtpprox-loopprevent ] ; then
+				FOUND_LOOPPREVENT=1;
+			fi
+
 			FOUND_DKIMPROXY=0;
 			if [ -x /usr/sbin/amavisd-new -o -x /usr/local/sbin/amavisd-new -o -x /usr/local/bin/amavisd-new -o -x /usr/sbin/amavisd ] ; then
 				if [ -x /usr/sbin/dkimproxy.in -o -x /usr/bin/dkimproxy.in -o -x /usr/local/sbin/dkimproxy.in -o -x /usr/local/bin/dkimproxy.in ] ; then
@@ -2584,8 +2589,9 @@ smtpd_tls_auth_only = no"
 echo "                               $dnsbl_list
                                reject_unauth_destination" >> $TMP_FILE
 				if [ "$FOUND_DKIMPROXY" -eq 1 ] ; then
-#				if [ "$FOUND_DKFILTER" -eq 1 ] ; then
-					echo "			check_sender_access regexp:$PATH_POSTFIX_ETC/filter_10026_catchall" >> $TMP_FILE
+					if [ "$FOUND_LOOPPREVENT" -eq 0 ] ; then
+						echo "			check_sender_access regexp:$PATH_POSTFIX_ETC/filter_10026_catchall" >> $TMP_FILE
+					fi
 				fi
                                permit_sasl_authenticated=""
                                sasl_main_dot_cf_rules=""
@@ -2611,8 +2617,9 @@ smtpd_recipient_restrictions = permit_mynetworks,${permit_sasl_authenticated}
 			$dnsbl_list
 			reject_unauth_destination," >> $TMP_FILE
 			if [ "$FOUND_DKIMPROXY" -eq 1 ] ; then
-#			if [ "$FOUND_DKFILTER" -eq 1 ] ; then
-				echo "			check_sender_access regexp:$PATH_POSTFIX_ETC/filter_10026_catchall" >> $TMP_FILE
+				if [ "$FOUND_LOOPPREVENT" -eq 0 ] ; then
+					echo "			check_sender_access regexp:$PATH_POSTFIX_ETC/filter_10026_catchall" >> $TMP_FILE
+				fi
 			fi
 			echo "			permit${sasl_main_dot_cf_rules}" >> $TMP_FILE
 
@@ -2678,11 +2685,9 @@ transport_maps = hash:$PATH_POSTFIX_ETC/transport
 				if [ -x /usr/sbin/spamd -o -x /usr/local/bin/spamd ] ; then
 					echo "# Adds support for the sa-learn script
 sa-spam unix    -       n       n       -       -       pipe
-    -o smtpd_client_restrictions=permit_sasl_authenticated,permit_mynetworks,reject
     user=$AMAVISD_USER:$AMAVISD_USER argv=$PATH_DTC_ADMIN/sa-wrapper spam \${sender}
 
 sa-ham  unix    -       n       n       -       -       pipe
-    -o smtpd_client_restrictions=permit_sasl_authenticated,permit_mynetworks,reject
     user=$AMAVISD_USER:$AMAVISD_USER argv=$PATH_DTC_ADMIN/sa-wrapper ham  \${sender}
 
 " >> $TMP_FILE2
@@ -2731,6 +2736,42 @@ tumgreyspf unix  -      n       n       -       -       spawn
 					echo "cyrus     unix  -       n       n       -       -       pipe
   flags=R user=cyrus argv=${TMP_CYRDELIVERPATH} -e -m \${extension} \${recipient}
 ">> $TMP_FILE2
+				fi
+
+				# Insert smtpprox-loopprevent config into master.cf
+				if [ "$FOUND_LOOPPREVENT" -eq 1 ] ; then
+					echoIfVerbose "===> smtpprox-loopprevent found, including in postfix config"
+					echo "# smtpprox-loopprevent configuration
+#
+# Before-filter SMTP server. Receive mail from the network and
+# pass it to smtpprox-loopprevent on localhost port 10022.
+# (overwrite the default smtp service)
+#
+smtp      inet  n       -       n       -       20      smtpd
+	-o smtpd_proxy_filter=127.0.0.1:10022
+	-o smtpd_client_connection_count_limit=10
+	-o smtpd_proxy_options=speed_adjust
+
+#
+# After-filter SMTP server. Receive mail from smtpprox-loopprevent
+# on localhost port 10023.
+#
+127.0.0.1:10023 inet n  -       n       -        -      smtpd
+	-o smtpd_authorized_xforward_hosts=127.0.0.0/8
+	-o smtpd_client_restrictions=
+	-o smtpd_helo_restrictions=
+	-o smtpd_sender_restrictions=
+	-o smtpd_relay_restrictions=
+	-o smtpd_recipient_restrictions=permit_mynetworks,reject
+	-o smtpd_data_restrictions=
+	-o mynetworks=127.0.0.0/8
+	-o receive_override_options=no_unknown_recipient_checks" >> $TMP_FILE2
+					if [ "$FOUND_DKIMPROXY" -eq 1 ] ; then
+						echo "	-o content_filter=dkimsign:[127.0.0.1]:10026" >> $TMP_FILE2
+					fi
+					echo "" >> $TMP_FILE2
+				else
+					echoIfVerbose "===> smtpprox-loopprevent not found"
 				fi
 
 				# Insert our amavis stuff inside the master.cf
@@ -2920,6 +2961,45 @@ maildrop_destination_recipient_limit = 1" >> $TMP_FILE
   			echoIfVerbose "===> ****** $PATH_SASLLIB/libsql.so NOT found and PAM was removed from the installation, leaving Postfix SASL unconfigured! Please fix me!"
   		  echoIfVerbose "===> ********************************************************** "
   		fi # [ -f $PATH_SASLLIB/libsql.so ]
+
+
+	# configure smtpprox-loopprevent
+	if [ "$FOUND_LOOPPREVENT" -eq 1 ] ; then
+		LOOPPREVENT_CONF=""
+		LOOPPREVENT_CONFIG=""
+		if [ -f /etc/default/smtpprox-loopprevent ]; then
+			LOOPPREVENT_CONF=/etc/default/smtpprox-loopprevent
+			LOOPPREVENT_CONFIG="
+# Configured by DTC $VERSION
+
+# smtpprox-loopprevent: listen on 10022, send to 10023
+_LISTEN_PORT=\"127.0.0.1:10022\"
+_SEND_PORT=\"127.0.0.1:10023\"
+
+# End of DTC configuration $VERSION
+"
+		fi
+		LOOPPREVENT_BACKUP=${LOOPPREVENT_CONF}.DTC.backup
+		if ! [ -f ${LOOPPREVENT_BACKUP} ] ; then
+			if [ -f ${LOOPPREVENT_CONF} ] ; then
+				cp -f ${LOOPPREVENT_CONF} ${LOOPPREVENT_BACKUP}
+			fi
+		fi
+
+		if [ -n "${LOOPPREVENT_CONF}" -a -f "${LOOPPREVENT_CONF}" ] ; then
+			if grep "Configured by DTC " ${LOOPPREVENT_CONF} >/dev/null
+			then
+				echoIfVerbose "smtpprox-loopprevent has been configured previously, not adding config."
+			else
+				echoIfVerbose "===> adding smtpprox-loopprevent config to ${LOOPPREVENT_CONF}"
+				echo "${LOOPPREVENT_CONFIG}" >> ${LOOPPREVENT_CONF}
+				restartDaemonMultiUnix smtpprox-loopprevent
+			fi
+		else
+			echoIfVerbose "NOTICE:  smtpprox-loopprevent config file not found, you should manually configure it to listen on 127.0.0.1:10022 and send to 127.0.0.1:10023.  Postfix may bounce incoming emails if this is not done."
+		fi
+	fi
+
 	# By default, CentOS setup is wrong with maildrop not being SUID
 	if [ "$UNIX_TYPE" = "redhat" -a /usr/bin/maildrop ] ; then
 		chmod +s /usr/bin/maildrop
@@ -5385,6 +5465,32 @@ uninstallETC_CONFD_APACHE2 () {
 	fi
 }
 
+uninstallLoopPreventConfig () {
+	#
+	# uninstall smtpprox-loopprevent config
+	#
+	echoIfVerbose "===> Uninstalling inclusion for smtpprox-loopprevent"
+	LOOPPREVENT_CONF=""
+	if [ -f /etc/default/smtpprox-loopprevent ]; then
+		LOOPPREVENT_CONF=/etc/default/smtpprox-loopprevent
+	fi
+	if [ -n "${LOOPPREVENT_CONF}" -a -f "${LOOPPREVENT_CONF}" ] ; then
+		if grep "Configured by DTC " ${LOOPPREVENT_CONF} >/dev/null
+		then
+			start_line=`grep -n "Configured by DTC " ${LOOPPREVENT_CONF} | cut -d":" -f1`
+			end_line=`grep -n "End of DTC configuration" ${LOOPPREVENT_CONF}| cut -d":" -f1`
+			nbr_line=`cat ${LOOPPREVENT_CONF} | wc -l`
+			TMP_FILE=`${MKTEMP} DTC_uninstall.smtpprox-loopprevent.XXXXXX` || exit 1
+			cat ${LOOPPREVENT_CONF} | head -n $(($start_line - 1 )) > $TMP_FILE
+			cat ${LOOPPREVENT_CONF} | tail -n $(($nbr_line - $end_line )) >> $TMP_FILE
+			cp -f ${LOOPPREVENT_CONF} ${LOOPPREVENT_CONF}.DTC.removed
+			echo -n > ${LOOPPREVENT_CONF}
+			cat < $TMP_FILE >> ${LOOPPREVENT_CONF}
+			rm $TMP_FILE
+		fi
+	fi
+}
+
 createMailAutoconfigFiles () {
 	MAILSERVER=$conf_mx_mail.$main_domain_name
 	DTC_SERVER=$dtc_admin_subdomain.$main_domain_name
@@ -5621,6 +5727,7 @@ DTCuninstallDaemons () {
 	uninstallAmavisConf
 	uninstallQmail
 	uninstallSshVhostsConfig
+	uninstallLoopPreventConfig
 }
 
 DTCsetupDaemons () {
