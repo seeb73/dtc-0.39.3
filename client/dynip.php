@@ -1,4 +1,4 @@
-<?
+<?php
 
 require("../shared/autoSQLconfig.php");
 require("$dtcshared_path/vars/table_names.php");
