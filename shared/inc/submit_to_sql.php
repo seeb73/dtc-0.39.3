@@ -604,6 +604,7 @@ last_used_lang   ,path            ,id_client,bandwidth_per_month_mb,quota,nbrdb,
 	case "shared":
 		$country = $conf_this_server_country_code;
 		addDomainToUser($waiting_login,$new_admin["reqadm_pass"],$new_admin["domain_name"]);
+		triggerDomainListUpdate();
 
 		// Read the (customizable) registration message to send
 		$txt_welcome_message = readCustomizedMessage("registration_msg/shared_open",$waiting_login);
