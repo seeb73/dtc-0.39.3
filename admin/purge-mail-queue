@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# This script deletes mail from your postfix queue depending on the
+# first parameter. It's not really rocket science, but it may be
+# handy at times of SPAM sent from your server.
+#
+# When tracking for spam in the mail postfix mail queue, the output
+# of postqueue -p is something like that:
+# -Queue ID- --Size-- ----Arrival Time---- -Sender/Recipient-------
+# 1FF5D1280AC     3535 Sat Dec 15 01:25:40  sender@example.com
+#
+# most of the times, the sender will always be the same. So, to purge
+# your mail queue, you would simply need to do:
+# ./purge-mail-queue sender@example.com
+# and this script will delete all the mails from the queue that are
+# sent from sender@example.com. It's most of the time quite effective.
+# Note that if the mails where sent on the previous month, then you
+# might need to overwrite the MONTH variable below.
+
+MONTH=`date | awk '{print $2}'`
+
+for i in `postqueue -p | grep $1 | grep ${MONTH} | cut -d'*' -f1 | cut -d' ' -f1` ; do postsuper -d $i ; done
