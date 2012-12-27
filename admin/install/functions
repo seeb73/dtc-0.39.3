@@ -87,20 +87,33 @@ createDTCuserAndGroup () {
 		else
 			if [ -x /usr/sbin/useradd ] ; then
 				if [ -x ${PATH_BASH} ] ; then
-					/usr/sbin/useradd -r -s ${PATH_BASH} -g ${CONF_DTC_SYSTEM_GROUPNAME} ${CONF_DTC_SYSTEM_USERNAME}
+					/usr/sbin/useradd -r -m -s ${PATH_BASH} -g ${CONF_DTC_SYSTEM_GROUPNAME} ${CONF_DTC_SYSTEM_USERNAME}
 				else
 					echo "Could not find a shell, please fix me here!!!"
 				fi
 			# This one is for freebsd
 			else
 				if [ -x /bin/sh ] ; then
-					pw useradd ${CONF_DTC_SYSTEM_USERNAME} -g ${CONF_DTC_SYSTEM_GROUPNAME} -s /bin/sh
+					pw useradd ${CONF_DTC_SYSTEM_USERNAME} -g ${CONF_DTC_SYSTEM_GROUPNAME} -s /bin/sh -m
 				else
 					echo "Could not find a shell, please fix me here!!!"
 				fi
 			fi
 		fi
 		CONF_DTC_SYSTEM_UID=`${GETENT} passwd ${CONF_DTC_SYSTEM_USERNAME} | cut -d':' -f3`
+		CONF_DTC_SYSTEM_HOMEDIR=`${GETENT} passwd ${CONF_DTC_SYSTEM_USERNAME} | cut -d':' -f6`
+		if [ -d ${CONF_DTC_SYSTEM_HOMEDIR} ] ; then
+			echoIfVerbose "-> Directory ${CONF_DTC_SYSTEM_HOMEDIR} already exists: skipping creation!"
+		else
+			echoIfVerbose "-> creating dtc home directory: ${CONF_DTC_SYSTEM_HOMEDIR}"
+			mkdir -p ${CONF_DTC_SYSTEM_HOMEDIR}
+			if [ -d /etc/skel ] ; then
+				cd /etc/skel/
+				cp -pr . ${CONF_DTC_SYSTEM_HOMEDIR}
+			fi
+			chmod 755 ${CONF_DTC_SYSTEM_HOMEDIR}
+			chown -R ${CONF_DTC_SYSTEM_USERNAME}:${CONF_DTC_SYSTEM_GROUPNAME} ${CONF_DTC_SYSTEM_HOMEDIR}
+		fi
 	fi
 	if [ -z ""$CONF_DTC_SYSTEM_UID ] ; then
 		echo "No dtc system user: exiting"
