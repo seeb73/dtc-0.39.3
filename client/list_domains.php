@@ -75,6 +75,17 @@ case "trigger_update_mx_recipients":
 
         $out .= "Successfuly recieved trigger for MX!";
         break;
+case "list_mx":    
+	$q = "SELECT * FROM $pro_mysql_domain_table WHERE other_mx='default' AND primary_mx='default';";     
+	$r = mysql_query($q)or die("Cannot query $q ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());     
+	$n = mysql_num_rows($r);     
+	$out .= "<dtc_backup_mx_domain_list>\n";     
+	for($i=0;$i<$n;$i++){     
+		$a = mysql_fetch_array($r);        
+		$out .= $a["name"]."\n";     
+	}     
+	$out .= "</dtc_backup_mx_domain_list>\n";     
+	break;
 case "list_mx_recipients":
 	$q = "SELECT * FROM $pro_mysql_domain_table WHERE other_mx='default' AND primary_mx='default';";
 	$r = mysql_query($q)or die("Cannot query $q ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
