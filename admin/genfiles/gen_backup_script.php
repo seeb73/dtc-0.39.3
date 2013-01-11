@@ -189,7 +189,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 			$dbfilename = $owner.".userdb.".$a3["Db"].".sql";
 			$backup_net .= "echo -n \" Database ".$a3["Db"].": \"\n";
 			$backup_net .= "echo -n \" dumping...\"\n";
-			$backup_net .= "mysqldump -u$conf_mysql_login -p$conf_mysql_pass -c --add-drop-table --routines --databases ".$a3["Db"]." >".$dbfilename."\n";
+			$backup_net .= "mysqldump -u$conf_mysql_login -p$conf_mysql_pass -c --add-drop-table --skip-extended-insert --routines --databases ".$a3["Db"]." >".$dbfilename."\n";
 			$backup_net .= "echo -n \" compressing...\"\n";
 			if ($z7_mode==1) {
 				$backup_net .= "7zr a -t7z -m0=lzma2 -mx$z7_mx -mfb=$z7_mfb -md=$z7_md -ms=$z7_ms -mmt=on $dbfilename.gz  $dbfilename\n";
@@ -232,7 +232,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 	$backup_net .= "echo -n \"===> Backuping database dtc: \"\n";
 	$dbfilename = "dtcdb.sql";
 	$backup_net .= "echo -n \" dumping...\"\n";
-	$backup_net .= "mysqldump -h$conf_mysql_host -u$conf_mysql_login -p$conf_mysql_pass -c --add-drop-table --routines --databases $conf_mysql_db >".$dbfilename."\n";
+	$backup_net .= "mysqldump -h$conf_mysql_host -u$conf_mysql_login -p$conf_mysql_pass -c --add-drop-table --skip-extended-insert --routines --databases $conf_mysql_db >".$dbfilename."\n";
 	$backup_net .= "echo -n \" compressing...\"\n";
 	if ($z7_mode==1) {
 		$backup_net .= "7zr a -t7z -m0=lzma2 -mx$z7_mx -mfb=$z7_mfb -md=$z7_md -ms=$z7_ms -mmt=on $dbfilename.gz  $dbfilename\n";
@@ -273,7 +273,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 	$backup_net .= "echo -n \"===> Backuping database mysql: \"\n";
 	$dbfilename = "mysqldb.sql";
 	$backup_net .= "echo -n \" dumping...\"\n";
-	$backup_net .= "mysqldump -h$conf_user_mysql_host -u$conf_mysql_login -p$conf_mysql_pass -c --add-drop-table --routines --databases mysql >".$dbfilename."\n";
+	$backup_net .= "mysqldump -h$conf_user_mysql_host -u$conf_mysql_login -p$conf_mysql_pass -c --add-drop-table --skip-extended-insert --routines --databases mysql >".$dbfilename."\n";
 	$backup_net .= "echo -n \" compressing...\"\n";
 	if ($z7_mode==1) {
 		$backup_net .= "7zr a -t7z -m0=lzma2 -mx$z7_mx -mfb=$z7_mfb -md=$z7_md -ms=$z7_ms -mmt=on $dbfilename.gz  $dbfilename\n";

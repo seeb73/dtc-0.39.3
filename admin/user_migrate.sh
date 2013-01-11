@@ -102,7 +102,7 @@ export_adm_dbs () {
 		for j in ${SQL_DBS} ; do
 			echo "-> Exporting db: ${j}"
 			TMP=`mktemp`
-			mysqldump --defaults-file=/etc/mysql/debian.cnf -c --add-drop-table --routines --databases ${j} >${TMP}
+			mysqldump --defaults-file=/etc/mysql/debian.cnf -c --add-drop-table --skip-extended-insert --routines --databases ${j} >${TMP}
 			echo "-> SCP to destination"
 			scp ${TMP} ${DST_HOST}:/tmp
 			echo "-> Importing"
