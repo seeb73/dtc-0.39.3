@@ -95,7 +95,7 @@ function migrate_dump_all_dbs($dir){
 		$a = mysql_fetch_array($r);
 		$name = $a["Database"];
 		if($name != "information_schema" && $name != "mysql" && $name != "test"){
-			$cmd = "mysqldump -u$conf_mysql_login -p$conf_mysql_pass -c --add-drop-table --databases $name >$dir/$name.sql\n";
+			$cmd = "mysqldump -u$conf_mysql_login -p$conf_mysql_pass -c --add-drop-table --routines --databases $name >$dir/$name.sql\n";
 			$script .= "echo -n \" $name\"\n";
 			$script .= "$cmd\n";
 			$imp .= "echo -n \" $name\"\n";
