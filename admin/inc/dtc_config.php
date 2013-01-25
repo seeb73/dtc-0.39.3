@@ -1290,6 +1290,15 @@ function drawGeneralConfig(){
 				"type" => "radio",
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
+			"action_on_old_new_admin" => array (
+				"legend" => _("show upgrade product button: "),
+				"type" => "radio",
+				"values" => array("archive","delete","nothing"),
+				"display_replace" => array(_("Archive"),_("Delete"),_("No Action Taken"))),
+			"new_admin_old_age" => array (
+				"legend" => _("New Admin age (days) to be considered old: "),
+				"size" => "50",
+				"type" => "text"),
 		        )
                 );
 	$out .= configEditorTemplate ($dsc);

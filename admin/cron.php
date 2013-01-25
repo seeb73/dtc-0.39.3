@@ -706,6 +706,32 @@ function checkDisableAdmins() {
 	}
 }
 
+function checkArchiveOrDeleteNewAdmins(){
+	global $pro_mysql_new_admin_table;
+	global $conf_action_on_old_new_admin;
+	global $conf_new_admin_old_age;
+
+	if ($conf_action_on_old_new_admin == 'archive' or $conf_action_on_old_new_admin == 'delete') {
+		$now_timestamp = mktime();
+		$one_day = 3600 * 24;
+		$q = "SELECT id, reqadm_login FROM $pro_mysql_new_admin_table WHERE to_days(date) < to_days('".
+			date("Y-m-d",$now_timestamp - $one_day*$conf_new_admin_old_age)."') and archive='no';";
+		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysql_num_rows($r);
+		for($i=0;$i<$n;$i++){
+			$admin=mysql_fetch_array($r) or die("Cannot fetch record line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			if ($conf_action_on_old_new_admin == 'delete') {
+				echo "Deleting old new_admin ".$admin["reqadm_login"]."\n";
+				$s = "DELETE FROM $pro_mysql_new_admin_table WHERE id='".$admin["id"]."';";
+			}else{
+				echo "Archiving old new_admin ".$admin["reqadm_login"]."\n";
+				$s = "UPDATE $pro_mysql_new_admin_table SET archive='yes' WHERE id='".$admin["id"]."';";
+			}
+			$t = mysql_query($s)or die("Cannot query $s line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		}
+	}
+}
+
 // Edit the following if you want to disable some services...
 checkLockFlag();
 checkOtherServerTriggers();
@@ -730,6 +756,7 @@ if(($start_stamps%(60*60*24))< 60*10)	updateAllDomainsStats();
 // updateAllDomainsStats();
 // Update all list archives
 if(($start_stamps%(60*60))< 60*10){	updateAllListWebArchive();	}
+if(($start_stamps%(60*60))< 60*10){	checkArchiveOrDeleteNewAdmins();	}
 
 // Re-read cronjob values as long as they could have change
 // during this long job calculation !
