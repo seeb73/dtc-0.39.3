@@ -14,6 +14,12 @@ if(isset($_REQUEST["ip"])){
 	$ip = $_REQUEST["ip"];
 }
 $domain = $_REQUEST["domain"];
+if(!isset($domain)){
+	$domain = $_REQUEST["mx"];
+}
+if(!isset($domain)){
+	$domain = $_REQUEST["hostname"];
+}
 
 if(!isset($login) || $login == "" || !isset($pass) || $pass == ""){
 	die("Incorrect params");
@@ -25,7 +31,7 @@ if(!isDTCPassword($pass)){
         die("Requested pass does not look like to be correct. It should be made only with letters, numbers, \".\" or \"-\" sign.");
 }
 if(!isHostname($domain)){
-	die("Requested domain name does not looklike to be correct. Please check !");
+	die("Requested domain name does not looklike to be correct. Please check !: $domain");
 }
 
 $query = "SELECT * FROM $pro_mysql_subdomain_table WHERE login='$login' AND pass='$pass' AND domain_name='$domain';";

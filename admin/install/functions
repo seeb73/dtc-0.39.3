@@ -3815,8 +3815,9 @@ configFreeRadius () {
 		sed "s/auth_goodpass = no/auth_goodpass = yes/" $TMP_FILE2 >$TMP_FILE
 		sed "s/#	sql$/       sql/" $TMP_FILE >$TMP_FILE2 
 		sed "s/#	\$INCLUDE sql/	\$INCLUDE sql/" $TMP_FILE2 >$TMP_FILE 
+		sed "s/ \$INCLUDE sqlippool/    \#      $INCLUDE sqlippool/" $TMP_FILE >$TMP_FILE2
 
-		cat <$TMP_FILE >$FREERADIUS_CONF
+		cat <$TMP_FILE2 >$FREERADIUS_CONF
 
 		rm $TMP_FILE $TMP_FILE2
 

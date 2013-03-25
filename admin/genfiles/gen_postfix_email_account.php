@@ -155,7 +155,7 @@ function mail_account_generate_postfix(){
 					$relay_domains_file .= "$domain_full_name\n";
 					$relay_recipients_all_domains .= "$domain_full_name\n";
 					if ($domain["mail_relay_host"] != ""){
-						$transport_file .= "$domain_full_name	smtp:[".$domain["mail_relay_host"]."]\n";
+						$transport_file .= "$domain_full_name	smtp:".$domain["mail_relay_host"]."\n";
 					}
 				}
 			}
