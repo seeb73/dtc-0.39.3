@@ -10,14 +10,13 @@ for i in /var/www/sites/*/*/subdomains/*/html ; do
 	rm -rf bin dev etc lib lib64 libexec sbin tmp usr var
 done
 cd /var/www/sites
-rm */*/bin */*/dev */*/etc */*/lib */*/lib64 */*/sbin */*/tmp */*/usr
-*/*/var
+rm */*/bin */*/dev */*/etc */*/lib */*/lib64 */*/sbin */*/tmp */*/usr */*/var
 rm */bin */dev */etc */lib */lib64 */sbin */tmp */usr */var
 
 # Makes Joomla sites use networking and not the MySQL socket file
 for i in /var/www/sites/*/*/subdomains/*/html/configuration.php ; do
 	sed -i "s/var \$host = 'localhost';/var \$host = '127.0.0.1';/" $i
-fi
+do
 
 # Same for wordpress
 for i in /var/www/sites/*/*/subdomains/*/html/wp-config.php ; do
