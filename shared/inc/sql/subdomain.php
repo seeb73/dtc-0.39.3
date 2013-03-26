@@ -2,7 +2,7 @@
 
 if(isset($_REQUEST["subdomaindefault"]) && $_REQUEST["subdomaindefault"] == "Ok"){
 	checkLoginPassAndDomain($adm_login,$adm_pass,$edit_domain);
-	if(!checkSubdomainFormat($_REQUEST["subdomaindefault_name"])){
+	if($_REQUEST["subdomaindefault_name"] != "" && !checkSubdomainFormat($_REQUEST["subdomaindefault_name"])){
 		$submit_err .= _("Incorrect sub-domain format.") ;
 		$commit_flag = "no";
 	}
@@ -17,7 +17,7 @@ if(isset($_REQUEST["subdomaindefault"]) && $_REQUEST["subdomaindefault"] == "Ok"
 		}else{
 			$srvalias = ",default_sub_server_alias='no'";
 		}
-		$adm_query = "UPDATE $pro_mysql_domain_table SET default_subdomain='".$_REQUEST["subdomaindefault_name"]."'".$wild.$srvalias." WHERE name='$edit_domain' LIMIT 1;";
+		$adm_query = "UPDATE $pro_mysql_domain_table SET default_subdomain='".$_REQUEST["subdomaindefault_name"]."'".$wild.$srvalias.",generate_flag='yes' WHERE name='$edit_domain' LIMIT 1;";
 		mysql_query($adm_query)or die("Cannot execute query \"$adm_query\"");
 
 		updateUsingCron("gen_vhosts='yes',restart_apache='yes',gen_named='yes',reload_named='yes'");

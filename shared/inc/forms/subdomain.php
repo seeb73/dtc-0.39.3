@@ -146,7 +146,12 @@ function drawAdminTools_Subdomain($admin,$domain){
 	$subdomains = $domain["subdomains"];
 	$txt .= "<table><tr><td align=\"right\">";
 	$txt .= _("Default subdomain: ") ."</td><td><select name=\"subdomaindefault_name\">";
-	$default_subdomain_id = 0;
+	$default_subdomain_id = -1;
+	if($domain["default_subdomain"] == ""){
+		$txt .= "<option value=\"\" selected>"._("None")."</option>";
+	}else{
+		$txt .= "<option value=\"\">"._("None")."</option>";
+	}
 	for($i=0;$i<$nbr_subdomain;$i++){
 		$sub = $subdomains[$i]["name"];
 		if($domain["default_subdomain"] == "$sub"){
@@ -355,7 +360,7 @@ function drawAdminTools_Subdomain($admin,$domain){
 				"legend" => _("Dynamic IP update password: ") );
 
 	if(isset($_REQUEST["item"]) && isset($_REQUEST["subaction"]) && $_REQUEST["subaction"] == "subdomain_editor_edit_item"
-		&& ($_REQUEST["item"] == $default_subdomain_id or $nbr_subdomain == 1)){
+		&& ($_REQUEST["item"] == $default_subdomain_id)){
 		$dsc["no_delete"] = true;
 	}
 

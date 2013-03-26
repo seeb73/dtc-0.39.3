@@ -1335,23 +1335,23 @@ $more_mx_server
 			}
 
 			// Set the "root subdomain" IP as the same as the "default subdomain" IP
-			$qd = "SELECT ip FROM $pro_mysql_subdomain_table WHERE subdomain_name='$web_default_subdomain' AND domain_name='$domain_to_get';";
-			$rd = mysql_query($qd)or die("Cannot query $qd line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$nd = mysql_num_rows($rd);
-			if($nd == 1){
-				$ad = mysql_fetch_array($rd);
-				if( $ad["ip"] == "default" ){
-					$this_site_file .= "	IN	A	$ip_to_write\n";
-				}else{
-					// In case of a CNAME, add a final dot
-					if( isIP($ad["ip"]) ){
-						$this_site_file .= "	IN	A	".$ad["ip"]."\n";
+			if ( $web_default_subdomain != "" ){
+				$qd = "SELECT ip FROM $pro_mysql_subdomain_table WHERE subdomain_name='$web_default_subdomain' AND domain_name='$domain_to_get';";
+				$rd = mysql_query($qd)or die("Cannot query $qd line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$nd = mysql_num_rows($rd);
+				if($nd == 1){
+					$ad = mysql_fetch_array($rd);
+					if( $ad["ip"] == "default" ){
+						$this_site_file .= "	IN	A	$ip_to_write\n";
 					}else{
-						$this_site_file .= "	IN	CNAME	".$ad["ip"].".\n";
+						// In case of a CNAME, DO NOT add to zone
+						if( isIP($ad["ip"]) ){
+							$this_site_file .= "	IN	A	".$ad["ip"]."\n";
+						}
 					}
+				}else{
+					$this_site_file .= "	IN	A	$ip_to_write\n";
 				}
-			}else{
-				$this_site_file .= "	IN	A	$ip_to_write\n";
 			}
 			// if we have the public.key for DomainKeys, write it into our zone file
 			if (file_exists($conf_domainkey_publickey_filepath) && $row["primary_mx"] == "default"){
