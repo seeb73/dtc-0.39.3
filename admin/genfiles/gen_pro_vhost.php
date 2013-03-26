@@ -777,6 +777,7 @@ AND $pro_mysql_admin_table.id_client != '0'";
 		Allow from all
 	</Directory>
 	<Directory $web_path/$web_name/subdomains/$web_subname/logs>
+		DirectoryIndex index.php
 		Allow from all
 	</Directory>
 # No ScriptAlias: we want to use system's /usr/lib/cgi-bin !!!
