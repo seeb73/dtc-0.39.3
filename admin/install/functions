@@ -1420,7 +1420,8 @@ enableApache2Modules () {
 
 createApacheAdminProtectedDir () {
 	echoIfVerbose "Creating "$PATH_DTC_ADMIN"/.htaccess file."
-	echo "<Files *>
+	echo "DirectoryIndex index.php
+<Files *>
 	Order deny,allow
 	deny from all
 </Files>
