@@ -23,6 +23,13 @@ if [ -z "$MX_MAIL" ] ; then
 	fi
 fi
 
+conf_max_receive_process=${conf_max_receive_process:-5}
+
+maxproc=$conf_max_receive_process
+
+maxprocloop=`expr $conf_max_receive_process \* 2`
+
+
 if [ -z ${PATH_BASH} ] ; then
 	if [ -x /bin/bash ] ; then
 		PATH_BASH=/bin/bash
@@ -2071,7 +2078,7 @@ setupAmavisConf () {
                 	echo "# Configured by DTC $VERSION" >> $TMP_FILE
                 	echo "\$daemon_user  = '$AMAVISD_USER';" >> $TMP_FILE
                 	echo "\$daemon_group  = '$AMAVISD_USER';" >> $TMP_FILE
-			echo "\$max_servers=5;" >> $TMP_FILE
+			echo "\$max_servers=$maxproc;" >> $TMP_FILE
 	echo "\$first_infected_stops_scan = 1;  # default is false, all scanners in a section" >> $TMP_FILE
 			echo "\$sa_mail_body_size_limit = 150*1024;" >> $TMP_FILE
                 	echo "\$final_virus_destiny = D_DISCARD;" >> $TMP_FILE
@@ -2452,6 +2459,11 @@ mailbox_size_limit = 0
 			if [ -x /usr/sbin/amavisd-new -o -x /usr/local/sbin/amavisd-new -o -x /usr/local/bin/amavisd-new -o -x /usr/sbin/amavisd ] ; then
 				if [ -x /usr/sbin/dkimproxy.in -o -x /usr/bin/dkimproxy.in -o -x /usr/local/sbin/dkimproxy.in -o -x /usr/local/bin/dkimproxy.in ] ; then
 					FOUND_DKIMPROXY=1;
+					if [ -f /etc/default/dkimproxy ] ; then
+						DKIMPROXY_CONF=/etc/default/dkimproxy
+					else
+						DKIMPROXY_CONF=
+					fi
 					echo "# use check_access directive to filter all incoming mail
 /^/  FILTER dkimsign:[127.0.0.1]:10026" > $PATH_POSTFIX_ETC/filter_10026_catchall
 					echo "# Amavis AND dkimproxy.in have been detected as installed, so this has been activated by default
@@ -2753,7 +2765,7 @@ tumgreyspf unix  -      n       n       -       -       spawn
 # pass it to smtpprox-loopprevent on localhost port 10022.
 # (overwrite the default smtp service)
 #
-smtp      inet  n       -       n       -       20      smtpd
+smtp      inet  n       -       n       -       $maxprocloop      smtpd
 	-o smtpd_proxy_filter=127.0.0.1:10022
 	-o smtpd_client_connection_count_limit=10
 	-o smtpd_proxy_options=speed_adjust
@@ -2782,7 +2794,7 @@ smtp      inet  n       -       n       -       20      smtpd
 
 				# Insert our amavis stuff inside the master.cf
 				echo "# amavisd-new
-smtp-amavis unix -      -       -       -       2  smtp
+smtp-amavis unix -      -       -       -       $maxproc  smtp
     -o smtp_data_done_timeout=1200
     -o smtp_send_xforward_command=yes
     -o disable_dns_lookups=yes
@@ -2822,14 +2834,14 @@ submission  inet  n     -       n       -       -       smtpd
 #
 # specify the location of the DomainKeys signing filter
 #
-dkimsign    unix  -       -       n       -       4      smtp
+dkimsign    unix  -       -       n       -       $maxproc      smtp
     -o smtp_send_xforward_command=yes
     -o smtp_discard_ehlo_keywords=8bitmime
 
 #
 # service for accepting messages FROM the DomainKeys signing filter
 #
-127.0.0.1:10029 inet  n  -      n       -       5      smtpd
+127.0.0.1:10029 inet  n  -      n       -       $maxproc      smtpd
     -o smtpd_use_tls=no
     -o content_filter=
     -o receive_override_options=no_unknown_recipient_checks,no_header_body_checks,no_address_mappings
@@ -3024,6 +3036,13 @@ _SEND_PORT=\"127.0.0.1:10023\"
 		echo "# options to dkimproxy_out
 OPTIONS=\"--domain=\`cat /var/lib/dtc/etc/local_domains | tr \\\\\\r\\\\\\n ,,\`\"
 " >/etc/sysconfig/dkimproxy_out
+	fi
+
+	if [ "$UNIX_TYPE" = "debian" -a -f $DKIMPROXY_CONF ] ; then
+		echoIfVerbose "===> adding dkimproxy config to $DKIMPROXY_CONF"
+		sed -i "s/#*DKIMPROXY_IN_MIN_SERVERS=.*/DKIMPROXY_IN_MIN_SERVERS=$maxproc/" $DKIMPROXY_CONF
+		sed -i "s/#*DKIMPROXY_OUT_MIN_SERVERS=.*/DKIMPROXY_OUT_MIN_SERVERS=$maxproc/" $DKIMPROXY_CONF
+		restartDaemonMultiUnix dkimproxy
 	fi
 }
 
@@ -5637,7 +5656,7 @@ saveConfig () {
 	fi
 	oldumask=`umask`
 	umask 0700
-        echo "
+        echo -n "
 conf_mysqlautoconfig=\"${conf_mysqlautoconfig}\"
 conf_mysql_host=\"${conf_mysql_host}\"
 conf_mysql_login=\"${conf_mysql_login}\"
@@ -5674,6 +5693,7 @@ conf_cert_unit=\"${conf_cert_unit}\"
 conf_cert_email=\"${conf_cert_email}\"
 conf_cert_challenge_pass=\"${conf_cert_challenge_pass}\"
 conf_postmaster_email=\"${conf_postmaster_email}\"
+conf_max_receive_process=\"${conf_max_receive_process}\"
 " >${DTC_SAVED_INSTALL_CONFIG}
 	if [ -n "${conf_ftp_type}" ] ; then
 		echo "conf_ftp_type=\"${conf_ftp_type}\"" >>${DTC_SAVED_INSTALL_CONFIG}

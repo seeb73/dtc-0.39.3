@@ -260,3 +260,11 @@ Type: string
 _Description: Postmaster email address
  Email address of this server's postmaster.  This will default to
  postmaster@{mx_mail_host} using the mx subdomain you specify.
+
+Template: dtc/conf_max_receive_process
+Type:string
+Default: 5
+_Description: SMTP receive process quantity
+ How many SMTP and dependent process you want to run (smtpd,
+ smtpprox-loop, amavis, dkimproxy).
+ Each additional process adds 60Mb to memory used by the server.
