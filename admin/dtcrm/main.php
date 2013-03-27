@@ -335,7 +335,7 @@ cc_code_popup($row["country"])."</select>",0);
 <form method=\"$conf_post_or_get\" action=\"?\">
 <input type=\"hidden\" name=\"rub\" value=\"crm\">
 <input type=\"hidden\" name=\"delete_id\" value=\"$cid\">
-<input type=\"hidden\" name=\"action\" value=\"delete_customer_id\">
+<input type=\"hidden\" name=\"action\" value=\"edit_client\">
 <input type=\"hidden\" name=\"del\" value=\"Del\">
 <div class=\"input_btn_container\" onMouseOver=\"this.className='input_btn_container-hover';\" onMouseOut=\"this.className='input_btn_container';\">
  <div class=\"input_btn_left\"></div>
