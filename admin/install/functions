@@ -2655,14 +2655,6 @@ transport_maps = hash:$PATH_POSTFIX_ETC/transport hash:$PATH_DTC_ETC/postfix_tra
 " >> $TMP_FILE
 			fi
 
-			# this adds supports for "config" snippets to append to main.cf
-			if [ -f $PATH_DTC_ETC/postfix_config_snippets ] ; then
-				cat $PATH_DTC_ETC/postfix_config_snippets >> $TMP_FILE
-			else
-				echo "# /var/lib/dtc/etc/postfix_config_snippets
-# this file is appended to the postfix configure, in case you need to override some configure parameters in the postfix main.cf" > $PATH_DTC_ETC/postfix_config_snippets
-			fi
-
 			if grep "Configured by DTC" /etc/aliases >/dev/null; then
 				echoIfVerbose "/etc/aliases configured before, not adding ham/spam aliases"
 			else
@@ -2912,6 +2904,15 @@ smtpd_client_restrictions = permit_mynetworks,
 maildrop_destination_recipient_limit = 1" >> $TMP_FILE
 				fi
 			fi
+
+			# this adds supports for "config" snippets to append to main.cf
+			if [ -f $PATH_DTC_ETC/postfix_config_snippets ] ; then
+				cat $PATH_DTC_ETC/postfix_config_snippets >> $TMP_FILE
+			else
+				echo "# /var/lib/dtc/etc/postfix_config_snippets
+# this file is appended to the postfix configure, in case you need to override some configure parameters in the postfix main.cf" > $PATH_DTC_ETC/postfix_config_snippets
+			fi
+
 			echo "# End of DTC configuration v0.12 : please don't touch this line !" >> $TMP_FILE
 
 			# now to insert it at the end of the actual main.cf
