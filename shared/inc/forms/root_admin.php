@@ -934,8 +934,8 @@ function drawDomainConfig($admin){
 
 		$dsc = array(
 			"table_name" => $pro_mysql_custom_product_table,
-			"title" => "",
-			"action" => _("Configuration of the Custom product") ,
+			"title" => _("Configuration of the Custom product"),
+			"action" => "change_custom_config" ,
 			"forward" => array("rub","adm_login","adm_pass"),
 			"skip_deletion" => "yes",
 			"skip_creation" => "yes",
