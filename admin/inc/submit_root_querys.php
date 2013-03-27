@@ -297,6 +297,7 @@ if(isset($_REQUEST["updateuserinfo"]) && $_REQUEST["updateuserinfo"] == "Ok"){
 			resseller_flag='".$_REQUEST["resseller_flag"]."',
 			ssh_login_flag='".$_REQUEST["ssh_login_flag"]."',
 			ftp_login_flag='".$_REQUEST["ftp_login_flag"]."',
+			edit_domain_custom='".$_REQUEST["edit_domain_custom"]."',
 			restricted_ftp_path='".$_REQUEST["restricted_ftp_path"]."',
 			allow_dns_and_mx_change='".$_REQUEST["allow_dns_and_mx_change"]."',
 			allow_mailing_list_edit='".$_REQUEST["allow_mailing_list_edit"]."',

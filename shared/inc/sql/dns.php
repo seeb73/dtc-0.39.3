@@ -132,7 +132,8 @@ Server said: <i>" . $regz["response_text"] . "</i>");
 		}
 	}
 
-	$query = "UPDATE $pro_mysql_domain_table SET primary_dns='$new_dns_1',other_dns='$new_dns_2',primary_mx='$new_mx_1',other_mx='$new_mx_2',txt_root_entry='".mysql_real_escape_string($_REQUEST["txt_root_entry"])."',txt_root_entry2='".mysql_real_escape_string($_REQUEST["txt_root_entry2"])."',spf_txt_entry='".mysql_real_escape_string($_REQUEST["spf_txt_entry"])."',mail_relay_host='".mysql_real_escape_string($_REQUEST["mail_relay_host"])."' WHERE owner='$adm_login' AND name='$edit_domain';";
+	$query = "UPDATE $pro_mysql_domain_table SET primary_dns='$new_dns_1',other_dns='$new_dns_2',primary_mx='$new_mx_1',other_mx='$new_mx_2',txt_root_entry='".mysql_real_escape_string($_REQUEST["txt_root_entry"])."',txt_root_entry2='".mysql_real_escape_string($_REQUEST["txt_root_entry2"])."',spf_txt_entry='".mysql_real_escape_string($_REQUEST["spf_txt_entry"])."',mail_relay_host='".mysql_real_escape_string($_REQUEST["mail_relay_host"])."',custom_part='".mysql_real_escape_string
+($_REQUEST["custom_part"])."' WHERE owner='$adm_login' AND name='$edit_domain';";
 	mysql_query($query)or die("Cannot execute query \"$query\" !!!".mysql_error());
 
 	$domupdate_query = "UPDATE $pro_mysql_domain_table SET generate_flag='yes' WHERE name='$edit_domain' LIMIT 1;";

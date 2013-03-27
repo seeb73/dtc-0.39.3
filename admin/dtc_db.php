@@ -43,6 +43,7 @@ $dtc_database = array(
 			"ssh_login_flag" => "enum('yes','no') NOT NULL default 'no'",
 			"ftp_login_flag" => "enum('yes','no') NOT NULL default 'yes'",
 			"pkg_install_flag" => "enum('yes','no') NOT NULL default 'yes'",
+			"edit_domain_custom" => "enum('yes','no') NOT NULL default 'no'",
 			"ob_head" => "varchar(64) NOT NULL default ''",
 			"ob_tail" => "varchar(64) NOT NULL default ''",
 			"ob_next" => "varchar(64) NOT NULL default ''",

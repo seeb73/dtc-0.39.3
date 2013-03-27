@@ -1155,6 +1155,7 @@ function named_generate(){
 		}else{
 			$all_dns = explode("|",$row["other_dns"]);
 		}
+		$thisdomain_custom_part = $row["custom_part"];
 		$thisdomain_dns2 = $all_dns[0];
 		$nbr_other_dns = sizeof($all_dns);
 		$all_ip = "";
@@ -1535,6 +1536,9 @@ $more_dns_server
 			}
 			if(isset($wildcard_dns_txt)){
 				$this_site_file .= $wildcard_dns_txt;
+			}
+			if(isset($thisdomain_custom_part)){
+				$this_site_file .= $thisdomain_custom_part;
 			}
 			if($web_serial_flag=="yes"){
 				$console .= "Updating zone file for domain $web_name using serial : $todays_serial, ipaddr : $ip_to_write<br>";

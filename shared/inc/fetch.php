@@ -605,6 +605,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 		$domain["domain_parking_type"] = $row["domain_parking_type"];
 		$domain["wildcard_dns"] = $row["wildcard_dns"];
 		$domain["default_sub_server_alias"] = $row["default_sub_server_alias"];
+		$domain["custom_part"] = $row["custom_part"];
 		$domain["spf_txt_entry"] = $row["spf_txt_entry"];
 		$domain["mail_relay_host"] = $row["mail_relay_host"];
 

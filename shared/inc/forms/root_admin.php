@@ -59,6 +59,7 @@ function drawEditAdminData($admin){
 	$resseller_flag = $info["resseller_flag"];
 	$ssh_login_flag = $info["ssh_login_flag"];
 	$ftp_login_flag = $info["ftp_login_flag"];
+	$edit_domain_custom = $info["edit_domain_custom"];
 	$pkg_install_flag = $info["pkg_install_flag"];
 	$shared_hosting_security = $info["shared_hosting_security"];
 	$admin_disabled = $info["disabled"];
@@ -98,6 +99,16 @@ function drawEditAdminData($admin){
 	}
 	$ftplog_selector = "<input type=\"radio\" name=\"ftp_login_flag\" value=\"yes\"$ftplogin_yes> "._("Yes")."
 	<input type=\"radio\" name=\"ftp_login_flag\" value=\"no\"$ftplogin_no> "._("No");
+
+	if($edit_domain_custom == "yes"){
+		$editdomaincustom_yes = " checked='checked' ";
+		$editdomaincustom_no = "";
+	}else{
+		$editdomaincustom_yes = "";
+		$editdomaincustom_no = " checked='checked' ";
+	}
+	$domaincustom_selector = "<input type=\"radio\" name=\"edit_domain_custom\" value=\"yes\"$editdomaincustom_yes> "._("Yes")."
+	<input type=\"radio\" name=\"edit_domain_custom\" value=\"no\"$editdomaincustom_no> "._("No");
 
 	if($pkg_install_flag == "yes"){
 		$pkg_install_yes = " checked='checked' ";
@@ -282,6 +293,7 @@ function drawEditAdminData($admin){
 	$user_data .= dtcFormLineDraw( _("Allow addition of SSH logins:") ,$sshlog_selector,0);
 	$user_data .= dtcFormLineDraw( _("Allow addition of FTP logins:") ,$ftplog_selector);
 	$user_data .= dtcFormLineDraw( _("Restrict FTP to the html folder:") ,$restricted_ftp_path_selector,0);
+	$user_data .= dtcFormLineDraw( _("Allow edition of domain's custom part:") ,$domaincustom_selector,0);
 	$user_data .= dtcFormLineDraw( _("Allow edition of mailing lists and mail groups:") ,$allow_mailing_list_edit_selector);
 	$user_data .= dtcFormLineDraw( _("Allow edition of DNS and MX:") ,$allow_dns_and_mx_change_selector,0);
 	$user_data .= dtcFormLineDraw( _("Allow edition of subdomains:") ,$allow_subdomain_edit_selector);
@@ -336,6 +348,7 @@ function drawEditAdminDomains($admin){
 	$resseller_flag = $info["resseller_flag"];
 	$ssh_login_flag = $info["ssh_login_flag"];
 	$ftp_login_flag = $info["ftp_login_flag"];
+	$edit_domain_custom = $info["edit_domain_custom"];
 	$pkg_install_flag = $info["pkg_install_flag"];
 	$shared_hosting_security = $info["shared_hosting_security"];
 
