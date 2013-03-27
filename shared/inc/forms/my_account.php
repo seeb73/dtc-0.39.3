@@ -117,7 +117,8 @@ function drawAdminTools_MyAccount($admin){
 	if($id_client != 0){
 
 		// If the customer has domains (he could have only a VPS...).
-		if(isset($admin["data"])){
+	//	if(isset($admin["data"])){
+		if(isset($admin["info"]["prod_id"]) && $admin["info"]["prod_id"]<>0){
 			$out .= "<br><h3>". _("Your hosting account:") ."</h3>";
 			$out .= "<table width=\"100%\" height=\"1\" cellpadding=\"4\" cellspacing=\"0\" border=\"1\">
 <tr>
