@@ -2076,8 +2076,8 @@ setupAmavisConf () {
 			echo "\$sa_mail_body_size_limit = 150*1024;" >> $TMP_FILE
                 	echo "\$final_virus_destiny = D_DISCARD;" >> $TMP_FILE
                 	echo "\$final_spam_destiny = D_BOUNCE; #we set this to bounce to let users decide if the sender should be notified. If dsn_cutoff is not higher than kill_level, bounce will be changed to discart automatically!" >> $TMP_FILE
-                	echo "\$final_banned_destiny = D_DISCART; #to let users discart messages we default to discart and overrule this by setting all users to lovers which is the same as passing through." >> $TMP_FILE
-                	echo "\$final_bad_header_destiny = D_DISCART; #again we discart to let users decide on their own what to do." >> $TMP_FILE
+                	echo "\$final_banned_destiny = D_DISCARD; #to let users discard messages we default to discart and overrule this by setting all users to lovers which is the same as passing through." >> $TMP_FILE
+                	echo "\$final_bad_header_destiny = D_DISCARD; #again we discard to let users decide on their own what to do." >> $TMP_FILE
 echo "@banned_files_lovers_maps = ('Y');" >> $TMP_FILE
 echo "@bad_header_lovers_maps = ('Y');" >> $TMP_FILE
                 	echo "\$warnvirussender = 0;" >> $TMP_FILE
