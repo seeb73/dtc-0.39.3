@@ -1456,15 +1456,11 @@ $more_mx_server
 					$this_site_file .= "_$web_subname._".$subdomain["srv_record_protocol"]."	$sub_ttl	IN	SRV	0	10	".$subdomain["srv_record"]."	".$subdomain["ip"]."\n";
 				} else {
 					// write TTL values into subdomain
-					if ($conf_use_cname_for_subdomains == "yes"){
-						$this_site_file .= "$web_subname	$sub_ttl	IN	CNAME	@\n";
-					}else{
-						if($web_subname == $web_default_subdomain && $wildcard_dns == "yes"){
-							$wildcard_dns_txt = "*        $sub_ttl        IN      $the_ip_writed\n";
-						}
-						if( substr($web_subname,0,1) != "_" ){
-							$this_site_file .= "$web_subname	$sub_ttl	IN	$the_ip_writed\n";
-						}
+					if($web_subname == $web_default_subdomain && $wildcard_dns == "yes"){
+						$wildcard_dns_txt = "*        $sub_ttl        IN      $the_ip_writed\n";
+					}
+					if( substr($web_subname,0,1) != "_" ){
+						$this_site_file .= "$web_subname	$sub_ttl	IN	$the_ip_writed\n";
 					}
 				}
 				if ($subdomain["ipv4_round_robin"] != ""){
@@ -1494,7 +1490,9 @@ $more_mx_server
 					if($autosubs[ $autosubs_keys[$autog]] == "no"){
 						$zeautogen = $autosubs_keys[$autog];
 						if($conf_use_cname_for_subdomains == "yes"){
-							$this_site_file .= "$zeautogen	IN	CNAME	@\n";
+							if($web_default_subdomain != ""){
+								$this_site_file .= "$zeautogen	IN	CNAME	$web_default_subdomain\n";
+							}
 						}else{
 							if($zeautogen == "mysql1"){
 								$this_site_file .= "$zeautogen	IN	A	127.0.0.1\n";
