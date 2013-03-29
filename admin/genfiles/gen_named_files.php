@@ -1103,6 +1103,7 @@ function named_generate(){
 	global $conf_named_soa_retry;
 	global $conf_named_soa_expire;
 	global $conf_named_soa_default_ttl;
+	global $conf_use_relative_cnames;
 	global $conf_autogen_webmail_host;
 	global $conf_autogen_webmail_hostname;
 	global $conf_autogen_admin_host;
@@ -1439,7 +1440,11 @@ $more_dns_server
 						}
 					}
 				}else{
-					$the_ip_writed = "CNAME\t".$subdomain["ip"].".";
+					if($conf_use_relative_cnames == 'no' && substr($subdomain["ip"],-1) != "."){
+						$the_ip_writed = "CNAME\t".$subdomain["ip"].".";
+					}else{
+						$the_ip_writed = "CNAME\t".$subdomain["ip"];
+					}
 				}
 // Note from Thomas Goirand:
 // This patch seems to 1/ produce some NOTICE like this:
