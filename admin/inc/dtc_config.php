@@ -1604,6 +1604,11 @@ function drawNamedConfig(){
 				"legend" => _("Auto-generate subdomain list (separated by |):"),
 				"type" => "text",
 				"size" => "50"),
+                        "use_relative_cnames" => array(
+                                "legend" => _("Use relative CNAMEs in subdomains instead of absolute ones<BR>(WARNING!!! you MUST change all existent CNAMEs by yourself): "),
+                                "type" => "radio",
+                                "values" => array("yes","no"),
+                                "display_replace" => array(_("Yes"),_("No"))),
 			"ip_allowed_dns_transfer" => array(
 				"legend" => _("List the DNS server IPs allowed to perform zone<br>
 transfers separated by &quot;|&quot; (pipe)<br>
