@@ -367,11 +367,12 @@ $dtc_database = array(
 			"widgetvalues" => "varchar(255) NOT NULL default ''",
 			"widgetdisplay" => "varchar(255) NOT NULL default ''",
 			"widgetorder" => "int(9) NOT NULL default '0'",
-			"mandatory" => "enum('yes','no') NOT NULL default 'no'"
+			"mandatory" => "enum('yes','no') NOT NULL default 'no'",
+			"showonmyaccount" => "enum('yes','no') NOT NULL default 'no'"
 		),
 		"primary" => "(id)"
 	),
-		"custom_heb_types" => array(
+	"custom_heb_types" => array(
 		"vars" => array(
 			"id" => "int(11) NOT NULL auto_increment",
 			"name" => "varchar(32) NOT NULL default ''",

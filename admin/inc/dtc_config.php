@@ -1954,6 +1954,12 @@ function drawDTCpayConfig(){
 				"type" => "radio",
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No")),
+				"default" => "no"),
+			"showonmyaccount" => array(
+				"legend" => _("Show field on My Account"),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No")),
 				"default" => "no")
 			)
 		);

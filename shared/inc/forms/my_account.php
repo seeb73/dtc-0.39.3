@@ -11,6 +11,7 @@ function drawAdminTools_MyAccount($admin){
 	global $pro_mysql_ssl_ips_table;
 	global $pro_mysql_product_table;
 	global $pro_mysql_pending_renewal_table;
+	global $pro_mysql_custom_fld_table;
 	global $secpayconf_currency_letters;
 	global $conf_post_or_get;
 	global $secpayconf_use_products_for_renewal;
@@ -268,6 +269,70 @@ function drawAdminTools_MyAccount($admin){
 		$out .= _("Fax:")		.$client["fax"]."<br>";
 		$out .= _("Email:")		.$client["email"]."<br>";
 
+		// Manage to print the answers of the custom fields;
+		// We first, out of the custom_fld field, get an array with the custom field varname as key
+		// and the customer's answer as data.
+		$customer_custom_fields = array();
+		if( isset($client["customfld"]) ){
+			$explo_row = explode("|", htmlspecialchars(stripcslashes($client["customfld"])));
+			$n_custf = sizeof($explo_row);
+			for($i=0;$i<$n_custf;$i++){
+				$one_fld = $explo_row[$i];
+				$pos_data = strpos($one_fld,":");
+				if($pos_data === false){
+					continue;
+				}
+				$varname = substr($one_fld,0,$pos_data);
+				$value = substr($one_fld,$pos_data+1);
+				$customer_custom_fields[ $varname ] = $value;
+			}
+		}
+	
+		$qcf = "SELECT * FROM $pro_mysql_custom_fld_table WHERE 1 ORDER BY widgetorder;";
+		$rcf = mysql_query($qcf)or die("Cannot query $qcf line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$ncf = mysql_num_rows($rcf);
+	
+		for($i=0;$i<$ncf;$i++){
+			$acf = mysql_fetch_array($rcf);
+			if(isset($customer_custom_fields[ $acf["varname"] ])){
+				$val = $customer_custom_fields[ $acf["varname"] ];
+			}else{
+				$val = "";
+			}
+			switch($acf["widgettype"]){
+			case "radio":
+				$explo_popup = explode("|",$acf["widgetvalues"]);
+				$explo_popup2 = explode("|",$acf["widgetdisplay"]);
+				$n_val = sizeof($explo_popup);
+				$widget = "";
+				for($j=0;$j<$n_val;$j++){
+					if($val == $explo_popup[$j]){
+						$widget .= $acf["question"].$explo_popup2[$j];
+					}
+				}
+				break;
+			case "popup":
+				$explo_popup = explode("|",$acf["widgetvalues"]);
+				$explo_popup2 = explode("|",$acf["widgetdisplay"]);
+				$n_val = sizeof($explo_popup);
+				$widget = "";
+				for($j=0;$j<$n_val;$j++){
+					if($val == $explo_popup[$j]){
+						$widget .= $acf["question"].$explo_popup2[$j];
+					}
+				}
+				break;
+			case "textarea":
+			case "text":
+			default:
+				$widget = $acf["question"].htmlspecialchars($val);
+				break;
+			}
+			if($acf["showonmyaccount"] == 'yes'){
+				$out .= $widget."<BR>";
+			}
+		}
+	
 		$sql = "SELECT SUM(kickback) as kickbacks FROM affiliate_payments WHERE adm_login = '{$adm_login}' and date_paid IS NULL; ";
 		$result = mysql_query($sql);
 		$row = mysql_fetch_array($result);
