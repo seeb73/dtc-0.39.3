@@ -80,10 +80,10 @@ function drawAdminTools_MyAccount($admin){
 		$client = $admin["client"];
 	}
 
+	if ($admin["info"]["disabled"]=='yes' || $admin["info"]["disabled"]=='always-yes') {
+		$out .= "<BR><h3><font color=\"RED\">"._("Your Account has EXPIRED or is DISABLED!!!!")."</h3><br>"._("Many system functions of your account are not working because of this!")."</font><br>";
+	}
 	if(isset($admin["data"])){
-		if ($admin["info"]["disabled"]=='yes' || $admin["info"]["disabled"]=='always-yes') {
-			$out .= "<BR><h3><font color=\"RED\">"._("Your Account has EXPIRED or is DISABLED!!!!")."</h3><br>"._("Many system functions of your account are not working because of this!")."</font><br>";
-		}
 		$out .= "<br><h3>". _("Transfer and disk usage:") ."</h3>";
 		// Draw overall this month usage
 		// if there is no usage, set to 0
