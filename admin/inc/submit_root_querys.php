@@ -308,7 +308,8 @@ if(isset($_REQUEST["updateuserinfo"]) && $_REQUEST["updateuserinfo"] == "Ok"){
 			temporary_extend=".$_REQUEST["temporary_extend"].",
 			max_ftp=".$_REQUEST["max_ftp"].",
 			max_ssh=".$_REQUEST["max_ssh"].",
-			max_email=".$_REQUEST["max_email"]."
+			max_email=".$_REQUEST["max_email"].",
+			show_invoice_info='".$_REQUEST["allow_invoice_info"]."'
 			WHERE adm_login='$adm_login';";
 		mysql_query($adm_query)or die("Cannot execute query \"$adm_query\" line ".__LINE__." file ".__FILE__." ".mysql_error());
 

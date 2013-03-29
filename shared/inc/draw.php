@@ -173,22 +173,26 @@ function drawAdminTools($admin){
 			"type" => "link",
 			"link" => "stats");
 	}
-	$user_ZEmenu[] = array(
-		"text" => _("Past payments") ,
-		"icon" => "box_wnb_nb_picto-pastpayments.gif",
-		"type" => "link",
-		"link" => "invoices");
+	if($admin_info["show_invoice_info"] == 'yes'){
+		$user_ZEmenu[] = array(
+			"text" => _("Past payments") ,
+			"icon" => "box_wnb_nb_picto-pastpayments.gif",
+			"type" => "link",
+			"link" => "invoices");
+	}
 	$user_ZEmenu[] = array(
 		"text" => _("Add a domain or service") ,
 		"icon" => "box_wnb_nb_picto-addadomainname.gif",
 		"type" => "link",
 		"link" => "adddomain");
-	if(($nbr_vps + $nbr_dedicated) > 1){
-		$user_ZEmenu[] = array(
-			"text" => _("Multiple renew") ,
-			"icon" => "box_wnb_nb_picto-addadomainname.gif",
-			"type" => "link",
-			"link" => "multiple-renew");
+	if($admin_info["show_invoice_info"] == 'yes'){
+		if(($nbr_vps + $nbr_dedicated) > 1){
+			$user_ZEmenu[] = array(
+				"text" => _("Multiple renew") ,
+				"icon" => "box_wnb_nb_picto-addadomainname.gif",
+				"type" => "link",
+				"link" => "multiple-renew");
+		}
 	}
 	if($conf_use_registrar_api == "yes" && $nbr_domain > 0){
 		$user_ZEmenu[] = array(

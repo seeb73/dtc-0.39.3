@@ -129,22 +129,23 @@ function drawAdminTools_MyAccount($admin){
 	<td>".smartByte($du_quota)."</td><td>".smartByte($bw_quota)."</td><td>".$admin["info"]["expire"]."</td>
 </tr>
 </table>";
-			$out .= "</center><br /><h3>". _("Payment") ."</h3><br />";
-			$out .= _("Click the corresponding button to pay your site.");
-			$out .= "<table>";
-			if(file_exists($dtcshared_path."/dtcrm")){
-				if ($conf_show_upgrade_product_button =="yes"){
-					$out .= "<tr><td><center>$frm_start<input type=\"hidden\" name=\"action\" value=\"upgrade_myaccount\">
+			if($admin["info"]["show_invoice_info"] == 'yes'){
+				$out .= "</center><br /><h3>". _("Payment") ."</h3><br />";
+				$out .= _("Click the corresponding button to pay your site.");
+				$out .= "<table>";
+				if(file_exists($dtcshared_path."/dtcrm")){
+					if ($conf_show_upgrade_product_button =="yes"){
+						$out .= "<tr><td><center>$frm_start<input type=\"hidden\" name=\"action\" value=\"upgrade_myaccount\">
 <input type=\"submit\" value=\"". _("Upgrade my account") ."\">
 </form></td></tr>";
-				}
-				if ($secpayconf_use_products_for_renewal == 'yes'){
-					$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$admin["info"]["prod_id"]."';";
-					$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-					$n = mysql_num_rows($r);
-					if($n == 1){
-						$a = mysql_fetch_array($r);
-						$out .= "<tr><td><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
+					}
+					if ($secpayconf_use_products_for_renewal == 'yes'){
+						$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$admin["info"]["prod_id"]."';";
+						$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+						$n = mysql_num_rows($r);
+						if($n == 1){
+							$a = mysql_fetch_array($r);
+							$out .= "<tr><td><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 	<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 	<input type=\"hidden\" name=\"renew_type\" value=\"shared\">
 	<input type=\"hidden\" name=\"product_id\" value=\"".$admin["info"]["prod_id"]."\">
@@ -152,15 +153,15 @@ function drawAdminTools_MyAccount($admin){
 	<input type=\"hidden\" name=\"client_id\" value=\"$id_client\">
 	<input type=\"submit\" value=\"".$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)"."\">
 	</form></td></tr>";
+						}
 					}
-				}
 
-				$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$admin["info"]["prod_id"]."';";
-				$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$n = mysql_num_rows($r);
-				for($i=0;$i<$n;$i++){
-					$a = mysql_fetch_array($r);
-					$out .= "<tr><td><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
+					$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$admin["info"]["prod_id"]."';";
+					$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+					$n = mysql_num_rows($r);
+					for($i=0;$i<$n;$i++){
+						$a = mysql_fetch_array($r);
+						$out .= "<tr><td><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 					<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 					<input type=\"hidden\" name=\"renew_type\" value=\"shared\">
 					<input type=\"hidden\" name=\"product_id\" value=\"".$a["id"]."\">
@@ -168,10 +169,11 @@ function drawAdminTools_MyAccount($admin){
 					<input type=\"hidden\" name=\"client_id\" value=\"$id_client\">
 					<input type=\"submit\" value=\"".$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)"."\">
 					</form></td></tr>";
+					}
 				}
-			}
 
-			$out .= "</table>";
+				$out .= "</table>";
+			}
 			if ($conf_show_ssl_tokens == "yes"){
 				$out .= "</center><br /><h3>". _("SSL tokens") ."</h3><br />";
 				$q = "SELECT * FROM $pro_mysql_ssl_ips_table WHERE adm_login='$adm_login' AND available='no';";

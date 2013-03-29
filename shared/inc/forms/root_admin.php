@@ -66,6 +66,7 @@ function drawEditAdminData($admin){
 	$max_ftp = $info["max_ftp"];
 	$max_email = $info["max_email"];
 	$max_ssh = $info["max_ssh"];
+	$allow_invoice_info = $info["show_invoice_info"];
 
 	if($resseller_flag == "yes"){
 		$resflag_yes = " checked='checked' ";
@@ -161,6 +162,17 @@ function drawEditAdminData($admin){
 	$allow_subdomain_edit_selector = "<input type=\"radio\" name=\"allow_subdomain_edit\" value=\"yes\"$allow_subdomain_edit_yes> "._("Yes")."
 <input type=\"radio\" name=\"allow_subdomain_edit\" value=\"no\"$allow_subdomain_edit_no> "._("No");
 
+	// Show invoicing info
+	if($allow_invoice_info == "yes"){
+		$allow_invoice_info_yes = " checked='checked' ";
+		$allow_invoice_info_no = "";
+	}else{
+		$allow_invoice_info_yes = "";
+		$allow_invoice_info_no = " checked='checked' ";
+	}
+	$allow_invoice_info_selector = "<input type=\"radio\" name=\"allow_invoice_info\" value=\"yes\"$allow_invoice_info_yes> "._("Yes")."
+<input type=\"radio\" name=\"allow_invoice_info\" value=\"no\"$allow_invoice_info_no> "._("No");
+
 	// Admin Enabled??
 	if($admin_disabled == "yes"){
 		$admin_enabled_no = " checked='checked' ";
@@ -255,6 +267,7 @@ function drawEditAdminData($admin){
 	$user_data .= dtcFormLineDraw( _("Expiry date:") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"expire\" value=\"$expire\">",0);
 	$user_data .= dtcFormLineDraw( _("Permanent Extension:") ,"<input class=\"dtcDatagrid_input_color\" type=\"text\" name=\"permanent_extend\" value=\"".$info["permanent_extend"]."\">",0);
 	$user_data .= dtcFormLineDraw( _("Temporary Extension:") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"temporary_extend\" value=\"".$info["temporary_extend"]."\">",0);
+	$user_data .= dtcFormLineDraw( _("Show Invoicing Information:") ,$allow_invoice_info_selector);
 	$user_data .= dtcFormLineDraw( _("Product ID:") ,$prodsid);
 	$user_data .= dtcFormLineDraw( _("Number of databases:") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"nbrdb\" value=\"".$info["nbrdb"]."\">",0);
 	$user_data .= dtcFormLineDraw( _("Allow to add domains:") ,$aldom_popup);

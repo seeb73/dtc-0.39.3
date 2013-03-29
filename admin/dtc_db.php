@@ -51,7 +51,8 @@ $dtc_database = array(
 			"recovery_timestamp" => "int(12) NOT NULL default '0'",
 			"disabled" => "enum('yes','no','always-yes','always-no') NOT NULL default 'no'",
 			"permanent_extend" => "int(12) NOT NULL default '0'",
-			"temporary_extend" => "int(12) NOT NULL default '0'"
+			"temporary_extend" => "int(12) NOT NULL default '0'",
+			"show_invoice_info" => "enum('yes','no') NOT NULL default 'yes'"
 		),
 		"primary" => "(adm_login)",
 		"index" => array(
