@@ -1258,9 +1258,9 @@ function named_generate(){
 		$query2 = "SELECT * FROM $pro_mysql_subdomain_table WHERE domain_name='$domain_to_get' ORDER BY subdomain_name;";
 		$result2 = mysql_query ($query2)or die("Cannot execute query \"$query2\"");
 		$num_rows2 = mysql_num_rows($result2);
-		if($num_rows2 < 1){
-			echo("WARNING: No subdomain for domain $domain_to_get !!!");
-		}
+//		if($num_rows2 < 1){
+//			echo("WARNING: No subdomain for domain $domain_to_get !!!");
+//		}
 		if($conf_use_multiple_ip == "yes"){
 			$ip_to_write = $ip_addr;
 		}else{
