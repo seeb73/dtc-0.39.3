@@ -323,6 +323,7 @@ $dtc_database = array(
 			"autogen_admin_host" => "enum('yes','no') NOT NULL default 'no'",
 			"autogen_admin_hostname" => "varchar(40) NOT NULL default 'admin'",
 			"shared_renewal_disable_admin" => "varchar(64) NOT NULL default '30'",
+			"shared_renewal_zero" => "enum('yes','no') NOT NULL default 'no'",
 			"auto_enable_admin_on_expire_change" => "enum('yes','no') NOT NULL default 'yes'",
 			"main_domain_mail_without_domain" => "enum('yes','no') NOT NULL default 'no'",
 			"action_on_old_new_admin" => "enum('archive','delete','nothing') NOT NULL default 'nothing'",

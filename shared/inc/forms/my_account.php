@@ -21,6 +21,7 @@ function drawAdminTools_MyAccount($admin){
 	global $conf_show_ssl_tokens;
 	global $conf_show_remaining_money_on_account;
 	global $conf_show_upgrade_product_button;
+	global $conf_shared_renewal_zero;
 
 	get_secpay_conf();
 
@@ -118,7 +119,7 @@ function drawAdminTools_MyAccount($admin){
 
 		// If the customer has domains (he could have only a VPS...).
 	//	if(isset($admin["data"])){
-		if(isset($admin["info"]["prod_id"]) && $admin["info"]["prod_id"]<>0){
+		if(($conf_shared_renewal_zero == 'yes' && isset($admin["info"]["prod_id"]) && $admin["info"]["prod_id"]<>0) || ($conf_shared_renewal_zero == 'no' && isset($admin["data"]))){
 			$out .= "<br><h3>". _("Your hosting account:") ."</h3>";
 			$out .= "<table width=\"100%\" height=\"1\" cellpadding=\"4\" cellspacing=\"0\" border=\"1\">
 <tr>

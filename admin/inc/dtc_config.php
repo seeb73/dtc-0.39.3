@@ -1280,6 +1280,11 @@ function drawGeneralConfig(){
 				"type" => "radio",
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
+			"shared_renewal_zero" => array (
+				"legend" => _("show shared hosting renewal button when no active domains: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
 			"show_remaining_money_on_account" => array (
 				"legend" => _("show remaining money on my account: "),
 				"type" => "radio",
