@@ -329,7 +329,9 @@ $dtc_database = array(
 			"auto_enable_admin_on_expire_change" => "enum('yes','no') NOT NULL default 'yes'",
 			"main_domain_mail_without_domain" => "enum('yes','no') NOT NULL default 'no'",
 			"action_on_old_new_admin" => "enum('archive','delete','nothing') NOT NULL default 'nothing'",
-			"new_admin_old_age" => "int(12) NOT NULL default '90'"
+			"new_admin_old_age" => "int(12) NOT NULL default '90'",
+			"show_invoice_info" => "enum('yes','no') NOT NULL default 'yes'",
+			"show_past_payments" => "varchar(255) NOT NULL default 'default'"
 		),
 		"keys" => array(
 			"unicrow" => "(unicrow)"

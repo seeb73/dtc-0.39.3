@@ -20,6 +20,7 @@ function drawAdminTools_VPS($admin,$vps){
 	global $pro_mysql_admin_table;
 	global $secpayconf_currency_letters;
 	global $conf_post_or_get;
+	global $conf_show_invoice_info;
 
 	global $panel_type;
 
@@ -101,7 +102,7 @@ function drawAdminTools_VPS($admin,$vps){
 	$r = mysql_query($q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	$admin = mysql_fetch_array($r);
 
-	if($admin["show_invoice_info"] == 'yes'){
+	if($admin["show_invoice_info"] == 'yes' && $conf_show_invoice_info == 'yes'){
 		// Renewal buttons
 		if ($secpayconf_use_products_for_renewal == 'yes'){
 			$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$vps["product_id"]."';";

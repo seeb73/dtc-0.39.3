@@ -33,6 +33,7 @@ function drawEditAdminData($admin){
 	global $conf_hide_password;
 	global $conf_post_or_get;
 	global $idn;
+	global $conf_show_invoice_info;
 	
 	$info = $admin["info"];
 	if(isset($admin["data"])){
@@ -267,7 +268,9 @@ function drawEditAdminData($admin){
 	$user_data .= dtcFormLineDraw( _("Expiry date:") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"expire\" value=\"$expire\">",0);
 	$user_data .= dtcFormLineDraw( _("Permanent Extension:") ,"<input class=\"dtcDatagrid_input_color\" type=\"text\" name=\"permanent_extend\" value=\"".$info["permanent_extend"]."\">",0);
 	$user_data .= dtcFormLineDraw( _("Temporary Extension:") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"temporary_extend\" value=\"".$info["temporary_extend"]."\">",0);
-	$user_data .= dtcFormLineDraw( _("Show Invoicing Information:") ,$allow_invoice_info_selector);
+	if($conf_show_invoice_info == 'yes'){
+		$user_data .= dtcFormLineDraw( _("Show Invoicing Information:") ,$allow_invoice_info_selector);
+	}
 	$user_data .= dtcFormLineDraw( _("Product ID:") ,$prodsid);
 	$user_data .= dtcFormLineDraw( _("Number of databases:") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"nbrdb\" value=\"".$info["nbrdb"]."\">",0);
 	$user_data .= dtcFormLineDraw( _("Allow to add domains:") ,$aldom_popup);

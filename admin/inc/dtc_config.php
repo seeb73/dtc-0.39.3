@@ -1304,6 +1304,15 @@ function drawGeneralConfig(){
 				"legend" => _("New Admin age (days) to be considered old: "),
 				"size" => "50",
 				"type" => "text"),
+			"show_invoice_info" => array (
+				"legend" => _("show invoicing info and renewal buttons: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"show_past_payments" => array(
+				"legend" => _("Show Past payments option in menu<BR>Use 'disabled' to hide, 'default' to show the default page<br>or enter a full http link to include a custom page: "),
+				"type" => "text",
+				"size" => "255"),
 		        )
                 );
 	$out .= configEditorTemplate ($dsc);

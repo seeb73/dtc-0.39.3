@@ -110,6 +110,8 @@ function drawAdminTools($admin){
 	global $conf_use_registrar_api;
 	global $conf_use_mail_alias_group;
 	global $conf_addr_mail_server;
+	global $conf_show_past_payments;
+	global $conf_show_invoice_info;
 
 	global $vps_node;
 	global $vps_name;
@@ -173,19 +175,28 @@ function drawAdminTools($admin){
 			"type" => "link",
 			"link" => "stats");
 	}
-	if($admin_info["show_invoice_info"] == 'yes'){
-		$user_ZEmenu[] = array(
-			"text" => _("Past payments") ,
-			"icon" => "box_wnb_nb_picto-pastpayments.gif",
-			"type" => "link",
-			"link" => "invoices");
+	if($admin_info["show_invoice_info"] == 'yes' && $conf_show_invoice_info == 'yes'){
+		if($conf_show_past_payments == 'default'){
+			$user_ZEmenu[] = array(
+				"text" => _("Past payments") ,
+				"icon" => "box_wnb_nb_picto-pastpayments.gif",
+				"type" => "link",
+				"link" => "invoices");
+		}
+		if($conf_show_past_payments != 'disabled' && $conf_show_past_payments != 'default'){
+			$user_ZEmenu[] = array(
+				"text" => _("Past payments") ,
+				"icon" => "box_wnb_nb_picto-pastpayments.gif",
+				"type" => "link",
+				"link" => "custompastpayment");
+		}
 	}
 	$user_ZEmenu[] = array(
 		"text" => _("Add a domain or service") ,
 		"icon" => "box_wnb_nb_picto-addadomainname.gif",
 		"type" => "link",
 		"link" => "adddomain");
-	if($admin_info["show_invoice_info"] == 'yes'){
+	if($admin_info["show_invoice_info"] == 'yes' && $conf_show_invoice_info == 'yes'){
 		if(($nbr_vps + $nbr_dedicated) > 1){
 			$user_ZEmenu[] = array(
 				"text" => _("Multiple renew") ,
@@ -532,6 +543,10 @@ function drawAdminTools($admin){
 		}else if(@$add_array[1] == "invoices"){
 			$web_editor .= "<img src=\"gfx/toolstitles/stats.png\" align=\"left\"><font size=\"+2\"><b><u>". _("Invoices") .":</u></b><br></font>";
 			$web_editor .= drawAdminTools_Invoices($admin);
+			$title = _("Invoices");
+		}else if(@$add_array[1] == "custompastpayment"){
+			$web_editor .= "<img src=\"gfx/toolstitles/stats.png\" align=\"left\"><font size=\"+2\"><b><u>". _("Invoices") .":</u></b><br></font>";
+//			$web_editor .= drawAdminTools_Invoices($admin);
 			$title = _("Invoices");
 		}else if(@$add_array[1] == "stats"){
 			if($add_array[0] == "myaccount"){

@@ -14,6 +14,7 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 
 	global $secpayconf_currency_letters;
 	global $secpayconf_use_products_for_renewal;
+	global $conf_show_invoice_info;
 
 	global $submit_err;
 	global $conf_post_or_get;
@@ -60,7 +61,7 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	$r = mysql_query($q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	$admin = mysql_fetch_array($r);
 
-	if($admin["show_invoice_info"] == 'yes'){
+	if($admin["show_invoice_info"] == 'yes' && $conf_show_invoice_info == 'yes'){
 		if ($secpayconf_use_products_for_renewal == 'yes'){
 			$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$dedicated["product_id"]."';";
 			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());

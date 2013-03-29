@@ -15,6 +15,7 @@ function drawAdminTools_MyAccount($admin){
 	global $secpayconf_currency_letters;
 	global $conf_post_or_get;
 	global $secpayconf_use_products_for_renewal;
+	global $conf_show_invoice_info;
 
 	global $cc_code_array;
 	global $conf_show_affiliation;
@@ -129,7 +130,7 @@ function drawAdminTools_MyAccount($admin){
 	<td>".smartByte($du_quota)."</td><td>".smartByte($bw_quota)."</td><td>".$admin["info"]["expire"]."</td>
 </tr>
 </table>";
-			if($admin["info"]["show_invoice_info"] == 'yes'){
+			if($admin["info"]["show_invoice_info"] == 'yes' && $conf_show_invoice_info == 'yes'){
 				$out .= "</center><br /><h3>". _("Payment") ."</h3><br />";
 				$out .= _("Click the corresponding button to pay your site.");
 				$out .= "<table>";
