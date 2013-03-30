@@ -36,6 +36,10 @@ require_once("genfiles/genfiles.php");
 echo date("Y m d / H:i:s T",$script_start_time)." Starting DTC cron job\n";
 $keep_mail_generate_flag = "no";
 $keep_dns_generate_flag = "no";
+if (isset($argv[1])){
+	$cron_recursing = $argv[1];
+}
+global $conf_cron_recurse;
 
 // Set to yes if you want to check for qmail pop3d availability and relaunch
 // it if needed. Note that you can have to customise that cron script part
@@ -770,6 +774,18 @@ echo("Report for this job:\n");
 echo( str_replace("<br>","\n",$console));
 printEndTime();
 $_inprogress = FALSE;
+$cron_final=getCronFlags();
+if(($cron_final["qmail_newu"] == 'yes' || $cron_final["restart_qmail"] == 'yes' || $cron_final["reload_named"] == 'yes' || $cron_final["restart_apache"] == 'yes' || $cron_final["gen_vhosts"] == 'yes' || $cron_final["gen_named"] == 'yes' || $cron_final["gen_reverse"] == 'yes' || $cron_final["gen_fetchmail"] == 'yes' || $cron_final["gen_qmail"] == 'yes' || $cron_final["gen_webalizer"] == 'yes' || $cron_final["gen_backup"] == 'yes' || $cron_final["gen_ssh"] == 'yes' || $cron_final["gen_nagios"] == 'yes' || $cron_final["gen_user_cron"] == 'yes') && $cron_recursing != "end"){
+	if($cron_final["lock_flag"] == 'finished'){
+		if ($cron_recursing < $conf_cron_recurse){
+			$cron_recursing = $cron_recursing + 1;
+			echo("Recursing cron.php: $cron_recursing time.\n");
+			system(__FILE__." $cron_recursing");
+		}else{
+			echo("Not recursing cron.php: Max recursion limit reached.");
+		}
+	}
+}
 exit();
 
 ?>

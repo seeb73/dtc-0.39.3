@@ -1340,7 +1340,11 @@ function drawGeneralConfig(){
 				"legend" => _("Send mail to admin when an error occurs in dtc cron:"),
 				"type" => "radio",
 				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No")))
+				"display_replace" => array(_("Yes"),_("No"))),
+			"cron_recurse" => array(
+				"legend" => _("Recurse cron.php this number of times at maximum: "),
+				"type" => "text",
+				"size" => "4")
                         )
                 );
 	$out .= configEditorTemplate ($dsc);
