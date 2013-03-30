@@ -1107,6 +1107,7 @@ function named_generate(){
 	global $conf_autogen_webmail_hostname;
 	global $conf_autogen_admin_host;
 	global $conf_autogen_admin_hostname;
+	global $keep_dns_generate_flag;
 
 	$slave_file = "";
 	$serial_prefix = date("Ymd");
@@ -1540,6 +1541,10 @@ $more_dns_server
 				chgrp("$conf_generated_file_path/$conf_named_zonefiles_path/$web_name",$conf_dtc_system_groupname);
 				$query_serial = "UPDATE $pro_mysql_domain_table SET generate_flag='no' WHERE name='$web_name' LIMIT 1;";
 				$result_serial = mysql_query ($query_serial)or die("Cannot execute query \"$query_serial\"");
+				// Mark domains redirected to this domains for generation on next cronjob.
+				$query_serial = "UPDATE $pro_mysql_domain_table SET generate_flag='yes' WHERE domain_parking='$web_name';";
+				$result_serial = mysql_query ($query_serial)or die("Cannot execute query \"$query_serial\"");
+				$keep_dns_generate_flag='yes';
 			}
 		}else{
 			$temp_ip = gethostbyname($thisdomain_dns1);
