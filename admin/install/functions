@@ -1735,7 +1735,7 @@ sasl_sql_engine: mysql
 sasl_sql_hostnames: ${conf_mysql_host}
 sasl_sql_database: ${conf_mysql_db}
 sasl_sql_user: dtcdaemons
-sasl_sql_select: SELECT passwd FROM pop_access WHERE fullemail = '%u@%r'
+sasl_sql_select: SELECT passwd FROM pop_access WHERE fullemail = '%u@%r' and active=1
 " > $cyrus_etc_path/imapd.conf
 
 			# CL: ok this looks like bsd only, so I will not touch this.
@@ -2308,7 +2308,7 @@ sasl_sql_engine: mysql
 sasl_sql_hostnames: ${conf_mysql_host}
 sasl_sql_database: ${conf_mysql_db}
 sasl_sql_user: dtcdaemons
-sasl_sql_select: SELECT passwd FROM pop_access WHERE fullemail = '%u@%r'
+sasl_sql_select: SELECT passwd FROM pop_access WHERE fullemail = '%u@%r' and active=1
 sasl_sql_passwd: ${MYSQL_DTCDAEMONS_PASS}
 " >> $TMP_FILE
 			echo "# End of DTC configuration v0.20 : Please don't touch this line !" >> $TMP_FILE
@@ -2963,7 +2963,7 @@ maildrop_destination_recipient_limit = 1" >> $TMP_FILE
   sql_user: dtcdaemons
   sql_passwd: ${MYSQL_DTCDAEMONS_PASS}
   sql_database: ${conf_mysql_db}
-  sql_select: SELECT passwd FROM pop_access,domain,admin,config WHERE mbox_host=name AND owner=adm_login AND (disabled='no' or disabled='always-no' or disabled='') AND pop_access.id = '%u' AND case when config.main_domain_mail_without_domain='yes' and '%r'='' then mbox_host=config.main_domain else (mbox_host='%r' or mbox_host in (select domain_parking from domain where name='%r' and domain_parking_type='redirect')) end
+  sql_select: SELECT passwd FROM pop_access,domain,admin,config WHERE pop_access.active=1 and mbox_host=name AND owner=adm_login AND (disabled='no' or disabled='always-no' or disabled='') AND pop_access.id = '%u' AND case when config.main_domain_mail_without_domain='yes' and '%r'='' then mbox_host=config.main_domain else (mbox_host='%r' or mbox_host in (select domain_parking from domain where name='%r' and domain_parking_type='redirect')) end
   sql_update: UPDATE pop_access SET passwd = '%v' WHERE fullemail = '%u@%r'
   sql_verbose: yes
   # End of DTC configuration v0.25 : please don't touch this line !" >${PATH_AUTH_SMTP}
@@ -3471,8 +3471,8 @@ mail_max_userip_connections = 200
 connect = host=$DOVECOT_MYSQL dbname=$conf_mysql_db user=dtcdaemons password=${MYSQL_DTCDAEMONS_PASS} client_flags=0
 driver = mysql
 default_pass_scheme = PLAIN
-password_query = SELECT passwd as password FROM pop_access,domain,admin,config WHERE mbox_host=name AND owner=adm_login AND (disabled='no' or disabled='always-no' or disabled='') AND pop_access.id = '%n' AND case when config.main_domain_mail_without_domain='yes' and '%d'='' THEN mbox_host=config.main_domain ELSE (mbox_host='%d' or mbox_host in (select domain_parking from domain where name='%d' and domain_parking_type='redirect')) END
-user_query = SELECT home, uid, gid FROM pop_access,domain,admin,config WHERE mbox_host=name AND owner=adm_login AND (disabled='no' or disabled='always-no' or disabled='') AND pop_access.id = '%n' AND case when config.main_domain_mail_without_domain='yes' and '%d'='' then mbox_host=config.main_domain else (mbox_host='%d' or mbox_host in (select domain_parking from domain where name='%d' and domain_parking_type='redirect')) end
+password_query = SELECT passwd as password FROM pop_access,domain,admin,config WHERE pop_access.active=1 and mbox_host=name AND owner=adm_login AND (disabled='no' or disabled='always-no' or disabled='') AND pop_access.id = '%n' AND case when config.main_domain_mail_without_domain='yes' and '%d'='' THEN mbox_host=config.main_domain ELSE (mbox_host='%d' or mbox_host in (select domain_parking from domain where name='%d' and domain_parking_type='redirect')) END
+user_query = SELECT home, uid, gid FROM pop_access,domain,admin,config WHERE pop_access.active=1 and mbox_host=name AND owner=adm_login AND (disabled='no' or disabled='always-no' or disabled='') AND pop_access.id = '%n' AND case when config.main_domain_mail_without_domain='yes' and '%d'='' then mbox_host=config.main_domain else (mbox_host='%d' or mbox_host in (select domain_parking from domain where name='%d' and domain_parking_type='redirect')) end
 " > $PATH_DTC_ETC/dovecot-mysql.conf
 			else
 				echo "
@@ -3480,8 +3480,8 @@ user_query = SELECT home, uid, gid FROM pop_access,domain,admin,config WHERE mbo
 connect = host=${MYSQL_DB_SOCKET_PATH} port=3306 dbname=$conf_mysql_db user=dtcdaemons password=${MYSQL_DTCDAEMONS_PASS}
 driver = mysql
 default_pass_scheme = PLAIN
-password_query = SELECT passwd AS password, home as userdb_home, uid as userdb_uid, gid as userdb_gid FROM pop_access WHERE id = '%n' AND mbox_host = '%d'
-user_query = SELECT home, uid, gid FROM pop_access WHERE id = '%n' AND mbox_host = '%d'
+password_query = SELECT passwd AS password, home as userdb_home, uid as userdb_uid, gid as userdb_gid FROM pop_access WHERE active=1 and id = '%n' AND mbox_host = '%d'
+user_query = SELECT home, uid, gid FROM pop_access WHERE active=1 and id = '%n' AND mbox_host = '%d'
 db_client_flags = 0
 " > $PATH_DTC_ETC/dovecot-mysql.conf
 			fi

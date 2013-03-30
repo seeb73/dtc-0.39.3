@@ -502,6 +502,10 @@ function drawAdminTools_Emails($domain){
 				"help" => _("This text is just a memo for yourself, and will not really be used."),
 				"placeholder" => "John Doe",
 				"legend" => _("Name:") ),
+			"active" => array(
+				"type" => "checkbox",
+				"values" => array("1","0"),
+				"legend" => _("Mail Account ACTIVE: ") ),
 			)
 		);
 
