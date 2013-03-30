@@ -1228,6 +1228,7 @@ function named_generate(){
 
 		$web_default_subdomain = $row["default_subdomain"];
 		$wildcard_dns = $row["wildcard_dns"];
+		$autogen_type = $row["autogen_subdomain"];
 
 		// Get the owner informations
 		$query2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$web_owner';";
@@ -1497,15 +1498,27 @@ $more_dns_server
 				for($autog=0;$autog<$n_autogen;$autog++){
 					if($autosubs[ $autosubs_keys[$autog]] == "no"){
 						$zeautogen = $autosubs_keys[$autog];
-						if($conf_use_cname_for_subdomains == "yes"){
-							if($web_default_subdomain != ""){
-								$this_site_file .= "$zeautogen	IN	CNAME	$web_default_subdomain\n";
-							}
-						}else{
-							if($zeautogen == "mysql1"){
-								$this_site_file .= "$zeautogen	IN	A	127.0.0.1\n";
+						if($autogen_type != 'no'){
+							if($autogen_type != 'thisserver'){
+								if($conf_use_cname_for_subdomains == "yes"){
+									$this_site_file .= "$zeautogen	IN	CNAME	$conf_administrative_site.\n";
+								}else{
+									if($zeautogen == "mysql1"){
+										$this_site_file .= "$zeautogen	IN	A	127.0.0.1\n";
+									}else{
+										$this_site_file .= "$zeautogen	IN	A	$conf_main_site_ip\n";
+									}
+								}
 							}else{
-								$this_site_file .= "$zeautogen	IN	A	$ip_to_write\n";
+								if($conf_use_cname_for_subdomains == "yes"){
+									$this_site_file .= "$zeautogen	IN	CNAME	@\n";
+								}else{
+									if($zeautogen == "mysql1"){
+										$this_site_file .= "$zeautogen	IN	A	127.0.0.1\n";
+									}else{
+										$this_site_file .= "$zeautogen	IN	A	$ip_to_write\n";
+									}
+								}
 							}
 						}
 					}
