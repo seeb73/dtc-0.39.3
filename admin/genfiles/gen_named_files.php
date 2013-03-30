@@ -1243,10 +1243,10 @@ function named_generate(){
 		$webadmin = mysql_fetch_array($result2) or die ("Cannot fetch user");
 		$web_path = $webadmin["path"];
 
-		// This should handle domain parking: need to get the target IP addr
+		// This should handle domain parking: need to get the target IP addr, default subdomain, wildcard and autogensubdomain from main, as this is not accesible for parked...
 		if($domain_parking != "no-parking"){
 			$domain_to_get = $domain_parking;
-			$qp = "SELECT ip_addr FROM $pro_mysql_domain_table WHERE name='$domain_parking'";
+			$qp = "SELECT * FROM $pro_mysql_domain_table WHERE name='$domain_parking'";
 			$rp = mysql_query($qp)or die("Cannot query $qp line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 			$np = mysql_num_rows($rp);
 			if($np != 1){
@@ -1256,6 +1256,9 @@ function named_generate(){
 			}else{
 				$ap = mysql_fetch_array($rp);
 				$ip_addr = $ap["ip_addr"];
+				$web_default_subdomain = $ap["default_subdomain"];
+				$wildcard_dns = $ap["wildcard_dns"];
+				$autogen_type = $ap["autogen_subdomain"];
 			}
 		}else{
 			$domain_to_get = $web_name;
