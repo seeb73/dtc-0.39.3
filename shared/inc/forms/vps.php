@@ -109,7 +109,7 @@ function drawAdminTools_VPS($admin,$vps){
 	}
 
 	$out .= "<br>"._("Your dedicated server will be shutdown on:")." ";
-	$period = "00-00-".($admin["info"]["permanent_extend"]+$admin["info"]["temporary_extend"]+$conf_vps_renewal_shutdown);
+	$period = "00-00-".($admin["permanent_extend"]+$admin["temporary_extend"]+$conf_vps_renewal_shutdown);
 	$out .= " ".calculateExpirationDate($vps["expire_date"],$period)."<br>";
 
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."'";
