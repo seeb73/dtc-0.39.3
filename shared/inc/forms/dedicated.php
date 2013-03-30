@@ -18,6 +18,7 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 
 	global $submit_err;
 	global $conf_post_or_get;
+	global $conf_vps_renewal_shutdown;
 
 	get_secpay_conf();
 
@@ -43,6 +44,14 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	}else{
 		$contact = _("Not found!");
 	}
+	// Get the current admin
+	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."';";
+	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysql_num_rows($r);
+	if($n == 1){
+		$admin = mysql_fetch_array($r);
+	}
+
 	$out .= "<h3>". _("Dedicated server contract:") ."</h3><br>$contract<br><br>";
 
 	$ar = explode("-",$dedicated["expire_date"]);
@@ -56,6 +65,9 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	}else{
 		$out .= _("Your dedicated server will expire on the: ") .$dedicated["expire_date"];
 	}
+	$out .= "<br>"._("Your dedicated server will be shutdown on:")." ";
+	$period = "00-00-".($admin["info"]["permanent_extend"]+$admin["info"]["temporary_extend"]+$conf_vps_renewal_shutdown);
+	$out .= " ".calculateExpirationDate($dedicated["expire_date"],$period)."<br>";
 
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."'";
 	$r = mysql_query($q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());

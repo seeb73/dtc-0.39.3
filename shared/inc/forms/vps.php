@@ -15,6 +15,8 @@ function drawAdminTools_VPS($admin,$vps){
 	global $secpayconf_use_products_for_renewal;
 	global $pro_mysql_vps_ip_table;
 	global $pro_mysql_vps_server_table;
+	global $conf_vps_renewal_shutdown;
+	global $pro_mysql_admin_table;
 
 	global $pro_mysql_vps_stats_table;
 	global $pro_mysql_admin_table;
@@ -73,6 +75,14 @@ function drawAdminTools_VPS($admin,$vps){
 	}else{
 		$contract = "not found!";
 	}
+	// Get current admin
+	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."';";
+	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysql_num_rows($r);
+	if($n == 1){
+		$admin = mysql_fetch_array($r);
+	}
+
 	$out .= "<br><h3>". _("Description: ") ."</h3><br>". _("Current contract: ") ."$contract<br>";
 	$q = "SELECT location FROM $pro_mysql_vps_server_table WHERE hostname='$vps_node';";
 	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
@@ -97,6 +107,10 @@ function drawAdminTools_VPS($admin,$vps){
 	}else{
 		$out .= _("Your VPS will expire on the: ") .$vps["expire_date"];
 	}
+
+	$out .= "<br>"._("Your dedicated server will be shutdown on:")." ";
+	$period = "00-00-".($admin["info"]["permanent_extend"]+$admin["info"]["temporary_extend"]+$conf_vps_renewal_shutdown);
+	$out .= " ".calculateExpirationDate($vps["expire_date"],$period)."<br>";
 
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."'";
 	$r = mysql_query($q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());

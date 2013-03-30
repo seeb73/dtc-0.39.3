@@ -20,6 +20,7 @@ function drawAdminTools_MyAccount($admin){
 	global $cc_code_array;
 	global $conf_show_affiliation;
 	global $conf_show_ssl_tokens;
+	global $conf_shared_renewal_shutdown;
 	global $conf_show_remaining_money_on_account;
 	global $conf_show_upgrade_product_button;
 	global $conf_shared_renewal_zero;
@@ -128,6 +129,14 @@ function drawAdminTools_MyAccount($admin){
 </tr>
 <tr>
 	<td>".smartByte($du_quota)."</td><td>".smartByte($bw_quota)."</td><td>".$admin["info"]["expire"]."</td>
+</tr>
+<tr>
+	<td colspan=3>"._("Your service is paid until:")." ".$admin["info"]["expire"]."</td>
+</tr>
+<tr>
+	<td colspan=3>"._("Your service will be shutdown on:")." ";
+			$period = "00-00-".($admin["info"]["permanent_extend"]+$admin["info"]["temporary_extend"]+$conf_shared_renewal_shutdown);
+			$out .= " ".calculateExpirationDate($admin["info"]["expire"],$period)."</td>
 </tr>
 </table>";
 			if($admin["info"]["show_invoice_info"] == 'yes' && $conf_show_invoice_info == 'yes'){

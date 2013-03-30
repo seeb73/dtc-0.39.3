@@ -14,6 +14,7 @@ function drawAdminTools_Custom($admin,$custom_id){
 	global $secpayconf_currency_letters;
 	global $secpayconf_use_products_for_renewal;
 	global $conf_post_or_get;
+	global $conf_custom_renewal_shutdown;
 	global $conf_show_invoice_info;
 
 	global $submit_err_custom;
@@ -42,6 +43,14 @@ function drawAdminTools_Custom($admin,$custom_id){
 		$contract = $server_prod["name"];
 	}else{
 		$contract = _("Not found!");
+	}
+
+	// Get the current admin
+	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."';";
+	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysql_num_rows($r);
+	if($n == 1){
+		$admin = mysql_fetch_array($r);
 	}
 
 	$additiona_info = "";
@@ -74,6 +83,9 @@ function drawAdminTools_Custom($admin,$custom_id){
 	}else{
 		$out .= _("Your custom product will expire on the: ") .$custom_prod["expire_date"];
 	}
+	$out .= "<br>"._("Your dedicated server will be shutdown on:")." ";
+	$period = "00-00-".($admin["info"]["permanent_extend"]+$admin["info"]["temporary_extend"]+$conf_custom_renewal_shutdown);
+	$out .= " ".calculateExpirationDate($custom_prod["expire_date"],$period)."<br>";
 
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."'";
 	$r = mysql_query($q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
