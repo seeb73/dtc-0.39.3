@@ -1,3 +1,9 @@
+dtc (0.36.1-1) experimental; urgency=low
+
+  * New upstream release.
+
+ -- Thomas Goirand <zigo@debian.org>  Wed, 03 Apr 2013 23:41:19 +0800
+
 dtc (0.35.6-2) experimental; urgency=low
 
   * Fixes the cron job PHP Notice in fetch.php.
