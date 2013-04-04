@@ -1,3 +1,9 @@
+dtc (0.36.2-1) experimental; urgency=low
+
+  * Changes the db a bit to mimic old DTC behavior (thanks to Jesse Norwel).
+
+ -- Thomas Goirand <zigo@debian.org>  Thu, 04 Apr 2013 14:42:48 +0800
+
 dtc (0.36.1-1) experimental; urgency=low
 
   * New upstream release with these changes:
