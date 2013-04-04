@@ -16,7 +16,7 @@ rm */bin */dev */etc */lib */lib64 */sbin */tmp */usr */var
 # Makes Joomla sites use networking and not the MySQL socket file
 for i in /var/www/sites/*/*/subdomains/*/html/configuration.php ; do
 	sed -i "s/var \$host = 'localhost';/var \$host = '127.0.0.1';/" $i
-do
+done
 
 # Same for wordpress
 for i in /var/www/sites/*/*/subdomains/*/html/wp-config.php ; do
