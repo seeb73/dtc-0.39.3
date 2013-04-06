@@ -108,7 +108,7 @@ function drawAdminTools_VPS($admin,$vps){
 		$out .= _("Your VPS will expire on the: ") .$vps["expire_date"];
 	}
 
-	$out .= "<br>"._("Your dedicated server will be shutdown on:")." ";
+	$out .= "<br>"._("Your VPSwill be shutdown on:")." ";
 	$period = "00-00-".($admin["permanent_extend"]+$admin["temporary_extend"]+$conf_vps_renewal_shutdown);
 	$out .= " ".calculateExpirationDate($vps["expire_date"],$period)."<br>";
 
