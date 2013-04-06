@@ -78,8 +78,7 @@ function drawAdminTools_Custom($admin,$custom_id){
 	if(date("Y") > $ar[0] ||
 			(date("Y") == $ar[0] && date("m") > $ar[1]) ||
 			(date("Y") == $ar[0] && date("m") == $ar[1] && date("d") > $ar[2])){
-		$out .= "<font color=\"red\">". _("Your custom product has expired on the: ") .$custom_prod["expire_date"]."</font>"
-		."<br>". _("Please renew it with one of the following options") ."<br>";
+		$out .= "<font color=\"red\">". _("Your custom product has expired on the: ") .$custom_prod["expire_date"]."</font>";
 	}else{
 		$out .= _("Your custom product will expire on the: ") .$custom_prod["expire_date"];
 	}
@@ -92,6 +91,7 @@ function drawAdminTools_Custom($admin,$custom_id){
 	$admin = mysql_fetch_array($r);
 
 	if($admin["show_invoice_info"] == 'yes' && $conf_show_invoice_info == 'yes'){
+		$out .= "<br>". _("Please renew it with one of the following options") ."<br>";
 		if ($secpayconf_use_products_for_renewal == 'yes'){
 			$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$custom_prod["product_id"]."';";
 			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());

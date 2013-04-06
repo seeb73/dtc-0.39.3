@@ -102,8 +102,7 @@ function drawAdminTools_VPS($admin,$vps){
 	if(date("Y") > $ar[0] ||
 			(date("Y") == $ar[0] && date("m") > $ar[1]) ||
 			(date("Y") == $ar[0] && date("m") == $ar[1] && date("d") > $ar[2])){
-		$out .= "<font color=\"red\">". _("Your VPS has expired on the: ") .$vps["expire_date"]."</font>"
-			."<br>". _("Please renew with one of the following options: ") ."<br>";
+		$out .= "<font color=\"red\">". _("Your VPS has expired on the: ") .$vps["expire_date"]."</font>";
 	}else{
 		$out .= _("Your VPS will expire on the: ") .$vps["expire_date"];
 	}
@@ -118,6 +117,7 @@ function drawAdminTools_VPS($admin,$vps){
 
 	if($admin["show_invoice_info"] == 'yes' && $conf_show_invoice_info == 'yes'){
 		// Renewal buttons
+		$out .= "<br>". _("Please renew with one of the following options: ") ."<br>";
 		if ($secpayconf_use_products_for_renewal == 'yes'){
 			$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$vps["product_id"]."';";
 			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());

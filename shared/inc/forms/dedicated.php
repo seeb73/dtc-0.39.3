@@ -60,8 +60,7 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	if(date("Y") > $ar[0] ||
 			(date("Y") == $ar[0] && date("m") > $ar[1]) ||
 			(date("Y") == $ar[0] && date("m") == $ar[1] && date("d") > $ar[2])){
-		$out .= "<font color=\"red\">". _("Your dedicated server has expired on the: ") .$dedicated["expire_date"]."</font>"
-		."<br>". _("Please renew it with one of the following options") ."<br>";
+		$out .= "<font color=\"red\">". _("Your dedicated server has expired on the: ") .$dedicated["expire_date"]."</font>";
 	}else{
 		$out .= _("Your dedicated server will expire on the: ") .$dedicated["expire_date"];
 	}
@@ -74,6 +73,7 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	$admin = mysql_fetch_array($r);
 
 	if($admin["show_invoice_info"] == 'yes' && $conf_show_invoice_info == 'yes'){
+		$out .= "<br>". _("Please renew it with one of the following options") ."<br>";
 		if ($secpayconf_use_products_for_renewal == 'yes'){
 			$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$dedicated["product_id"]."';";
 			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
