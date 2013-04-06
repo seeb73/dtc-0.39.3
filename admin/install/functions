@@ -29,6 +29,7 @@ maxproc=$conf_max_receive_process
 
 maxprocloop=`expr $conf_max_receive_process \* 2`
 
+maxprocloopdaemon=`expr $maxprocloop + 5`
 
 if [ -z ${PATH_BASH} ] ; then
 	if [ -x /bin/bash ] ; then
@@ -3003,7 +3004,7 @@ maildrop_destination_recipient_limit = 1" >> $TMP_FILE
 # smtpprox-loopprevent: listen on 10022, send to 10023
 _LISTEN_PORT=\"127.0.0.1:10022\"
 _SEND_PORT=\"127.0.0.1:10023\"
-
+_OPTS=\"--children=$maxprocloopdaemon\"
 # End of DTC configuration $VERSION
 "
 		fi
