@@ -7,6 +7,7 @@ function drawAdminTools_MultipleRenew($admin){
 	global $pro_mysql_product_table;
 	global $secpayconf_currency_letters;
 	global $conf_post_or_get;
+	global $secpayconf_use_products_for_renewal;
 
 	get_secpay_conf();
 	$out = "<br><br>";
@@ -40,10 +41,13 @@ function drawAdminTools_MultipleRenew($admin){
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$vps["product_id"]."';";
 		$r = mysql_query($q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 		$n = mysql_num_rows($r);
-		if($n < 1){
+		if($n < 1 && $secpayconf_use_products_for_renewal == 'no'){
 			return _("Cannot find renewal product ID for your VPS.");
 		}
 		$pop = "";
+		if ($secpayconf_use_products_for_renewal == 'yes'){
+			$pop .= "<option value=\"".$prod["id"]."\">".$prod["name"]." (".$prod["price_dollar"]." $secpayconf_currency_letters)</option>";
+		}
 		for($j=0;$j<$n;$j++){
 			$a = mysql_fetch_array($r);
 			$pop .= "<option value=\"".$a["id"]."\">".$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)</option>";
@@ -73,10 +77,13 @@ function drawAdminTools_MultipleRenew($admin){
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$dedi["product_id"]."';";
 		$r = mysql_query($q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 		$n = mysql_num_rows($r);
-		if($n < 1){
+		if($n < 1 && $secpayconf_use_products_for_renewal == 'no'){
 			return _("Cannot find renewal product ID for your dedicated server.");
 		}
 		$pop = "";
+		if ($secpayconf_use_products_for_renewal == 'yes'){
+			$pop .= "<option value=\"".$prod["id"]."\">".$prod["name"]." (".$prod["price_dollar"]." $secpayconf_currency_letters)</option>";
+		}
 		for($j=0;$j<$n;$j++){
 			$a = mysql_fetch_array($r);
 			$pop .= "<option value=\"".$a["id"]."\">".$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)</option>";
@@ -87,7 +94,43 @@ function drawAdminTools_MultipleRenew($admin){
 </tr>";
 	}
 
-	if(($nbr_dedi+$nbr_vps) % 2){
+	// echo "<pre>" ; print_r($admin["custom"]); echo "</pre>";
+	$nbr_custom = sizeof($admin["custom"]);
+	for($i=0;$i<$nbr_custom;$i++){
+		if(($i+$nbr_vps+$nbr_dedi) % 2){
+			$td = "td  class=\"dtcDatagrid_table_flds\"";
+		}else{
+			$td = "td  class=\"dtcDatagrid_table_flds_alt\"";
+		}
+		$custom = $admin["custom"][$i];
+		$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$custom["product_id"]."';";
+		$r = mysql_query($q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$n = mysql_num_rows($r);
+		if($n != 1){
+			return _("Cannot find your dedicated server product ID.");
+		}
+		$prod = mysql_fetch_array($r);
+		$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$custom["product_id"]."';";
+		$r = mysql_query($q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$n = mysql_num_rows($r);
+		if($n < 1 && $secpayconf_use_products_for_renewal == 'no'){
+			return _("Cannot find renewal product ID for your dedicated server.");
+		}
+		$pop = "";
+		if ($secpayconf_use_products_for_renewal == 'yes'){
+			$pop .= "<option value=\"".$prod["id"]."\">".$prod["name"]." (".$prod["price_dollar"]." $secpayconf_currency_letters)</option>";
+		}
+		for($j=0;$j<$n;$j++){
+			$a = mysql_fetch_array($r);
+			$pop .= "<option value=\"".$a["id"]."\">".$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)</option>";
+		}
+		$out .= "<$td><input type=\"checkbox\" name=\"service_host[]\" value=\"custom:".$custom["domain"]."\"></td>
+<$td><select name=\"custom:".$custom["domain"]."\">$pop</option></select></td>
+<$td>".$custom["domain"]."</td>
+</tr>";
+	}
+
+	if(($nbr_dedi+$nbr_vps+$nbr_custom) % 2){
 		$td = "td  class=\"dtcDatagrid_table_flds\"";
 	}else{
 		$td = "td  class=\"dtcDatagrid_table_flds_alt\"";

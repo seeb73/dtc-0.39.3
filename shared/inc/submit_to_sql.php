@@ -324,7 +324,7 @@ login: ";
 				$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 				$n = mysql_num_rows($r);
 				if($n != 1){
-					$submit_err = "Could not find VPS id in table line ".__LINE__." file ".__FILE__;
+					$submit_err = "Could not find dedicated server id in table line ".__LINE__." file ".__FILE__;
 					$commit_flag = "no";
 					return false;
 				}
@@ -345,6 +345,34 @@ login: ";
 				$product = mysql_fetch_array($r);
 				$date_expire = calculateExpirationDate($dedi_expire,$product["period"]);
 				$q = "UPDATE $pro_mysql_dedicated_table SET expire_date='$date_expire' WHERE server_hostname='".$atrs[1]."';";
+				$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				break;
+			case "custom":
+				$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE domain='".$atrs[1]."';";
+				$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$n = mysql_num_rows($r);
+				if($n != 1){
+					$submit_err = "Could not find custom product id in table line ".__LINE__." file ".__FILE__;
+					$commit_flag = "no";
+					return false;
+				}
+				$custom_entry = mysql_fetch_array($r);
+				if($i>0){
+					$old_expire .= "|";
+				}
+				$old_expire = $custom_entry["expire_date"];
+				$custom_expire = $custom_entry["expire_date"];
+				$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$atrs[2]."';";
+				$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$n = mysql_num_rows($r);
+				if($n != 1){
+					$submit_err = "Could not find product in table line ".__LINE__." file ".__FILE__;
+					$commit_flag = "no";
+					return false;
+				}
+				$product = mysql_fetch_array($r);
+				$date_expire = calculateExpirationDate($custom_expire,$product["period"]);
+				$q = "UPDATE $pro_mysql_custom_product_table SET expire_date='$date_expire' WHERE domain='".$atrs[1]."';";
 				$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 				break;
 			default:
