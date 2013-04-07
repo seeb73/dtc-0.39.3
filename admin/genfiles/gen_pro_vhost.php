@@ -184,6 +184,7 @@ function pro_vhost_generate(){
 	global $conf_force_use_https;
 
 	global $conf_shared_renewal_shutdown;
+	global $conf_global_extend;
 
 	global $conf_use_nated_vhost;
 	global $conf_nated_vhost_ip;
@@ -536,7 +537,7 @@ AND $pro_mysql_admin_table.id_client != '0'";
 		if($expire_stored == "0000-00-00"){
 			$site_expired = "no";
 		}else{
-			$calc_expire_date = calculateExpirationDate($expire_stored,"0000-00-".$conf_shared_renewal_shutdown+$webadmin["permanent_extend"]+$webadmin["temporary_extend"]);
+			$calc_expire_date = calculateExpirationDate($expire_stored,"0000-00-".$conf_shared_renewal_shutdown+$conf_global_extend+$webadmin["permanent_extend"]+$webadmin["temporary_extend"]);
 			$calc_expire_date_array = explode("-",$calc_expire_date);
 			$expire_timestamp = mktime(1,1,1,$calc_expire_date_array[1],$calc_expire_date_array[2],$calc_expire_date_array[0]);
 			if($expire_timestamp < mktime()){

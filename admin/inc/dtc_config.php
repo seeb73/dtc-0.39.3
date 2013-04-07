@@ -252,7 +252,7 @@ function drawRenewalsConfig(){
 	$out = "";
 
 	$dsc = array(
-		"title" => _("VPS renewal email reminder configuration"),
+		"title" => _("Renewal email reminder configuration"),
 		"action" => "vps_renewal_period",
 		"forward" => array("rub","sousrub"),
 		"desc" => _("These numbers represent the days before and after expiration.
@@ -262,6 +262,10 @@ are stored in /etc/dtc, and if not present in: ").$conf_dtcadmin_path."/reminder
 <br />"._("For custom product types the file format is for example custom_1_expired_already.txt 
 for custom product type with id 1 for the expired reminder"),
 		"cols" => array(
+			"global_extend" => array(
+				"legend" => _("Defer all expirations, shutdown and warning dates by: "),
+				"type" => "text",
+				"size" => "16"),
 			"vps_renewal_before" => array(
 				"legend" => _("Warning before expiration for VPS: "),
 				"type" => "text",

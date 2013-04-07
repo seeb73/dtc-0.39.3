@@ -331,6 +331,7 @@ $dtc_database = array(
 			"action_on_old_new_admin" => "enum('archive','delete','nothing') NOT NULL default 'nothing'",
 			"new_admin_old_age" => "int(12) NOT NULL default '90'",
 			"show_invoice_info" => "enum('yes','no') NOT NULL default 'yes'",
+			"global_extend" => "int(12) NOT NULL default '0'",
 			"show_past_payments" => "varchar(255) NOT NULL default 'default'"
 		),
 		"keys" => array(

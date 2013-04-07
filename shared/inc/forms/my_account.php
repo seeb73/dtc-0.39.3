@@ -21,6 +21,7 @@ function drawAdminTools_MyAccount($admin){
 	global $conf_show_affiliation;
 	global $conf_show_ssl_tokens;
 	global $conf_shared_renewal_shutdown;
+	global $conf_global_extend;
 	global $conf_show_remaining_money_on_account;
 	global $conf_show_upgrade_product_button;
 	global $conf_shared_renewal_zero;
@@ -134,8 +135,11 @@ function drawAdminTools_MyAccount($admin){
 	<td colspan=3>"._("Your service is paid until:")." ".$admin["info"]["expire"]."</td>
 </tr>
 <tr>
+	<td colspan=3>"._("Your can pay your service without overdue charges until:")." ".calculateExpirationDate($admin["info"]["expire"],'00-00-'.$conf_global_extend)."</td>
+</tr>
+<tr>
 	<td colspan=3>"._("Your service will be shutdown on:")." ";
-			$period = "00-00-".($admin["info"]["permanent_extend"]+$admin["info"]["temporary_extend"]+$conf_shared_renewal_shutdown);
+			$period = "00-00-".($admin["info"]["permanent_extend"]+$admin["info"]["temporary_extend"]+$conf_shared_renewal_shutdown+$conf_global_extend);
 			$out .= " ".calculateExpirationDate($admin["info"]["expire"],$period)."</td>
 </tr>
 </table>";

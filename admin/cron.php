@@ -677,6 +677,7 @@ function checkDisableAdmins() {
 
         global $conf_webmaster_email_addr;
         global $conf_shared_renewal_disable_admin;
+	global $conf_global_extend;
 	global $conf_auto_enable_admin_on_expire_change;
         global $dtcshared_path;
 
@@ -684,8 +685,8 @@ function checkDisableAdmins() {
 
         $now_timestamp = mktime();
         $one_day = 3600 * 24;
-        $q = "SELECT * FROM $pro_mysql_admin_table WHERE adddate(expire,permanent_extend+temporary_extend)<='".date("Y-m-d",$now_timestamp - $one_day*$conf_shared_renewal_disable_admin)."' and disabled='no';";
-        $r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adddate(expire,permanent_extend+temporary_extend+".$conf_global_extend.")<='".date("Y-m-d",$now_timestamp - $one_day*$conf_shared_renewal_disable_admin)."' and disabled='no';";
+	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
         $n = mysql_num_rows($r);
         for($i=0;$i<$n;$i++){
 		$admin=mysql_fetch_array($r) or die("Cannot fetch record line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
@@ -694,7 +695,7 @@ function checkDisableAdmins() {
         	$t = mysql_query($s)or die("Cannot query $s line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	}
 	if ($conf_auto_enable_admin_on_expire_change == 'yes') {
-        	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adddate(expire,permanent_extend+temporary_extend)>'".date("Y-m-d",$now_timestamp - $one_day*$conf_shared_renewal_disable_admin)."' and disabled='yes';";
+        	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adddate(expire,permanent_extend+temporary_extend+".$conf_global_extend.")>'".date("Y-m-d",$now_timestamp - $one_day*$conf_shared_renewal_disable_admin)."' and disabled='yes';";
         	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
         	$n = mysql_num_rows($r);
         	for($i=0;$i<$n;$i++){

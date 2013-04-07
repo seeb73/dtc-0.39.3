@@ -16,6 +16,7 @@ function drawAdminTools_VPS($admin,$vps){
 	global $pro_mysql_vps_ip_table;
 	global $pro_mysql_vps_server_table;
 	global $conf_vps_renewal_shutdown;
+	global $conf_global_extend;
 	global $pro_mysql_admin_table;
 
 	global $pro_mysql_vps_stats_table;
@@ -107,8 +108,9 @@ function drawAdminTools_VPS($admin,$vps){
 		$out .= _("Your VPS will expire on the: ") .$vps["expire_date"];
 	}
 
-	$out .= "<br>"._("Your VPSwill be shutdown on:")." ";
-	$period = "00-00-".($admin["permanent_extend"]+$admin["temporary_extend"]+$conf_vps_renewal_shutdown);
+	$out .= "<BR>"._("Your can pay your VPS without overdue charges until:")." ".calculateExpirationDate($vps["expire_date"],'00-00-'.$conf_global_extend);
+	$out .= "<br>"._("Your VPS will be shutdown on:")." ";
+	$period = "00-00-".($admin["permanent_extend"]+$admin["temporary_extend"]+$conf_vps_renewal_shutdown+$conf_global_extend);
 	$out .= " ".calculateExpirationDate($vps["expire_date"],$period)."<br>";
 
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."'";

@@ -15,6 +15,7 @@ function drawAdminTools_Custom($admin,$custom_id){
 	global $secpayconf_use_products_for_renewal;
 	global $conf_post_or_get;
 	global $conf_custom_renewal_shutdown;
+	global $conf_global_extend;
 	global $conf_show_invoice_info;
 
 	global $submit_err_custom;
@@ -82,7 +83,8 @@ function drawAdminTools_Custom($admin,$custom_id){
 	}else{
 		$out .= _("Your custom product will expire on the: ") .$custom_prod["expire_date"];
 	}
-	$out .= "<br>"._("Your dedicated server will be shutdown on:")." ";
+	$out .= "<BR>"._("Your can pay your custom service without overdue charges until:")." ".calculateExpirationDate($custom_procustom_pro["expire_date"],'00-00-'.$conf_global_extend);
+	$out .= "<br>"._("Your custom service be shutdown on:")." ";
 	$period = "00-00-".($admin["permanent_extend"]+$admin["temporary_extend"]+$conf_custom_renewal_shutdown);
 	$out .= " ".calculateExpirationDate($custom_prod["expire_date"],$period)."<br>";
 

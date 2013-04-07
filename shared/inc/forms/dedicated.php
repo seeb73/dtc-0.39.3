@@ -19,6 +19,7 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	global $submit_err;
 	global $conf_post_or_get;
 	global $conf_vps_renewal_shutdown;
+	global $conf_global_extend;
 
 	get_secpay_conf();
 
@@ -64,6 +65,7 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	}else{
 		$out .= _("Your dedicated server will expire on the: ") .$dedicated["expire_date"];
 	}
+	$out .= "<BR>"._("Your can pay your dedicated server without overdue charges until:")." ".calculateExpirationDate($dedicated["expire_date"],'00-00-'.$conf_global_extend);
 	$out .= "<br>"._("Your dedicated server will be shutdown on:")." ";
 	$period = "00-00-".($admin["permanent_extend"]+$admin["temporary_extend"]+$conf_vps_renewal_shutdown);
 	$out .= " ".calculateExpirationDate($dedicated["expire_date"],$period)."<br>";
