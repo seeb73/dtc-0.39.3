@@ -729,9 +729,13 @@ AND $pro_mysql_admin_table.id_client != '0'";
 						$vhost_file .= "	SSLCertificateChainFile ".$conf_generated_file_path."/ssl/new.cert.ca\n";
 					}
 				}
-				vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/html");
-				vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/logs");
-				vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/cgi-bin");
+				if (($conf_autogen_webmail_host == "yes" && $webmail_hostname_exists == "no" && $web_subname == $conf_autogen_webmail_hostname) || ($conf_autogen_admin_host == "yes" && $admin_hostname_exists == "no" && $web_subname == $conf_autogen_admin_hostname)){
+					//Not generate subdirs for virtual aliases
+				}else{
+					vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/html");
+					vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/logs");
+					vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/cgi-bin");
+				}
 				if ( $conf_unix_type == "bsd" ) {
 					$vhost_file .= "	Alias /phpmyadmin ".$conf_tools_prefix."/phpMyAdmin\n";
 				}else{
@@ -775,6 +779,7 @@ AND $pro_mysql_admin_table.id_client != '0'";
 			$vhost_file .= $php_more_conf . "
 	DocumentRoot $web_path/$web_name/subdomains/$web_subname/html
 	<Directory $web_path/$web_name/subdomains/$web_subname/html>
+		DirectoryIndex index.php
 		Allow from all
 	</Directory>
 	<Directory $web_path/$web_name/subdomains/$web_subname/logs>
@@ -830,19 +835,31 @@ $vhost_file .= "
                                 } else if ($domain_parking != "no-parking" && $domain_parking_type == "serveralias") {
                                         // do nothing here, as serveralias parking will be injected throughout the generation of the main domain
 				}else{
-					vhost_chk_dir_sh("$web_path/$domain_to_get/subdomains/$web_subname/logs");
-					vhost_chk_dir_sh("$web_path/$domain_to_get/subdomains/$web_subname/html");
-					vhost_chk_dir_sh("$web_path/$domain_to_get/subdomains/$web_subname/cgi-bin");
+					if (($conf_autogen_webmail_host == "yes" && $webmail_hostname_exists == "no" && $web_subname == $conf_autogen_webmail_hostname) || ($conf_autogen_admin_host == "yes" && $admin_hostname_exists == "no" && $web_subname == $conf_autogen_admin_hostname)){
+						//Not generate subdirs for virtual aliases
+					}else{
+						vhost_chk_dir_sh("$web_path/$domain_to_get/subdomains/$web_subname/logs");
+						vhost_chk_dir_sh("$web_path/$domain_to_get/subdomains/$web_subname/html");
+						vhost_chk_dir_sh("$web_path/$domain_to_get/subdomains/$web_subname/cgi-bin");
+					}
 					// We need to make it for both in case of a domain parking
 					if($domain_to_get != $web_name){
-						vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/logs");
-						vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/html");
-						vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/cgi-bin");
+						if (($conf_autogen_webmail_host == "yes" && $webmail_hostname_exists == "no" && $web_subname == $conf_autogen_webmail_hostname) || ($conf_autogen_admin_host == "yes" && $admin_hostname_exists == "no" && $web_subname == $conf_autogen_admin_hostname)){
+							//Not generate subdirs for virtual aliases
+						}else{
+							vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/logs");
+							vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/html");
+							vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/cgi-bin");
+						}
 					}
 					if($webadmin["shared_hosting_security"] == 'sbox_aufs' || ($webadmin["shared_hosting_security"] == 'mod_php' && $subdomain["shared_hosting_security"] == 'sbox_aufs')){
-						vhost_chk_dir_sh("$web_path/$web_name/subdomains.aufs");
-						vhost_chk_dir_sh("$web_path/$web_name/subdomains.aufs/".$web_subname);
-						$aufs_list .= "$web_path/$web_name/subdomains/".$web_subname."\n";
+						if (($conf_autogen_webmail_host == "yes" && $webmail_hostname_exists == "no" && $web_subname == $conf_autogen_webmail_hostname) || ($conf_autogen_admin_host == "yes" && $admin_hostname_exists == "no" && $web_subname == $conf_autogen_admin_hostname)){
+							//Not generate subdirs for virtual aliases
+						}else{
+							vhost_chk_dir_sh("$web_path/$web_name/subdomains.aufs");
+							vhost_chk_dir_sh("$web_path/$web_name/subdomains.aufs/".$web_subname);
+							$aufs_list .= "$web_path/$web_name/subdomains/".$web_subname."\n";
+						}
 					}
 					$iteration_table = array();
 					$iteration_table[] = "normal";
@@ -909,7 +926,7 @@ $vhost_file .= "
 						$iteration_table[]="shared_ssl";
 					}
 					if (preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $subdomain["redirect_url"])) {
-						$vhost_more_conf .= "Redirect / ".$subdomain["redirect_url"]."\n";
+						$vhost_more_conf .= "	Redirect / ".$subdomain["redirect_url"]."\n";
 					}
 					if($web_subname == "$web_default_subdomain"){
 						if ($domain_parking == "no-parking"){
@@ -1000,6 +1017,10 @@ $vhost_file .= "
 						$vhost_file .= "	ServerName $web_subname.$web_name
 	Alias /stats $web_path/$web_name/subdomains/$web_subname/logs
 	Alias /awstats-icon /usr/share/awstats/icon\n";
+						if (($conf_autogen_webmail_host == "yes" && $webmail_hostname_exists == "no" && $web_subname == $conf_autogen_webmail_hostname) || ($conf_autogen_admin_host == "yes" && $admin_hostname_exists == "no" && $web_subname == $conf_autogen_admin_hostname)){
+							//Not generate subdirs for virtual aliases
+							$vhost_file .= $vhost_more_conf;
+						}else{
 						// Disable the site if expired
 						if($site_expired == "yes"){
 							$document_root = $conf_generated_file_path."/expired_site";
@@ -1072,6 +1093,7 @@ $vhost_file .= "
 
 						if ($create_mail_autoconfig && ($domain_default_sub_server_alias == "yes") && ($web_subname == "$web_default_subdomain")) {
 							$vhost_file .= "	AliasMatch ^/.well-known/autoconfig/mail/config-v1.1.xml\$ $conf_generated_file_path/config-v1.1.xml\n";
+						}
 						}
 	
 						$vhost_file .= "</VirtualHost>\n\n";
