@@ -22,10 +22,40 @@ function drawAdminTools_MultipleRenew($admin){
 <td class=\"dtcDatagrid_table_titles\">"._("Renewal product")."</td>
 <td class=\"dtcDatagrid_table_titles\">"._("Hostname")."</td>
 </tr>";
+	$nbr_shared = 0;
+	if ( $admin["info"]["prod_id"] != 0 ){
+		$nbr_shared = 1;
+		$td = "td  class=\"dtcDatagrid_table_flds\"";
+		$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$admin["info"]["prod_id"]."';";
+		$r = mysql_query($q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$n = mysql_num_rows($r);
+		if($n != 1){
+			return _("Cannot find your Shared Hosting product ID.");
+		}
+		$prod = mysql_fetch_array($r);
+		$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$admin["info"]["prod_id"]."';";
+		$r = mysql_query($q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$n = mysql_num_rows($r);
+		if($n < 1 && $secpayconf_use_products_for_renewal == 'no'){
+			return _("Cannot find renewal product ID for your Shared Hosting.");
+		}
+		$pop = "";
+		if ($secpayconf_use_products_for_renewal == 'yes'){
+			$pop .= "<option value=\"".$prod["id"]."\">".$prod["name"]." (".$prod["price_dollar"]." $secpayconf_currency_letters)</option>";
+		}
+		for($j=0;$j<$n;$j++){
+			$a = mysql_fetch_array($r);
+			$pop .= "<option value=\"".$a["id"]."\">".$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)</option>";
+		}
+		$out .= "<$td><input type=\"checkbox\" name=\"service_host[]\" value=\"shared:\"></td>
+<$td><select name=\"shared:\">$pop</option></select></td>
+<$td>"._("Shared Hosting")."</td>
+</tr>";
+	}
 
 	$nbr_vps = sizeof($admin["vps"]);
 	for($i=0;$i<$nbr_vps;$i++){
-		if($i % 2){
+		if($i+$nbr_shared % 2){
 			$td = "td  class=\"dtcDatagrid_table_flds\"";
 		}else{
 			$td = "td  class=\"dtcDatagrid_table_flds_alt\"";
@@ -61,7 +91,7 @@ function drawAdminTools_MultipleRenew($admin){
 	// echo "<pre>" ; print_r($admin["dedicated"]); echo "</pre>";
 	$nbr_dedi = sizeof($admin["dedicated"]);
 	for($i=0;$i<$nbr_dedi;$i++){
-		if(($i+$nbr_vps) % 2){
+		if(($i+$nbr_vps+$nbr_shared) % 2){
 			$td = "td  class=\"dtcDatagrid_table_flds\"";
 		}else{
 			$td = "td  class=\"dtcDatagrid_table_flds_alt\"";
@@ -97,7 +127,7 @@ function drawAdminTools_MultipleRenew($admin){
 	// echo "<pre>" ; print_r($admin["custom"]); echo "</pre>";
 	$nbr_custom = sizeof($admin["custom"]);
 	for($i=0;$i<$nbr_custom;$i++){
-		if(($i+$nbr_vps+$nbr_dedi) % 2){
+		if(($i+$nbr_vps+$nbr_dedi+$nbr_shared) % 2){
 			$td = "td  class=\"dtcDatagrid_table_flds\"";
 		}else{
 			$td = "td  class=\"dtcDatagrid_table_flds_alt\"";
@@ -130,7 +160,7 @@ function drawAdminTools_MultipleRenew($admin){
 </tr>";
 	}
 
-	if(($nbr_dedi+$nbr_vps+$nbr_custom) % 2){
+	if(($nbr_dedi+$nbr_vps+$nbr_custom+$nbr_shared) % 2){
 		$td = "td  class=\"dtcDatagrid_table_flds\"";
 	}else{
 		$td = "td  class=\"dtcDatagrid_table_flds_alt\"";
