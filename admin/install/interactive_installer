@@ -426,6 +426,15 @@ installerQuestions () {
 	fi
 
 	echo ""
+	echo "Choose the ports used by the submission serivce"
+	echo "If you choose more than one, separate them with" 
+	echo -n 'commas ['$conf_submission_ports']: '
+	read answer
+	if [ ! -x "$answer" ]; then
+		conf_submission_ports=$answer
+	fi
+
+	echo ""
 	echo "Choose the recpient delimiter character. This MUST match what"
 	echo "you have setup in Qmail or Postfix."
 	if [ "${conf_recipient_delim}" = "-" ] ; then

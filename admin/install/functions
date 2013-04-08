@@ -31,6 +31,8 @@ maxprocloop=`expr $conf_max_receive_process \* 2`
 
 maxprocloopdaemon=`expr $maxprocloop + 5`
 
+conf_submission_ports=${conf_submission_ports:-587}
+
 if [ -z ${PATH_BASH} ] ; then
 	if [ -x /bin/bash ] ; then
 		PATH_BASH=/bin/bash
@@ -2871,6 +2873,35 @@ pickup fifo n - n 60 1 pickup
 					touch /var/log/sieve.info
 					chown ${CONF_DTC_SYSTEM_USERNAME} /var/log/sieve.info
 				fi
+				if [ $conf_submission_ports != "587" ] ; then
+					echo "Submission ports modified."
+					submis=`echo $conf_submission_ports |awk -F, '{print $1 " " $2 " " $3 " " $4 " " $5 " " $6 " " $7 " " $8}'`
+					for port in $submis
+					do
+						if [ "$port" -ne 587 ] ; then
+							echo "Adding submission service for port $port"
+							if [ "$FOUND_DKIMPROXY" -eq 1 ] ; then
+								echo "# DKIM filter configuration (alternate port for submission service)
+#
+# modify the default submission service to specify a content filter
+# and restrict it to local clients and SASL authenticated clients only
+#
+$port  inet  n     -       n       -       -       smtpd
+    -o smtpd_etrn_restrictions=reject
+    -o smtpd_sasl_auth_enable=yes
+    -o content_filter=dkimsign:[127.0.0.1]:10028
+    -o smtpd_recipient_restrictions=permit_mynetworks,permit_sasl_authenticated,reject
+
+" >> $TMP_FILE2
+							else
+								echo "# Alternate port for submission service
+$port	inet  n       -       -       -       -       smtpd
+
+" >> $TMP_FILE2
+							fi
+						fi
+					done
+				fi
 				echo "# End of DTC configuration v0.17 : please don't touch this line !" >> $TMP_FILE2
 				cat < $TMP_FILE2 >>"$PATH_POSTFIX_ETC/master.cf"
 				rm $TMP_FILE2
@@ -5696,6 +5727,7 @@ conf_cert_email=\"${conf_cert_email}\"
 conf_cert_challenge_pass=\"${conf_cert_challenge_pass}\"
 conf_postmaster_email=\"${conf_postmaster_email}\"
 conf_max_receive_process=\"${conf_max_receive_process}\"
+conf_submission_ports=\"${conf_submission_ports}\"
 " >${DTC_SAVED_INSTALL_CONFIG}
 	if [ -n "${conf_ftp_type}" ] ; then
 		echo "conf_ftp_type=\"${conf_ftp_type}\"" >>${DTC_SAVED_INSTALL_CONFIG}

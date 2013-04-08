@@ -102,6 +102,8 @@ debianGetDebconfValues () {
 	conf_eth2monitor=$RET
 	db_get dtc/conf_max_receive_process
 	conf_max_receive_process=$RET
+	db_get dtc/conf_submission_ports
+	conf_submission_ports=$RET
 	db_unregister dtc/conf_mysqlpass
 	db_unregister dtc/conf_mysql_change_root
 	db_unregister dtc/conf_admlogin
