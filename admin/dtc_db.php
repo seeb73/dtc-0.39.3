@@ -508,6 +508,7 @@ $dtc_database = array(
 			"windows_compat" => "enum('yes','no') NOT NULL default 'no'",
 			"custom_part" => "text",
 			"spf_txt_entry" => "varchar(128) NOT NULL default 'v=spf1 mx ~all'",
+			"autogen_subdomain" => "enum('no','default','thisserver') NOT NULL default 'thisserver'",
 			"mail_relay_host" => "varchar(128) NOT NULL default ''"
 		),
 		"primary" => "(id)",

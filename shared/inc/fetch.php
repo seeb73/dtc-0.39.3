@@ -608,6 +608,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 		$domain["custom_part"] = $row["custom_part"];
 		$domain["spf_txt_entry"] = $row["spf_txt_entry"];
 		$domain["mail_relay_host"] = $row["mail_relay_host"];
+		$domain["autogen_subdomain"] = $row["autogen_subdomain"];
 
 		$query2 = "SELECT * FROM $pro_mysql_subdomain_table WHERE domain_name='$name' ORDER BY subdomain_name;";
 		$result2 = mysql_query ($query2);
