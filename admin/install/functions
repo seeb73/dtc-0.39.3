@@ -2705,10 +2705,10 @@ transport_maps = hash:$PATH_POSTFIX_ETC/transport hash:$PATH_DTC_ETC/postfix_tra
 				if [ -x /usr/sbin/spamd -o -x /usr/local/bin/spamd ] ; then
 					echo "# Adds support for the sa-learn script
 sa-spam unix    -       n       n       -       -       pipe
-    user=$AMAVISD_USER:$AMAVISD_USER argv=$PATH_DTC_ADMIN/sa-wrapper spam \${sender}
+    flags=X user=$AMAVISD_USER:$AMAVISD_USER argv=$PATH_DTC_ADMIN/sa-wrapper spam \${sasl_username} \${client_address}
 
 sa-ham  unix    -       n       n       -       -       pipe
-    user=$AMAVISD_USER:$AMAVISD_USER argv=$PATH_DTC_ADMIN/sa-wrapper ham  \${sender}
+    flags=X user=$AMAVISD_USER:$AMAVISD_USER argv=$PATH_DTC_ADMIN/sa-wrapper ham  \${sasl_username} \${client_address}
 
 " >> $TMP_FILE2
 				fi
