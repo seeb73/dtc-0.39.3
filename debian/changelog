@@ -1,3 +1,12 @@
+dtc (0.36.3-1) experimental; urgency=low
+
+  * Added AllowOverride and AllowOverrideList directive to protect against any
+    hacker that would add an AddHandler or Action directive in order to bypass
+    the SBOX wrapper protection. Note that this imposes the use of a patched
+    apache 2.2.16, available in GPLHost repository.
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 30 Apr 2013 17:30:04 +0800
+
 dtc (0.36.2-1) experimental; urgency=low
 
   * Changes the db a bit to mimic old DTC behavior (thanks to Jesse Norwel).
