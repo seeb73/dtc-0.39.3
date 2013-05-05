@@ -1300,7 +1300,7 @@ function drawGeneralConfig(){
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
 			"action_on_old_new_admin" => array (
-				"legend" => _("show upgrade product button: "),
+				"legend" => _("action on old new admin: "),
 				"type" => "radio",
 				"values" => array("archive","delete","nothing"),
 				"display_replace" => array(_("Archive"),_("Delete"),_("No Action Taken"))),
