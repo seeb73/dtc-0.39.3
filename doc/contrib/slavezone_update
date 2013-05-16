@@ -12,31 +12,84 @@
 # then add an include directive in your bind configuration:
 #
 # echo "include \"/etc/bind/named.slavezones.conf\";" >>/etc/bind/named.conf.local
+# echo "include \"/etc/bind/named.reverse.slavezones.conf\";" >>/etc/bind/named.conf.local
 #
 # then edit the following 3 parameters, and maybe your
 # /etc/hosts file to make sure your backup DNS can resolve
 # the main DTC panel.
+#
+# Set UPDATE_FORWARD to 1 to transfer the forward zones
+# and UPDATE_REVERSE to 1 to transfer the reverse zones
+# 
 
 DTC_PANEL_URL=dtc.example.com
-BACKUP_LOGIN=bla
-BACKUP_PASSWORD=changeme
+BACKUP_LOGIN=whatever
+BACKUP_PASSWORD=thepass
+UPDATE_FORWARD=1
+UPDATE_REVERSE=0
 
 # Start of backup script here...
 TEMP_OUTFILE=`mktemp -t -u`
 TEMP_OUTFILE2=`mktemp -t`
 
-/usr/bin/wget --no-check-certificate -O ${TEMP_OUTFILE} "https://${DTC_PANEL_URL}/dtc/list_domains.php?login=${BACKUP_LOGIN}&pass=${BACKUP_PASSWORD}&action=list_dns"
+mkdir -p /var/lib/dtc/etc/slave_zones
+mkdir -p /var/lib/dtc/etc/slave_reverse_zones
 
-/bin/cat ${TEMP_OUTFILE} | /bin/sed -e 's/\(type slave;\)/\1\n\tallow-query { any; };/' > ${TEMP_OUTFILE2}
+if [ $UPDATE_FORWARD -eq 1 ]
+then
 
-/bin/cp /etc/bind/named.slavezones.conf /etc/bind/named.slavezones.conf.bak
-FILESIZE=0
-FILESIZE=$(/usr//bin/stat -c%s "${TEMP_OUTFILE2}")
-# don't overwrite the working slavezones.conf if the generated one is zero bytes
-if [ $FILESIZE -gt 0 ]; then
-        /bin/mv ${TEMP_OUTFILE2} /etc/bind/named.slavezones.conf
-	chown bind.bind /etc/bind/named.slavezones.conf
-        /usr/sbin/rndc reload
+	/usr/bin/wget --no-check-certificate -O ${TEMP_OUTFILE} "https://${DTC_PANEL_URL}/dtc/list_domains.php?login=${BACKUP_LOGIN}&pass=${BACKUP_PASSWORD}&action=list_dns"
+
+	if [ $? -ne 0 ]
+	then
+		echo WGET list_dns error
+		exit 1
+	fi
+
+	/bin/cat ${TEMP_OUTFILE} | /bin/sed -e 's/\(type slave;\)/\1\n\tallow-query { any; };/' > ${TEMP_OUTFILE2}
+
+	if [ -f /etc/bind/named.slavezones.conf ] ; then
+		/bin/cp /etc/bind/named.slavezones.conf /etc/bind/named.slavezones.conf.bak
+	fi
+
+	FILESIZE=0
+	FILESIZE=$(/usr//bin/stat -c%s "${TEMP_OUTFILE2}")
+	# don't overwrite the working slavezones.conf if the generated one is zero bytes
+	if [ $FILESIZE -gt 0 ]; then
+        	/bin/mv ${TEMP_OUTFILE2} /etc/bind/named.slavezones.conf
+		chown bind.bind /etc/bind/named.slavezones.conf
+        	/usr/sbin/rndc reload
+	fi
+
+fi
+
+if [ $UPDATE_REVERSE -eq 1 ]
+then
+
+	/usr/bin/wget --no-check-certificate -O ${TEMP_OUTFILE} "https://${DTC_PANEL_URL}/dtc/list_domains.php?login=${BACKUP_LOGIN}&pass=${BACKUP_PASSWORD}&action=list_reverse_dns"
+
+	if [ $? -ne 0 ]
+	then
+		echo WGET list_reverse_dns error
+		exit 1
+	fi
+
+#	/bin/cat ${TEMP_OUTFILE} | /bin/sed -e 's/\(type slave;\)/\1\n\tallow-query { any; };/' > ${TEMP_OUTFILE2}
+	/bin/cat ${TEMP_OUTFILE} > ${TEMP_OUTFILE2}
+
+	if [ -f /etc/bind/named.reverse.slavezones.conf ] ; then
+		/bin/cp /etc/bind/named.reverse.slavezones.conf /etc/bind/named.reverse.slavezones.conf.bak
+	fi
+
+	FILESIZE=0
+	FILESIZE=$(/usr//bin/stat -c%s "${TEMP_OUTFILE2}")
+	# don't overwrite the working slavezones.conf if the generated one is zero bytes
+	if [ $FILESIZE -gt 0 ]; then
+        	/bin/mv ${TEMP_OUTFILE2} /etc/bind/named.reverse.slavezones.conf
+		chown bind.bind /etc/bind/named.reverse.slavezones.conf
+        	/usr/sbin/rndc reload
+	fi
+
 fi
 
 rm -f ${TEMP_OUTFILE}

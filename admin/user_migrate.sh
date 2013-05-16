@@ -28,7 +28,7 @@ get_remote_credentials () {
 copy_adm_login_and_client () {
 	echo "===> Creating admin and client in remote server"
 
-	admin_props="adm_pass path max_email max_ftp max_ssh quota bandwidth_per_month_mb expire prod_id allow_add_domain max_domain restricted_ftp_path allow_dns_and_mx_change allow_mailing_list_edit allow_subdomain_edit allow_cronjob_edit nbrdb resseller_flag ssh_login_flag ftp_login_flag pkg_install_flag last_used_lang"
+	admin_props="adm_pass path max_email max_ftp max_ssh quota bandwidth_per_month_mb expire prod_id allow_add_domain max_domain restricted_ftp_path allow_dns_and_mx_change allow_mailing_list_edit allow_subdomain_edit allow_cronjob_edit nbrdb resseller_flag ssh_login_flag ftp_login_flag pkg_install_flag last_used_lang edit_domain_custom"
 	client_props="is_company company_name vat_num familyname christname addr1 addr2 addr3 city zipcode state country phone fax email special_note dollar disk_quota_mb bw_quota_per_month_gb expire customfld"
 
 	# Get the client info
@@ -102,7 +102,7 @@ export_adm_dbs () {
 		for j in ${SQL_DBS} ; do
 			echo "-> Exporting db: ${j}"
 			TMP=`mktemp`
-			mysqldump --defaults-file=/etc/mysql/debian.cnf -c --add-drop-table --databases ${j} >${TMP}
+			mysqldump --defaults-file=/etc/mysql/debian.cnf -c --add-drop-table --skip-extended-insert --routines --databases ${j} >${TMP}
 			echo "-> SCP to destination"
 			scp ${TMP} ${DST_HOST}:/tmp
 			echo "-> Importing"

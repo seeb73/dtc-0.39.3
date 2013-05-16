@@ -191,11 +191,58 @@ case "dtcemail_spambox":
 	}else{
 		$spambox_enable = "no";
 	}
-	if(!isDTCPassword($_REQUEST["spam_mailbox"])){
-		echo "Wrong spam folder format";
+	if($_REQUEST["spam_lover"] == "Y"){
+		$spamlover = "Y";
+	}else{
+		$spamlover = "N";
+	}
+
+	if(($spambox_enable == "yes"
+		&& !isIMAPMailbox($_REQUEST["spam_mailbox"]))
+|| ($spambox_enable == "no"
+		&&$_REQUEST["spam_mailbox"] != ""
+		&& !isIMAPMailbox($_REQUEST["spam_mailbox"]))){
+		echo _("Wrong spam folder format!");
 		break;
 	}
-	$q = "UPDATE $pro_mysql_pop_table SET spam_mailbox_enable='$spambox_enable',spam_mailbox='".$_REQUEST["spam_mailbox"]."'
+
+	if(!isNumeric($_REQUEST["spam_tag_level"])||
+		!isNumeric($_REQUEST["spam_tag2_level"])||
+		!isNumeric($_REQUEST["spam_tag3_level"])||
+		!isNumeric($_REQUEST["spam_kill_level"])||
+		!isNumeric($_REQUEST["quarantine_cutoff_level"])){
+		echo _("Wrong spam level format! Please enter a numeric value.");
+		break;
+	}
+
+		if($_REQUEST["spam_subject_tag"] != "" && !isExtendedPassword($_REQUEST["spam_subject_tag"])){
+		echo _("Wrong spam subject tag format! Do only use one of: a-z A-Z 0-9 * ( ) [ ]");
+		break;
+	}
+
+		if($_REQUEST["spam_subject_tag2"] != "" && !isExtendedPassword($_REQUEST["spam_subject_tag2"])){
+		echo _("Wrong spam subject tag2 format! Do only use one of: a-z A-Z 0-9 * ( ) [ ]");
+		break;
+	}
+
+		if($_REQUEST["spam_subject_tag3"] != "" && !isExtendedPassword($_REQUEST["spam_subject_tag3"])){
+		echo _("Wrong spam subject tag3 format! Do only use one of: a-z A-Z 0-9 * ( ) [ ]");
+		break;
+	}
+
+	if($_REQUEST["spam_quarantine_to"] != ""
+		&& !isValidEmail($_REQUEST["spam_quarantine_to"])){
+		echo _("Wrong quarantine spam to email format!");
+		break;
+	}
+
+	if($_REQUEST["addr_extension_spam"] != ""
+		&& !isIMAPMailbox($_REQUEST["addr_extension_spam"])){
+		echo _("Wrong spam address extension format!");
+		break;
+	}
+
+	$q = "UPDATE $pro_mysql_pop_table SET spam_mailbox_enable='$spambox_enable',spam_mailbox='".$_REQUEST["spam_mailbox"]."',spam_lover='$spamlover',spam_tag_level='".$_REQUEST["spam_tag_level"]."',spam_tag2_level='".$_REQUEST["spam_tag2_level"]."',spam_tag3_level='".$_REQUEST["spam_tag3_level"]."',spam_kill_level='".$_REQUEST["spam_kill_level"]."',quarantine_cutoff_level='".$_REQUEST["quarantine_cutoff_level"]."',spam_subject_tag='".$_REQUEST["spam_subject_tag"]."',spam_subject_tag2='".$_REQUEST["spam_subject_tag2"]."',spam_subject_tag3='".$_REQUEST["spam_subject_tag3"]."',spam_quarantine_to='".$_REQUEST["spam_quarantine_to"]."',addr_extension_spam='".$_REQUEST["addr_extension_spam"]."'
 	WHERE id='$user' AND mbox_host='$host' LIMIT 1;";
 	$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 	$q = "UPDATE $pro_mysql_cronjob_table SET qmail_newu='yes',gen_qmail='yes' WHERE 1";

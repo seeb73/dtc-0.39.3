@@ -948,6 +948,12 @@ function bwoupUserEditForms($adm_login,$adm_pass){
 			$out .= "<li class=\"box_wnb_content_nb_item_select\"><a href=\"?adm_login=$adm_login&adm_pass=$pass&rub=domain_config\"><img width=\"16\" height=\"16\" src=\"gfx/skin/paperboard/gfx/tabs/p_domainconfig.gif\" align=\"absmiddle\" border=\"0\" />". _("Domain config") ."</a></li>";
 		}
 		$out .= '<li class="box_wnb_content_nb_item_vsep"></li>';
+		if($rub != "addelservice"){
+			$out .= "<li class=\"box_wnb_content_nb_item\"><a href=\"?adm_login=$adm_login&adm_pass=$pass&rub=addelservice\"><img width=\"16\" height=\"16\" src=\"gfx/skin/paperboard/gfx/tabs/p_admineditor.gif\" align=\"absmiddle\" border=\"0\" />". _("Add/Delete Services") ."</a></li>";
+		}else{
+			$out .= "<li class=\"box_wnb_content_nb_item_select\"><a href=\"?adm_login=$adm_login&adm_pass=$pass&rub=addelservice\"><img width=\"16\" height=\"16\" src=\"gfx/skin/paperboard/gfx/tabs/p_admineditor.gif\" align=\"absmiddle\" border=\"0\" />". _("Add/Delete Services") ."</a></li>";
+		}
+		$out .= '<li class="box_wnb_content_nb_item_vsep"></li>';
 		if($rub != "adminedit"){
 			$out .= "<li class=\"box_wnb_content_nb_item\"><a href=\"?adm_login=$adm_login&adm_pass=$pass&rub=adminedit\"><img width=\"16\" height=\"16\" src=\"gfx/skin/paperboard/gfx/tabs/p_admineditor.gif\" align=\"absmiddle\" border=\"0\" />". _("Admin editor") ."</a></li>";
 		}else{
@@ -962,9 +968,11 @@ function bwoupUserEditForms($adm_login,$adm_pass){
 
 		// Draw the html forms
 		if(isset($rub) && $rub == "adminedit"){
-			$out .= drawEditAdmin($admin);
+			$out .= drawEditAdminData($admin);
 		}else if(isset($rub) && $rub == "domain_config"){
 			$out .= drawDomainConfig($admin);
+		}else if(isset($rub) && $rub == "addelservice"){
+			$out .= drawEditAdminDomains($admin);
 		}else{
 			$out .= '<table class="box_wnb_content_clientimport"><tr><td>'.drawAdminTools($admin).'</td></tr></table>';
 		}

@@ -624,6 +624,25 @@ function isDTCPassword($pass){
 	else			return true;
 }
 
+function isExtendedPassword($pass){
+	$reg = "/^([\wäöüÄÖÜß\*\(\)\[\]\.\-\ ]){3,255}\$/";
+	if(!preg_match($reg,$pass))	return false;
+	else			return true;
+}
+
+function isIMAPMailbox($mailbox){
+	$reg = "/^([A-Za-z0-9])\$|^([A-Za-z0-9]+)([._A-Za-z0-9-]+)\$/";
+	if(!preg_match($reg,$mailbox))	return false;
+	else			return true;
+}
+
+function isnumeric($number){
+	$reg = "/[a-zA-Z]/";
+	if(preg_match($reg,$number))	return false;
+		elseif(!Is_Numeric($number))	return false;
+	else			return true;
+}
+
 // Take care, check with FALSE === check_password($pass) as this function can return zero
 // if it matches the first pass of the top_bad_passwords.txt database.
 function check_password($pass){

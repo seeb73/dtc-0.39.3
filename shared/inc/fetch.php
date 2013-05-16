@@ -474,9 +474,13 @@ function fetchAdminData($adm_login,$adm_input_pass){
 
 	$adm_path = $row["path"];
 	$adm_max_ftp = $row["max_ftp"];
+	$ret["max_ftp"] = $adm_max_ftp;
 	$adm_max_ssh = $row["max_ssh"];
+	$ret["max_ssh"] = $adm_max_ssh;
 	$adm_max_email = $row["max_email"];
+	$total_email = 0;
 	$adm_quota = $row["quota"];
+	$total_quota = 0;
 
 	// Get all the VPS of the user
 	$q = "SELECT * FROM $pro_mysql_vps_table WHERE owner='$adm_login' ORDER BY vps_server_hostname,vps_xen_name;";
@@ -574,11 +578,13 @@ function fetchAdminData($adm_login,$adm_input_pass){
 		$domain["safe_mode"] = $row["safe_mode"];
 		$domain["sbox_protect"] = $row["sbox_protect"];
 		$domain["max_email"] = $row["max_email"];
+		$total_email += $row["max_email"];
 		$domain["max_lists"] = $row["max_lists"];
 		$domain["max_ftp"] = $row["max_ftp"];
 		$domain["max_ssh"] = $row["max_ssh"];
 		$domain["max_subdomain"] = $row["max_subdomain"];
 		$domain["quota"] = $row["quota"];
+		$total_quota += $row["quota"];
 		$domain["ip_addr"] = $row["ip_addr"];
 		$domain["backup_ip_addr"] = $row["backup_ip_addr"];
 		$domain["generate_flag"] = $row["generate_flag"];
@@ -599,6 +605,9 @@ function fetchAdminData($adm_login,$adm_input_pass){
 		$domain["domain_parking_type"] = $row["domain_parking_type"];
 		$domain["wildcard_dns"] = $row["wildcard_dns"];
 		$domain["default_sub_server_alias"] = $row["default_sub_server_alias"];
+		$domain["custom_part"] = $row["custom_part"];
+		$domain["spf_txt_entry"] = $row["spf_txt_entry"];
+		$domain["mail_relay_host"] = $row["mail_relay_host"];
 
 		$query2 = "SELECT * FROM $pro_mysql_subdomain_table WHERE domain_name='$name' ORDER BY subdomain_name;";
 		$result2 = mysql_query ($query2);
@@ -726,6 +735,9 @@ function fetchAdminData($adm_login,$adm_input_pass){
 			$email["spam_mailbox_enable"] = $row4["spam_mailbox_enable"];
 			$email["vacation_flag"] = $row4["vacation_flag"];
 			$email["vacation_text"] = $row4["vacation_text"];
+			$email["permit_redir"] = $row4["permit_redir"];
+			$email["permit_spam"] = $row4["permit_spam"];
+			$email["spam_modifies_subj"] = $row4["spam_modifies_subj"];
 			$emails[] = $email;
 		}	
 		if(isset($emails)){
@@ -890,6 +902,10 @@ function fetchAdminData($adm_login,$adm_input_pass){
 		$user_domains[] = $domain;
 	}
 	if(isset($user_domains)){
+		$user_domains[0]["total_email"] = $total_email;
+		$user_domains[0]["total_quota"] = $total_quota;
+		$user_domains[0]["adm_email"] = $adm_max_email;
+		$user_domains[0]["adm_quota"] = $adm_quota;
 		$ret["data"] = $user_domains;
 	}
 	if(isset($user_vps)){

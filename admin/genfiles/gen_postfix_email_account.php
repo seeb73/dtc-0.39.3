@@ -36,6 +36,7 @@ function mail_account_generate_postfix(){
 	global $pro_mysql_domain_table;
 	global $pro_mysql_admin_table;
 	global $pro_mysql_subdomain_table;
+	global $pro_mysql_pop_table;
 
 	global $console;
 
@@ -79,6 +80,8 @@ function mail_account_generate_postfix(){
 	$conf_postfix_relay_recipients_path = $conf_generated_file_path . "/postfix_relay_recipients";
 	$conf_postfix_recipient_lists_path = $conf_generated_file_path . "/recipientlists";
 
+	$conf_postfix_transport_path = $conf_generated_file_path . "/postfix_transport";
+
 	// now for our variables to write out the db info to
 
 	$domains_file = "";
@@ -89,6 +92,7 @@ function mail_account_generate_postfix(){
 	$uid_mappings_file = "";
 	$relay_domains_file = "";
 	$relay_recipients_file = "";
+	$transport_file = "";
 	//store ALL of the domains we know about
 	//if we manage to get better information later, don't worry about the entry on this one
 	$relay_recipients_all_domains = "";
@@ -101,7 +105,7 @@ function mail_account_generate_postfix(){
 //		genSasl2PasswdDBStart();
 //	}
 	// go through each admin login and find the domains associated 
-	$query = "SELECT * FROM $pro_mysql_admin_table ORDER BY adm_login;";
+	$query = "SELECT * FROM $pro_mysql_admin_table where disabled='no' or disabled='always-no' or disabled='' ORDER BY adm_login;";
 	$result = mysql_query ($query)or die("Cannot execute query : \"$query\"");
 	$num_rows = mysql_num_rows($result);
 
@@ -147,8 +151,13 @@ function mail_account_generate_postfix(){
 				$domains_file .= "$domain_full_name virtual\n";
 				$local_domains_file .="$domain_full_name\n";
 			} else {
-				$relay_domains_file .= "$domain_full_name\n";
-				$relay_recipients_all_domains .= "$domain_full_name\n";
+				if ( $domain["primary_mx"] == $conf_addr_mail_server) {
+					$relay_domains_file .= "$domain_full_name\n";
+					$relay_recipients_all_domains .= "$domain_full_name\n";
+					if ($domain["mail_relay_host"] != ""){
+						$transport_file .= "$domain_full_name	smtp:".$domain["mail_relay_host"]."\n";
+					}
+				}
 			}
 
 			$store_catch_all = "";
@@ -401,6 +410,18 @@ function mail_account_generate_postfix(){
 		}
 	}
 
+	$relay_recipients_list = explode("\n", $relay_domains_file);
+
+        foreach($relay_recipients_list as $domain){
+		$qqq = "SELECT fullemail FROM $pro_mysql_pop_table WHERE mbox_host='".$domain."';";
+        	$qqr = mysql_query($qqq)or die ("Cannot query $qqq line: ".__LINE__." file ".__FILE__." sql said:" .mysql_error());
+        	$qqn = mysql_num_rows($qqr);
+        	for($i=0;$i<$qqn;$i++){
+                	$a = mysql_fetch_array($qqr);
+                       	$relay_recipients_file .= $a["fullemail"]." OK\n";
+        	}
+	}
+
 	$relay_recipients_list = explode("\n", get_remote_mail_recipients());
 
 	foreach($relay_recipients_list as $email){
@@ -493,6 +514,10 @@ function mail_account_generate_postfix(){
 	fwrite($fp, $relay_recipients_file);
 	fclose($fp);
 
+	$fp = fopen ( "$conf_postfix_transport_path", "w");
+	fwrite($fp, $transport_file);
+	fclose($fp);
+
 
 	//now that we have our base files, go and rebuild the db's
 	if($conf_unix_type == "bsd"){
@@ -509,6 +534,7 @@ function mail_account_generate_postfix(){
 	system("$POSTMAP_BIN $conf_postfix_vmailbox_path");
 	system("$POSTMAP_BIN $conf_postfix_virtual_uid_mapping_path");
 	system("$POSTMAP_BIN $conf_postfix_relay_recipients_path");
+	system("$POSTMAP_BIN $conf_postfix_transport_path");
 //	genSaslFinishConfigAndRights();
 	system("chown  ".$conf_dtc_system_username.":postfix ".$conf_generated_file_path."/postfix_*");
 	//in case our relay_domains file hasn't been created correctly, we should touch it

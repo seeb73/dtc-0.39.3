@@ -588,6 +588,9 @@ dtcFromOkDraw()."
 					case "server":
 						$ind = 2;
 						break;
+					case "custom":
+						$ind = 2;
+						break;
 					}
 					$q2 = "SELECT name,price_dollar,period FROM $pro_mysql_product_table WHERE id='".$attrs[$ind]."';";
 					$r2 = mysql_query($q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
@@ -686,6 +689,9 @@ dtcFromOkDraw()."
 						break;
 					case "server":
 						$heb_type .= _("Server:")." ".$attrs[1];
+						break;
+					case "custom":
+						$heb_type .= _("Custom Product:")." ".$attrs[1];
 						break;
 					}
 				}

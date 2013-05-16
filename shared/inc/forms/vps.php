@@ -15,10 +15,15 @@ function drawAdminTools_VPS($admin,$vps){
 	global $secpayconf_use_products_for_renewal;
 	global $pro_mysql_vps_ip_table;
 	global $pro_mysql_vps_server_table;
+	global $conf_vps_renewal_shutdown;
+	global $conf_global_extend;
+	global $pro_mysql_admin_table;
 
 	global $pro_mysql_vps_stats_table;
+	global $pro_mysql_admin_table;
 	global $secpayconf_currency_letters;
 	global $conf_post_or_get;
+	global $conf_show_invoice_info;
 
 	global $panel_type;
 
@@ -71,6 +76,14 @@ function drawAdminTools_VPS($admin,$vps){
 	}else{
 		$contract = "not found!";
 	}
+	// Get current admin
+	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."';";
+	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysql_num_rows($r);
+	if($n == 1){
+		$admin = mysql_fetch_array($r);
+	}
+
 	$out .= "<br><h3>". _("Description: ") ."</h3><br>". _("Current contract: ") ."$contract<br>";
 	$q = "SELECT location FROM $pro_mysql_vps_server_table WHERE hostname='$vps_node';";
 	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
@@ -90,20 +103,30 @@ function drawAdminTools_VPS($admin,$vps){
 	if(date("Y") > $ar[0] ||
 			(date("Y") == $ar[0] && date("m") > $ar[1]) ||
 			(date("Y") == $ar[0] && date("m") == $ar[1] && date("d") > $ar[2])){
-		$out .= "<font color=\"red\">". _("Your VPS has expired on the: ") .$vps["expire_date"]."</font>"
-			."<br>". _("Please renew with one of the following options: ") ."<br>";
+		$out .= "<font color=\"red\">". _("Your VPS has expired on the: ") .$vps["expire_date"]."</font>";
 	}else{
 		$out .= _("Your VPS will expire on the: ") .$vps["expire_date"];
 	}
 
-	// Renewal buttons
-	if ($secpayconf_use_products_for_renewal == 'yes'){
-	    $q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$vps["product_id"]."';";
-	    $r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	    $n = mysql_num_rows($r);
-	    if($n == 1){
-		$a = mysql_fetch_array($r);
-		$out .= "<br><br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
+	$out .= "<BR>"._("Your can pay your VPS without overdue charges until:")." ".calculateExpirationDate($vps["expire_date"],'00-00-'.$conf_global_extend);
+	$out .= "<br>"._("Your VPS will be shutdown on:")." ";
+	$period = "00-00-".($admin["permanent_extend"]+$admin["temporary_extend"]+$conf_vps_renewal_shutdown+$conf_global_extend);
+	$out .= " ".calculateExpirationDate($vps["expire_date"],$period)."<br>";
+
+	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."'";
+	$r = mysql_query($q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$admin = mysql_fetch_array($r);
+
+	if($admin["show_invoice_info"] == 'yes' && $conf_show_invoice_info == 'yes'){
+		// Renewal buttons
+		$out .= "<br>". _("Please renew with one of the following options: ") ."<br>";
+		if ($secpayconf_use_products_for_renewal == 'yes'){
+			$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$vps["product_id"]."';";
+			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysql_num_rows($r);
+			if($n == 1){
+				$a = mysql_fetch_array($r);
+				$out .= "<br><br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 <input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 <input type=\"hidden\" name=\"renew_type\" value=\"vps\">
 <input type=\"hidden\" name=\"product_id\" value=\"".$vps["product_id"]."\">
@@ -111,15 +134,15 @@ function drawAdminTools_VPS($admin,$vps){
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 ".submitButtonStart().$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)".submitButtonEnd()."
 		</form>";
-	    }
-	}
+    			}
+		}
 
-	$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$vps["product_id"]."';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
-	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
-		$out .= "<br><br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
+		$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$vps["product_id"]."';";
+		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysql_num_rows($r);
+		for($i=0;$i<$n;$i++){
+			$a = mysql_fetch_array($r);
+			$out .= "<br><br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 <input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 <input type=\"hidden\" name=\"renew_type\" value=\"vps\">
 <input type=\"hidden\" name=\"product_id\" value=\"".$a["id"]."\">
@@ -127,6 +150,7 @@ function drawAdminTools_VPS($admin,$vps){
 <input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 ".submitButtonStart().$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)".submitButtonEnd()."
 </form>";
+		}
 	}
 
 	return $out;

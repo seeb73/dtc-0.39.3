@@ -87,6 +87,7 @@ function drawRenewalTables (){
 	global $pro_mysql_client_table;
 	global $pro_mysql_new_admin_table;
 	global $pro_mysql_custom_product_table;
+	global $pro_mysql_custom_heb_types_table;
 
 	global $secpayconf_currency_letters;
 	global $rub;
@@ -217,7 +218,7 @@ function drawRenewalTables (){
 					"type" => "popup",
 					"values" => array("none", "credit_card", "wire_transfer", "paypal", "check", "cash"),
 					"display_replace" => array( _("Unknown"), _("Credit cCrd"), _("Wire Transfer"),
-									_("Paypal"), _("Check"), _("Cash") ) ),
+									_("Paypal"), _("Cheque"), _("Cash") ) ),
 				"payment_total" => array(
 					"type" => "text",
 					"size" => 6,
@@ -655,7 +656,8 @@ function drawRenewalTables (){
 		// Calculation of recuring totals
 		$out .= "<h3>". _("Total Recurring Income per Month:") ."</h3>";
 		// Monthly recurring for shared hosting:
-		$q = "SELECT $pro_mysql_product_table.price_dollar,$pro_mysql_product_table.period,$pro_mysql_product_table.id
+		$q = "SELECT $pro_mysql_product_table.price_dollar,$pro_mysql_product_table.period,$pro_mysql_product_table.id,
+		TO_DAYS($pro_mysql_admin_table.expire) as expire, TO_DAYS(NOW()) as now, $pro_mysql_product_table.name
 		FROM $pro_mysql_product_table,$pro_mysql_admin_table
 		WHERE $pro_mysql_product_table.id = $pro_mysql_admin_table.prod_id
 		AND $pro_mysql_product_table.heb_type='shared'
@@ -663,11 +665,21 @@ function drawRenewalTables (){
 		$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 		$n = mysql_num_rows($r);
 		$total_shared = 0;
+		$cant_shared = 0;
+		$cant_shared_expired = 0;
+		$cant_shared_notexpired = 0;
+		$total_shared_expired = 0;
+		$total_shared_notexpired = 0;
+		$total_shared_plans = array();
+		$cant_shared_plans = array();
 		for($i=0;$i<$n;$i++){
 			$a = mysql_fetch_array($r);
 			$period = $a["period"];
 			$price = $a["price_dollar"];
 			$id = $a["id"];
+			$expire = $a["expire"];
+			$now = $a["now"];
+			$name = $a["name"];
 			// Calculate the total number of months for a product
 			$date_array_calc = explode("-",$period);
 			$my_total_month = 0;
@@ -684,7 +696,27 @@ function drawRenewalTables (){
 			if($my_total_month == 0){
 				echo "Product $id has zero month.<br>";
 			}else{
-				$total_shared += $price / $my_total_month;
+				$relativeprice = $price / $my_total_month;
+				$total_shared += $relativeprice;
+				$total_shared_plans[$id]['total'] += $relativeprice;
+			}
+			$cant_shared++;
+			$cant_shared_plans[$id]['total']++;
+			$cant_shared_plans[$id]['name'] = $name;
+			if($expire < $now){
+				$cant_shared_expired++;
+				$cant_shared_plans[$id]['expired']++;
+				if($my_total_month != 0){
+					$total_shared_expired += $relativeprice;
+					$total_shared_plans[$id]['expired'] += $relativeprice;
+				}
+			}else{
+				$cant_shared_notexpired++;
+				$cant_shared_plans[$id]['notexpired']++;
+				if($my_total_month != 0){
+					$total_shared_notexpired += $relativeprice;
+					$total_shared_plans[$id]['notexpired'] += $relativeprice;
+				}
 			}
 		}
 
@@ -693,6 +725,7 @@ function drawRenewalTables (){
 		$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 		$n = mysql_num_rows($r);
 		$total_ssl = 0;
+		$cant_ssl = 0;
 		if($n != 0){
 			$a = mysql_fetch_array($r);
 			$q = "SELECT price_dollar FROM $pro_mysql_product_table WHERE heb_type='ssl'";
@@ -701,22 +734,33 @@ function drawRenewalTables (){
 			if($n != 0){
 				$b = mysql_fetch_array($r);
 				$total_ssl = $a["num_ssl"] * $b["price_dollar"] / 12;
+				$cant_ssl++;
 			}
 		}
 
 		// Monthly recurring for VPS:
-		$q = "SELECT $pro_mysql_product_table.price_dollar,$pro_mysql_product_table.period,$pro_mysql_product_table.id
+		$q = "SELECT $pro_mysql_product_table.price_dollar,$pro_mysql_product_table.period,$pro_mysql_product_table.id,
+		TO_DAYS($pro_mysql_vps_table.expire_date) as expire, TO_DAYS(NOW()) as now, $pro_mysql_product_table.name
 		FROM $pro_mysql_product_table,$pro_mysql_vps_table
 		WHERE $pro_mysql_product_table.id = $pro_mysql_vps_table.product_id";
 		$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 		$n = mysql_num_rows($r);
 		$total_vps = 0;
+		$cant_vps = 0;
+		$cant_vps_expired = 0;
+		$cant_vps_notexpired = 0;
+		$total_vps_expired = 0;
+		$total_vps_notexpired = 0;
+		$total_vps_plans = array();
+		$cant_vps_plans = array();
 		for($i=0;$i<$n;$i++){
 			$a = mysql_fetch_array($r);
 			$period = $a["period"];
 			$price = $a["price_dollar"];
 			$id = $a["id"];
-
+			$expire = $a["expire"];
+			$now = $a["now"];
+			$name = $a["name"];
 			// Calculate the total number of months for a product
 			$date_array_calc = explode("-",$period);
 			$my_total_month = 0;
@@ -733,23 +777,53 @@ function drawRenewalTables (){
 			if($my_total_month == 0){
 				echo "Product $id has zero month.<br>";
 			}else{
-				$total_vps += $price / $my_total_month;
+				$relativeprice = $price / $my_total_month;
+				$total_vps += $relativeprice;
+				$total_vps_plans[$id]['total'] += $relativeprice;
+			}
+			$cant_vps++;
+			$cant_vps_plans[$id]['total']++;
+			$cant_vps_plans[$id]['name'] = $name;
+			if($expire < $now){
+				$cant_vps_expired++;
+				$cant_vps_plans[$id]['expired']++;
+				if($my_total_month != 0){
+					$total_vps_expired += $relativeprice;
+					$total_vps_plans[$id]['expired'] += $relativeprice;
+				}
+			}else{
+				$cant_vps_notexpired++;
+				$cant_vps_plans[$id]['notexpired']++;
+				if($my_total_month != 0){
+					$total_vps_notexpired += $relativeprice;
+					$total_vps_plans[$id]['notexpired'] += $relativeprice;
+				}
 			}
 		}
 
 		// Monthly recurring for dedicated servers:
-		$q = "SELECT $pro_mysql_product_table.price_dollar,$pro_mysql_product_table.period,$pro_mysql_product_table.id
+		$q = "SELECT $pro_mysql_product_table.price_dollar,$pro_mysql_product_table.period,$pro_mysql_product_table.id,
+		TO_DAYS($pro_mysql_dedicated_table.expire_date) as expire, TO_DAYS(NOW()) as now, $pro_mysql_product_table.name
 		FROM $pro_mysql_product_table,$pro_mysql_dedicated_table
 		WHERE $pro_mysql_product_table.id = $pro_mysql_dedicated_table.product_id";
 		$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 		$n = mysql_num_rows($r);
 		$total_dedicated = 0;
+		$cant_dedicated = 0;
+		$cant_dedicated_expired = 0;
+		$cant_dedicated_notexpired = 0;
+		$total_dedicated_expired = 0;
+		$total_dedicated_notexpired = 0;
+		$total_dedicated_plans = array();
+		$cant_dedicated_plans = array();
 		for($i=0;$i<$n;$i++){
 			$a = mysql_fetch_array($r);
 			$period = $a["period"];
 			$price = $a["price_dollar"];
 			$id = $a["id"];
-
+			$expire = $a["expire"];
+			$now = $a["now"];
+			$name = $a["name"];
 			// Calculate the total number of months for a product
 			$date_array_calc = explode("-",$period);
 			$my_total_month = 0;
@@ -766,23 +840,224 @@ function drawRenewalTables (){
 			if($my_total_month == 0){
 				echo "Product $id has zero month.<br>";
 			}else{
-				$total_dedicated += $price / $my_total_month;
+				$relativeprice = $price / $my_total_month;
+				$total_dedicated += $relativeprice;
+				$total_dedicated_plans[$id]['total'] += $relativeprice;
+			}
+			$cant_dedicated++;
+			$cant_dedicated_plans[$id]['total']++;
+			$cant_dedicated_plans[$id]['name'] = $name;
+			if($expire < $now){
+				$cant_dedicated_expired++;
+				$cant_dedicated_plans[$id]['expired']++;
+				if($my_total_month != 0){
+					$total_dedicated_expired += $relativeprice;
+					$total_dedicated_plans[$id]['expired'] += $relativeprice;
+				}
+			}else{
+				$cant_dedicated_notexpired++;
+				$cant_dedicated_plans[$id]['notexpired']++;
+				if($my_total_month != 0){
+					$total_dedicated_notexpired += $relativeprice;
+					$total_dedicated_plans[$id]['notexpired'] += $relativeprice;
+				}
 			}
 		}
 
+		// Monthly recurring for custom products:
+		$q = "SELECT $pro_mysql_product_table.price_dollar,$pro_mysql_product_table.period,$pro_mysql_product_table.id,
+		TO_DAYS($pro_mysql_custom_product_table.expire_date) as expire, TO_DAYS(NOW()) as now, $pro_mysql_product_table.name,
+		$pro_mysql_custom_product_table.custom_heb_type
+		FROM $pro_mysql_product_table,$pro_mysql_custom_product_table
+		WHERE $pro_mysql_product_table.id = $pro_mysql_custom_product_table.product_id
+		ORDER BY $pro_mysql_custom_product_table.custom_heb_type";
+		$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysql_num_rows($r);
+		$total_custom = 0;
+		$cant_custom = 0;
+		$cant_custom_expired = 0;
+		$cant_custom_notexpired = 0;
+		$total_custom_expired = 0;
+		$total_custom_notexpired = 0;
+		$total_custom_plans = array();
+		$cant_custom_plans = array();
+		$hebtype_totals = array();
+		for($i=0;$i<$n;$i++){
+			$a = mysql_fetch_array($r);
+			$period = $a["period"];
+			$price = $a["price_dollar"];
+			$id = $a["id"];
+			$expire = $a["expire"];
+			$now = $a["now"];
+			$name = $a["name"];
+			$custom_heb_type = $a["custom_heb_type"];
+			// Calculate the total number of months for a product
+			$date_array_calc = explode("-",$period);
+			$my_total_month = 0;
+			if($date_array_calc[0] != "0"){
+				$my_total_month += $date_array_calc[0] * 12;
+			}
+			if($date_array_calc[1] != 0){
+				$my_total_month += $date_array_calc[1];
+			}
+			if($date_array_calc[2] != 0){
+				$my_total_month += ($date_array_calc[2] / 30);
+			}
+			// Then the price per month
+			if($my_total_month == 0){
+				echo "Product $id has zero month.<br>";
+			}else{
+				$relativeprice = $price / $my_total_month;
+				$total_custom += $relativeprice;
+				$total_custom_plans[$id]['total'] += $relativeprice;
+				$hebtype_totals[$custom_heb_type]['total_money'] += $relativeprice;
+			}
+			$cant_custom++;
+			$cant_custom_plans[$id]['total']++;
+			$cant_custom_plans[$id]['name'] = $name;
+			$cant_custom_plans[$id]['plantype'] = $custom_heb_type;
+			$hebtype_totals[$custom_heb_type]['total_cant']++;
+			if($expire < $now){
+				$cant_custom_expired++;
+				$cant_custom_plans[$id]['expired']++;
+				$hebtype_totals[$custom_heb_type]['expired_cant']++;
+				if($my_total_month != 0){
+					$total_custom_expired += $relativeprice;
+					$total_custom_plans[$id]['expired'] += $relativeprice;
+					$hebtype_totals[$custom_heb_type]['expired_money'] += $relativeprice;
+				}
+			}else{
+				$cant_custom_notexpired++;
+				$cant_custom_plans[$id]['notexpired']++;
+				$hebtype_totals[$custom_heb_type]['notexpired_cant']++;
+				if($my_total_month != 0){
+					$total_custom_notexpired += $relativeprice;
+					$total_custom_plans[$id]['notexpired'] += $relativeprice;
+					$hebtype_totals[$custom_heb_type]['notexpired_money'] += $relativeprice;
+				}
+			}
+		}
+		$q = "SELECT $pro_mysql_custom_heb_types_table.id,$pro_mysql_custom_heb_types_table.name
+		FROM $pro_mysql_custom_heb_types_table";
+		$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysql_num_rows($r);
+		$custom_categories = array();
+		for($i=0;$i<$n;$i++){
+			$a = mysql_fetch_array($r);
+			$custom_categories[$a["id"]] = $a["name"];
+		}
+
 		$p_renewal = dtcFormTableAttrs();
-		$p_renewal .= "<tr><td colspan=\"2\" style=\"white-space:nowrap; text-align:center;\" nowrap class=\"dtcDatagrid_table_titles\">"._("Total installed products")."</td></tr>";
-		$p_renewal .= "<tr><td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>"._("Shared Hosting:")."</td>";
-			$p_renewal .= "<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap;\" nowrap>".round($total_shared,2)." $secpayconf_currency_letters</td></tr>";
-		$p_renewal .= "<tr><td class=\"dtcDatagrid_table_flds\" style=\"white-space:nowrap; text-align:right;\" nowrap>"._("SSL IPs Renewals:")."</td>";
-			$p_renewal .= "<td class=\"dtcDatagrid_table_flds\" style=\"white-space:nowrap;\" nowrap>".round($total_ssl,2)." $secpayconf_currency_letters</td></tr>";
-		$p_renewal .= "<tr><td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>"._("VPS: ")."</td>";
-			$p_renewal .= "<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap;\" nowrap>".round($total_vps,2)." $secpayconf_currency_letters</td</tr>";
-		$p_renewal .= "<tr><td class=\"dtcDatagrid_table_flds\" style=\"white-space:nowrap; text-align:right;\" nowrap>"._("Dedicated Servers: ")."</td>";
-			$p_renewal .= "<td class=\"dtcDatagrid_table_flds\" style=\"white-space:nowrap;\" nowrap>".round($total_dedicated,2)." $secpayconf_currency_letters</td></tr>";
-		$big_total = $total_shared + $total_vps + $total_dedicated + $total_ssl;
-		$p_renewal .= "<tr><td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>". _("Total: ")."</b></td>";
-			$p_renewal .= "<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap;\" nowrap><b>".round($big_total,2)." $secpayconf_currency_letters</b></td></tr></table>";
+		$p_renewal .= "<tr><td colspan=\"7\" style=\"white-space:nowrap; text-align:center;\" nowrap class=\"dtcDatagrid_table_titles\">"._("Total installed products")."</td></tr>";
+
+		$p_renewal .= "<tr><td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>Product</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>quantity</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>Total Amount</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>Expired Quantity</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>Expired Amount</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>Not expired Quantity</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>Not expired Amount</td></tr>";
+
+		$p_renewal .= "<tr><td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>"._("Shared Hosting:")."</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>$cant_shared</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($total_shared,2)." $secpayconf_currency_letters</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>$cant_shared_expired</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($total_shared_expired,2)." $secpayconf_currency_letters</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>$cant_shared_notexpired</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($total_shared_notexpired,2)." $secpayconf_currency_letters</b></td></tr>";
+foreach($cant_shared_plans as $plan => $arr)
+	{
+	$p_renewal .= "<tr><td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".$arr['name']."</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".$arr['total']."</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".round($total_shared_plans[$plan]['total'],2)." $secpayconf_currency_letters</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".$arr['expired']."</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".round($total_shared_plans[$plan]['expired'],2)." $secpayconf_currency_letters</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".$arr['notexpired']."</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".round($total_shared_plans[$plan]['notexpired'],2)." $secpayconf_currency_letters</td></tr>";
+	}
+		$p_renewal .= "<tr><td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>"._("SSL IPs Renewals:")."</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>$cant_ssl</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($total_ssl,2)." $secpayconf_currency_letters</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>&nbsp;</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>&nbsp;</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>&nbsp;</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>&nbsp;</td></tr>";
+
+		$p_renewal .= "<tr><td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>"._("VPS: ")."</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>$cant_vps</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($total_vps,2)." $secpayconf_currency_letters</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>$cant_vps_expired</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($total_vps_expired,2)." $secpayconf_currency_letters</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>$cant_vps_notexpired</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($total_vps_notexpired,2)." $secpayconf_currency_letters</b></td></tr>";
+foreach($cant_vps_plans as $plan => $arr)
+	{
+	$p_renewal .= "<tr><td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".$arr['name']."</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".$arr['total']."</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".round($total_vps_plans[$plan]['total'],2)." $secpayconf_currency_letters</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".$arr['expired']."</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".round($total_vps_plans[$plan]['expired'],2)." $secpayconf_currency_letters</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".$arr['notexpired']."</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".round($total_vps_plans[$plan]['notexpired'],2)." $secpayconf_currency_letters</td></tr>";
+	}
+		$p_renewal .= "<tr><td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>"._("Dedicated Servers: ")."</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>$cant_dedcated</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($total_dedicated,2)." $secpayconf_currency_letters</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>$cant_dedicated_expired</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($total_dedicated_expired,2)." $secpayconf_currency_letters</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>$cant_dedicated_notexpired</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($total_dedicated_notexpired,2)." $secpayconf_currency_letters</b></td></tr>";
+foreach($cant_dedicated_plans as $plan => $arr)
+	{
+	$p_renewal .= "<tr><td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".$arr['name']."</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".$arr['total']."</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".round($total_dedicated_plans[$plan]['total'],2)." $secpayconf_currency_letters</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".$arr['expired']."</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".round($total_dedicated_plans[$plan]['expired'],2)." $secpayconf_currency_letters</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".$arr['notexpired']."</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".round($total_dedicated_plans[$plan]['notexpired'],2)." $secpayconf_currency_letters</td></tr>";
+	}
+		$p_renewal .= "<tr><td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>". _("Custom: ")."</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>$cant_custom</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($total_custom,2)." $secpayconf_currency_letters</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>$cant_custom_expired</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($total_custom_expired,2)." $secpayconf_currency_letters</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>$cant_custom_notexpired</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($total_custom_notexpired,2)." $secpayconf_currency_letters</b></td></tr>";
+		$lastplantype = "";
+		foreach($cant_custom_plans as $plan => $arr)
+			{
+			if ($lastplantype != $arr['plantype']){
+				$lastplantype = $arr['plantype'];
+				$p_renewal .= "<tr><td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".$custom_categories[$lastplantype]."</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".$hebtype_totals[$lastplantype]['total_cant']."</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($hebtype_totals[$lastplantype]['total_money'],2)." $secpayconf_currency_letters</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".$hebtype_totals[$lastplantype]['expired_cant']."</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($hebtype_totals[$lastplantype]['expired_money'],2)." $secpayconf_currency_letters</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".$hebtype_totals[$lastplantype]['notexpired_cant']."</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($hebtype_totals[$lastplantype]['notexpired_money'],2)." $secpayconf_currency_letters</b></td></tr>";
+				}
+			$p_renewal .= "<tr><td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".$arr['name']."</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".$arr['total']."</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".round($total_custom_plans[$plan]['total'],2)." $secpayconf_currency_letters</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".$arr['expired']."</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".round($total_custom_plans[$plan]['expired'],2)." $secpayconf_currency_letters</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".$arr['notexpired']."</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>".round($total_custom_plans[$plan]['notexpired'],2)." $secpayconf_currency_letters</td></tr>";
+			}
+		$cant_total = $cant_shared + $cant_vps + $cant_dedicated + $cant_ssl + $cant_custom;
+		$big_total = $total_shared + $total_vps + $total_dedicated + $total_ssl + $total_custom;
+		$cant_total_expired = $cant_shared_expired + $cant_vps_expired + $cant_dedicated_expired + $cant_custom_expired;
+		$total_total_expired = $total_shared_expired + $total_vps_expired + $total_dedicated_expired + $total_custom_expired;
+		$cant_total_notexpired = $cant_shared_notexpired + $cant_vps_notexpired + $cant_dedicated_notexpired + $cant_custom_notexpired;
+		$total_total_notexpired = $total_shared_notexpired + $total_vps_notexpired + $total_dedicated_notexpired + $total_custom_notexpired;
+		$p_renewal .= "<tr><td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap>". _("Total: ")."</td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>$cant_total</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($big_total,2)." $secpayconf_currency_letters</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>$cant_total_expired</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($total_total_expired,2)." $secpayconf_currency_letters</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>$cant_total_notexpired</b></td>
+<td class=\"dtcDatagrid_table_flds_alt\" style=\"white-space:nowrap; text-align:right;\" nowrap><b>".round($total_total_notexpired,2)." $secpayconf_currency_letters</b></td></tr></table>";
 
 		// Show a quick history of payments
 		$year = date("Y");
@@ -1078,6 +1353,7 @@ function drawRenewalTables (){
 			<td class=\"dtcDatagrid_table_titles\">". _("Expiration Date") ."</td>
 			<td class=\"dtcDatagrid_table_titles\">". _("Days Past Expiration") ."</td>
 			<td class=\"dtcDatagrid_table_titles\">". _("Action") ."</td>
+			<td class=\"dtcDatagrid_table_titles\">". _("Status") ."</td>
 			</tr>";
 			for($i=0;$i<$n;$i++){
 				if($i % 2){
@@ -1144,7 +1420,8 @@ function drawRenewalTables (){
 				<$td>".$a2["email"]."</td>
 				<$td $bgcolor>".$a["expire_date"]."</td>
 				<$td $bgcolor>". calculateAge($a["expire_date"],"00:00:00") ."</td>
-				<$td><a href=\"?rub=$rub&action=shutdown_expired_vps&server_hostname=".$a["vps_server_hostname"]."&vps_name=".$a["vps_xen_name"]."\">"._("Shutdown")."</a> - $kill_owner_txt</td></tr>";
+				<$td><a href=\"?rub=$rub&action=shutdown_expired_vps&server_hostname=".$a["vps_server_hostname"]."&vps_name=".$a["vps_xen_name"]."\">"._("Shutdown")."</a> - $kill_owner_txt</td>
+				<$td><iframe frameborder=\"0\" scrolling=\"no\" width=\"128\" marginheight=\"0\" marginwidth=\"0\" height=\"14\" src=\"vps_status.php?server_hostname=".$a["vps_server_hostname"]."&vps_name=".$a["vps_xen_name"]."\"></iframe></td></tr>";
 			}
 			$out .= "</table>";
 		}

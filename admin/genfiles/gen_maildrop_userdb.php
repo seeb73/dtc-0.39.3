@@ -87,6 +87,7 @@ function mail_account_generate_maildrop(){
 		WHERE $pro_mysql_admin_table.adm_login=$pro_mysql_domain_table.owner
 		AND $pro_mysql_domain_table.name=$pro_mysql_pop_table.mbox_host
 		AND $pro_mysql_domain_table.name='$query_dom_name'
+		AND ($pro_mysql_admin_table.disabled='no' or $pro_mysql_admin_table.disabled='always-no' or $pro_mysql_admin_table.disabled='')
 		ORDER BY $pro_mysql_pop_table.id";
 		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 		$n = mysql_num_rows($r);
@@ -98,21 +99,34 @@ function mail_account_generate_maildrop(){
 
 			$PATH = getenv('PATH');
 			putenv("PATH=/usr/lib/courier-imap/bin:$PATH");
-			system("/bin/mkdir -p $boxpath/Maildir");
-			system("$path_maildirmake $boxpath/Maildir >/dev/null 2>&1");
-			if($quota_maildrop!="0S,0C"){
-				system("$path_maildirmake -q $quota_maildrop $boxpath/Maildir >/dev/null 2>&1");
+			if (!file_exists("$boxpath/Maildir")){
+				system("/bin/mkdir -p $boxpath/Maildir");
+				system("$path_maildirmake $boxpath/Maildir >/dev/null 2>&1");
 			}
-			putenv("PATH=$PATH");
-			if($quota_maildrop=="0S,0C"){
+			if($quota_maildrop!="0S,0C"){
+				if(file_exists("$boxpath/Maildir/maildirsize")){
+					$currentquota=exec("head -n1 $boxpath/Maildir/maildirsize");
+					if (substr($currentquota,-1,1) != "C"){
+						$currentquota=$currentquota.",0C";
+					}
+					if (!strpos($currentquota,"S")){
+						$currentquota="0S,".$currentquota;
+					}
+				}else{
+					$currentquota="";
+				}
+				if($quota_maildrop != $currentquota ){
+					system("$path_maildirmake -q $quota_maildrop $boxpath/Maildir >/dev/null 2>&1");
+					if($panel_type == "cronjob" && file_exists("$boxpath/Maildir/maildirsize")){
+						chown("$boxpath/Maildir/maildirsize",$conf_dtc_system_username);
+					}
+				}
+			}else{
 				if(file_exists("$boxpath/Maildir/maildirsize")){
 					system("rm $boxpath/Maildir/maildirsize");
 				}
-			}else{
-				if($panel_type == "cronjob" && file_exists("$boxpath/Maildir/maildirsize")){
-					chown("$boxpath/Maildir/maildirsize",$conf_dtc_system_username);
-				}
 			}
+			putenv("PATH=$PATH");
 
 		}
 

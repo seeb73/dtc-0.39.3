@@ -9,10 +9,14 @@ function drawAdminTools_Custom($admin,$custom_id){
 	global $pro_mysql_product_table;
 	global $pro_mysql_custom_product_table;
 	global $pro_mysql_custom_heb_types_table;
+	global $pro_mysql_admin_table;
 
 	global $secpayconf_currency_letters;
 	global $secpayconf_use_products_for_renewal;
 	global $conf_post_or_get;
+	global $conf_custom_renewal_shutdown;
+	global $conf_global_extend;
+	global $conf_show_invoice_info;
 
 	global $submit_err_custom;
 
@@ -39,7 +43,15 @@ function drawAdminTools_Custom($admin,$custom_id){
 		$server_prod = mysql_fetch_array($r);
 		$contract = $server_prod["name"];
 	}else{
-		$contact = _("Not found!");
+		$contract = _("Not found!");
+	}
+
+	// Get the current admin
+	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."';";
+	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysql_num_rows($r);
+	if($n == 1){
+		$admin = mysql_fetch_array($r);
 	}
 
 	$additiona_info = "";
@@ -50,7 +62,7 @@ function drawAdminTools_Custom($admin,$custom_id){
 		if($n == 1){
 			$custom_heb_types = mysql_fetch_array($r);
 			if($custom_heb_types["reqdomain"] == "yes"){
-				$additiona_info .= "<br>"._("Domain name:")." ".$custom_prod["domain"];
+				$additiona_info .= "<br>"._("Domain or user name:")." ".$custom_prod["domain"];
 			}
 		}else{
 			$additiona_info .= "<br>"._("Warning: no custom type found")." line ".__LINE__." file ".__FILE__;
@@ -67,19 +79,28 @@ function drawAdminTools_Custom($admin,$custom_id){
 	if(date("Y") > $ar[0] ||
 			(date("Y") == $ar[0] && date("m") > $ar[1]) ||
 			(date("Y") == $ar[0] && date("m") == $ar[1] && date("d") > $ar[2])){
-		$out .= "<font color=\"red\">". _("Your custom product has expired on the: ") .$custom_prod["expire_date"]."</font>"
-		."<br>". _("Please renew it with one of the following options") ."<br>";
+		$out .= "<font color=\"red\">". _("Your custom product has expired on the: ") .$custom_prod["expire_date"]."</font>";
 	}else{
 		$out .= _("Your custom product will expire on the: ") .$custom_prod["expire_date"];
 	}
+	$out .= "<BR>"._("Your can pay your custom service without overdue charges until:")." ".calculateExpirationDate($custom_procustom_pro["expire_date"],'00-00-'.$conf_global_extend);
+	$out .= "<br>"._("Your custom service be shutdown on:")." ";
+	$period = "00-00-".($admin["permanent_extend"]+$admin["temporary_extend"]+$conf_custom_renewal_shutdown);
+	$out .= " ".calculateExpirationDate($custom_prod["expire_date"],$period)."<br>";
 
-	if ($secpayconf_use_products_for_renewal == 'yes'){
-	    $q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$custom_prod["product_id"]."';";
-	    $r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	    $n = mysql_num_rows($r);
-	    if($n == 1){
-		$a = mysql_fetch_array($r);
-		$out .= "<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
+	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."'";
+	$r = mysql_query($q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$admin = mysql_fetch_array($r);
+
+	if($admin["show_invoice_info"] == 'yes' && $conf_show_invoice_info == 'yes'){
+		$out .= "<br>". _("Please renew it with one of the following options") ."<br>";
+		if ($secpayconf_use_products_for_renewal == 'yes'){
+			$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$custom_prod["product_id"]."';";
+			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysql_num_rows($r);
+			if($n == 1){
+				$a = mysql_fetch_array($r);
+				$out .= "<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 		<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 		<input type=\"hidden\" name=\"renew_type\" value=\"custom\">
 		<input type=\"hidden\" name=\"product_id\" value=\"".$custom_prod["product_id"]."\">
@@ -87,15 +108,15 @@ function drawAdminTools_Custom($admin,$custom_id){
 		<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 		".submitButtonStart().$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)".submitButtonEnd()."
 		</form><br>";
-	    }
-	}
+			}
+		}
 
-	$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$custom_prod["product_id"]."';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
-	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
-		$out .= "<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
+		$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$custom_prod["product_id"]."';";
+		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysql_num_rows($r);
+		for($i=0;$i<$n;$i++){
+			$a = mysql_fetch_array($r);
+			$out .= "<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 		<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 		<input type=\"hidden\" name=\"renew_type\" value=\"custom\">
 		<input type=\"hidden\" name=\"product_id\" value=\"".$a["id"]."\">
@@ -103,6 +124,7 @@ function drawAdminTools_Custom($admin,$custom_id){
 		<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 		".submitButtonStart().$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)".submitButtonEnd()."
 		</form><br>";
+		}
 	}
 
 	return $out;

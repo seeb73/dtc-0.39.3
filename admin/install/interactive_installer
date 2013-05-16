@@ -417,6 +417,15 @@ installerQuestions () {
 	fi
 
 	echo ""
+	echo "Choose the maximum amount of processes that will be used"
+	echo "to receive mail from internet. Each process will consume"
+	echo -n 'about 60Mb of memory ['$conf_max_receive_process']: '
+	read answer
+	if [ ! -x "$answer" ]; then
+		conf_max_receive_process=$answer
+	fi
+
+	echo ""
 	echo "Choose the recpient delimiter character. This MUST match what"
 	echo "you have setup in Qmail or Postfix."
 	if [ "${conf_recipient_delim}" = "-" ] ; then

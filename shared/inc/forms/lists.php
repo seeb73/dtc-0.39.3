@@ -3,6 +3,17 @@
 ////////////////////////////////////////////////////
 // One domain name ftp account collection edition //
 ////////////////////////////////////////////////////
+$mlmmj_back_color=0;
+function mlmmj_color(){
+	global $mlmmj_back_color;
+	if($mlmmj_back_color == 1){
+		$mlmmj_back_color = 0;
+	}else{
+		$mlmmj_back_color = 1;
+	}
+	return $mlmmj_back_color;
+}
+
 function drawAdminTools_MailingLists($domain){
 	global $adm_login;
 	global $adm_pass;
@@ -12,7 +23,6 @@ function drawAdminTools_MailingLists($domain){
 	global $conf_post_or_get;
 
 	$txt = "";
-//	$nbr_email = sizeof($domain["emails"]);
 	if (isset($domain["mailinglists"])){
 		$nbr_email = sizeof($domain["mailinglists"]);
 	}else{
@@ -59,28 +69,202 @@ function drawAdminTools_MailingLists($domain){
 			$list_owner = $_REQUEST["editmail_owner"];
 		}
 
-		$txt .= "
-<table border=\"1\"><tr><td align=\"right\">
-<form method=\"$conf_post_or_get\" action=\"?\" method=\"post\">
-	<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
-	<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
-	<input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">
-	<input type=\"hidden\" name=\"edit_domain\" value=\"$edit_domain\">
-	<input type=\"hidden\" name=\"whatdoiedit\" value=\"mails\">
-	<input type=\"hidden\" name=\"edit_mailbox\" value=\"".$_REQUEST["edit_mailbox"]."\">
-	<div onmouseover=\"return escape('". _("Name of the list.") ."')\">". _("List name:") ."</div></td>
-	<td><b>$list_name</b>@$edit_domain</td></tr>
-	<tr><td align=\"right\"><div onmouseover=\"return escape('". _("This is the main owner of the list.") ."')\">". _("List owner") ."</div></td>
-	<td><input type=\"text\" name=\"editmail_owner\" value=\"$list_owner\"></td></tr>";
-$txt .= list_options();
-$txt .= "<tr><td>&nbsp;</td><td><input type=\"submit\" name=\"modifylistdata\" value=\"Ok\">&nbsp;
-<input type=\"submit\" name=\"dellist\" value=\"Del\">
-</td></tr>
-</table>
-</form>
-";
 		$admin_path = getAdminPath($adm_login);
 		$list_path = $admin_path."/".$edit_domain."/lists/".$edit_domain."_".$_REQUEST["edit_mailbox"];
+
+// Description of the mailing list form
+$dsc = array(
+	"forward" => array("adm_login" => $adm_login,"adm_pass" => $adm_pass,"addrlink" => $addrlink,"whatdoiedit" => "mails","edit_mailbox" => $_REQUEST["edit_mailbox"],"modifylistdata" => "Ok"),
+	"has_delete" => "yes",
+	"titles" => array(
+		_("List name and owner") => array(
+			"form_lines" => array(
+				_("List name:") => array(
+					"widget" => "<b>$list_name</b>@".$edit_domain,
+					"help" => _("Name of the list.")
+				)
+				,
+				_("List owner") => array(
+					"widget" => "<input type=\"text\" name=\"editmail_owner\" value=\"$list_owner\">",
+					"help" => _("This is the main owner of the list.")
+				)
+			)
+		),
+		_("Header") => array(
+			"form_lines" => array(
+				_("Subject prefix:") => array(
+					"widget" => getListOptionsValue($list_path,"prefix"),
+					"help" => getTunableHelp("prefix")
+				),
+				_("Delete headers:") => array(
+					"widget" => getListOptionsList($list_path,"delheaders"),
+					"help" => getTunableHelp("delheaders")
+				),
+				_("Add To: header:") => array(
+					"widget" => getListOptionsBoolean($list_path,"addtohdr"),
+					"help" => getTunableHelp("addtohdr")
+				),
+				_("To: or Cc: not mandatory:") => array(
+					"widget" => getListOptionsBoolean($list_path,"tocc"),
+					"help" => getTunableHelp("tocc")
+				),
+				_("Custom headers:") => array(
+					"widget" => getListOptionsTextarea($list_path,"customheaders"),
+					"help" => getTunableHelp("customheaders")
+				),
+				_("Added footer:") => array(
+					"widget" => getListOptionsTextarea($list_path,"footer"),
+					"help" => getTunableHelp("footer")
+				)
+			)
+		),
+		_("Rights") => array(
+			"default_close" => "yes",
+			"form_lines" => array(
+				_("Subscribers only post:") => array(
+					"widget" => getListOptionsBoolean($list_path,"subonlypost"),
+					"help" => getTunableHelp("subonlypost")
+				),
+				_("Closed list:") => array(
+					"widget" => getListOptionsBoolean($list_path,"closedlist"),
+					"help" => getTunableHelp("closedlist")
+				),
+				_("Owner:") => array(
+					"widget" => getListOptionsList($list_path,"owner"),
+					"help" => getTunableHelp("owner")
+				)
+			)
+		),
+		_("List moderation") => array(
+			"default_close" => "yes",
+			"form_lines" => array(
+				_("Subscribers only post:") => array(
+					"widget" => getListOptionsBoolean($list_path,"moderated"),
+					"help" => getTunableHelp("moderated")
+				),
+				_("Moderators:") => array(
+					"widget" => getListOptionsList($list_path,"moderators"),
+					"help" => getTunableHelp("moderators")
+				),
+				_("No subscribtion confirmation:") => array(
+					"widget" => getListOptionsBoolean($list_path,"nosubconfirm"),
+					"help" => getTunableHelp("nosubconfirm")
+				)
+			)
+		),
+		_("Digest") => array(
+			"default_close" => "yes",
+			"form_lines" => array(
+				_("Digest interval:") => array(
+					"widget" => getListOptionsValue($list_path,"digestinterval"),
+					"help" => getTunableHelp("digestinterval")
+				),
+				_("Digest max mails:") => array(
+					"widget" => getListOptionsValue($list_path,"digestmaxmails"),
+					"help" => getTunableHelp("digestmaxmails")
+				)
+			)
+		),
+		_("Notifications") => array(
+			"default_close" => "yes",
+			"form_lines" => array(
+				_("Notify new subscribtions:") => array(
+					"widget" => getListOptionsBoolean($list_path,"notifysub"),
+					"help" => getTunableHelp("notifysub")
+				),
+				_("Notify when post and not subscribed:") => array(
+					"widget" => getListOptionsBoolean($list_path,"nosubonlydenymails"),
+					"help" => getTunableHelp("nosubonlydenymails")
+				),
+				_("Deny if no To: or Cc::") => array(
+					"widget" => getListOptionsBoolean($list_path,"notoccdenymails"),
+					"help" => getTunableHelp("notoccdenymails")
+				),
+				_("Notify when post and no access:") => array(
+					"widget" => getListOptionsBoolean($list_path,"noaccessdenymails"),
+					"help" => getTunableHelp("noaccessdenymails")
+				)
+			)
+		),
+		_("SMTP configuration") => array(
+			"default_close" => "yes",
+			"form_lines" => array(
+				_("Max mail memory size:") => array(
+					"widget" => getListOptionsValue($list_path,"memorymailsize"),
+					"help" => getTunableHelp("memorymailsize")
+				),
+				_("SMTP relay server:") => array(
+					"widget" => getListOptionsValue($list_path,"relayhost"),
+					"help" => getTunableHelp("relayhost")
+				),
+				_("VERP:") => array(
+					"widget" => getListOptionsValue($list_path,"verp"),
+					"help" => getTunableHelp("verp")
+				),
+				_("Max VERP recipients:") => array(
+					"widget" => getListOptionsValue($list_path,"maxverprecips"),
+					"help" => getTunableHelp("maxverprecips")
+				),
+				_("Delimiter:") => array(
+					"widget" => getListOptionsValue($list_path,"delimiter"),
+					"help" => getTunableHelp("delimiter")
+				),
+				_("Bounce life:") => array(
+					"widget" => getListOptionsValue($list_path,"bouncelife"),
+					"help" => getTunableHelp("bouncelife")
+				),
+				_("Access list:") => array(
+					"widget" => getListOptionsTextarea($list_path,"access"),
+					"help" => getTunableHelp("access")
+				)
+			)
+		),
+		_("Archive") => array(
+			"default_close" => "yes",
+			"form_lines" => array(
+				_("No archives:") => array(
+					"widget" => getListOptionsBoolean($list_path,"noarchive"),
+					"help" => getTunableHelp("noarchive")
+				),
+				_("No get-N function:") => array(
+					"widget" => getListOptionsBoolean($list_path,"noget"),
+					"help" => getTunableHelp("noget")
+				),
+				_("get-N function only for subscribers:") => array(
+					"widget" => getListOptionsBoolean($list_path,"subonlyget"),
+					"help" => getTunableHelp("subonlyget")
+				)
+			)
+		),
+		_("Web archive") => array(
+			"default_close" => "yes",
+			"form_lines" => array(
+				_("Enable webarchive:") => array(
+					"widget" => getListOptionsWABoolean($list_path,"webarchive"),
+					"help" => getTunableHelp("webarchive")
+				),
+				_("Own template:") => array(
+					"widget" => getListOptionsWATextarea($list_path,"rcfile"),
+					"help" => getTunableHelp("rcfile")
+				),
+				_("Recreate:") => array(
+					"widget" => getListOptionsWABooleanActions($list_path,"recreatewa"),
+					"help" => getTunableHelp("recreatewa")
+				),
+				_("Delete:") => array(
+					"widget" => getListOptionsWABooleanActions($list_path,"deletewa"),
+					"help" => getTunableHelp("deletewa")
+				),
+				_("Anti-spam mode:") => array(
+					"widget" => getListOptionsWABoolean($list_path,""),
+					"help" => getTunableHelp("")
+				)
+			)
+		)
+	)
+);
+$txt .= dtcFoldingForm($dsc);
+
 		$txt .= subscribers_list($list_path);
 	}else{
 		$txt .= "<br><br>". _("new mailing list");
@@ -89,21 +273,15 @@ $txt .= "<tr><td>&nbsp;</td><td><input type=\"submit\" name=\"modifylistdata\" v
 		if($nbr_email < $max_email){
 			$txt .= "
 <form method=\"$conf_post_or_get\" action=\"?\" method=\"post\">
-<table border=\"1\"><tr><td align=\"right\">
-	<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
-	<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
-	<input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">
-	<input type=\"hidden\" name=\"edit_domain\" value=\"$edit_domain\">
-	<input type=\"hidden\" name=\"whatdoiedit\" value=\"mails\">
-	<div onmouseover=\"return escape('"._("List name") ."')\">". _("List name:") ."</div></td>
-	<td><input type=\"text\" name=\"newlist_name\" value=\"\"></td></tr>
-	<tr><td align=\"right\"><div onmouseover=\"return escape('". _("This is the main owner of the list.") ."')\">". _("List owner:") ."</div></td>
-	<td><input type=\"text\" name=\"newlist_owner\" value=\"\">";
-$txt .= "</td></tr>
-<tr><td>&nbsp;</td>
-<td><input type=\"submit\" name=\"addnewlisttodomain\" value=\"Ok\"></td>
-</tr>
-</table>
+<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
+<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
+<input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">
+<input type=\"hidden\" name=\"edit_domain\" value=\"$edit_domain\">
+<input type=\"hidden\" name=\"whatdoiedit\" value=\"mails\">";
+	$txt .= dtcFormTableAttrs().dtcFormLineDraw(_("List name"),"<input type=\"text\" placeholder=\"listname\" name=\"newlist_name\" value=\"\"> @$edit_domain",0);
+	$txt .= dtcFormLineDraw( _("List owner:"),"<input type=\"text\" placeholder=\"example@example.com\" name=\"newlist_owner\" value=\"\">",1,_("This is the main owner of the list."));
+	$txt .= dtcFormLineDraw("","<input type=\"hidden\" name=\"addnewlisttodomain\" value=\"Ok\">".submitButtonStart()._("Ok").submitButtonEnd(),0);
+	$txt .= "</table>
 </form>
 ";
 		}else{
@@ -152,18 +330,48 @@ function subscribers_list($list_path){
 		}
 		$out .= "<a href=\"?adm_login=$adm_login&adm_pass=$adm_pass&addrlink=$addrlink&edit_domain=$edit_domain&whatdoiedit=mails&edit_mailbox=".$_REQUEST["edit_mailbox"]."&action=unsubscribe_user&subscriber_email=".$subs[$i]."\">".$subs[$i]."</a>";
 	}
-	$out .= "<br><br><h3>". _("Subscribe a new user") .":</h3><br><br>";
-	$out .= "<form method=\"$conf_post_or_get\" action=\"?\" method=\"post\">
-	<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
-	<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
-	<input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">
-	<input type=\"hidden\" name=\"edit_domain\" value=\"$edit_domain\">
-	<input type=\"hidden\" name=\"whatdoiedit\" value=\"mails\">
-	<input type=\"hidden\" name=\"edit_mailbox\" value=\"".htmlspecialchars($_REQUEST["edit_mailbox"])."\">
-	<input type=\"hidden\" name=\"action\" value=\"subscribe_new_user\">
-	<input type=\"text\" size=\"40\" name=\"subscriber_email\" value=\"\">
-	<input type=\"submit\" value=\"Ok\">
-	</form>";
+	$out .= "<br><br><h3>". _("Subscribe a new user") .":</h3>";
+	$out .= dtcFormTableAttrs();
+	$out .= dtcFormLineDraw(_("New subscriber email address:"),"<form method=\"$conf_post_or_get\" action=\"?\" method=\"post\">
+		<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
+		<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
+		<input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">
+		<input type=\"hidden\" name=\"edit_domain\" value=\"$edit_domain\">
+		<input type=\"hidden\" name=\"whatdoiedit\" value=\"mails\">
+		<input type=\"hidden\" name=\"edit_mailbox\" value=\"".htmlspecialchars($_REQUEST["edit_mailbox"])."\">
+		<input type=\"hidden\" name=\"action\" value=\"subscribe_new_user\">
+		<input type=\"text\" size=\"40\" name=\"subscriber_email\" value=\"\">",1);
+	$out .= dtcFormLineDraw("","<input type=\"hidden\" value=\"Ok\">".submitButtonStart()._("Ok").submitButtonEnd()."</form>",0);
+	$out .= "</table>";
+
+	// Get a list of existing mlmmj translation templates
+	// TODO: adapt for the path in FreeBSD, CentOS, etc.
+	$options = "";
+	$dir = "/usr/share/mlmmj/text.skel/";
+	if (is_dir($dir)) {
+		if ($dh = opendir($dir)) {
+			while (($file = readdir($dh)) !== false) {
+				if($file != "." && $file != ".."){
+					$options .= "<option value=\"$file\">$file</option>";
+				}
+			}
+			closedir($dh);
+		}
+	}
+
+	$out .= "<br><br><h3>". _("Language of the list:") ."</h3>";
+	$out .= dtcFormTableAttrs();
+	$out .= dtcFormLineDraw(_("Language:"),"<form method=\"$conf_post_or_get\" action=\"?\" method=\"post\">
+		<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
+		<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
+		<input type=\"hidden\" name=\"addrlink\" value=\"$addrlink\">
+		<input type=\"hidden\" name=\"edit_domain\" value=\"$edit_domain\">
+		<input type=\"hidden\" name=\"whatdoiedit\" value=\"mails\">
+		<input type=\"hidden\" name=\"edit_mailbox\" value=\"".htmlspecialchars($_REQUEST["edit_mailbox"])."\">
+		<input type=\"hidden\" name=\"action\" value=\"copy_list_text_language\">
+		<select name=\"list_text_lang\">$options</select>",1,_("Select the language of the template to copy in the list folder"));
+	$out .= dtcFormLineDraw("","<input type=\"hidden\" value=\"Ok\">".submitButtonStart()._("Ok").submitButtonEnd()."</form>",0);
+	$out .= "</table>";
 	return $out;
 }
 
@@ -282,9 +490,7 @@ function getListOptionsBoolean($ctrl_path,$tunable_name,$tunable_title){
 	}else{
 		$check_option = "";
 	}
-	return "<tr>
-                <td onmouseover=\"Tip('".getTunableHelp($tunable_name)."',STICKY,true,CLICKCLOSE,true,FADEIN,600)\" align=\"right\">".$tunable_title."</td>
-                <td><input type=\"checkbox\" value=\"yes\" name=\"".$tunable_name."\"".$check_option."></td></tr>";
+	return "<input type=\"checkbox\" value=\"yes\" name=\"".$tunable_name."\"".$check_option.">";
 }
 
 function getListOptionsValue($ctrl_path,$tunable_name,$tunable_title){
@@ -295,9 +501,7 @@ function getListOptionsValue($ctrl_path,$tunable_name,$tunable_title){
 		$a = file($option_file);
 		$value = $a[0];
 	}
-	return "<tr>
-			<td onmouseover=\"Tip('".getTunableHelp($tunable_name)."',STICKY,true,CLICKCLOSE,true,FADEIN,600)\" align=\"right\">".$tunable_title."</td>
-			<td><input size=\"40\" type=\"text\" value=\"".htmlspecialchars($value)."\" name=\"".$tunable_name."\"></td></tr>";
+	return "<input size=\"40\" type=\"text\" value=\"".htmlspecialchars($value)."\" name=\"".$tunable_name."\">";
 }
 
 function getListOptionsTextarea($ctrl_path,$tunable_name,$tunable_title){
@@ -309,9 +513,7 @@ function getListOptionsTextarea($ctrl_path,$tunable_name,$tunable_title){
 			$value .= str_replace("\r","",str_replace("\n","",$line))."\n";
 		}
 	}
-	return "<tr>
-	<td onmouseover=\"Tip('".getTunableHelp($tunable_name)."',STICKY,true,CLICKCLOSE,true,FADEIN,600)\" valign=\"top\" align=\"right\">".$tunable_title."</td>
-	<td><textarea rows=\"5\" cols=\"60\" name=\"".$tunable_name."\">".htmlspecialchars($value)."</textarea></td></tr>";
+	return "<textarea rows=\"5\" cols=\"60\" name=\"".$tunable_name."\">".htmlspecialchars($value)."</textarea>";
 }
 
 
@@ -322,30 +524,16 @@ function getListOptionsList($ctrl_path,$tunable_name,$tunable_title){
 	}else{
 		$values = file($option_file);
 	}
-        //if owner i don't control the first line
-//	if($tunable_name=="owner"){
-//		$start=1;
-//	}else{
-		$start=0;
-//	}
+	$start=0;
 
         $mouseover = "onmouseover=\"Tip('".getTunableHelp($tunable_name)."',STICKY,true,CLICKCLOSE,true,FADEIN,600)\"";
-	$out = "<tr>";
+	$out = "<table border=\"0\" cellpadding=\"0\" cellspacing=\"2\">";
 	
-	for($i=$start;$i<sizeof($values);$i++){
-		if ($i==$start){
-			$out .= "<td $mouseover align=\"right\" valign=\"top\" rowspan=\"".(sizeof($values) - $start + 1)."\">".$tunable_title."</td>";
-		}else{
-			$out .= "<tr>";
-		}
-		$out .= "<td><input size=\"40\" type=\"text\" value=\"".htmlspecialchars($values[$i])."\" name=\"".$tunable_name."[]\"></td></tr>";
+	for($i=0;$i<sizeof($values);$i++){
+		$out .= "<tr><td><input size=\"40\" type=\"text\" value=\"".htmlspecialchars($values[$i])."\" name=\"".$tunable_name."[]\"></td></tr>";
 	}
-	if($start >= sizeof($values)){
-		$out .= "<td $mouseover align=\"right\">".$tunable_title."</td>";
-	}else{
-		$out .= "<tr>";
-	}
-	$out .="<td><input size=\"40\" type=\"text\" value=\"\" name=\"".$tunable_name."[]\"></td></tr>";
+	$out .= "<tr><td><input size=\"40\" type=\"text\" value=\"\" name=\"".$tunable_name."[]\"></td></tr>";
+	$out .= "</table>";
 	return $out;
 }
 
@@ -361,8 +549,7 @@ function getListOptionsWABoolean($tunable_name, $tunable_title){
 	}else{
 		$check_option = "";
 	}
-	return "<tr><td onmouseover=\"Tip('".getTunableHelp($tunable_name)."',STICKY,true,CLICKCLOSE,true,FADEIN,600)\" align=\"right\">". $tunable_title ."</td>
-                <td><input type=\"checkbox\" value=\"yes\" name=\"".$tunable_name."\"".$check_option."></td></tr>";
+	return "<input type=\"checkbox\" value=\"yes\" name=\"".$tunable_name."\"".$check_option.">";
 }
 
 function getListOptionsWATextarea($ctrl_path,$tunable_name,$tunable_title){
@@ -374,77 +561,11 @@ function getListOptionsWATextarea($ctrl_path,$tunable_name,$tunable_title){
 			$value .= $line."\n";
 		}
 	}
-	return "<tr>
-    <td onmouseover=\"Tip('".getTunableHelp($tunable_name)."',STICKY,true,CLICKCLOSE,true,FADEIN,600)\" valign=\"top\" align=\"right\">".$tunable_title."</td>
-    <td><textarea rows=\"5\" cols=\"40\" name=\"".$tunable_name."\">".htmlspecialchars($value)."</textarea></td></tr>";
+	return "<textarea rows=\"5\" cols=\"40\" name=\"".$tunable_name."\">".htmlspecialchars($value)."</textarea>";
 }
 
 function getListOptionsWABooleanActions($tunable_name,$tunable_title){
-	return "<tr><td onmouseover=\"Tip('".getTunableHelp($tunable_name)."',STICKY,true,CLICKCLOSE,true,FADEIN,600)\" align=\"right\">".$tunable_title."</td>
-                <td><input type=\"checkbox\" value=\"yes\" name=\"".$tunable_name."\"></td></tr>";
-}
-
-//this function check options and checkbox
-function list_options(){
-
-	global $edit_domain;
-	global $adm_login;
-	global $conf_use_advanced_lists_tunables;
-
-	$admin_path = getAdminPath($adm_login);
-	$list_path = $admin_path."/".$edit_domain."/lists/".$edit_domain."_".$_REQUEST["edit_mailbox"];
-
-	$output = "";
-	$output .= "<tr><td colspan=\"2\"><b>". _("Rights") ."</b></td></tr>";
-	$output .= getListOptionsBoolean($list_path,"subonlypost", _("Subscribers only post:") );
-	$output .= getListOptionsBoolean($list_path,"closedlist", _("Closed list:") );
-	$output .= getListOptionsList($list_path,"owner", _("Owner:") );
-	$output .= getListOptionsBoolean($list_path,"moderated", _("Moderated:") );
-	$output .= getListOptionsList($list_path,"moderators", _("Moderators:") );
-	$output .= getListOptionsBoolean($list_path,"nosubconfirm", _("No subscribtion confirmation:") );
-
-	$output .= "<tr><td colspan=\"2\"><b>". _("Header") ."</b></td></tr>";
-	$output .= getListOptionsValue($list_path,"prefix", _("Subject prefix:") );
-	$output .= getListOptionsList($list_path,"delheaders", _("Delete headers:") );
-	$output .= getListOptionsBoolean($list_path,"addtohdr", _("Add To: header:") );
-	$output .= getListOptionsBoolean($list_path,"tocc", _("To: or Cc: not mandatory:") );
-	$output .= getListOptionsTextarea($list_path,"customheaders", _("Custom headers:") );
-	$output .= getListOptionsTextarea($list_path,"footer", _("Added footer:") );
-
-	$output .= "<tr><td colspan=\"2\"><b>". _("Archive") ."</b></td></tr>";
-	$output .= getListOptionsBoolean($list_path,"noarchive", _("No archives:") );
-	$output .= getListOptionsBoolean($list_path,"noget", _("No get-N function:") );
-	$output .= getListOptionsBoolean($list_path,"subonlyget", _("get-N function only for subscribers:") );
-
-	$output .= "<tr><td colspan=\"2\"><b>". _("Digest") ."</b></td></tr>";
-	$output .= getListOptionsValue($list_path,"digestinterval", _("Digest interval:") );
-	$output .= getListOptionsValue($list_path,"digestmaxmails", _("Digest max mails:") );
-
-	$output .= "<tr><td colspan=\"2\"><b>". _("Notifications") ."</b></td></tr>";
-	$output .= getListOptionsBoolean($list_path,"notifysub", _("Notify new subscribtions:") );
-	$output .= getListOptionsBoolean($list_path,"nosubonlydenymails", _("Notify when post and not subscribed:") );
-	$output .= getListOptionsBoolean($list_path,"notoccdenymails", _("Deny if no To: or Cc::") );
-	$output .= getListOptionsBoolean($list_path,"noaccessdenymails", _("Notify when post and no access:") );
-
-	$output .= "<tr><td colspan=\"2\"><b>". _("SMTP configuration") ."</b></td></tr>";
-	$output .= getListOptionsValue($list_path,"memorymailsize", _("Max mail memory size:") );
-	if($conf_use_advanced_lists_tunables == "yes"){
-		$output .= getListOptionsValue($list_path,"relayhost", _("SMTP relay server:") );
-		$output .= getListOptionsValue($list_path,"verp", _("VERP:") );
-		$output .= getListOptionsValue($list_path,"maxverprecips", _("Max VERP recipients:") );
-		$output .= getListOptionsValue($list_path,"delimiter", _("Delimiter:") );
-		$output .= getListOptionsValue($list_path,"bouncelife", _("Bounce life:") );
-		$output .= getListOptionsTextarea($list_path,"access", _("Access list:") );
-	}
-
-	$output .= "<tr><td colspan=\"2\"><b>". _("Web archive") ."</b></td></tr>";
-	$output .= getListOptionsWABoolean("webarchive", _("Enable webarchive:") );
-	$output .= getListOptionsWATextarea($list_path,"rcfile", _("Own template:") );
-	$output .= getListOptionsWABooleanActions("recreatewa", _("Recreate:") );
-	$output .= getListOptionsWABooleanActions("deletewa", _("Delete:") );
-	$output .= getListOptionsWABoolean("spammode", _("Anti-spam mode:") );
-
-	return $output;
+	return "<input type=\"checkbox\" value=\"yes\" name=\"".$tunable_name."\">";
 }
 
 ?>

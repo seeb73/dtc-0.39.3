@@ -209,6 +209,7 @@ $form_start
 ";
 		}
 		addDomainToUser($adm_login,$adm_pass,$_REQUEST["domain_name"]);
+		triggerDomainListUpdate();
 		return "<br><u><b>". _("Your domain name is now ready:") ."</b></u><br>
 ". _("You may verify the configuration by clicking here:") ."<br>
 <a href=\"?adm_login=$adm_login&adm_pass=$adm_pass&addrlink=".$_REQUEST["domain_name"]."\">".$_REQUEST["domain_name"]."</a><br>

@@ -12,6 +12,28 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "delete_a_dedicated"){
 	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 }
 
+if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "delete_a_custom_product"){
+	$q = "DELETE FROM $pro_mysql_custom_product_table WHERE id='".$_REQUEST["id"]."';";
+	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+}
+
+if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_custom_to_user"){
+	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$_REQUEST["product_id"]."';";
+	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysql_num_rows($r);
+	if($n != 1){
+		die("Didn't find the product you want to add line ".__LINE__." file ".__FILE__);
+	}
+	$prod = mysql_fetch_array($r);
+
+	$exp_date = calculateExpirationDate(date("Y-m-d"),$prod["period"]);
+
+	$q = "INSERT INTO $pro_mysql_custom_product_table (id,owner,domain,start_date,expire_date,product_id,country_code,custom_heb_type,custom_heb_type_fld)
+	VALUES('','$adm_login','".$_REQUEST["server_hostname"]."','".date("Y-m-d")."','$exp_date',".$_REQUEST["product_id"].",'".$_REQUEST["country"]."',".$prod["custom_heb_type"].",'".$prod["custom_heb_type_fld"]."');";
+	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+}
+
+////////////////////
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_dedicated_to_user"){
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$_REQUEST["product_id"]."';";
 	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
@@ -275,12 +297,20 @@ if(isset($_REQUEST["updateuserinfo"]) && $_REQUEST["updateuserinfo"] == "Ok"){
 			resseller_flag='".$_REQUEST["resseller_flag"]."',
 			ssh_login_flag='".$_REQUEST["ssh_login_flag"]."',
 			ftp_login_flag='".$_REQUEST["ftp_login_flag"]."',
+			edit_domain_custom='".$_REQUEST["edit_domain_custom"]."',
 			restricted_ftp_path='".$_REQUEST["restricted_ftp_path"]."',
 			allow_dns_and_mx_change='".$_REQUEST["allow_dns_and_mx_change"]."',
 			allow_mailing_list_edit='".$_REQUEST["allow_mailing_list_edit"]."',
 			allow_subdomain_edit='".$_REQUEST["allow_subdomain_edit"]."',
 			pkg_install_flag='".$_REQUEST["pkg_install_flag"]."',
-			shared_hosting_security='".$_REQUEST["shared_hosting_security"]."'
+			shared_hosting_security='".$_REQUEST["shared_hosting_security"]."',
+			disabled='".$_REQUEST["admin_enabled"]."',
+			permanent_extend=".$_REQUEST["permanent_extend"].",
+			temporary_extend=".$_REQUEST["temporary_extend"].",
+			max_ftp=".$_REQUEST["max_ftp"].",
+			max_ssh=".$_REQUEST["max_ssh"].",
+			max_email=".$_REQUEST["max_email"].",
+			show_invoice_info='".$_REQUEST["allow_invoice_info"]."'
 			WHERE adm_login='$adm_login';";
 		mysql_query($adm_query)or die("Cannot execute query \"$adm_query\" line ".__LINE__." file ".__FILE__." ".mysql_error());
 

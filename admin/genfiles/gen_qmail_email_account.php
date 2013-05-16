@@ -43,7 +43,7 @@ function mail_account_generate_qmail(){
 	$assign_file = "";
 	$more_rcpt = "";
 
-	$query = "SELECT * FROM $pro_mysql_admin_table ORDER BY adm_login;";
+	$query = "SELECT * FROM $pro_mysql_admin_table WHERE disabled='no' or disabled='always-no' or disabled='' ORDER BY adm_login;";
 	$result = mysql_query ($query)or die("Cannot execute query : \"$query\"");
 	$num_rows = mysql_num_rows($result);
 

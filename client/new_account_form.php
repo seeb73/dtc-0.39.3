@@ -24,6 +24,15 @@ function register_user($adding_service="no"){
 	global $pro_mysql_domain_table;
 	global $pro_mysql_dedicated_table;
 	global $pro_mysql_custom_product_table;
+	global $conf_send_registration_mail_to_customer;
+	global $conf_registration_mail_subject;
+	global $conf_include_payment_on_reg_mail;
+	global $conf_registration_mail_payment_text;
+	global $conf_use_ssl;
+	global $conf_administrative_site;
+
+	global $conf_require_valid_tld_on_dedicated;
+	global $conf_require_valid_tld_on_custom;
 
 	get_secpay_conf();
 
@@ -91,6 +100,10 @@ function register_user($adding_service="no"){
 		$domain_tld = "";
 	}else{
 		$domain_tld = $_REQUEST["domain_tld"];
+	}
+
+	if($db_product["heb_type"] == "server" || $db_product["heb_type"] == "custom"){
+		$domain_tld = "";
 	}
 
 	// If shared or ssl hosting or custom with domain, we MUST do type checkings
@@ -499,6 +512,38 @@ $vps_mail_add1
 	$headers = "From: DTC Robot <$conf_webmaster_email_addr>";
 	mail($conf_webmaster_email_addr, "$conf_message_subject_header Somebody tried to register an account", $mail_content, $headers);
 
+	if ($conf_send_registration_mail_to_customer == 'yes'){
+		$mail_content = readCustomizedMessage("messages_header",$_REQUEST["reqadm_login"]);
+		$mail_content .= readCustomizedMessage("registration_msg/new_registration",$_REQUEST["reqadm_login"]);
+		if($conf_use_ssl == "yes"){
+			$surl = "s";
+		}else{
+			$surl = "";
+		}
+		$client_panel = "http".$surl."://".$conf_administrative_site."/dtc/";
+		$search = array('%%%DTC_NEW_PAYMENT_PANEL_URL%%%','%%%DTC_CLIENT_URL%%%',
+			'%%%DTC_CUSTOMER_USERNAME%%%','%%%DTC_CUSTOMER_PASSWORD%%%','%%%DTC_CUSTOMER_DOMAIN%%%',
+			'%%%DTC_CUSTOMER_COMPANYNAME%%%','%%%DTC_CUSTOMER_FIRSTNAME%%%','%%%DTC_CUSTOMER_FAMILYNAME%%%',
+			'%%%DTC_CUSTOMER_EMAIL%%%','%%%DTC_CUSTOMER_PHONE%%%','%%%DTC_CUSTOMER_FAX%%%',
+			'%%%DTC_CUSTOMER_ADDRESS%%%','%%%DTC_CUSTOMER_ZIPCODE%%%','%%%DTC_CUSTOMER_CITY%%%',
+			'%%%DTC_CUSTOMER_STATE%%%','%%%DTC_CUSTOMER_COUNTRY%%%','%%%DTC_CUSTOMER_IP%%%',
+			'%%%DTC_CUSTOMER_PRODUCT%%%','%%%DTC_CUSTOMER_NOTE%%%','%%%VPS_ADD%%%');
+		$replace = array($client_panel."new_account_payment.php", $client_panel,
+			$_REQUEST["reqadm_login"],$pass_for_email,$_REQUEST["domain_name"].$domain_tld,
+			$esc_compname,$esc_firstname,$esc_familyname,
+			$_REQUEST["email"],$esc_phone,$esc_fax,
+			$esc_address1." ".$esc_address2." ".$esc_address3,$esc_zipcode,$esc_city,
+			$esc_state,$_REQUEST["country"],$_SERVER["REMOTE_ADDR"],
+			$the_prod,$esc_custom_notes,$vps_mail_add1);
+		$mail_content = str_replace($search, $replace, $mail_content);
+
+		// Manage the signature of all registration messages
+		$signature = readCustomizedMessage("signature",$_REQUEST["reqadm_login"]);
+		$mail_content = str_replace("%%%SIGNATURE%%%",$signature,$mail_content);
+
+	    mail($_REQUEST["email"], $conf_registration_mail_subject, $mail_content, $headers);
+	}
+
 	return $ret;
 }
 
@@ -523,6 +568,9 @@ function registration_form(){
 	global $conf_new_account_restrict_action;
         global $conf_new_account_restrict_hide_products;
 	global $conf_new_account_restrict_message;
+
+	global $conf_require_valid_tld_on_dedicated;
+	global $conf_require_valid_tld_on_custom;
 
 
 
@@ -584,11 +632,21 @@ function registration_form(){
 	$prod_popup .= "<option value=\"-1\">"._("Please select.")."</optioon>";
 	for($i=0;$i<$n;$i++){
 		$a = mysql_fetch_array($r);
-				if ($a["heb_type"] == "custom"){
+		if ($a["heb_type"] == "custom"){
 			if($a["reqdomain"] == "yes"){
-				$p_jscript .= " prod_popup_htype[".$a["id"]."] = 'custom_domain';\n";
+				if($conf_require_valid_tld_on_custom == "yes"){
+					$p_jscript .= " prod_popup_htype[".$a["id"]."] = 'custom_domain';\n";
+				}else{
+					$p_jscript .= " prod_popup_htype[".$a["id"]."] = 'custom_notld';\n";
+				}
 			}else{
 				$p_jscript .= " prod_popup_htype[".$a["id"]."] = 'custom_nodomain';\n";
+			}
+		}elseif($a["heb_type"] == "server"){
+			if($conf_require_valid_tld_on_dedicated == "yes"){
+				$p_jscript .= " prod_popup_htype[".$a["id"]."] = 'server';\n";
+			}else{
+				$p_jscript .= " prod_popup_htype[".$a["id"]."] = 'server_notld';\n";
 			}
 		}else{
 			$p_jscript .= " prod_popup_htype[".$a["id"]."] = '".$a["heb_type"]."';\n";
@@ -674,13 +732,15 @@ function registration_form(){
 	if(isset($_REQUEST["custom_notes"]))	$frm_custom_notes = htmlspecialchars($_REQUEST["custom_notes"]);
 	else	$frm_custom_notes = "";
 
-	if($heb_type == "all" || $heb_type == "shared" || $heb_type == "server" || $heb_type == "ssl"){
+	if($heb_type == "all" || $heb_type == "shared" || $heb_type == "ssl" || $heb_type == "server"){
 		$domname_hidden = " style=\"white-space:nowrap;\" ";
+		$domext_hidden = " style=\"white-space:nowrap;\" ";
 	}else{
 		$domname_hidden = " style=\"display:none;visibility:hidden;white-space:nowrap;\" ";
+		$domext_hidden = " style=\"display:none;visibility:hidden;white-space:nowrap;\" ";
 	}
 
-	if($heb_type == "all" || $heb_type == "vps"){
+	if($heb_type == "vps"){
 		$vps_hidden = " ";
 	}else{
 		$vps_hidden = " style=\"display:none;visibility:hidden;\" ";
@@ -706,10 +766,10 @@ function registration_form(){
 
 	$prod_popup = "<table>
 <tr>
-	<td style=\"white-space: nowrap;text-align: right;\">". _("Product") .": </td><td>".$prod_popup."</td>
+	<td style=\"white-space: nowrap;text-align: right;\">". _("Product") .": </td><td colspan=\"2\">".$prod_popup."</td>
 </td><tr>
-	<td style=\"white-space: nowrap;text-align: right;\"><div name=\"domname_text\" id=\"domname_text\" $domname_hidden>". _("Desired domain name") .":</div></td>
-	<td><div name=\"domname_field\" id=\"domname_field\" $domname_hidden>www.<input type=\"text\" name=\"domain_name\" value=\"$frm_domain_name\"><select name=\"domain_tld\">".$tld_popup."</select></div></td>
+	<td style=\"white-space: nowrap;text-align: right;\"><div name=\"domname_text\" id=\"domname_text\" $domname_hidden>". _("Desired domain<BR>or user name<BR>(No leading www.)") .":</div></td>
+	<td><div name=\"domname_field\" id=\"domname_field\" $domname_hidden><input type=\"text\" name=\"domain_name\" value=\"$frm_domain_name\"></div></td><td><div name=\"domext_field\" id=\"domext_field\" $domext_hidden><select name=\"domain_tld\">".$tld_popup."</select></div></td>
 </tr><tr>
 	<td style=\"white-space: nowrap;text-align: right;\"><div name=\"vps_popup_text\" id=\"vps_popup_text\" $vps_hidden>". _("VPS location: ") ."</div></td>
 	<td><div name=\"vps_popup_field\" id=\"vps_popup_field\" $vps_hidden><select name=\"vps_server_hostname\">$vps_location_popup</select></div></td>
@@ -907,11 +967,14 @@ function hostingProductChanged(){
 	var d = new getObj('vps_popup_text');
 	var e = new getObj('vps_ospopup_text');
 	var f = new getObj('vps_ospopup_field');
+	var g = new getObj('domext_field');
 	if(hosting_type == 'vps'){
 		a.style.visibility = 'hidden';
 		a.style.display = 'none';
 		b.style.visibility = 'hidden';
 		b.style.display = 'none';
+		g.style.visibility = 'hidden';
+		g.style.display = 'none';
 
 		c.style.visibility = 'visible';
 		c.style.display = 'block';
@@ -921,11 +984,29 @@ function hostingProductChanged(){
 		e.style.display = 'block';
 		f.style.visibility = 'visible';
 		f.style.display = 'block';
-		}else if(hosting_type == 'custom_nodomain'){
+	}else if(hosting_type == 'custom_nodomain'){
 		a.style.visibility = 'hidden';
 		a.style.display = 'none';
 		b.style.visibility = 'hidden';
 		b.style.display = 'none';
+		g.style.visibility = 'hidden';
+		g.style.display = 'none';
+
+		c.style.visibility = 'hidden';
+		c.style.display = 'none';
+		d.style.visibility = 'hidden';
+		d.style.display = 'none';
+		e.style.visibility = 'hidden';
+		e.style.display = 'none';
+		f.style.visibility = 'hidden';
+		f.style.display = 'none';
+	}else if(hosting_type == 'custom_domain' || hosting_type == 'server' || hosting_type == 'shared'){
+		a.style.visibility = 'visible';
+		a.style.display = 'block';
+		b.style.visibility = 'visible';
+		b.style.display = 'block';
+		g.style.visibility = 'visible';
+		g.style.display = 'block';
 
 		c.style.visibility = 'hidden';
 		c.style.display = 'none';
@@ -940,6 +1021,8 @@ function hostingProductChanged(){
 		a.style.display = 'block';
 		b.style.visibility = 'visible';
 		b.style.display = 'block';
+		g.style.visibility = 'hidden';
+		g.style.display = 'none';
 
 		c.style.visibility = 'hidden';
 		c.style.display = 'none';
@@ -994,4 +1077,99 @@ function layout_login_and_languages($login_skined,$language_selection_skined){
 </tr></table>";
 }
 
+function new_account_payment($reguser){
+	global $pro_mysql_new_admin_table;
+	global $pro_mysql_product_table;
+	global $pro_mysql_vps_server_table;
+	global $conf_this_server_country_code;
+	global $secpayconf_currency_letters;
+	global $secpayconf_use_paypal_recurring;
+	global $pro_mysql_companies_table;
+
+	$form = "";
+	$print_form = "yes";
+	$q = "SELECT * FROM $pro_mysql_new_admin_table WHERE id='".$reguser["id"]."';";
+	$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$n = mysql_num_rows($r);
+	if($n != 1){
+		$form .= _("Cannot reselect user: registration failed.") ;//"Cannot reselect user: registration failed.";
+	}else{
+		// Get the recorded new admin in the new_admin table, and process the display of payment buttons
+		$newadmin = mysql_fetch_array($r);
+		$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$newadmin["product_id"]."';";
+		$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$n = mysql_num_rows($r);
+		if($n != 1){
+			$form = _("Cannot reselect product: registration failed.") ;//"Cannot reselect product: registration failed.";
+			$print_form = "no";
+			$service_location = $conf_this_server_country_code;
+		}else{
+			$product = mysql_fetch_array($r);
+		}
+		switch($product["heb_type"]){
+		default:
+		case "shared":	// -> Something has to be done to select dedicated servers location in the form !!!
+		case "server":
+			$service_location = $conf_this_server_country_code;
+			break;
+		case "vps":
+			$q = "SELECT * FROM $pro_mysql_vps_server_table WHERE hostname='".$newadmin["vps_location"]."'";
+			$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+			if($n != 1){
+				$form = _("Cannot reselect product: registration failed.") ;//"Cannot reselect product: registration failed!";
+				$print_form = "no";
+				$service_location = $conf_this_server_country_code;
+			}else{
+				$vps_server = mysql_fetch_array($r);
+				$service_location = $vps_server["country_code"];
+			}
+			break;
+		}
+		if($print_form == "yes"){
+			$company_invoicing_id = findInvoicingCompany ($service_location,$newadmin["country"]);
+			$q = "SELECT * FROM $pro_mysql_companies_table WHERE id='$company_invoicing_id';";
+			$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+			if($n != 1){
+				$form = "Cannot find company invoicing line ".__LINE__." file ".__FILE__;
+				$print_form = "no";
+			}else{
+				$company_invoicing = mysql_fetch_array($r);
+				// If VAT is set, use it.
+				if($company_invoicing["vat_rate"] == 0 || $company_invoicing["vat_number"] == ""){
+					$vat_rate = 0;
+					$use_vat = "no";
+				}else{
+						// Both companies are in europe, in different countries, and customer as a VAT number,
+						// then there is no VAT and the customer shall pay the VAT in it's own country
+					// These are the VAT rules in the European Union...
+					if($newadmin["iscomp"] == "yes" && $newadmin["vat_num"] != ""
+							&& isset($cc_europe[ $newadmin["country"] ]) && isset($cc_europe[ $company_invoicing["country"] ])
+							&& $newadmin["country"] != $company_invoicing["country"]){
+						$vat_rate = 0;
+						$use_vat = "no";
+					}else{
+								$use_vat = "yes";
+						$vat_rate = $company_invoicing["vat_rate"];
+					}
+				}
+				$payid = createCreditCardPaiementID($product["price_dollar"] + $product["setup_fee"],$reguser["id"],$product["name"]." (login: ".$newadmin["reqadm_login"].")","yes",$product["id"],$vat_rate);
+				$q = "UPDATE $pro_mysql_new_admin_table SET paiement_id='$payid' WHERE id='".$reguser["id"]."';";
+				$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$return_url = htmlentities($_SERVER["PHP_SELF"])."?action=return_from_pay&regid=$payid";
+				$paybutton =paynowButton($payid,$product["price_dollar"] + $product["setup_fee"],$product["name"]." (login: ".$newadmin["reqadm_login"].")",$return_url,$vat_rate,$secpayconf_use_paypal_recurring);
+			}
+			if($print_form == "yes"){
+				$master_total = $product["price_dollar"] + $product["setup_fee"];
+				$form = $reguser["mesg"]."<br><h4>". _("Registration successful.") ."<!--Registration successfull!--></h4>
+<u>". _("Product name:") . "</u> " . $product["name"] ."<br>
+<u>". _("Product price:") . "</u> " . $product["price_dollar"] ." $secpayconf_currency_letters<br>
+<u>". _("Setup fees:") . "</u> " . $product["setup_fee"] ." $secpayconf_currency_letters<br>
+<u>". _("Product net price before VAT and payment gateway:") . "</u> " . $master_total . " $secpayconf_currency_letters<br><br><br>
+<b>". _("Please now click on the following button to go for payment:") . "</b><br>
+<br>$paybutton";
+			}
+		}
+	}
+	return $form;
+}
 ?>

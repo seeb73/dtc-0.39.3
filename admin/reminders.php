@@ -12,6 +12,8 @@ chdir(dirname(__FILE__));
 require("../shared/autoSQLconfig.php"); // Our main configuration file
 require_once("$dtcshared_path/dtc_lib.php");
 
+global $conf_global_extend;
+
 // Send a mail to the admin with the error message
 function sendAdminWarning($message){
 	global $conf_webmaster_email_addr;
@@ -140,21 +142,25 @@ function sendVPSReminderEmail($remaining_days,$file,$send_webmaster_copy="no"){
 $before = explode("|",$conf_vps_renewal_before);
 $n = sizeof($before);
 for($i=0;$i<$n;$i++){
-	sendVPSReminderEmail($before[$i],"reminders_msg/vps_will_expire");
+	if ($before[$i] > 0){
+		sendVPSReminderEmail($before[$i]-$conf_global_extend,"reminders_msg/vps_will_expire");
+	}
 }
 // Send reminders the day of the expiration
-sendVPSReminderEmail(0,"reminders_msg/vps_expired_today","no");
+sendVPSReminderEmail(0-$conf_global_extend,"reminders_msg/vps_expired_today","no");
 // Send reminders after expiration
 $after = explode("|",$conf_vps_renewal_after);
 $n = sizeof($after);
 for($i=0;$i<$n;$i++){
-	$days = 0 - $after[$i];
-	sendVPSReminderEmail($days,"reminders_msg/vps_expired_already");
+	if ($after[$i] > 0){
+		$days = 0 - $after[$i];
+		sendVPSReminderEmail($days-$conf_global_extend,"reminders_msg/vps_expired_already");
+	}
 }
 // Send reminders for last warning
-sendVPSReminderEmail(-$conf_vps_renewal_lastwarning,"reminders_msg/vps_expired_last_warning","yes");
+sendVPSReminderEmail(-$conf_vps_renewal_lastwarning-$conf_global_extend,"reminders_msg/vps_expired_last_warning","yes");
 // Send the shutdown message
-sendVPSReminderEmail(-$conf_vps_renewal_shutdown,"reminders_msg/vps_expired_shutdown","yes");
+sendVPSReminderEmail(-$conf_vps_renewal_shutdown-$conf_global_extend,"reminders_msg/vps_expired_shutdown","yes");
 
 // Send all the mail for dedicated server for a given renew period
 function sendDedicatedReminderEmail($remaining_days,$file,$send_webmaster_copy="no"){
@@ -226,21 +232,25 @@ function sendDedicatedReminderEmail($remaining_days,$file,$send_webmaster_copy="
 $before = explode("|",$conf_vps_renewal_before);
 $n = sizeof($before);
 for($i=0;$i<$n;$i++){
-	sendDedicatedReminderEmail($before[$i],"reminders_msg/server_will_expire");
+	if ($before[$i] > 0){
+		sendDedicatedReminderEmail($before[$i]-$conf_global_extend,"reminders_msg/server_will_expire");
+	}
 }
 // Send reminders the day of the expiration
-sendDedicatedReminderEmail(0,"reminders_msg/server_expired_today","no");
+sendDedicatedReminderEmail(0-$conf_global_extend,"reminders_msg/server_expired_today","no");
 // Send reminders after expiration
 $after = explode("|",$conf_vps_renewal_after);
 $n = sizeof($after);
 for($i=0;$i<$n;$i++){
-	$days = 0 - $after[$i];
-	sendDedicatedReminderEmail($days,"reminders_msg/server_expired_already");
+	if ($after[$i] > 0){
+		$days = 0 - $after[$i];
+		sendDedicatedReminderEmail($days-$conf_global_extend,"reminders_msg/server_expired_already");
+	}
 }
 // Send reminders for last warning
-sendDedicatedReminderEmail(-$conf_vps_renewal_lastwarning,"reminders_msg/server_expired_last_warning","yes");
+sendDedicatedReminderEmail(-$conf_vps_renewal_lastwarning-$conf_global_extend,"reminders_msg/server_expired_last_warning","yes");
 // Send the shutdown message
-sendDedicatedReminderEmail(-$conf_vps_renewal_shutdown,"reminders_msg/server_expired_shutdown","yes");
+sendDedicatedReminderEmail(-$conf_vps_renewal_shutdown-$conf_global_extend,"reminders_msg/server_expired_shutdown","yes");
 
 ///////////////////////////////
 // SHARED HOSTING EXPIRATION //
@@ -302,21 +312,25 @@ function sendSharedHostingReminderEmail($remaining_days,$file,$send_webmaster_co
 $before = explode("|",$conf_shared_renewal_before);
 $n = sizeof($before);
 for($i=0;$i<$n;$i++){
-	sendSharedHostingReminderEmail($before[$i],"reminders_msg/shared_will_expire");
+	if ($before[$i] > 0){
+		sendSharedHostingReminderEmail($before[$i]-$conf_global_extend,"reminders_msg/shared_will_expire");
+	}
 }
 // Send reminder the day of expiration
-sendSharedHostingReminderEmail(0,"reminders_msg/shared_expired_today","no");
+sendSharedHostingReminderEmail(0-$conf_global_extend,"reminders_msg/shared_expired_today","no");
 // Send reminders after expiration
 $after = explode("|",$conf_shared_renewal_after);
 $n = sizeof($after);
 for($i=0;$i<$n;$i++){
-	$days = 0 - $after[$i];
-	sendSharedHostingReminderEmail($days,"reminders_msg/shared_expired_already");
+	if ($after[$i] > 0){
+		$days = 0 - $after[$i];
+		sendSharedHostingReminderEmail($days-$conf_global_extend,"reminders_msg/shared_expired_already");
+	}
 }
 // Send last warning
-sendSharedHostingReminderEmail(-$conf_shared_renewal_lastwarning,"reminders_msg/shared_expired_last_warning","yes");
+sendSharedHostingReminderEmail(-$conf_shared_renewal_lastwarning-$conf_global_extend,"reminders_msg/shared_expired_last_warning","yes");
 // Send rexpiration reminder
-sendSharedHostingReminderEmail(-$conf_shared_renewal_shutdown,"reminders_msg/shared_expired_shutdown","yes");
+sendSharedHostingReminderEmail(-$conf_shared_renewal_shutdown-$conf_global_extend,"reminders_msg/shared_expired_shutdown","yes");
 
 // Send all the mail for custom products for a given renew period
 function sendCustomProductsReminderEmail($remaining_days,$file,$cust_heb_type_id,$send_webmaster_copy="no"){
@@ -402,20 +416,24 @@ for($nid=0;$nid<$n;$nid++){
 	$before = explode("|",$conf_custom_renewal_before);
 	$n = sizeof($before);
 	for($i=0;$i<$n;$i++){
-		sendCustomProductsReminderEmail($before[$i],"reminders_msg/custom_".$cust_pr_id['id']."_will_expire",$cust_pr_id['id']);
+		if ($before[$i] > 0){
+			sendCustomProductsReminderEmail($before[$i]-$conf_global_extend,"reminders_msg/custom_".$cust_pr_id['id']."_will_expire",$cust_pr_id['id']);
+		}
 	}
 	// Send reminders the day of the expiration
-	sendCustomProductsReminderEmail(0,"reminders_msg/custom_".$cust_pr_id['id']."_expired_today",$cust_pr_id['id'],"no");
+	sendCustomProductsReminderEmail(0-$conf_global_extend,"reminders_msg/custom_".$cust_pr_id['id']."_expired_today",$cust_pr_id['id'],"no");
 	// Send reminders after expiration
 	$after = explode("|",$conf_custom_renewal_after);
 	$n = sizeof($after);
 	for($i=0;$i<$n;$i++){
-		$days = 0 - $after[$i];
-		sendCustomProductsReminderEmail($days,"reminders_msg/custom_".$cust_pr_id['id']."_expired_already",$cust_pr_id['id']);
+		if ($after[$i] > 0){
+			$days = 0 - $after[$i];
+			sendCustomProductsReminderEmail($days-$conf_global_extend,"reminders_msg/custom_".$cust_pr_id['id']."_expired_already",$cust_pr_id['id']);
+		}
 	}
 	// Send reminders for last warning
-	sendCustomProductsReminderEmail(-$conf_custom_renewal_lastwarning,"reminders_msg/custom_".$cust_pr_id['id']."_expired_last_warning",$cust_pr_id['id'],"yes");
+	sendCustomProductsReminderEmail(-$conf_custom_renewal_lastwarning-$conf_global_extend,"reminders_msg/custom_".$cust_pr_id['id']."_expired_last_warning",$cust_pr_id['id'],"yes");
 	// Send the shutdown message
-	sendCustomProductsReminderEmail(-$conf_custom_renewal_shutdown,"reminders_msg/custom_".$cust_pr_id['id']."_expired_shutdown",$cust_pr_id['id'],"yes");
+	sendCustomProductsReminderEmail(-$conf_custom_renewal_shutdown-$conf_global_extend,"reminders_msg/custom_".$cust_pr_id['id']."_expired_shutdown",$cust_pr_id['id'],"yes");
 }
 ?>

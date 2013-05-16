@@ -10,12 +10,16 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	global $pro_mysql_dedicated_table;
 	global $pro_mysql_dedicated_ips_table;
 	global $pro_mysql_raduser_table;
+	global $pro_mysql_admin_table;
 
 	global $secpayconf_currency_letters;
 	global $secpayconf_use_products_for_renewal;
+	global $conf_show_invoice_info;
 
 	global $submit_err;
 	global $conf_post_or_get;
+	global $conf_vps_renewal_shutdown;
+	global $conf_global_extend;
 
 	get_secpay_conf();
 
@@ -41,6 +45,14 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	}else{
 		$contact = _("Not found!");
 	}
+	// Get the current admin
+	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."';";
+	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysql_num_rows($r);
+	if($n == 1){
+		$admin = mysql_fetch_array($r);
+	}
+
 	$out .= "<h3>". _("Dedicated server contract:") ."</h3><br>$contract<br><br>";
 
 	$ar = explode("-",$dedicated["expire_date"]);
@@ -49,19 +61,28 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	if(date("Y") > $ar[0] ||
 			(date("Y") == $ar[0] && date("m") > $ar[1]) ||
 			(date("Y") == $ar[0] && date("m") == $ar[1] && date("d") > $ar[2])){
-		$out .= "<font color=\"red\">". _("Your dedicated server has expired on the: ") .$dedicated["expire_date"]."</font>"
-		."<br>". _("Please renew it with one of the following options") ."<br>";
+		$out .= "<font color=\"red\">". _("Your dedicated server has expired on the: ") .$dedicated["expire_date"]."</font>";
 	}else{
 		$out .= _("Your dedicated server will expire on the: ") .$dedicated["expire_date"];
 	}
+	$out .= "<BR>"._("Your can pay your dedicated server without overdue charges until:")." ".calculateExpirationDate($dedicated["expire_date"],'00-00-'.$conf_global_extend);
+	$out .= "<br>"._("Your dedicated server will be shutdown on:")." ";
+	$period = "00-00-".($admin["permanent_extend"]+$admin["temporary_extend"]+$conf_vps_renewal_shutdown);
+	$out .= " ".calculateExpirationDate($dedicated["expire_date"],$period)."<br>";
 
-	if ($secpayconf_use_products_for_renewal == 'yes'){
-	    $q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$dedicated["product_id"]."';";
-	    $r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	    $n = mysql_num_rows($r);
-	    if($n == 1){
-		$a = mysql_fetch_array($r);
-		$out .= "<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
+	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."'";
+	$r = mysql_query($q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$admin = mysql_fetch_array($r);
+
+	if($admin["show_invoice_info"] == 'yes' && $conf_show_invoice_info == 'yes'){
+		$out .= "<br>". _("Please renew it with one of the following options") ."<br>";
+		if ($secpayconf_use_products_for_renewal == 'yes'){
+			$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$dedicated["product_id"]."';";
+			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysql_num_rows($r);
+			if($n == 1){
+				$a = mysql_fetch_array($r);
+				$out .= "<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 		<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 		<input type=\"hidden\" name=\"renew_type\" value=\"server\">
 		<input type=\"hidden\" name=\"product_id\" value=\"".$dedicated["product_id"]."\">
@@ -69,15 +90,15 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 		<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 		".submitButtonStart().$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)".submitButtonEnd()."
 		</form><br>";
-	    }
-	}
+	    		}
+		}
 
-	$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$dedicated["product_id"]."';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
-	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
-		$out .= "<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
+		$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$dedicated["product_id"]."';";
+		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysql_num_rows($r);
+		for($i=0;$i<$n;$i++){
+			$a = mysql_fetch_array($r);
+			$out .= "<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 		<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 		<input type=\"hidden\" name=\"renew_type\" value=\"server\">
 		<input type=\"hidden\" name=\"product_id\" value=\"".$a["id"]."\">
@@ -85,6 +106,7 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 		<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 		".submitButtonStart().$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)".submitButtonEnd()."
 		</form><br>";
+		}
 	}
 
 //	$out .= "Dedicated server content!";

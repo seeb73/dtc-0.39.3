@@ -23,6 +23,14 @@ if [ -z "$MX_MAIL" ] ; then
 	fi
 fi
 
+conf_max_receive_process=${conf_max_receive_process:-5}
+
+maxproc=$conf_max_receive_process
+
+maxprocloop=`expr $conf_max_receive_process \* 2`
+
+maxprocloopdaemon=`expr $maxprocloop + 5`
+
 if [ -z ${PATH_BASH} ] ; then
 	if [ -x /bin/bash ] ; then
 		PATH_BASH=/bin/bash
@@ -87,20 +95,33 @@ createDTCuserAndGroup () {
 		else
 			if [ -x /usr/sbin/useradd ] ; then
 				if [ -x ${PATH_BASH} ] ; then
-					/usr/sbin/useradd -r -s ${PATH_BASH} -g ${CONF_DTC_SYSTEM_GROUPNAME} ${CONF_DTC_SYSTEM_USERNAME}
+					/usr/sbin/useradd -r -m -s ${PATH_BASH} -g ${CONF_DTC_SYSTEM_GROUPNAME} ${CONF_DTC_SYSTEM_USERNAME}
 				else
 					echo "Could not find a shell, please fix me here!!!"
 				fi
 			# This one is for freebsd
 			else
 				if [ -x /bin/sh ] ; then
-					pw useradd ${CONF_DTC_SYSTEM_USERNAME} -g ${CONF_DTC_SYSTEM_GROUPNAME} -s /bin/sh
+					pw useradd ${CONF_DTC_SYSTEM_USERNAME} -g ${CONF_DTC_SYSTEM_GROUPNAME} -s /bin/sh -m
 				else
 					echo "Could not find a shell, please fix me here!!!"
 				fi
 			fi
 		fi
 		CONF_DTC_SYSTEM_UID=`${GETENT} passwd ${CONF_DTC_SYSTEM_USERNAME} | cut -d':' -f3`
+		CONF_DTC_SYSTEM_HOMEDIR=`${GETENT} passwd ${CONF_DTC_SYSTEM_USERNAME} | cut -d':' -f6`
+		if [ -d ${CONF_DTC_SYSTEM_HOMEDIR} ] ; then
+			echoIfVerbose "-> Directory ${CONF_DTC_SYSTEM_HOMEDIR} already exists: skipping creation!"
+		else
+			echoIfVerbose "-> creating dtc home directory: ${CONF_DTC_SYSTEM_HOMEDIR}"
+			mkdir -p ${CONF_DTC_SYSTEM_HOMEDIR}
+			if [ -d /etc/skel ] ; then
+				cd /etc/skel/
+				cp -pr . ${CONF_DTC_SYSTEM_HOMEDIR}
+			fi
+			chmod 755 ${CONF_DTC_SYSTEM_HOMEDIR}
+			chown -R ${CONF_DTC_SYSTEM_USERNAME}:${CONF_DTC_SYSTEM_GROUPNAME} ${CONF_DTC_SYSTEM_HOMEDIR}
+		fi
 	fi
 	if [ -z ""$CONF_DTC_SYSTEM_UID ] ; then
 		echo "No dtc system user: exiting"
@@ -1061,6 +1082,14 @@ setupDTCDatabase () {
 	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'domain', '', NOW(NULL), 'Select', 'Select')"
 	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'email_accounting', '', NOW(NULL), 'Select,Insert,Update,Delete,References,Index', 'Select')"
 
+	# grant select to admin
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'admin', '', NOW(NULL), 'Select', 'Select')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'admin', '', NOW(NULL), 'Select', 'Select')"
+
+	# grant select to config
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'config', '', NOW(NULL), 'Select', 'Select')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'config', '', NOW(NULL), 'Select', 'Select')"
+
 	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="FLUSH PRIVILEGES"
 
 	# Setup good values depending on Unix distribution
@@ -1392,7 +1421,8 @@ enableApache2Modules () {
 
 createApacheAdminProtectedDir () {
 	echoIfVerbose "Creating "$PATH_DTC_ADMIN"/.htaccess file."
-	echo "<Files *>
+	echo "DirectoryIndex index.php
+<Files *>
 	Order deny,allow
 	deny from all
 </Files>
@@ -1706,7 +1736,7 @@ sasl_sql_engine: mysql
 sasl_sql_hostnames: ${conf_mysql_host}
 sasl_sql_database: ${conf_mysql_db}
 sasl_sql_user: dtcdaemons
-sasl_sql_select: SELECT passwd FROM pop_access WHERE fullemail = '%u@%r'
+sasl_sql_select: SELECT passwd FROM pop_access WHERE fullemail = '%u@%r' and active=1
 " > $cyrus_etc_path/imapd.conf
 
 			# CL: ok this looks like bsd only, so I will not touch this.
@@ -2050,27 +2080,54 @@ setupAmavisConf () {
                 	echo "# Configured by DTC $VERSION" >> $TMP_FILE
                 	echo "\$daemon_user  = '$AMAVISD_USER';" >> $TMP_FILE
                 	echo "\$daemon_group  = '$AMAVISD_USER';" >> $TMP_FILE
-			echo "\$max_servers=5;" >> $TMP_FILE
-                	echo "\$final_virus_destiny = D_DISCARD;" >> $TMP_FILE
-                	echo "\$final_spam_destiny = D_PASS;" >> $TMP_FILE
-                	echo "\$final_banned_destiny = D_PASS;" >> $TMP_FILE
-                	echo "\$final_bad_header_destiny = D_PASS;" >> $TMP_FILE
-                	echo "\$warnvirussender = 0;" >> $TMP_FILE
-                	echo "\$warnspamsender = 0;" >> $TMP_FILE
-			echo " # kill level defaults " >> $TMP_FILE
-
-			echo "\$sa_tag_level_deflt  = -9999;" >> $TMP_FILE
-			echo "\$sa_tag2_level_deflt = 4.3;" >> $TMP_FILE
-			echo "\$sa_kill_level_deflt = 6.0;" >> $TMP_FILE
-			echo "\$sa_dsn_cutoff_level = 11;" >> $TMP_FILE
-
+			echo "\$max_servers=$maxproc;" >> $TMP_FILE
+	echo "\$first_infected_stops_scan = 1;  # default is false, all scanners in a section" >> $TMP_FILE
 			echo "\$sa_mail_body_size_limit = 150*1024;" >> $TMP_FILE
-			echo "# The following line will read the local domains as generated by DTC, amavisd will need to be restarted for new domains..." >> $TMP_FILE
-			echo "read_hash(\\%local_domains, '$PATH_DTC_ETC/local_domains');" >> $TMP_FILE
+                	echo "\$final_virus_destiny = D_DISCARD;" >> $TMP_FILE
+                	echo "\$final_spam_destiny = D_BOUNCE; #we set this to bounce to let users decide if the sender should be notified. If dsn_cutoff is not higher than kill_level, bounce will be changed to discart automatically!" >> $TMP_FILE
+                	echo "\$final_banned_destiny = D_DISCARD; #to let users discard messages we default to discart and overrule this by setting all users to lovers which is the same as passing through." >> $TMP_FILE
+                	echo "\$final_bad_header_destiny = D_DISCARD; #again we discard to let users decide on their own what to do." >> $TMP_FILE
+echo "@banned_files_lovers_maps = ('Y');" >> $TMP_FILE
+echo "@bad_header_lovers_maps = ('Y');" >> $TMP_FILE
+                	echo "\$warnvirussender = 0;" >> $TMP_FILE
+                	echo "\$warnspamsender = 1; #senders only will be warned if dsn_cutoff is higher than kill_level! Be default this is not true so warning is turned off." >> $TMP_FILE
+	echo "\$warnbannedsender = 0;" >> $TMP_FILE
+	echo "\$warnbadhsender = 0;" >> $TMP_FILE
+	echo "\$insert_received_line = 1;       # behave like MTA: insert 'Received:' header" >> $TMP_FILE
+	echo "\$sa_spam_level_char = '*';  # char for X-Spam-Level bar, defaults to '*';" >> $TMP_FILE
+	echo "\$sa_spam_modifies_subj = 1; # or specify individual settings in @spam_modifies_subj_maps, default is true" >> $TMP_FILE
 
-			# if we have a list of postfix relay domains, we may as well check them to virii etc...
+			echo " # kill level and subject defaults 
+@spam_tag_level_maps = ('-999');
+@spam_tag2_level_maps = ('4.3');
+@spam_tag3_level_maps = ('6.0'); #if you set this below kill_level you can define a separate subject for mails that are above tag3 level.
+@spam_kill_level_maps = ('6.0');
+#change subject of spam tagged mails per level:
+@spam_subject_tag_maps = (\"\");
+@spam_subject_tag2_maps = (\"***SPAM*** _SCORE_ (_REQD_) \");
+@spam_subject_tag3_maps = (\"***BLATANT*SPAM**** _SCORE_ \");
+@spam_dsn_cutoff_level_maps = ('6.0'); #from kill level up to this level warnings can be send if activated
+@quarantine_cutoff_level_maps = ('20');
+" >> $TMP_FILE
+			echo "# whom quarantined messages appear to be sent from (envelope sender);
+# keeps original sender if undef, or set it explicitly, default is undef
+\$mailfrom_to_quarantine = '';   # override sender address with null return path
+#change x header field:
+\$X_HEADER_TAG = 'X-Virus-Scanned';  # (default: \'X-Virus-Scanned\')
+# Set to empty to add no header field   
+# \$X_HEADER_LINE = \"\$myproduct_name at \$mydomain\";
+# \$X_HEADER_LINE = \"by \$myproduct_name using ClamAV at \$mydomain\";
+# \$X_HEADER_LINE = \"\$myproduct_name \$myversion_id (\$myversion_date) at \$mydomain\";
+#set the default delimiter:
+\$recipient_delimiter = \"$conf_recipient_delim\";
+" >> $TMP_FILE
+
+	echo "\$sa_spam_report_header = 0; # insert X-Spam-Report header field? default false" >> $TMP_FILE
+			# if we have a list of postfix relay domains, we may check them to virii etc...
 			# If you enable this, it will tag ***SPAM*** twice... not very good looking :)
 	 		# if [ -e "$PATH_DTC_ETC/postfix_relay_domains" ] ; then
+#			echo "# The following line will read the local and relay domains as generated by DTC, amavisd will need to be restarted for new domains..." >> $TMP_FILE
+#			echo "read_hash(\\%local_domains, '$PATH_DTC_ETC/local_domains');" >> $TMP_FILE
 	 		#	echo "my %tmp_relay_domains;" >> $TMP_FILE
 			#	echo "read_hash(\\%tmp_relay_domains, '$PATH_DTC_ETC/postfix_relay_domains');" >> $TMP_FILE
 			#	echo "# now merge the two hashes" >> $TMP_FILE
@@ -2100,6 +2157,19 @@ if (defined @\$ref)
 
 " >> $TMP_FILE
 
+			echo "#activate amavis sql lookups for userbased configuration in dtc:
+@lookup_sql_dsn = (
+['DBI:mysql:database=$conf_mysql_db;host=$conf_mysql_host;port=3306',
+'$conf_mysql_login',
+'$conf_mysql_pass']);
+\$sql_select_policy = 'SELECT * FROM pop_access WHERE fullemail IN (%k)';
+\$sql_select_white_black_list = undef;  # undef disables SQL white/blacklisting
+#
+# for logging and debugging:
+\$syslog_priority = \"info\";  # we set the log to info instead of debug which is the amavis default. switch to debug and uncomment the next line to activate debug output, etc
+#\$log_level = 5;  #uncomment to get full debugging information if logging is set to debug.
+#
+" >> $TMP_FILE
 	                echo "# End of DTC configuration $VERSION" >> $TMP_FILE
 	                echo "1;  # insure a defined return" >> $TMP_FILE
 
@@ -2239,7 +2309,7 @@ sasl_sql_engine: mysql
 sasl_sql_hostnames: ${conf_mysql_host}
 sasl_sql_database: ${conf_mysql_db}
 sasl_sql_user: dtcdaemons
-sasl_sql_select: SELECT passwd FROM pop_access WHERE fullemail = '%u@%r'
+sasl_sql_select: SELECT passwd FROM pop_access WHERE fullemail = '%u@%r' and active=1
 sasl_sql_passwd: ${MYSQL_DTCDAEMONS_PASS}
 " >> $TMP_FILE
 			echo "# End of DTC configuration v0.20 : Please don't touch this line !" >> $TMP_FILE
@@ -2382,10 +2452,20 @@ mailbox_size_limit = 0
 				cp -f ${PATH_DTC_ADMIN}/postfix_checks/relaying_stoplist ${PATH_POSTFIX_ETC}/maps
 			fi
 
+			FOUND_LOOPPREVENT=0;
+			if [ -x /usr/sbin/smtpprox-loopprevent -o -x /usr/bin/smtpprox-loopprevent -o -x /usr/local/sbin/smtpprox-loopprevent -o -x /usr/local/bin/smtpprox-loopprevent ] ; then
+				FOUND_LOOPPREVENT=1;
+			fi
+
 			FOUND_DKIMPROXY=0;
 			if [ -x /usr/sbin/amavisd-new -o -x /usr/local/sbin/amavisd-new -o -x /usr/local/bin/amavisd-new -o -x /usr/sbin/amavisd ] ; then
 				if [ -x /usr/sbin/dkimproxy.in -o -x /usr/bin/dkimproxy.in -o -x /usr/local/sbin/dkimproxy.in -o -x /usr/local/bin/dkimproxy.in ] ; then
 					FOUND_DKIMPROXY=1;
+					if [ -f /etc/default/dkimproxy ] ; then
+						DKIMPROXY_CONF=/etc/default/dkimproxy
+					else
+						DKIMPROXY_CONF=
+					fi
 					echo "# use check_access directive to filter all incoming mail
 /^/  FILTER dkimsign:[127.0.0.1]:10026" > $PATH_POSTFIX_ETC/filter_10026_catchall
 					echo "# Amavis AND dkimproxy.in have been detected as installed, so this has been activated by default
@@ -2536,8 +2616,9 @@ smtpd_tls_auth_only = no"
 echo "                               $dnsbl_list
                                reject_unauth_destination" >> $TMP_FILE
 				if [ "$FOUND_DKIMPROXY" -eq 1 ] ; then
-#				if [ "$FOUND_DKFILTER" -eq 1 ] ; then
-					echo "			check_sender_access regexp:$PATH_POSTFIX_ETC/filter_10026_catchall" >> $TMP_FILE
+					if [ "$FOUND_LOOPPREVENT" -eq 0 ] ; then
+						echo "			check_sender_access regexp:$PATH_POSTFIX_ETC/filter_10026_catchall" >> $TMP_FILE
+					fi
 				fi
                                permit_sasl_authenticated=""
                                sasl_main_dot_cf_rules=""
@@ -2558,13 +2639,15 @@ smtpd_recipient_restrictions = permit_mynetworks,${permit_sasl_authenticated}
 			reject_invalid_hostname,
 			reject_non_fqdn_sender,
 			reject_non_fqdn_recipient,
+			reject_non_fqdn_hostname,
 			reject_unknown_sender_domain,
 			reject_unknown_recipient_domain,
 			$dnsbl_list
 			reject_unauth_destination," >> $TMP_FILE
 			if [ "$FOUND_DKIMPROXY" -eq 1 ] ; then
-#			if [ "$FOUND_DKFILTER" -eq 1 ] ; then
-				echo "			check_sender_access regexp:$PATH_POSTFIX_ETC/filter_10026_catchall" >> $TMP_FILE
+				if [ "$FOUND_LOOPPREVENT" -eq 0 ] ; then
+					echo "			check_sender_access regexp:$PATH_POSTFIX_ETC/filter_10026_catchall" >> $TMP_FILE
+				fi
 			fi
 			echo "			permit${sasl_main_dot_cf_rules}" >> $TMP_FILE
 
@@ -2582,16 +2665,8 @@ ham.ham         sa-ham:
 " >$PATH_POSTFIX_ETC/transport
 				postmap $PATH_POSTFIX_ETC/transport
 				echo "# spam learning transport maps
-transport_maps = hash:$PATH_POSTFIX_ETC/transport
+transport_maps = hash:$PATH_POSTFIX_ETC/transport hash:$PATH_DTC_ETC/postfix_transport
 " >> $TMP_FILE
-			fi
-
-			# this adds supports for "config" snippets to append to main.cf
-			if [ -f $PATH_DTC_ETC/postfix_config_snippets ] ; then
-				cat $PATH_DTC_ETC/postfix_config_snippets >> $TMP_FILE
-			else
-				echo "# /var/lib/dtc/etc/postfix_config_snippets
-# this file is appended to the postfix configure, in case you need to override some configure parameters in the postfix main.cf" > $PATH_DTC_ETC/postfix_config_snippets
 			fi
 
 			if grep "Configured by DTC" /etc/aliases >/dev/null; then
@@ -2630,11 +2705,9 @@ transport_maps = hash:$PATH_POSTFIX_ETC/transport
 				if [ -x /usr/sbin/spamd -o -x /usr/local/bin/spamd ] ; then
 					echo "# Adds support for the sa-learn script
 sa-spam unix    -       n       n       -       -       pipe
-    -o smtpd_client_restrictions=permit_sasl_authenticated,permit_mynetworks,reject
     user=$AMAVISD_USER:$AMAVISD_USER argv=$PATH_DTC_ADMIN/sa-wrapper spam \${sender}
 
 sa-ham  unix    -       n       n       -       -       pipe
-    -o smtpd_client_restrictions=permit_sasl_authenticated,permit_mynetworks,reject
     user=$AMAVISD_USER:$AMAVISD_USER argv=$PATH_DTC_ADMIN/sa-wrapper ham  \${sender}
 
 " >> $TMP_FILE2
@@ -2685,9 +2758,45 @@ tumgreyspf unix  -      n       n       -       -       spawn
 ">> $TMP_FILE2
 				fi
 
+				# Insert smtpprox-loopprevent config into master.cf
+				if [ "$FOUND_LOOPPREVENT" -eq 1 ] ; then
+					echoIfVerbose "===> smtpprox-loopprevent found, including in postfix config"
+					echo "# smtpprox-loopprevent configuration
+#
+# Before-filter SMTP server. Receive mail from the network and
+# pass it to smtpprox-loopprevent on localhost port 10022.
+# (overwrite the default smtp service)
+#
+smtp      inet  n       -       n       -       $maxprocloop      smtpd
+	-o smtpd_proxy_filter=127.0.0.1:10022
+	-o smtpd_client_connection_count_limit=10
+	-o smtpd_proxy_options=speed_adjust
+
+#
+# After-filter SMTP server. Receive mail from smtpprox-loopprevent
+# on localhost port 10023.
+#
+127.0.0.1:10023 inet n  -       n       -        -      smtpd
+	-o smtpd_authorized_xforward_hosts=127.0.0.0/8
+	-o smtpd_client_restrictions=
+	-o smtpd_helo_restrictions=
+	-o smtpd_sender_restrictions=
+	-o smtpd_relay_restrictions=
+	-o smtpd_recipient_restrictions=permit_mynetworks,reject
+	-o smtpd_data_restrictions=
+	-o mynetworks=127.0.0.0/8
+	-o receive_override_options=no_unknown_recipient_checks" >> $TMP_FILE2
+					if [ "$FOUND_DKIMPROXY" -eq 1 ] ; then
+						echo "	-o content_filter=dkimsign:[127.0.0.1]:10026" >> $TMP_FILE2
+					fi
+					echo "" >> $TMP_FILE2
+				else
+					echoIfVerbose "===> smtpprox-loopprevent not found"
+				fi
+
 				# Insert our amavis stuff inside the master.cf
 				echo "# amavisd-new
-smtp-amavis unix -      -       -       -       2  smtp
+smtp-amavis unix -      -       -       -       $maxproc  smtp
     -o smtp_data_done_timeout=1200
     -o smtp_send_xforward_command=yes
     -o disable_dns_lookups=yes
@@ -2727,14 +2836,14 @@ submission  inet  n     -       n       -       -       smtpd
 #
 # specify the location of the DomainKeys signing filter
 #
-dkimsign    unix  -       -       n       -       4      smtp
+dkimsign    unix  -       -       n       -       $maxproc      smtp
     -o smtp_send_xforward_command=yes
     -o smtp_discard_ehlo_keywords=8bitmime
 
 #
 # service for accepting messages FROM the DomainKeys signing filter
 #
-127.0.0.1:10029 inet  n  -      n       -       5      smtpd
+127.0.0.1:10029 inet  n  -      n       -       $maxproc      smtpd
     -o smtpd_use_tls=no
     -o content_filter=
     -o receive_override_options=no_unknown_recipient_checks,no_header_body_checks,no_address_mappings
@@ -2754,7 +2863,7 @@ pickup fifo n - n 60 1 pickup
 				# if we also have sieve, we should use it too!
 				if [ ""$conf_use_sieve = "true" ] ; then
 					echo "dovecot unix    -       n       n       -       -      pipe
-    flags=DRhu user=${CONF_DTC_SYSTEM_USERNAME} argv=$PATH_DOVECOT_DELIVER -f \${sender} -d \${user}@\${nexthop} -n -m \${extension} -a \${recipient}
+    flags=DRhu user=${CONF_DTC_SYSTEM_USERNAME} argv=$PATH_DOVECOT_DELIVER -f \${sender} -d \${user}@\${nexthop} -n -s -m \${extension} -a \${recipient}
 
 " >> $TMP_FILE2
 					touch /var/log/sieve.log
@@ -2809,6 +2918,15 @@ smtpd_client_restrictions = permit_mynetworks,
 maildrop_destination_recipient_limit = 1" >> $TMP_FILE
 				fi
 			fi
+
+			# this adds supports for "config" snippets to append to main.cf
+			if [ -f $PATH_DTC_ETC/postfix_config_snippets ] ; then
+				cat $PATH_DTC_ETC/postfix_config_snippets >> $TMP_FILE
+			else
+				echo "# /var/lib/dtc/etc/postfix_config_snippets
+# this file is appended to the postfix configure, in case you need to override some configure parameters in the postfix main.cf" > $PATH_DTC_ETC/postfix_config_snippets
+			fi
+
 			echo "# End of DTC configuration v0.12 : please don't touch this line !" >> $TMP_FILE
 
 			# now to insert it at the end of the actual main.cf
@@ -2846,10 +2964,7 @@ maildrop_destination_recipient_limit = 1" >> $TMP_FILE
   sql_user: dtcdaemons
   sql_passwd: ${MYSQL_DTCDAEMONS_PASS}
   sql_database: ${conf_mysql_db}
-  #password_format: crypt
-  #sql_select: SELECT crypt FROM pop_access WHERE fullemail = '%u@%r'
-  #sql_update: UPDATE pop_access SET crypt = '%v' WHERE fullemail = '%u@%r'
-  sql_select: SELECT passwd FROM pop_access WHERE fullemail = '%u@%r'
+  sql_select: SELECT passwd FROM pop_access,domain,admin,config WHERE pop_access.active=1 and mbox_host=name AND owner=adm_login AND (disabled='no' or disabled='always-no' or disabled='') AND pop_access.id = '%u' AND case when config.main_domain_mail_without_domain='yes' and '%r'='' then mbox_host=config.main_domain else (mbox_host='%r' or mbox_host in (select domain_parking from domain where name='%r' and domain_parking_type='redirect')) end
   sql_update: UPDATE pop_access SET passwd = '%v' WHERE fullemail = '%u@%r'
   sql_verbose: yes
   # End of DTC configuration v0.25 : please don't touch this line !" >${PATH_AUTH_SMTP}
@@ -2875,6 +2990,45 @@ maildrop_destination_recipient_limit = 1" >> $TMP_FILE
   			echoIfVerbose "===> ****** $PATH_SASLLIB/libsql.so NOT found and PAM was removed from the installation, leaving Postfix SASL unconfigured! Please fix me!"
   		  echoIfVerbose "===> ********************************************************** "
   		fi # [ -f $PATH_SASLLIB/libsql.so ]
+
+
+	# configure smtpprox-loopprevent
+	if [ "$FOUND_LOOPPREVENT" -eq 1 ] ; then
+		LOOPPREVENT_CONF=""
+		LOOPPREVENT_CONFIG=""
+		if [ -f /etc/default/smtpprox-loopprevent ]; then
+			LOOPPREVENT_CONF=/etc/default/smtpprox-loopprevent
+			LOOPPREVENT_CONFIG="
+# Configured by DTC $VERSION
+
+# smtpprox-loopprevent: listen on 10022, send to 10023
+_LISTEN_PORT=\"127.0.0.1:10022\"
+_SEND_PORT=\"127.0.0.1:10023\"
+_OPTS=\"--children=$maxprocloopdaemon\"
+# End of DTC configuration $VERSION
+"
+		fi
+		LOOPPREVENT_BACKUP=${LOOPPREVENT_CONF}.DTC.backup
+		if ! [ -f ${LOOPPREVENT_BACKUP} ] ; then
+			if [ -f ${LOOPPREVENT_CONF} ] ; then
+				cp -f ${LOOPPREVENT_CONF} ${LOOPPREVENT_BACKUP}
+			fi
+		fi
+
+		if [ -n "${LOOPPREVENT_CONF}" -a -f "${LOOPPREVENT_CONF}" ] ; then
+			if grep "Configured by DTC " ${LOOPPREVENT_CONF} >/dev/null
+			then
+				echoIfVerbose "smtpprox-loopprevent has been configured previously, not adding config."
+			else
+				echoIfVerbose "===> adding smtpprox-loopprevent config to ${LOOPPREVENT_CONF}"
+				echo "${LOOPPREVENT_CONFIG}" >> ${LOOPPREVENT_CONF}
+				restartDaemonMultiUnix smtpprox-loopprevent
+			fi
+		else
+			echoIfVerbose "NOTICE:  smtpprox-loopprevent config file not found, you should manually configure it to listen on 127.0.0.1:10022 and send to 127.0.0.1:10023.  Postfix may bounce incoming emails if this is not done."
+		fi
+	fi
+
 	# By default, CentOS setup is wrong with maildrop not being SUID
 	if [ "$UNIX_TYPE" = "redhat" -a /usr/bin/maildrop ] ; then
 		chmod +s /usr/bin/maildrop
@@ -2884,6 +3038,13 @@ maildrop_destination_recipient_limit = 1" >> $TMP_FILE
 		echo "# options to dkimproxy_out
 OPTIONS=\"--domain=\`cat /var/lib/dtc/etc/local_domains | tr \\\\\\r\\\\\\n ,,\`\"
 " >/etc/sysconfig/dkimproxy_out
+	fi
+
+	if [ "$UNIX_TYPE" = "debian" -a -f $DKIMPROXY_CONF ] ; then
+		echoIfVerbose "===> adding dkimproxy config to $DKIMPROXY_CONF"
+		sed -i "s/#*DKIMPROXY_IN_MIN_SERVERS=.*/DKIMPROXY_IN_MIN_SERVERS=$maxproc/" $DKIMPROXY_CONF
+		sed -i "s/#*DKIMPROXY_OUT_MIN_SERVERS=.*/DKIMPROXY_OUT_MIN_SERVERS=$maxproc/" $DKIMPROXY_CONF
+		restartDaemonMultiUnix dkimproxy
 	fi
 }
 
@@ -3311,8 +3472,8 @@ mail_max_userip_connections = 200
 connect = host=$DOVECOT_MYSQL dbname=$conf_mysql_db user=dtcdaemons password=${MYSQL_DTCDAEMONS_PASS} client_flags=0
 driver = mysql
 default_pass_scheme = PLAIN
-password_query = SELECT passwd as password FROM pop_access WHERE id = '%n' AND (mbox_host='%d' or mbox_host in (select domain_parking from domain where name='%d' and domain_parking_type='redirect'))
-user_query = SELECT home, uid, gid FROM pop_access WHERE id = '%n' AND (mbox_host='%d' or mbox_host in (select domain_parking from domain where name='%d' and domain_parking_type='redirect'))
+password_query = SELECT passwd as password FROM pop_access,domain,admin,config WHERE pop_access.active=1 and mbox_host=name AND owner=adm_login AND (disabled='no' or disabled='always-no' or disabled='') AND pop_access.id = '%n' AND case when config.main_domain_mail_without_domain='yes' and '%d'='' THEN mbox_host=config.main_domain ELSE (mbox_host='%d' or mbox_host in (select domain_parking from domain where name='%d' and domain_parking_type='redirect')) END
+user_query = SELECT home, uid, gid FROM pop_access,domain,admin,config WHERE pop_access.active=1 and mbox_host=name AND owner=adm_login AND (disabled='no' or disabled='always-no' or disabled='') AND pop_access.id = '%n' AND case when config.main_domain_mail_without_domain='yes' and '%d'='' then mbox_host=config.main_domain else (mbox_host='%d' or mbox_host in (select domain_parking from domain where name='%d' and domain_parking_type='redirect')) end
 " > $PATH_DTC_ETC/dovecot-mysql.conf
 			else
 				echo "
@@ -3320,8 +3481,8 @@ user_query = SELECT home, uid, gid FROM pop_access WHERE id = '%n' AND (mbox_hos
 connect = host=${MYSQL_DB_SOCKET_PATH} port=3306 dbname=$conf_mysql_db user=dtcdaemons password=${MYSQL_DTCDAEMONS_PASS}
 driver = mysql
 default_pass_scheme = PLAIN
-password_query = SELECT passwd AS password, home as userdb_home, uid as userdb_uid, gid as userdb_gid FROM pop_access WHERE id = '%n' AND mbox_host = '%d'
-user_query = SELECT home, uid, gid FROM pop_access WHERE id = '%n' AND mbox_host = '%d'
+password_query = SELECT passwd AS password, home as userdb_home, uid as userdb_uid, gid as userdb_gid FROM pop_access WHERE active=1 and id = '%n' AND mbox_host = '%d'
+user_query = SELECT home, uid, gid FROM pop_access WHERE active=1 and id = '%n' AND mbox_host = '%d'
 db_client_flags = 0
 " > $PATH_DTC_ETC/dovecot-mysql.conf
 			fi
@@ -3391,10 +3552,10 @@ MYSQLUser dtcdaemons
 MYSQLPassword ${MYSQL_DTCDAEMONS_PASS}
 MYSQLDatabase $conf_mysql_db
 MYSQLCrypt cleartext
-MYSQLGetPW      SELECT password FROM ftp_access WHERE login=\"\L\"
-MYSQLGetUID     SELECT uid FROM ftp_access WHERE login=\"\L\"
-MYSQLGetGID     SELECT gid FROM ftp_access WHERE login=\"\L\"
-MYSQLGetDir     SELECT homedir FROM ftp_access WHERE login=\"\L\"
+MYSQLGetPW      SELECT password FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login=\"\L\"
+MYSQLGetUID     SELECT uid FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login=\"\L\"
+MYSQLGetGID     SELECT gid FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login=\"\L\"
+MYSQLGetDir     SELECT homedir FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login=\"\L\"
 
 " >/usr/local/etc/pureftpd-mysql.conf;
 		fi
@@ -3438,10 +3599,10 @@ MYSQLUser dtcdaemons
 MYSQLPassword ${MYSQL_DTCDAEMONS_PASS}
 MYSQLDatabase $conf_mysql_db
 MYSQLCrypt cleartext
-MYSQLGetPW      SELECT password FROM ftp_access WHERE login=\"\L\"
-MYSQLGetUID     SELECT uid FROM ftp_access WHERE login=\"\L\"
-MYSQLGetGID     SELECT gid FROM ftp_access WHERE login=\"\L\"
-MYSQLGetDir     SELECT homedir FROM ftp_access WHERE login=\"\L\"
+MYSQLGetPW      SELECT password FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login=\"\L\"
+MYSQLGetUID     SELECT uid FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login=\"\L\"
+MYSQLGetGID     SELECT gid FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login=\"\L\"
+MYSQLGetDir     SELECT homedir FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login=\"\L\"
 
 " >${PURE_DBCONFIG_FILE}
 			# If running in Debian, try to determine if using standalone or daemon
@@ -3553,10 +3714,16 @@ configProftpd () {
 			fi
 			TMP_FILE_SQL=`${MKTEMP} DTC_install.proftp.conf.sql.XXXXXX` || exit 1
 			echo "<IfModule mod_sql.c>" > $TMP_FILE_SQL
-			echo "SQLAuthenticate	on" >> $TMP_FILE_SQL
+			echo "SQLAuthenticate	users groups usersetfast" >> $TMP_FILE_SQL
 			echo "SQLConnectInfo	"$conf_mysql_db"@"$conf_mysql_host" dtcdaemons "${MYSQL_DTCDAEMONS_PASS} >> $TMP_FILE_SQL
 			echo "SQLAuthTypes	Plaintext Crypt" >> $TMP_FILE_SQL
-			echo "SQLUserInfo	ftp_access login password uid gid homedir shell" >> $TMP_FILE_SQL
+#			echo "SQLUserInfo	ftp_access login password uid gid homedir shell" >> $TMP_FILE_SQL
+			echo "SQLUserInfo custom:/get-user-by-name/get-user-by-id/get-user-names/get-all-users
+SQLNamedQuery get-user-by-name SELECT \"login, password, uid, gid, homedir, shell FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login = '%U'\"
+SQLNamedQuery get-user-by-id SELECT \"login, password, uid, gid, homedir, shell FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and uid = %{0}\"
+SQLNamedQuery get-user-names SELECT \"login FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='')\"
+SQLNamedQuery get-all-users SELECT \"login, password, uid, gid, homedir, shell FROM ftp_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='')\"
+"
 			echo "# // Transfer Log to Proftpd
 SQLLog RETR,STOR transfer1
 SQLNamedQuery transfer1 INSERT \"'%u', '%f', '%b', '%h', '%a', '%m', '%T',now(), 'c', NULL\" ftp_logs
@@ -3670,8 +3837,9 @@ configFreeRadius () {
 		sed "s/auth_goodpass = no/auth_goodpass = yes/" $TMP_FILE2 >$TMP_FILE
 		sed "s/#	sql$/       sql/" $TMP_FILE >$TMP_FILE2 
 		sed "s/#	\$INCLUDE sql/	\$INCLUDE sql/" $TMP_FILE2 >$TMP_FILE 
+		sed "s/ \$INCLUDE sqlippool/    \#      $INCLUDE sqlippool/" $TMP_FILE >$TMP_FILE2
 
-		cat <$TMP_FILE >$FREERADIUS_CONF
+		cat <$TMP_FILE2 >$FREERADIUS_CONF
 
 		rm $TMP_FILE $TMP_FILE2
 
@@ -4022,16 +4190,16 @@ groups.member_groupid_column = ssh_user_group.group_id;
 				if [ "$UNIX_TYPE" = "freebsd" ] ; then
 					echo "
 [queries]
-getpwnam    SELECT login,crypt,uid,gid,'','default','DTC User',homedir,shell,2145916000 FROM ssh_access WHERE login='%1\$s' LIMIT 1
-getpwuid    SELECT login,'*',uid,gid,'DTC User',homedir,shell FROM ssh_access WHERE uid='%1\$u' LIMIT 1
-getpwent    SELECT login,'*',uid,gid,'DTC User',homedir,shell FROM ssh_access
+getpwnam    SELECT login,crypt,uid,gid,'','default','DTC User',homedir,shell,2145916000 FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login='%1\$s' LIMIT 1
+getpwuid    SELECT login,'*',uid,gid,'DTC User',homedir,shell FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and uid='%1\$u' LIMIT 1
+getpwent    SELECT login,'*',uid,gid,'DTC User',homedir,shell FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') 
 getgrnam    SELECT group_name,group_password,group_id FROM ssh_groups WHERE group_name='%1\$s' LIMIT 1
 getgrgid    SELECT group_name,group_password,group_id FROM ssh_groups WHERE group_id='%1\$u' LIMIT 1
 getgrent    SELECT group_name,group_password,group_id FROM ssh_groups
-memsbygid   SELECT login FROM ssh_access WHERE gid='%1\$u'
-gidsbymem   SELECT gid  FROM ssh_access WHERE login='%1\$s'
-getspnam    SELECT login,crypt,UNIX_TIMESTAMP() - 10,1,2,7,-1,-1,0 FROM ssh_access WHERE ssh_access.login='%1\$s' LIMIT 1
-getspent    SELECT login,crypt,UNIX_TIMESTAMP() - 10,1,2,7,-1,-1,0 FROM ssh_access
+memsbygid   SELECT login FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and gid='%1\$u'
+gidsbymem   SELECT gid  FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login='%1\$s'
+getspnam    SELECT login,crypt,UNIX_TIMESTAMP() - 10,1,2,7,-1,-1,0 FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and ssh_access.login='%1\$s' LIMIT 1
+getspent    SELECT login,crypt,UNIX_TIMESTAMP() - 10,1,2,7,-1,-1,0 FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='')
 
 [server]
 host ${conf_mysql_host}
@@ -4043,16 +4211,16 @@ password ${MYSQL_DTCDAEMONS_PASS}
 				else
 					echo "
 [queries]
-getpwnam    SELECT login,crypt,uid,gid,'DTC User',homedir,shell FROM ssh_access WHERE login='%1\$s' LIMIT 1 
-getpwuid    SELECT login,'*',uid,gid,'DTC User',homedir,shell FROM ssh_access WHERE uid='%1\$u' LIMIT 1
-getpwent    SELECT login,'*',uid,gid,'DTC User',homedir,shell FROM ssh_access
+getpwnam    SELECT login,crypt,uid,gid,'DTC User',homedir,shell FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login='%1\$s' LIMIT 1 
+getpwuid    SELECT login,'*',uid,gid,'DTC User',homedir,shell FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and uid='%1\$u' LIMIT 1
+getpwent    SELECT login,'*',uid,gid,'DTC User',homedir,shell FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='')
 getgrnam    SELECT group_name,group_password,group_id FROM ssh_groups WHERE group_name='%1\$s' LIMIT 1
 getgrgid    SELECT group_name,group_password,group_id FROM ssh_groups WHERE group_id='%1\$u' LIMIT 1
 getgrent    SELECT group_name,group_password,group_id FROM ssh_groups
-memsbygid   SELECT login FROM ssh_access WHERE gid='%1\$u'
-gidsbymem   SELECT gid  FROM ssh_access WHERE login='%1\$s'
-getspnam    SELECT login,crypt,UNIX_TIMESTAMP() - 10,1,2,7,-1,-1,0 FROM ssh_access WHERE ssh_access.login='%1\$s' LIMIT 1
-getspent    SELECT login,crypt,UNIX_TIMESTAMP() - 10,1,2,7,-1,-1,0 FROM ssh_access
+memsbygid   SELECT login FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and gid='%1\$u'
+gidsbymem   SELECT gid  FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and login='%1\$s'
+getspnam    SELECT login,crypt,UNIX_TIMESTAMP() - 10,1,2,7,-1,-1,0 FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='') and ssh_access.login='%1\$s' LIMIT 1
+getspent    SELECT login,crypt,UNIX_TIMESTAMP() - 10,1,2,7,-1,-1,0 FROM ssh_access,domain,admin where hostname=name and owner=adm_login and (disabled='no' or disabled='always-no' or disabled='')
 
 [server]
 host ${conf_mysql_host}
@@ -4332,7 +4500,7 @@ nice -n+20 memgraph/get_meminfo.sh      $PATH_DTC_ETC 2>&1 >>/var/log/dtc.log
 
 startPhpCronScript () {
 	# Set the flags on the SQL table to make the cron job execute correctly
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="UPDATE cron_job SET qmail_newu='yes',restart_qmail='yes',gen_qmail='yes',reload_named='yes',restart_apache='yes',gen_vhosts='yes',gen_named='yes' WHERE 1"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="UPDATE cron_job SET qmail_newu='yes',restart_qmail='yes',gen_qmail='yes',reload_named='yes',restart_apache='yes',gen_vhosts='yes',gen_named='yes',gen_backup='yes' WHERE 1"
 	# Only start fetchmail cronjob if we have fetchmail installed *steveetm*
 	if [ `which fetchmail` ] ; then
 	    $MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="UPDATE cron_job SET gen_fetchmail='yes' WHERE 1"
@@ -5334,6 +5502,32 @@ uninstallETC_CONFD_APACHE2 () {
 	fi
 }
 
+uninstallLoopPreventConfig () {
+	#
+	# uninstall smtpprox-loopprevent config
+	#
+	echoIfVerbose "===> Uninstalling inclusion for smtpprox-loopprevent"
+	LOOPPREVENT_CONF=""
+	if [ -f /etc/default/smtpprox-loopprevent ]; then
+		LOOPPREVENT_CONF=/etc/default/smtpprox-loopprevent
+	fi
+	if [ -n "${LOOPPREVENT_CONF}" -a -f "${LOOPPREVENT_CONF}" ] ; then
+		if grep "Configured by DTC " ${LOOPPREVENT_CONF} >/dev/null
+		then
+			start_line=`grep -n "Configured by DTC " ${LOOPPREVENT_CONF} | cut -d":" -f1`
+			end_line=`grep -n "End of DTC configuration" ${LOOPPREVENT_CONF}| cut -d":" -f1`
+			nbr_line=`cat ${LOOPPREVENT_CONF} | wc -l`
+			TMP_FILE=`${MKTEMP} DTC_uninstall.smtpprox-loopprevent.XXXXXX` || exit 1
+			cat ${LOOPPREVENT_CONF} | head -n $(($start_line - 1 )) > $TMP_FILE
+			cat ${LOOPPREVENT_CONF} | tail -n $(($nbr_line - $end_line )) >> $TMP_FILE
+			cp -f ${LOOPPREVENT_CONF} ${LOOPPREVENT_CONF}.DTC.removed
+			echo -n > ${LOOPPREVENT_CONF}
+			cat < $TMP_FILE >> ${LOOPPREVENT_CONF}
+			rm $TMP_FILE
+		fi
+	fi
+}
+
 createMailAutoconfigFiles () {
 	MAILSERVER=$conf_mx_mail.$main_domain_name
 	DTC_SERVER=$dtc_admin_subdomain.$main_domain_name
@@ -5346,42 +5540,42 @@ createMailAutoconfigFiles () {
 		<displayName>%EMAILDOMAIN% E-Mail</displayName>
 		<displayShortName>E-Mail</displayShortName>
 		<incomingServer type="imap">
-			<hostname>$MAILSERVER</hostname>
+			<hostname>$DTC_SERVER</hostname>
 			<port>993</port>
 			<socketType>SSL</socketType>
 			<authentication>password-cleartext</authentication>
 			<username>%EMAILADDRESS%</username>
 		</incomingServer>
 		<incomingServer type="imap">
-			<hostname>$MAILSERVER</hostname>
+			<hostname>$DTC_SERVER</hostname>
 			<port>143</port>
 			<socketType>STARTTLS</socketType>
 			<authentication>password-cleartext</authentication>
 			<username>%EMAILADDRESS%</username>
 		</incomingServer>
 		<incomingServer type="pop3">
-			<hostname>$MAILSERVER</hostname>
+			<hostname>$DTC_SERVER</hostname>
 			<port>995</port>
 			<socketType>SSL</socketType>
 			<authentication>password-cleartext</authentication>
 			<username>%EMAILADDRESS%</username>
 		</incomingServer>
 		<incomingServer type="pop3">
-			<hostname>$MAILSERVER</hostname>
+			<hostname>$DTC_SERVER</hostname>
 			<port>110</port>
 			<socketType>STARTTLS</socketType>
 			<authentication>password-cleartext</authentication>
 			<username>%EMAILADDRESS%</username>
 		</incomingServer>
 		<outgoingServer type="smtp">
-			<hostname>$MAILSERVER</hostname>
+			<hostname>$DTC_SERVER</hostname>
 			<port>465</port>
 			<socketType>SSL</socketType>
 			<authentication>password-encrypted</authentication>
 			<username>%EMAILADDRESS%</username>
 		</outgoingServer>
 		<outgoingServer type="smtp">
-			<hostname>$MAILSERVER</hostname>
+			<hostname>$DTC_SERVER</hostname>
 			<port>587</port>
 			<socketType>STARTTLS</socketType>
 			<authentication>password-encrypted</authentication>
@@ -5405,7 +5599,7 @@ EOF
 			<Action>settings</Action>
 			<Protocol>
 				<Type>IMAP</Type>
-				<Server>$MAILSERVER</Server>
+				<Server>$DTC_SERVER</Server>
 				<Port>993</Port>
 				<LoginName><?php echo \$matches[1]; ?></LoginName>
 				<DomainRequired>on</DomainRequired>
@@ -5415,7 +5609,7 @@ EOF
 			</Protocol>
 			<Protocol>
 				<Type>POP3</Type>
-				<Server>$MAILSERVER</Server>
+				<Server>$DTC_SERVER</Server>
 				<Port>995</Port>
 				<LoginName><?php echo \$matches[1]; ?></LoginName>
 				<DomainRequired>on</DomainRequired>
@@ -5425,7 +5619,7 @@ EOF
 			</Protocol>
 			<Protocol>
 				<Type>SMTP</Type>
-				<Server>$MAILSERVER</Server>
+				<Server>$DTC_SERVER</Server>
 				<Port>587</Port>
 				<LoginName><?php echo \$matches[1]; ?></LoginName>
 				<DomainRequired>on</DomainRequired>
@@ -5464,7 +5658,7 @@ saveConfig () {
 	fi
 	oldumask=`umask`
 	umask 0700
-        echo "
+        echo -n "
 conf_mysqlautoconfig=\"${conf_mysqlautoconfig}\"
 conf_mysql_host=\"${conf_mysql_host}\"
 conf_mysql_login=\"${conf_mysql_login}\"
@@ -5501,6 +5695,7 @@ conf_cert_unit=\"${conf_cert_unit}\"
 conf_cert_email=\"${conf_cert_email}\"
 conf_cert_challenge_pass=\"${conf_cert_challenge_pass}\"
 conf_postmaster_email=\"${conf_postmaster_email}\"
+conf_max_receive_process=\"${conf_max_receive_process}\"
 " >${DTC_SAVED_INSTALL_CONFIG}
 	if [ -n "${conf_ftp_type}" ] ; then
 		echo "conf_ftp_type=\"${conf_ftp_type}\"" >>${DTC_SAVED_INSTALL_CONFIG}
@@ -5570,6 +5765,7 @@ DTCuninstallDaemons () {
 	uninstallAmavisConf
 	uninstallQmail
 	uninstallSshVhostsConfig
+	uninstallLoopPreventConfig
 }
 
 DTCsetupDaemons () {

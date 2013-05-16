@@ -252,16 +252,20 @@ function drawRenewalsConfig(){
 	$out = "";
 
 	$dsc = array(
-		"title" => _("VPS renewal email reminder configuration"),
+		"title" => _("Renewal email reminder configuration"),
 		"action" => "vps_renewal_period",
 		"forward" => array("rub","sousrub"),
 		"desc" => _("These numbers represent the days before and after expiration.
 Warnings before and after expiration can be listed separated by |,
 while single warnings accept one value. The message templates
 are stored in /etc/dtc, and if not present in: ").$conf_dtcadmin_path."/reminders_msg/
-<br />For custom product types the file format is for example custom_1_expired_already.txt 
-for custom product type with id 1 for the expired reminder",
+<br />"._("For custom product types the file format is for example custom_1_expired_already.txt 
+for custom product type with id 1 for the expired reminder"),
 		"cols" => array(
+			"global_extend" => array(
+				"legend" => _("Defer all expirations, shutdown and warning dates by: "),
+				"type" => "text",
+				"size" => "16"),
 			"vps_renewal_before" => array(
 				"legend" => _("Warning before expiration for VPS: "),
 				"type" => "text",
@@ -294,7 +298,16 @@ for custom product type with id 1 for the expired reminder",
 				"legend" => _("Shutdown warning for Shared Hosting: "),
                                 "type" => "text",
                                 "size" => "16"),
-            "custom_renewal_before" => array(
+			"shared_renewal_disable_admin" => array(
+				"legend" => _("Disable Admin after Shutdown warning for Shared Hosting: "),
+                                "type" => "text",
+                                "size" => "16"),
+                        "auto_enable_admin_on_expire_change" => array(
+                                "type" => "radio",
+                                "legend" => _("Automatically Re-enable Admin on Expire Date change to the future:"),
+                                "values" => array("yes","no"),
+                                "display_replace" => array(_("Yes"),_("No"))),
+			"custom_renewal_before" => array(
 				"legend" => _("Warning before expiration for Custom Products: "),
 				"type" => "text",
 				"size" => "16"),
@@ -732,6 +745,9 @@ function drawTicketConfig(){
 			"realname" => array(
 				"type" => "text",
 				"legend" => _("Real Name")),
+			"last_used_lang" => array(
+				"type" => "text",
+				"legend" => _("Language")),
 			"email" => array(
 				"type" => "text",
 				"legend" => _("Email Address")),
@@ -1131,7 +1147,7 @@ function generalDaemonCallback(){
         global $pro_mysql_cronjob_table;
         #$q = "UPDATE $pro_mysql_domain_table SET generate_flag='yes';";
         #$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-        $q = "UPDATE $pro_mysql_cronjob_table SET restart_apache='yes', gen_vhosts='yes';";
+        $q = "UPDATE $pro_mysql_cronjob_table SET restart_apache='yes', gen_vhosts='yes', gen_named='yes', reload_named='yes';";
         $r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 }
 
@@ -1146,8 +1162,8 @@ function drawGeneralConfig(){
 	$out = "";
 
 	$dsc = array(
-		"title" => _("General"),
-		"action" => "general_config_editor",
+		"title" => _("Web interface"),
+		"action" => "web_interface_config_editor",
 		"forward" => array("rub"),
 		"cols" => array(
 			"use_javascript" => array(
@@ -1155,38 +1171,13 @@ function drawGeneralConfig(){
 				"type" => "radio",
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
-                        "send_passwords_in_emails" => array(
-                                "legend" => _("Send passwords in registration emails: "),
-                                "type" => "radio",
-                                "values" => array("yes","no"),
-                                "display_replace" => array(_("Yes"),_("No"))),
 			"use_ssl" => array(
 				"legend" => _("Use SSL: "),
 				"type" => "radio",
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
-			"enforce_adm_encryption" => array(
-				"legend" => _("Enforce admin passwords encryption: "),
-				"type" => "radio",
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
-			"use_shared_ssl" => array(
-				"legend" => _("(<a href=\"http://dtcsupport.gplhost.com/PmWiki/Name-based-shared-SSL-vhosts\">Shared SSL warnings</a>) Allow use of name based shared SSL vhosts: "),
-				"type" => "radio",
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
 			"force_use_https" => array(
 				"legend" => _("Force HTTPS use for contol panel: "),
-				"type" => "radio",
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
-			"domain_based_ftp_logins" => array(
-				"legend" => _("Use @domain.com ftp logins: "),
-				"type" => "radio",
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
-			"domain_based_ssh_logins" => array(
-				"legend" => _("Use @domain.com ssh logins: "),
 				"type" => "radio",
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
@@ -1198,12 +1189,21 @@ function drawGeneralConfig(){
 			"session_expir_minute" => array(
 				"legend" => _("User session expire time (min): "),
 				"type" => "text",
-				"size" => "10"),
-			"this_server_country_code" => array(
-				"type" => "popup",
-				"legend" => _("This server location: "),
-				"values" => array_keys($cc_code_array),
-				"display_replace" => array_values($cc_code_array)),
+				"size" => "10")
+                        )
+                );
+	$out .= configEditorTemplate ($dsc);
+
+	$dsc = array(
+		"title" => _("New account registration"),
+		"action" => "new_account_registration_config_editor",
+		"forward" => array("rub"),
+		"cols" => array(
+                        "send_passwords_in_emails" => array(
+                                "legend" => _("Send passwords in registration emails: "),
+                                "type" => "radio",
+                                "values" => array("yes","no"),
+                                "display_replace" => array(_("Yes"),_("No"))),
 			"this_server_default_tld" => array(
 				"type" => "popup",
 				"legend" => _("Registration default TLD: "),
@@ -1212,11 +1212,6 @@ function drawGeneralConfig(){
 				"legend" => _("Terms and Conditions URL: "),
 				"type" => "text",
 				"size" => "40"),
-			"send_cron_alert" => array(
-				"legend" => _("Send mail to admin when an error occurs in dtc cron:"),
-				"type" => "radio",
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
 			"restrict_new_account_form" => array(
 				"legend" => _("Force the use product_id in the request of new_account form:"),
 				"type" => "radio",
@@ -1235,34 +1230,201 @@ function drawGeneralConfig(){
 			"new_account_restrict_message" => array(
 				"legend" => _("Url to redirect if product_id is not set in the request of new_account form: "),
 				"type" => "text",
-				"size" => "255")));
+				"size" => "60"),
+			"send_registration_mail_to_customer" => array (
+				"legend" => _("Send registration mail to the customer: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"registration_mail_subject" => array(
+				"legend" => _("Subject of the registration mail sent to the customer: "),
+				"type" => "text",
+				"size" => "30"),
+			"require_valid_tld_on_dedicated" => array(
+				"legend" => _("Require a valid TLD for the hostname on Dedicated Servers:"),
+				"type" => "radio",
+				"values" => array("yes","no"),
+                                "display_replace" => array(_("Yes"),_("No"))),
+			"require_valid_tld_on_custom" => array(
+				"legend" => _("Require a valid TLD for the domain on Custom Products:"),
+				"type" => "radio",
+				"values" => array("yes","no"),
+                                "display_replace" => array(_("Yes"),_("No")))
+                        )
+                );
 	$out .= configEditorTemplate ($dsc);
 
 	$dsc = array(
-		"title" => _("Daemon"),
-		"action" => "general_config_daemon",
+		"title" => _("Account behavior"),
+		"action" => "account_behavior_config_editor",
 		"forward" => array("rub"),
-                "edit_callback" => "generalDaemonCallback",
+		"cols" => array(
+			"enforce_adm_encryption" => array(
+				"legend" => _("Enforce admin passwords encryption: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"domain_based_ftp_logins" => array(
+				"legend" => _("Use @domain.com ftp logins: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"domain_based_ssh_logins" => array(
+				"legend" => _("Use @domain.com ssh logins: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"show_affiliation" => array (
+				"legend" => _("Show affiliation on my account: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"show_ssl_tokens" => array (
+				"legend" => _("show ssl tokens in my account: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"shared_renewal_zero" => array (
+				"legend" => _("show shared hosting renewal button when no active domains: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"show_remaining_money_on_account" => array (
+				"legend" => _("show remaining money on my account: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"show_upgrade_product_button" => array (
+				"legend" => _("show upgrade product button: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"action_on_old_new_admin" => array (
+				"legend" => _("show upgrade product button: "),
+				"type" => "radio",
+				"values" => array("archive","delete","nothing"),
+				"display_replace" => array(_("Archive"),_("Delete"),_("No Action Taken"))),
+			"new_admin_old_age" => array (
+				"legend" => _("New Admin age (days) to be considered old: "),
+				"size" => "50",
+				"type" => "text"),
+			"show_invoice_info" => array (
+				"legend" => _("show invoicing info and renewal buttons: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"show_past_payments" => array(
+				"legend" => _("Show Past payments option in menu<BR>Use 'disabled' to hide, 'default' to show the default page<br>or enter a full http link to include a custom page: "),
+				"type" => "text",
+				"size" => "255"),
+		        )
+                );
+	$out .= configEditorTemplate ($dsc);
+
+	$dsc = array(
+		"title" => _("Other misc options"),
+		"action" => "other_misc_options_editor",
+		"forward" => array("rub"),
+		"cols" => array(
+			"use_shared_ssl" => array(
+				"legend" => _("(<a href=\"http://dtcsupport.gplhost.com/PmWiki/Name-based-shared-SSL-vhosts\">Shared SSL warnings</a>) Allow use of name based shared SSL vhosts: "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"this_server_country_code" => array(
+				"type" => "popup",
+				"legend" => _("This server location: "),
+				"values" => array_keys($cc_code_array),
+				"display_replace" => array_values($cc_code_array)),
+			"send_cron_alert" => array(
+				"legend" => _("Send mail to admin when an error occurs in dtc cron:"),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"cron_recurse" => array(
+				"legend" => _("Recurse cron.php this number of times at maximum: "),
+				"type" => "text",
+				"size" => "4")
+                        )
+                );
+	$out .= configEditorTemplate ($dsc);
+
+	$dsc = array(
+		"title" => _("Shared hosting vhost generation setup"),
+		"action" => "shared_hosting_setup_config",
+		"forward" => array("rub"),
 		"cols" => array (
-			"mta_type" => array(
-				"legend" => "MTA <a href=\"http://www.wikipedia.org/wiki/Mail_transfer_agent\" target=\"_blank\">*</a> : ",
+			"autogen_webmail_alias" => array(
+				"legend" => _("Generate a global /webmail alias: "),
 				"type" => "radio",
-				"values" => array("qmail","postfix")),
-			"use_cyrus" => array(
-				"type" => "radio",
-				"legend" => _("Use cyrus: "),
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
-			"use_sieve" => array(
+			"autogen_webmail_type" => array(
+				"legend" => _("Type of webmail for the /webmail alias: "),
 				"type" => "radio",
-				"legend" => _("Use sieve: "),
+				"display_replace" => array("Roundcube","Squirrelmail"),
+				"values" => array("roundcube","squirrelmail")),
+			"autogen_webmail_protocol" => array(
+				"legend" => _("Protocol to use for the /webmail alias: "),
+				"type" => "radio",
+				"values" => array("http:","https:")),
+			"autogen_webmail_host" => array(
+				"legend" => _("Generate a global webmail subdomain: "),
+				"type" => "radio",
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
-			"use_advanced_lists_tunables" => array(
+			"autogen_webmail_hostname" => array(
+				"legend" => _("Subdomain for webmail access: "),
+				"type" => "text"),
+                        "autogen_admin_host" => array(
+                                "legend" => _("Auto generate an admin subdomain to acces DTC panel: "),
+                                "type" => "radio",
+                                "values" => array("yes","no"),
+                                "display_replace" => array(_("Yes"),_("No"))),
+                        "autogen_admin_hostname" => array(
+                                "legend" => _("Subdomain for panel access: "),
+                                "type" => "text"),
+			"apache_directoryindex" => array(
+				"legend" => _("Apache DirectoryIndex Config: "),
+				"size" => "50",
+				"type" => "text"),
+		        )
+		);
+	$out .= configEditorTemplate ($dsc);
+
+	$dsc = array(
+		"title" => _("User database server"),
+		"action" => "user_database_config_options",
+		"forward" => array("rub"),
+		"cols" => array (
+			"user_mysql_type" => array(
+				"legend" => _("Location of user's database: "),
 				"type" => "radio",
-				"legend" => _("Show advanced mailing list options: "),
+				"values" => array("localhost","distant"),
+				"display_replace" => array(_("Same as for DTC"),_("Another location"))),
+			"user_mysql_host" => array(
+				"legend" => _("User MySQL host: "),
+				"type" => "text"),
+			"user_mysql_root_login" => array(
+				"legend" => _("User MySQL root login: "),
+				"type" => "text"),
+			"user_mysql_root_pass" => array(
+				"legend" => _("User MySQL root password: "),
+				"type" => "text"),
+			"user_mysql_prepend_admin_name" => array(
+				"type" => "radio",
+				"legend" => _("Prepend admin name to db names: "),
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
+		        )
+                );
+	$out .= configEditorTemplate ($dsc);
+
+	$dsc = array(
+		"title" => _("Shared hosting statistic calculation"),
+		"action" => "shared_hosting_stats_config",
+		"forward" => array("rub"),
+		"cols" => array (
 			"use_webalizer" => array(
 				"type" => "radio",
 				"legend" => _("Use webalizer: "),
@@ -1283,43 +1445,40 @@ function drawGeneralConfig(){
 				"legend" => _("Use visitors: "),
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
-			"user_mysql_prepend_admin_name" => array(
+		        )
+                );
+	$out .= configEditorTemplate ($dsc);
+
+	$dsc = array(
+		"title" => _("Mail system setup"),
+		"action" => "mail_system_setup_config",
+		"forward" => array("rub"),
+                "edit_callback" => "generalDaemonCallback",
+		"cols" => array (
+			"mta_type" => array(
+				"legend" => "MTA <a href=\"http://www.wikipedia.org/wiki/Mail_transfer_agent\" target=\"_blank\">*</a> : ",
 				"type" => "radio",
-				"legend" => _("Prepend admin name to db names: "),
+				"values" => array("qmail","postfix")),
+			"main_domain_mail_without_domain" => array(
+				"type" => "radio",
+				"legend" => _("Permit mail accounts from main DTC domain login without @domain: "),
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
-			"user_mysql_type" => array(
-				"legend" => _("Location of user's database: "),
+			"use_cyrus" => array(
 				"type" => "radio",
-				"values" => array("localhost","distant"),
-				"display_replace" => array(_("Same as for DTC"),_("Another location"))),
-			"user_mysql_host" => array(
-				"legend" => _("User MySQL host: "),
-				"type" => "text"),
-			"user_mysql_root_login" => array(
-				"legend" => _("User MySQL root login: "),
-				"type" => "text"),
-			"user_mysql_root_pass" => array(
-				"legend" => _("User MySQL root password: "),
-				"type" => "text"),
-			"autogen_webmail_alias" => array(
-				"legend" => _("Generate a global /webmail alias: "),
-				"type" => "radio",
+				"legend" => _("Use cyrus: "),
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
-			"autogen_webmail_type" => array(
-				"legend" => _("Type of webmail for the /webmail alias: "),
+			"use_sieve" => array(
 				"type" => "radio",
-				"display_replace" => array("Roundcube","Squirrelmail"),
-				"values" => array("roundcube","squirrelmail")),
-			"autogen_webmail_protocol" => array(
-				"legend" => _("Protocol to use for the /webmail alias: "),
+				"legend" => _("Use sieve: "),
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"use_advanced_lists_tunables" => array(
 				"type" => "radio",
-				"values" => array("http:","https:")),
-			"apache_directoryindex" => array(
-				"legend" => _("Apache DirectoryIndex Config: "),
-				"size" => "50",
-				"type" => "text"),
+				"legend" => _("Show advanced mailing list options: "),
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
 			"spam_keep_days" => array(
 				"legend" => _("Keep spam email for n days"),
 				"type"	=> "text")));
@@ -1448,11 +1607,11 @@ function drawNamedConfig(){
 				"legend" => _("IP of the master DNS to be written in the named.slavezones.conf:"),
 				"type" => "text",
 				"size" => "20"),
-/*			"use_cname_for_subdomains" => array(
+			"use_cname_for_subdomains" => array(
 				"legend" => _("Use CNAME instead of A record for subdomains:"),
 				"type" => "radio",
 				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))), */
+				"display_replace" => array(_("Yes"),_("No"))),
 			"autogen_default_subdomains" => array(
 				"legend" => _("Auto-generate default subdomains (mail, pop, imap, smtp, ftp, list):"),
 				"type" => "radio",
@@ -1462,6 +1621,11 @@ function drawNamedConfig(){
 				"legend" => _("Auto-generate subdomain list (separated by |):"),
 				"type" => "text",
 				"size" => "50"),
+                        "use_relative_cnames" => array(
+                                "legend" => _("Use relative CNAMEs in subdomains instead of absolute ones<BR>(WARNING!!! you MUST change all existent CNAMEs by yourself): "),
+                                "type" => "radio",
+                                "values" => array("yes","no"),
+                                "display_replace" => array(_("Yes"),_("No"))),
 			"ip_allowed_dns_transfer" => array(
 				"legend" => _("List the DNS server IPs allowed to perform zone<br>
 transfers separated by &quot;|&quot; (pipe)<br>
@@ -1704,6 +1868,7 @@ function drawRegistryApiConfig(){
 function drawDTCpayConfig(){
 	global $pro_mysql_secpayconf_table;
 	global $pro_mysql_custom_fld_table;
+	global $pro_mysql_config_table;
 
 	$out = "";
 
@@ -1813,6 +1978,12 @@ function drawDTCpayConfig(){
 				"size" => "30"),
 			"mandatory" => array(
 				"legend" => _("Mandatory field"),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No")),
+				"default" => "no"),
+			"showonmyaccount" => array(
+				"legend" => _("Show field on My Account"),
 				"type" => "radio",
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No")),
@@ -2188,60 +2359,6 @@ be displayed to your users instead of the popup value.")."<br>";
 		);
 	$out .= configEditorTemplate ($dsc,"secpay");
 
-	$dsc = array(
-		"title" => _("Western Union:"),
-		"action" => "westernunion_edit",
-		"forward" => array("rub","sousrub"),
-		"cols" => array(
-			"accept_westernunion" => array (
-				"legend" => _("Accept Western Union payments: "),
-				"type" => "radio",
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
-			"westernunion_flat_fees" => array (
-				"legend" => _("Flat fee for accepting Western Union payments: "),
-				"size" => "6",
-				"type" => "text"),
-			"westernunion_details" => array (
-				"legend" => _("Payment details: "),
-				"cols" => "60",
-				"rows" => "12",
-				"type" => "textarea"),
-			"westernunion_logo_url" => array(
-				"legend" => _("Display payment image url (leave blank for default): "),
-				"type" => "text",
-				"size" => "15")
-			)
-		);
-	$out .= configEditorTemplate ($dsc,"secpay");
-
-	$dsc = array(
-		"title" => _("Abitab:"),
-		"action" => "abitab_edit",
-		"forward" => array("rub","sousrub"),
-		"cols" => array(
-			"accept_abitab" => array (
-				"legend" => _("Accept Abitab payments: "),
-				"type" => "radio",
-				"values" => array("yes","no"),
-				"display_replace" => array(_("Yes"),_("No"))),
-			"abitab_flat_fees" => array (
-				"legend" => _("Flat fee for accepting Abitab payments: "),
-				"size" => "6",
-				"type" => "text"),
-			"abitab_details" => array (
-				"legend" => _("Payment details: "),
-				"cols" => "60",
-				"rows" => "12",
-				"type" => "textarea"),
-			"abitab_logo_url" => array(
-				"legend" => _("Display payment image url (leave blank for default): "),
-				"type" => "text",
-				"size" => "15")
-			)
-		);
-	$out .= configEditorTemplate ($dsc,"secpay");
-
 	return $out;
 }
 
@@ -2541,6 +2658,7 @@ function drawDTCpathConfig(){
 	global $conf_named_slavefile_path;
 	global $conf_named_slavezonefiles_path;
 	global $conf_named_zonefiles_path;
+	global $conf_named_reversezonefiles_path;
 
 	global $conf_backup_script_path;
 	global $conf_bakcup_path;
@@ -2637,6 +2755,10 @@ All of the DTC daemon config files defined on this page will be saved here:"),
 				"size" => "30"),
 			"named_zonefiles_path" => array(
 				"legend" => _("Named main zonefiles folder:"),
+				"type" => "text",
+				"size" => "30"),
+			"named_reversezonefiles_path" => array(
+				"legend" => _("Named main reverse zonefiles folder:"),
 				"type" => "text",
 				"size" => "30")));
 	$out .= configEditorTemplate ($dsc);

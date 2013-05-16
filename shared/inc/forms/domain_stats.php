@@ -13,7 +13,16 @@ function drawAdminTools_DomainStats($admin,$eddomain){
 	global $conf_htpasswd_path;
 	global $conf_post_or_get;
 
-	$out = "";
+	$out = "<br><h3>"._("HTTP stats per subdomain")."</h3>";
+
+	$q = "SELECT vhost,bytes_sent FROM $pro_mysql_acc_http_table WHERE domain='".$eddomain["name"]."' AND month='".date("m")."' AND year='".date("Y")."' ORDER BY vhost";
+	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysql_num_rows($r);
+	for($i=0;$i<$n;$i++){   
+	$a = mysql_fetch_array($r);
+		$out .= $a["vhost"].": ".smartByte($a["bytes_sent"])."<br>";
+	}
+	$out .= "<br>";
 
 //	sum_http($eddomain["name"]);
 	$query_http = "SELECT sum(bytes_sent) as bytes_sent FROM $pro_mysql_acc_http_table WHERE domain='".$eddomain["name"]."'

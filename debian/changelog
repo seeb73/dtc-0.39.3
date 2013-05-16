@@ -1,3 +1,160 @@
+dtc (0.36.3-1) experimental; urgency=low
+
+  * Added AllowOverride and AllowOverrideList directive to protect against any
+    hacker that would add an AddHandler or Action directive in order to bypass
+    the SBOX wrapper protection. Note that this imposes the use of a patched
+    apache 2.2.16, available in GPLHost repository.
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 30 Apr 2013 17:30:04 +0800
+
+dtc (0.36.2-1) experimental; urgency=low
+
+  * Changes the db a bit to mimic old DTC behavior (thanks to Jesse Norwel).
+
+ -- Thomas Goirand <zigo@debian.org>  Thu, 04 Apr 2013 14:42:48 +0800
+
+dtc (0.36.1-1) experimental; urgency=low
+
+  * New upstream release with these changes:
+    [ Thomas Goirand ]
+    - Bugfix: Fixes cron job PHP Notice.
+    - Do not create symlinks to domains folders anymore.
+    - Bugfix: Restores correct unix rights in /var/lib/dtc/etc/template.
+    - Bugfix: Stops configure mysqmail with the (not in use) syslog_file option
+    - Generate a random password if install/upgrade is made in non-interactive
+    mode.
+    - Added the dtcgrp group in the sbox creation.
+    - Added few alt text in img tags (for blind people use).
+    - Bugfix: Missing conf_force_use_https global in gen_pro_vhosts.php.
+    - Now uses a bigint for the ftp_accounting transfer field.
+    - Bugfix: Fixes Vhost generation issue for parked domains (see
+    http://bts.gplhost.com/mantis/view.php?id=131).
+    - Bugfix: Added updateUsingCron("gen_qmail='yes'"); in the email panel.
+    - Bugfix: Fixed missing $panel_type="cronjob"; in backupcron.php.
+    - Bugfix: Do not allow users to write an email instead of a mailbox when
+    creating a new email address.
+    - Fixed link with empty subject of support tickets.
+    - Added a --insecure to the curl call in user_migrate.sh to allow self
+    signed certs.
+    - Added some HTML5 placeholder in the email.php and templates.php.
+    - Added the current running status of VPSes in renewals.php.
+    - Clean up the mailing list, so that it is using the themes as well.
+    - Allows translated MLMMJ list text to be copied in a list to configure
+    it with the correct language.
+    - Adds more theming and graphics to both the email and lists screens.
+    - Adds HTTP statistics break down per subdomain in domain stats.
+    - Sets force_use_https to on by default.
+    - Bugfix: do not generate a IN A record for a subdomain if it starts
+    with _ (but continue to allow it for TXT records).
+    - Bugfix: Calls triggerDomainListUpdate() when a customer adds a domain
+    from My Account.
+    - Added a mail queue purge script.
+    - Sets bounce_msg of pop_access as utf8 charset, so that vacation msgs
+    can be in any language.
+    - Added dumps of MySQL procedures (using --routines option to mysqldump)
+    when migrating.
+    - Also uses --routines in the gen_backup_script.php
+    - Adds --skip-extended-insert when dumping dbs.
+    - Added new Italian translation thanks to Lorenzo Bencini.
+    - Added a small script to massively convert sites to sbox.
+
+    [ Shuki Vaknin ]
+    - Added hebrew translations.
+
+    [ Jeremy Cayrasso ]
+    - fix file deletion and net_restor during backup.
+    - Fix ipv6 firewall.
+
+    [ Martin Thomas Schrott ]
+    - changed some fuzzy translations for german and added some missing
+    strings.
+    - Solved a little bug that did create serveraliases for the wildcarddomains
+    of parkeddomains not just for the domain but also for its subdomains.
+    - German translations update.
+    - Added user configurable email based spam and content filter configuration
+    for postfix/amavis-new/spamassassin.
+    - Added various options to the admin, client and email panel.
+
+    [ Gregory Fardel ]
+    - Many corrections to the French translation of DTC.
+    - delete_user.php : Also remove the dns zone file of the deleted domain
+    name.
+
+    [ Javier Marcon ]
+    - Fix send mail on cron fail option to be showed on configuration.
+    - Added Cuenta Digital payment gateway.
+    - Added to dtc-client the posibility to add hosting products, new domains
+    to an existing user, email accounts, add database users and add databases.
+    - Add image url for cheque and wiretransfer payment gateways.
+    - Add image url for paypal payment gateway.
+    - allow product hide if is enabled the option to force of product_id in
+    the request of new_account.
+    - Add renewalls for web hosting products.
+    - Add Western Union and abitab payment gateways.
+    - Add confirm to client delete.
+    - Add subdomains folder to ftp creation.
+    - Avoid deleting the default subdomain.
+    - Expired and not expired totals in renewals.php.
+    - Add the posibility to send registration mail to the customer.
+    - Options to hide some fields for my_account.
+    - Archive or delete new admins.
+
+    [ Jesse Norell ]
+    - Add auto-response support for Auto-Submitted: headers per rfc3834.
+    - Try to prevent auto-reply spam in mailbot auto-replies.
+    - Include message's Subject in sieve vacation reply.
+    - Escape vacation text and spam mailbox name in sieve script.
+    - Sets ownership of /var/lib/roundcube/temp
+    - Honor php resource settings for dtc admin site.
+    - Add wget user-agent to dtc-user-cron.
+    - Bugfix: Create sieve dir before try to use it.
+    - Sieve creates missing spambox
+    - dovecot: Subscribe to mailboxes that are automatically created.
+    - Add smtpprox-loopprevent support.
+    - Add migrate-mailman-list-to-dtc.sh contrib script.
+    - Add reject_non_fqdn_hostname in the postfix directives.
+
+    [ Fernando Kiernan ]
+    - Add Windows Compatibility option tu subdomains.
+    - Localize radio values on edits.
+    - Update spanish translation.
+    - Add domain alias support to dovecot login.
+    - Add custom part to DNS Zones.
+    - Respect Default Zone TTL on all generated files.
+    - Parametrize reverse_zones path to do the same as in forward zones
+    - Add list_reverse_dns to list_domains.php using named.conf.slave.reverse
+    already generated.
+    - Fix reverse zone name generation for "One zone file per pool with name"
+    - Split Admin Editor in Admin Editor itself and Add/Delete Services Screen.
+    - Delete function for custom products.
+    - Add a Custom Product in Add/Delete Services.
+    - Fix and Enhance Custom Product display on Admin.
+    - Make requiring valid TLD for custom products and dedicated servers
+    configurable. Adjust new_account.php for that.
+    - Add webmail hostname redirect.
+    - Add option to transfer only forward, reverse or both zones to
+    slavezone_update (contrib script folder).
+    - Add an optional client admin panel subdomain direction.
+    - Add SPF record support on DNS with a standard default.
+    - Create radio button to enable/disable/auto-enable-disable admin, add
+    permanent and temporary expire extension by admin.
+    - Add parameter to allow POP3 and IMAP login without @domain for
+    mailboxes in DTC main domain.
+    - Add SMTP relay mode for local domains using addr_mail_server config data
+    instead of "default". When in this mode let Mailboxes option active but
+    with a warning message so admin can configure the spam settings.
+    - Check admin limits on Domain Config.
+    - Add Max FTP, SSH and emails to Admin editor.
+    - Add options to hide some fields on email panel for users.
+
+    [ Jan-Claas Dirks ]
+    - Bugfix: Makes the security token forward work for the email panel
+    ($adm_email_pass in dtcListItemsEdit()).
+    - Bugfix: don't let the install script fail if the html template folder
+    doesn't contain all default files.
+
+ -- Thomas Goirand <zigo@debian.org>  Wed, 03 Apr 2013 23:41:19 +0800
+
 dtc (0.35.6-2) experimental; urgency=low
 
   * Fixes the cron job PHP Notice in fetch.php.

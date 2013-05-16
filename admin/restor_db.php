@@ -159,7 +159,7 @@ for($i=0;$i<$nbr_tables;$i++){
 			$v = $varnames[$j];
 			$vc = $allvars[$v];
 			// If the field is present, create it.
-			$q = "SHOW COLUMNS FROM $curtbl WHERE Field='$v'";
+			$q = "SHOW FULL COLUMNS FROM $curtbl WHERE Field='$v'";
 			$r = mysql_query($q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysql_error());
 			$n = mysql_num_rows($r);
 			if($n == 0){
@@ -182,10 +182,26 @@ for($i=0;$i<$nbr_tables;$i++){
 				$a = mysql_fetch_array($r);
 				$a_extra = $a["Extra"];
 				$a_type = $a["Type"];
+				$a_collate = $a["Collation"];
 				switch($a_type){
 				case "blob":
+					$type = $a_type;
+					break;
 				case "text":
 					$type = $a_type;
+					$q2 = "SELECT character_set_name FROM information_schema.`COLUMNS` WHERE table_name = '".$curtbl."' AND column_name = '".$v."'";
+                        		$r2 = mysql_query($q2)or die("Cannot execute query: \"$q2\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysql_error());
+					$a2 = mysql_fetch_array($r2);
+					if($a2["character_set_name"] != 'latin1'){
+						$type .= ' character set '.$a2["character_set_name"];
+					} 
+					mysql_free_result($r2);
+					if($a_collate != 'latin1_bin'){
+						$type .= ' collate '.$a_collate;
+					}
+					if($a["Null"] == "NO"){
+						$type .= " NOT NULL";
+					}
 					break;
 				case "time":
 					if($a["Null"] == "NO"){

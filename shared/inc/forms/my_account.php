@@ -11,11 +11,20 @@ function drawAdminTools_MyAccount($admin){
 	global $pro_mysql_ssl_ips_table;
 	global $pro_mysql_product_table;
 	global $pro_mysql_pending_renewal_table;
+	global $pro_mysql_custom_fld_table;
 	global $secpayconf_currency_letters;
 	global $conf_post_or_get;
 	global $secpayconf_use_products_for_renewal;
+	global $conf_show_invoice_info;
 
 	global $cc_code_array;
+	global $conf_show_affiliation;
+	global $conf_show_ssl_tokens;
+	global $conf_shared_renewal_shutdown;
+	global $conf_global_extend;
+	global $conf_show_remaining_money_on_account;
+	global $conf_show_upgrade_product_button;
+	global $conf_shared_renewal_zero;
 
 	get_secpay_conf();
 
@@ -75,6 +84,9 @@ function drawAdminTools_MyAccount($admin){
 		$client = $admin["client"];
 	}
 
+	if ($admin["info"]["disabled"]=='yes' || $admin["info"]["disabled"]=='always-yes') {
+		$out .= "<BR><h3><font color=\"RED\">"._("Your Account has EXPIRED or is DISABLED!!!!")."</h3><br>"._("Many system functions of your account are not working because of this!")."</font><br>";
+	}
 	if(isset($admin["data"])){
 		$out .= "<br><h3>". _("Transfer and disk usage:") ."</h3>";
 		// Draw overall this month usage
@@ -109,7 +121,8 @@ function drawAdminTools_MyAccount($admin){
 	if($id_client != 0){
 
 		// If the customer has domains (he could have only a VPS...).
-		if(isset($admin["data"])){
+	//	if(isset($admin["data"])){
+		if(($conf_shared_renewal_zero == 'yes' && isset($admin["info"]["prod_id"]) && $admin["info"]["prod_id"]<>0) || ($conf_shared_renewal_zero == 'no' && isset($admin["data"]))){
 			$out .= "<br><h3>". _("Your hosting account:") ."</h3>";
 			$out .= "<table width=\"100%\" height=\"1\" cellpadding=\"4\" cellspacing=\"0\" border=\"1\">
 <tr>
@@ -118,119 +131,140 @@ function drawAdminTools_MyAccount($admin){
 <tr>
 	<td>".smartByte($du_quota)."</td><td>".smartByte($bw_quota)."</td><td>".$admin["info"]["expire"]."</td>
 </tr>
+<tr>
+	<td colspan=3>"._("Your service is paid until:")." ".$admin["info"]["expire"]."</td>
+</tr>
+<tr>
+	<td colspan=3>"._("Your can pay your service without overdue charges until:")." ".calculateExpirationDate($admin["info"]["expire"],'00-00-'.$conf_global_extend)."</td>
+</tr>
+<tr>
+	<td colspan=3>"._("Your service will be shutdown on:")." ";
+			$period = "00-00-".($admin["info"]["permanent_extend"]+$admin["info"]["temporary_extend"]+$conf_shared_renewal_shutdown+$conf_global_extend);
+			$out .= " ".calculateExpirationDate($admin["info"]["expire"],$period)."</td>
+</tr>
 </table>";
-
-			if(file_exists($dtcshared_path."/dtcrm")){
-				$out .= "<br><center>$frm_start<input type=\"hidden\" name=\"action\" value=\"upgrade_myaccount\">
+			if($admin["info"]["show_invoice_info"] == 'yes' && $conf_show_invoice_info == 'yes'){
+				$out .= "</center><br /><h3>". _("Payment") ."</h3><br />";
+				$out .= _("Click the corresponding button to pay your site.");
+				$out .= "<table>";
+				if(file_exists($dtcshared_path."/dtcrm")){
+					if ($conf_show_upgrade_product_button =="yes"){
+						$out .= "<tr><td><center>$frm_start<input type=\"hidden\" name=\"action\" value=\"upgrade_myaccount\">
 <input type=\"submit\" value=\"". _("Upgrade my account") ."\">
-</form>";
-				if ($secpayconf_use_products_for_renewal == 'yes'){
-					$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$admin["info"]["prod_id"]."';";
-					$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-					$n = mysql_num_rows($r);
-					if($n == 1){
-						$a = mysql_fetch_array($r);
-						$out .= "<form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
+</form></td></tr>";
+					}
+					if ($secpayconf_use_products_for_renewal == 'yes'){
+						$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$admin["info"]["prod_id"]."';";
+						$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+						$n = mysql_num_rows($r);
+						if($n == 1){
+							$a = mysql_fetch_array($r);
+							$out .= "<tr><td><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 	<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 	<input type=\"hidden\" name=\"renew_type\" value=\"shared\">
 	<input type=\"hidden\" name=\"product_id\" value=\"".$admin["info"]["prod_id"]."\">
 	<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 	<input type=\"hidden\" name=\"client_id\" value=\"$id_client\">
 	<input type=\"submit\" value=\"".$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)"."\">
-	</form><br />";
+	</form></td></tr>";
+						}
 					}
-				}
 
-				$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$admin["info"]["prod_id"]."';";
-				$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$n = mysql_num_rows($r);
-				for($i=0;$i<$n;$i++){
-					$a = mysql_fetch_array($r);
-					$out .= "<br /><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
+					$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$admin["info"]["prod_id"]."';";
+					$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+					$n = mysql_num_rows($r);
+					for($i=0;$i<$n;$i++){
+						$a = mysql_fetch_array($r);
+						$out .= "<tr><td><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 					<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 					<input type=\"hidden\" name=\"renew_type\" value=\"shared\">
 					<input type=\"hidden\" name=\"product_id\" value=\"".$a["id"]."\">
 					<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
 					<input type=\"hidden\" name=\"client_id\" value=\"$id_client\">
 					<input type=\"submit\" value=\"".$a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)"."\">
-					</form><br />";
-				}
-			}
-
-			$out .= "</center><br /><h3>". _("SSL tokens") ."</h3><br />";
-			$q = "SELECT * FROM $pro_mysql_ssl_ips_table WHERE adm_login='$adm_login' AND available='no';";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
-			if($n == 0){
-				$out .= _("You currently don't have any SSL tokens.") ."<br><br>";
-			}else{
-				$out .= "<table cellspacing=\"0\" cellpadding=\"0\" border=\"1\">";
-				$out .= "<tr><td>". _("IP address") ."</td><td>". _("Used by") ."</td><td>". _("Expire"). "</td><td>". _("Action") ."</td></tr>";
-				for($i=0;$i<$n;$i++){
-					$a = mysql_fetch_array($r);
-					$nbr_domains = sizeof($admin["data"]);
-					$used_by = "Not used";
-					for($j=0;$j<$nbr_domains;$j++){
-						$nbr_subdomains = sizeof($admin["data"][$j]["subdomains"]);
-						for($k=0;$k<$nbr_subdomains;$k++){
-							if($admin["data"][$j]["subdomains"][$k]["ssl_ip"] == $a["ip_addr"]){
-								$used_by = $admin["data"][$j]["subdomains"][$k]["name"].".".$admin["data"][$j]["name"];
-							}
-						}
+					</form></td></tr>";
 					}
-					$prodq = "SELECT * FROM $pro_mysql_product_table WHERE heb_type='ssl';";
-					$prodr = mysql_query($prodq)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-					$prodn = mysql_num_rows($prodr);
-					if($prodn != 1){
-						$ssl_renew_form = _("No ssl product defined.") ;
-					}else{
-						$prod = mysql_fetch_array($prodr);
-						$ssl_renew_form = "<form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
-<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
-<input type=\"hidden\" name=\"renew_type\" value=\"ssl_renew\">
-<input type=\"hidden\" name=\"ssl_ip_id\" value=\"".$a["id"]."\">
-<input type=\"hidden\" name=\"product_id\" value=\"".$prod["id"]."\">
-<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
-<input type=\"hidden\" name=\"client_id\" value=\"$id_client\">
-<input type=\"submit\" value=\"Renew SSL IP\"></form>";
-					}
-
-					$out .= "<tr><td>".$a["ip_addr"]."</td><td>$used_by</td><td>".$a["expire"]."</td><td>$ssl_renew_form</td></tr>";
 				}
-				$out .= "</table><br><br>";
+
+				$out .= "</table>";
 			}
-			$q = "SELECT * FROM $pro_mysql_ssl_ips_table WHERE available='yes';";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
-			if($n == 0){
-				$out .= _("No SSL token available: contact your administrator to request it.") ."<br><br>";
-			}else{
-				$q = "SELECT * FROM $pro_mysql_product_table WHERE heb_type='ssl';";
+			if ($conf_show_ssl_tokens == "yes"){
+				$out .= "</center><br /><h3>". _("SSL tokens") ."</h3><br />";
+				$q = "SELECT * FROM $pro_mysql_ssl_ips_table WHERE adm_login='$adm_login' AND available='no';";
 				$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 				$n = mysql_num_rows($r);
-				if($n != 1){
-					$out .= _("No ssl product defined.") ;
+				if($n == 0){
+					$out .= _("You currently don't have any SSL tokens.") ."<br><br>";
 				}else{
-					$prod = mysql_fetch_array($r);
-					$out .= "<form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
-<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
-<input type=\"hidden\" name=\"renew_type\" value=\"ssl\">
-<input type=\"hidden\" name=\"product_id\" value=\"".$prod["id"]."\">
-<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
-<input type=\"hidden\" name=\"client_id\" value=\"$id_client\">
-<input type=\"submit\" value=\"Buy an SSL IP\">
-</form></center><br>";
+					$out .= "<table cellspacing=\"0\" cellpadding=\"0\" border=\"1\">";
+					$out .= "<tr><td>". _("IP address") ."</td><td>". _("Used by") ."</td><td>". _("Expire"). "</td><td>". _("Action") ."</td></tr>";
+					for($i=0;$i<$n;$i++){
+						$a = mysql_fetch_array($r);
+						$nbr_domains = sizeof($admin["data"]);
+						$used_by = "Not used";
+						for($j=0;$j<$nbr_domains;$j++){
+							$nbr_subdomains = sizeof($admin["data"][$j]["subdomains"]);
+							for($k=0;$k<$nbr_subdomains;$k++){
+								if($admin["data"][$j]["subdomains"][$k]["ssl_ip"] == $a["ip_addr"]){
+									$used_by = $admin["data"][$j]["subdomains"][$k]["name"].".".$admin["data"][$j]["name"];
+								}
+							}
+						}
+						$prodq = "SELECT * FROM $pro_mysql_product_table WHERE heb_type='ssl';";
+						$prodr = mysql_query($prodq)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+						$prodn = mysql_num_rows($prodr);
+						if($prodn != 1){
+							$ssl_renew_form = _("No ssl product defined.") ;
+						}else{
+							$prod = mysql_fetch_array($prodr);
+							$ssl_renew_form = "<form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
+	<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
+	<input type=\"hidden\" name=\"renew_type\" value=\"ssl_renew\">
+	<input type=\"hidden\" name=\"ssl_ip_id\" value=\"".$a["id"]."\">
+	<input type=\"hidden\" name=\"product_id\" value=\"".$prod["id"]."\">
+	<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
+	<input type=\"hidden\" name=\"client_id\" value=\"$id_client\">
+	<input type=\"submit\" value=\"Renew SSL IP\"></form>";
+						}
+
+						$out .= "<tr><td>".$a["ip_addr"]."</td><td>$used_by</td><td>".$a["expire"]."</td><td>$ssl_renew_form</td></tr>";
+					}
+				$out .= "</table><br><br>";
+				}
+				$q = "SELECT * FROM $pro_mysql_ssl_ips_table WHERE available='yes';";
+				$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n = mysql_num_rows($r);
+				if($n == 0){
+					$out .= _("No SSL token available: contact your administrator to request it.") ."<br><br>";
+				}else{
+					$q = "SELECT * FROM $pro_mysql_product_table WHERE heb_type='ssl';";
+					$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+					$n = mysql_num_rows($r);
+					if($n != 1){
+						$out .= _("No ssl product defined.") ;
+					}else{
+						$prod = mysql_fetch_array($r);
+						$out .= "<form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
+	<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
+	<input type=\"hidden\" name=\"renew_type\" value=\"ssl\">
+	<input type=\"hidden\" name=\"product_id\" value=\"".$prod["id"]."\">
+	<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
+	<input type=\"hidden\" name=\"client_id\" value=\"$id_client\">
+	<input type=\"submit\" value=\"Buy an SSL IP\">
+	</form></center><br>";
+					}
 				}
 			}
 
-			$out .=  "<h3>". _("Remaining money on my account:") ."</h3>";
-			$out .= dtcFormTableAttrs();
-			$out .= dtcFormLineDraw( _("Money remaining: "), $client["dollar"]." $secpayconf_currency_letters",1);
-			$out .= dtcFormLineDraw( _("Refund my account:"), "$frm_start<input type=\"hidden\" name=\"action\" value=\"refund_myaccount\">
-<input size=\"8\" type=\"text\" name=\"refund_amount\" value=\"\"> $secpayconf_currency_letters",0);
-			$out .= dtcFormLineDraw( "", submitButtonStart()._("Add money").submitButtonEnd()."</form>",1);
-			$out .= "</table>";
-
+			if ($conf_show_remaining_money_on_account =="yes"){
+				$out .=  "<h3>". _("Remaining money on my account:") ."</h3>";
+				$out .= dtcFormTableAttrs();
+				$out .= dtcFormLineDraw( _("Money remaining: "), $client["dollar"]." $secpayconf_currency_letters",1);
+				$out .= dtcFormLineDraw( _("Refund my account:"), "$frm_start<input type=\"hidden\" name=\"action\" value=\"refund_myaccount\">
+	<input size=\"8\" type=\"text\" name=\"refund_amount\" value=\"\"> $secpayconf_currency_letters",0);
+				$out .= dtcFormLineDraw( "", submitButtonStart()._("Add money").submitButtonEnd()."</form>",1);
+				$out .= "</table>";
+			}
 		}
 
 
@@ -253,6 +287,70 @@ function drawAdminTools_MyAccount($admin){
 		$out .= _("Fax:")		.$client["fax"]."<br>";
 		$out .= _("Email:")		.$client["email"]."<br>";
 
+		// Manage to print the answers of the custom fields;
+		// We first, out of the custom_fld field, get an array with the custom field varname as key
+		// and the customer's answer as data.
+		$customer_custom_fields = array();
+		if( isset($client["customfld"]) ){
+			$explo_row = explode("|", htmlspecialchars(stripcslashes($client["customfld"])));
+			$n_custf = sizeof($explo_row);
+			for($i=0;$i<$n_custf;$i++){
+				$one_fld = $explo_row[$i];
+				$pos_data = strpos($one_fld,":");
+				if($pos_data === false){
+					continue;
+				}
+				$varname = substr($one_fld,0,$pos_data);
+				$value = substr($one_fld,$pos_data+1);
+				$customer_custom_fields[ $varname ] = $value;
+			}
+		}
+	
+		$qcf = "SELECT * FROM $pro_mysql_custom_fld_table WHERE 1 ORDER BY widgetorder;";
+		$rcf = mysql_query($qcf)or die("Cannot query $qcf line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$ncf = mysql_num_rows($rcf);
+	
+		for($i=0;$i<$ncf;$i++){
+			$acf = mysql_fetch_array($rcf);
+			if(isset($customer_custom_fields[ $acf["varname"] ])){
+				$val = $customer_custom_fields[ $acf["varname"] ];
+			}else{
+				$val = "";
+			}
+			switch($acf["widgettype"]){
+			case "radio":
+				$explo_popup = explode("|",$acf["widgetvalues"]);
+				$explo_popup2 = explode("|",$acf["widgetdisplay"]);
+				$n_val = sizeof($explo_popup);
+				$widget = "";
+				for($j=0;$j<$n_val;$j++){
+					if($val == $explo_popup[$j]){
+						$widget .= $acf["question"].$explo_popup2[$j];
+					}
+				}
+				break;
+			case "popup":
+				$explo_popup = explode("|",$acf["widgetvalues"]);
+				$explo_popup2 = explode("|",$acf["widgetdisplay"]);
+				$n_val = sizeof($explo_popup);
+				$widget = "";
+				for($j=0;$j<$n_val;$j++){
+					if($val == $explo_popup[$j]){
+						$widget .= $acf["question"].$explo_popup2[$j];
+					}
+				}
+				break;
+			case "textarea":
+			case "text":
+			default:
+				$widget = $acf["question"].htmlspecialchars($val);
+				break;
+			}
+			if($acf["showonmyaccount"] == 'yes'){
+				$out .= $widget."<BR>";
+			}
+		}
+	
 		$sql = "SELECT SUM(kickback) as kickbacks FROM affiliate_payments WHERE adm_login = '{$adm_login}' and date_paid IS NULL; ";
 		$result = mysql_query($sql);
 		$row = mysql_fetch_array($result);
@@ -271,11 +369,12 @@ function drawAdminTools_MyAccount($admin){
 
 		}
 
-		$out .= "<h3>"._("Affiliation")."</h3>";
-		$out .= _("If you want to earn money, all you have to do is place a link on your site, pointing to:").
+		if ($conf_show_affiliation == "yes"){
+			$out .= "<h3>"._("Affiliation")."</h3>";
+			$out .= _("If you want to earn money, all you have to do is place a link on your site, pointing to:").
 		"<pre>https://{$_SERVER['SERVER_NAME']}/dtc/affiliation.php?affiliate={$adm_login}&amp;return=/hosting-vps.html</pre>"
 		._("You can customize the <code>return</code> variable to redirect the user to any particular landing page that exists on our Web site (though we recommend the product page as per the example).  Then, when one of your visitors clicks on that link to buy a product from us, he will be redirected to our Web site.  Once he buys, you will automatically be credited a payment depending on the product that your visitor bought.");
-
+		}
 	}else{
 		$out .= "<br>" . _("You do not have a client account, so there is no money in your account.");
 	}

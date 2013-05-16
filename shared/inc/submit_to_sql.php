@@ -111,7 +111,7 @@ login: ";
 		$admin = mysql_fetch_array($r);
 		$old_expire = $admin["expire"];
 		$date_expire = calculateExpirationDate($old_expire,$product["period"]);
-		$q = "UPDATE $pro_mysql_admin_table SET expire='$date_expire' WHERE adm_login='".$renew_entry["adm_login"]."'";
+		$q = "UPDATE $pro_mysql_admin_table SET expire='$date_expire',temporary_extend=0 WHERE adm_login='".$renew_entry["adm_login"]."'";
 		$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 		$txt_renewal_approved = "
 
@@ -170,7 +170,7 @@ login: ";
 
 		$old_expire = date("Y-m-d");
 		$date_expire = calculateExpirationDate(date("Y-m-d"),$product["period"]);
-		$q = "UPDATE $pro_mysql_admin_table SET expire='$date_expire',prod_id='".$renew_entry["product_id"]."',max_email=".$product["nbr_email"].",nbrdb=".$product["nbr_database"].",quota=".$product["quota_disk"].",bandwidth_per_month_mb=".$product["bandwidth"].",allow_add_domain='".$product["allow_add_domain"]."',max_domain=".$product["max_domain"]." WHERE adm_login='".$renew_entry["adm_login"]."'";
+		$q = "UPDATE $pro_mysql_admin_table SET expire='$date_expire',temporary_extend=0,prod_id='".$renew_entry["product_id"]."',max_email=".$product["nbr_email"].",nbrdb=".$product["nbr_database"].",quota=".$product["quota_disk"].",bandwidth_per_month_mb=".$product["bandwidth"].",allow_add_domain='".$product["allow_add_domain"]."',max_domain=".$product["max_domain"].",max_ftp=".$product["max_ftp"].",max_ssh=".$product["max_ssh"]." WHERE adm_login='".$renew_entry["adm_login"]."'";
 		$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 		$txt_renewal_approved = "
 
@@ -324,7 +324,7 @@ login: ";
 				$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 				$n = mysql_num_rows($r);
 				if($n != 1){
-					$submit_err = "Could not find VPS id in table line ".__LINE__." file ".__FILE__;
+					$submit_err = "Could not find dedicated server id in table line ".__LINE__." file ".__FILE__;
 					$commit_flag = "no";
 					return false;
 				}
@@ -345,6 +345,34 @@ login: ";
 				$product = mysql_fetch_array($r);
 				$date_expire = calculateExpirationDate($dedi_expire,$product["period"]);
 				$q = "UPDATE $pro_mysql_dedicated_table SET expire_date='$date_expire' WHERE server_hostname='".$atrs[1]."';";
+				$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				break;
+			case "custom":
+				$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE domain='".$atrs[1]."';";
+				$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$n = mysql_num_rows($r);
+				if($n != 1){
+					$submit_err = "Could not find custom product id in table line ".__LINE__." file ".__FILE__;
+					$commit_flag = "no";
+					return false;
+				}
+				$custom_entry = mysql_fetch_array($r);
+				if($i>0){
+					$old_expire .= "|";
+				}
+				$old_expire = $custom_entry["expire_date"];
+				$custom_expire = $custom_entry["expire_date"];
+				$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$atrs[2]."';";
+				$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$n = mysql_num_rows($r);
+				if($n != 1){
+					$submit_err = "Could not find product in table line ".__LINE__." file ".__FILE__;
+					$commit_flag = "no";
+					return false;
+				}
+				$product = mysql_fetch_array($r);
+				$date_expire = calculateExpirationDate($custom_expire,$product["period"]);
+				$q = "UPDATE $pro_mysql_custom_product_table SET expire_date='$date_expire' WHERE domain='".$atrs[1]."';";
 				$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 				break;
 			default:
@@ -604,6 +632,7 @@ last_used_lang   ,path            ,id_client,bandwidth_per_month_mb,quota,nbrdb,
 	case "shared":
 		$country = $conf_this_server_country_code;
 		addDomainToUser($waiting_login,$new_admin["reqadm_pass"],$new_admin["domain_name"]);
+		triggerDomainListUpdate();
 
 		// Read the (customizable) registration message to send
 		$txt_welcome_message = readCustomizedMessage("registration_msg/shared_open",$waiting_login);

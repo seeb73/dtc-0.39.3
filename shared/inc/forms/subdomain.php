@@ -146,10 +146,17 @@ function drawAdminTools_Subdomain($admin,$domain){
 	$subdomains = $domain["subdomains"];
 	$txt .= "<table><tr><td align=\"right\">";
 	$txt .= _("Default subdomain: ") ."</td><td><select name=\"subdomaindefault_name\">";
+	$default_subdomain_id = -1;
+	if($domain["default_subdomain"] == ""){
+		$txt .= "<option value=\"\" selected>"._("None")."</option>";
+	}else{
+		$txt .= "<option value=\"\">"._("None")."</option>";
+	}
 	for($i=0;$i<$nbr_subdomain;$i++){
 		$sub = $subdomains[$i]["name"];
 		if($domain["default_subdomain"] == "$sub"){
 			$txt .= "<option value=\"$sub\" selected>$sub</option>";
+			$default_subdomain_id = $subdomains[$i]["id"];
 		}else{
 			$txt .= "<option value=\"$sub\">$sub</option>";
 		}
@@ -289,7 +296,7 @@ function drawAdminTools_Subdomain($admin,$domain){
 		"type" => "radio",
 		"help" => _("This wil allow to match filenames in any case disregarding how it is requested and stored on disk ala Windows IIS"),
 		"legend" => _("Windows Compatibility") ,
-		"values" => array("yes","no"),
+		"values" => array("no","yes"),
 		"display_replace" => array(_("No"),_("Yes")) );
 	if($admin["info"]["shared_hosting_security"] == "mod_php"){
 		$dsc["cols"]["shared_hosting_security"] = array(
@@ -351,6 +358,11 @@ function drawAdminTools_Subdomain($admin,$domain){
 				"empty_makes_sql_null" => "yes",
 				"can_be_empty" => "yes",
 				"legend" => _("Dynamic IP update password: ") );
+
+	if(isset($_REQUEST["item"]) && isset($_REQUEST["subaction"]) && $_REQUEST["subaction"] == "subdomain_editor_edit_item"
+		&& ($_REQUEST["item"] == $default_subdomain_id)){
+		$dsc["no_delete"] = true;
+	}
 
 	$txt .= dtcListItemsEdit($dsc);
 	$txt .= "<br>" . _("Windows users (and UNIX users running WINE) can update their IP address dynamically by downloading and installing the following open source DTC client:") . "<br>" .

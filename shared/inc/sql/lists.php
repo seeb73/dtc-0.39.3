@@ -529,4 +529,31 @@ if(isset($_REQUEST["dellist"]) && $_REQUEST["dellist"] == "Del"){
 	updateUsingCron("gen_qmail='yes', qmail_newu='yes'");
 }
 
+
+if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "copy_list_text_language"){
+	checkLoginPassAndDomain($adm_login,$adm_pass,$edit_domain);
+	if(!isMailbox($_REQUEST["edit_mailbox"])){
+		die($_REQUEST["edit_mailbox"]. _(" does not look like a mailbox login...") );
+	}
+	$name = $_REQUEST["edit_mailbox"];
+	$admin_path = getAdminPath($adm_login);
+	$folder_name = $edit_domain."_".$name;
+	$list_full_path = $admin_path."/".$edit_domain."/lists/".$folder_name;
+
+	if( !isset($_REQUEST["list_text_lang"])){
+		echo "Language not set";
+	}else{
+		if(!preg_match("/^[a-z][a-z]\$/",$_REQUEST["list_text_lang"])){
+			echo "Language not valid!";
+		}else{
+			if( file_exists("/usr/share/mlmmj/text.skel/".$_REQUEST["list_text_lang"]) && file_exists("$list_full_path/text")){
+				$copy_cmd = "cp -f /usr/share/mlmmj/text.skel/".$_REQUEST["list_text_lang"]."/* $list_full_path/text/";
+				exec($copy_cmd);
+			}else{
+				echo "Source or destination dir do not exist";
+			}
+		}
+	}
+}
+
 ?>

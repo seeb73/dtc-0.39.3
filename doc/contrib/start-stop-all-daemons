@@ -5,6 +5,7 @@
 case "$1" in
 	stop)
 /etc/init.d/postfix stop
+/etc/init.d/smtpprox-loopprevent stop
 /etc/init.d/dkimproxy stop
 /etc/init.d/amavis stop
 /etc/init.d/spamassassin stop
@@ -56,6 +57,7 @@ case "$1" in
 /etc/init.d/courier-pop-ssl start
 
 /etc/init.d/dkimproxy start
+/etc/init.d/smtpprox-loopprevent start
 /etc/init.d/postfix start
 	;;
 	*)

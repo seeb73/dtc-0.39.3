@@ -50,6 +50,8 @@ function drawAdminTools_Ftp($domain,$adm_path){
 		$path_popup_disp[] = "/";
 		$path_popup_vals[] = "$adm_path/$edit_domain";
 		$path_popup_disp[] = "/$edit_domain";
+		$path_popup_vals[] = "$adm_path/$edit_domain/subdomains";
+		$path_popup_disp[] = "/$edit_domain/subdomains";
 	}
 	$nbr_subdomains = sizeof($domain["subdomains"]);
 	for($i=0;$i<$nbr_subdomains;$i++){

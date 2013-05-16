@@ -100,6 +100,8 @@ debianGetDebconfValues () {
 	fi
 	db_get dtc/conf_eth2monitor
 	conf_eth2monitor=$RET
+	db_get dtc/conf_max_receive_process
+	conf_max_receive_process=$RET
 	db_unregister dtc/conf_mysqlpass
 	db_unregister dtc/conf_mysql_change_root
 	db_unregister dtc/conf_admlogin
@@ -146,7 +148,7 @@ PATH_SASL_PASSWD2=/usr/sbin/saslpasswd2
 PATH_USERDB_BIN=/usr/sbin/userdb
 PATH_MAILDROP_BIN=/usr/bin/maildrop
 PATH_DTC_SHARED=/usr/share/dtc
-FREERADIUS_ETC="/etc/raddb"
+FREERADIUS_ETC="/etc/freeradius"
 PATH_AWSTATS_ETC=/etc/awstats
 PATH_AMAVISD_CONF=/etc/amavis/amavisd.conf
 PATH_CLAMAV_CONF=/etc/clamav/clamd.conf

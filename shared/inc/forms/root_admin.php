@@ -1,9 +1,25 @@
 <?php
 
+////////////////////////////////////////////////////////////////////////////////////
+// Draw the form for configuring current global admin account info (path, etc...) //
+////////////////////////////////////////////////////////////////////////////////////
+function drawEditAdmin($admin){
+
+	$out = "<font size=\"-1\">
+<table>
+ <tr>
+  <td>".drawEditAdminDomains($admin)."</td><td background=\"gfx/border_2.gif\">&nbsp;</td>
+  <td>".drawEditAdminData($admin)."</td>
+ </tr>
+</table>
+</font>
+";
+	return $out;
+}
 ////////////////////////////////////////////////////////////////////////////
 // Draw the form for configuring global admin account info (path, etc...) //
 ////////////////////////////////////////////////////////////////////////////
-function drawEditAdmin($admin){
+function drawEditAdminData($admin){
 	global $pro_mysql_vps_server_table;
 	global $pro_mysql_vps_ip_table;
 	global $pro_mysql_vps_table;
@@ -17,6 +33,7 @@ function drawEditAdmin($admin){
 	global $conf_hide_password;
 	global $conf_post_or_get;
 	global $idn;
+	global $conf_show_invoice_info;
 	
 	$info = $admin["info"];
 	if(isset($admin["data"])){
@@ -42,8 +59,16 @@ function drawEditAdmin($admin){
 	$resseller_flag = $info["resseller_flag"];
 	$ssh_login_flag = $info["ssh_login_flag"];
 	$ftp_login_flag = $info["ftp_login_flag"];
+	$edit_domain_custom = $info["edit_domain_custom"];
 	$pkg_install_flag = $info["pkg_install_flag"];
 	$shared_hosting_security = $info["shared_hosting_security"];
+	$admin_disabled = $info["disabled"];
+	$permanent_extend = $info["permanent_extend"];
+	$temporary_extend = $info["temporary_extend"];
+	$max_ftp = $info["max_ftp"];
+	$max_email = $info["max_email"];
+	$max_ssh = $info["max_ssh"];
+	$allow_invoice_info = $info["show_invoice_info"];
 
 	if($resseller_flag == "yes"){
 		$resflag_yes = " checked='checked' ";
@@ -74,6 +99,16 @@ function drawEditAdmin($admin){
 	}
 	$ftplog_selector = "<input type=\"radio\" name=\"ftp_login_flag\" value=\"yes\"$ftplogin_yes> "._("Yes")."
 	<input type=\"radio\" name=\"ftp_login_flag\" value=\"no\"$ftplogin_no> "._("No");
+
+	if($edit_domain_custom == "yes"){
+		$editdomaincustom_yes = " checked='checked' ";
+		$editdomaincustom_no = "";
+	}else{
+		$editdomaincustom_yes = "";
+		$editdomaincustom_no = " checked='checked' ";
+	}
+	$domaincustom_selector = "<input type=\"radio\" name=\"edit_domain_custom\" value=\"yes\"$editdomaincustom_yes> "._("Yes")."
+	<input type=\"radio\" name=\"edit_domain_custom\" value=\"no\"$editdomaincustom_no> "._("No");
 
 	if($pkg_install_flag == "yes"){
 		$pkg_install_yes = " checked='checked' ";
@@ -138,6 +173,44 @@ function drawEditAdmin($admin){
 	}
 	$allow_subdomain_edit_selector = "<input type=\"radio\" name=\"allow_subdomain_edit\" value=\"yes\"$allow_subdomain_edit_yes> "._("Yes")."
 <input type=\"radio\" name=\"allow_subdomain_edit\" value=\"no\"$allow_subdomain_edit_no> "._("No");
+
+	// Show invoicing info
+	if($allow_invoice_info == "yes"){
+		$allow_invoice_info_yes = " checked='checked' ";
+		$allow_invoice_info_no = "";
+	}else{
+		$allow_invoice_info_yes = "";
+		$allow_invoice_info_no = " checked='checked' ";
+	}
+	$allow_invoice_info_selector = "<input type=\"radio\" name=\"allow_invoice_info\" value=\"yes\"$allow_invoice_info_yes> "._("Yes")."
+<input type=\"radio\" name=\"allow_invoice_info\" value=\"no\"$allow_invoice_info_no> "._("No");
+
+	// Admin Enabled??
+	if($admin_disabled == "yes"){
+		$admin_enabled_no = " checked='checked' ";
+		$admin_enabled_yes = "";
+		$admin_enabled_always_yes = "";
+		$admin_enabled_always_no = "";
+	}elseif($admin_disabled == "no"){
+		$admin_enabled_yes = " checked='checked' ";
+		$admin_enabled_no = "";
+		$admin_enabled_always_yes = "";
+		$admin_enabled_always_no = "";
+	}elseif($admin_disabled == "always-yes"){
+		$admin_enabled_always_no = " checked='checked' ";
+		$admin_enabled_no = "";
+		$admin_enabled_yes = "";
+		$admin_enabled_always_yes = "";
+	}else{
+		$admin_enabled_always_yes = " checked='checked' ";
+		$admin_enabled_always_no = "";
+		$admin_enabled_no = "";
+		$admin_enabled_yes = "";
+	}
+	$admin_enabled_selector = "<input type=\"radio\" name=\"admin_enabled\" value=\"no\"$admin_enabled_yes> "._("Yes")."
+<input type=\"radio\" name=\"admin_enabled\" value=\"yes\"$admin_enabled_no> "._("No")."
+<input type=\"radio\" name=\"admin_enabled\" value=\"always-no\"$admin_enabled_always_yes> "._("Always Yes")."
+<input type=\"radio\" name=\"admin_enabled\" value=\"always-yes\"$admin_enabled_always_no> "._("Always No");
 
 	// The shared hosting security popup
 	switch($shared_hosting_security){
@@ -204,20 +277,81 @@ function drawEditAdmin($admin){
 	$user_data .= dtcFormLineDraw( _("Disk quota (MB):") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"adm_quota\" value=\"$adm_quota\">",0);
 	$user_data .= dtcFormLineDraw( _("Allowed bandwidth per month (MB):") ,"<input class=\"dtcDatagrid_input_color\" type=\"text\" name=\"bandwidth_per_month\" value=\"$bandwidth_per_month_mb\">");
 	$user_data .= dtcFormLineDraw( _("Expiry date:") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"expire\" value=\"$expire\">",0);
+	$user_data .= dtcFormLineDraw( _("Permanent Extension:") ,"<input class=\"dtcDatagrid_input_color\" type=\"text\" name=\"permanent_extend\" value=\"".$info["permanent_extend"]."\">",0);
+	$user_data .= dtcFormLineDraw( _("Temporary Extension:") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"temporary_extend\" value=\"".$info["temporary_extend"]."\">",0);
+	if($conf_show_invoice_info == 'yes'){
+		$user_data .= dtcFormLineDraw( _("Show Invoicing Information:") ,$allow_invoice_info_selector);
+	}
 	$user_data .= dtcFormLineDraw( _("Product ID:") ,$prodsid);
 	$user_data .= dtcFormLineDraw( _("Number of databases:") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"nbrdb\" value=\"".$info["nbrdb"]."\">",0);
 	$user_data .= dtcFormLineDraw( _("Allow to add domains:") ,$aldom_popup);
 	$user_data .= dtcFormLineDraw( _("Max domain:") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"max_domain\" value=\"$max_domain\">",0);
+	$user_data .= dtcFormLineDraw( _("Max Emails:") ,"<input class=\"dtcDatagrid_input_color\" type=\"text\" name=\"max_email\" value=\"$max_email\">",0);
+	$user_data .= dtcFormLineDraw( _("Max FTP:") ,"<input class=\"dtcDatagrid_input_alt_color\" type=\"text\" name=\"max_ftp\" value=\"$max_ftp\">",0);
+	$user_data .= dtcFormLineDraw( _("Max SSH:") ,"<input class=\"dtcDatagrid_input_color\" type=\"text\" name=\"max_ssh\" value=\"$max_ssh\">",0);
 	$user_data .= dtcFormLineDraw( _("Grant sub-account addition rights (reseller):") ,$res_selector);
 	$user_data .= dtcFormLineDraw( _("Allow addition of SSH logins:") ,$sshlog_selector,0);
 	$user_data .= dtcFormLineDraw( _("Allow addition of FTP logins:") ,$ftplog_selector);
 	$user_data .= dtcFormLineDraw( _("Restrict FTP to the html folder:") ,$restricted_ftp_path_selector,0);
+	$user_data .= dtcFormLineDraw( _("Allow edition of domain's custom part:") ,$domaincustom_selector,0);
 	$user_data .= dtcFormLineDraw( _("Allow edition of mailing lists and mail groups:") ,$allow_mailing_list_edit_selector);
 	$user_data .= dtcFormLineDraw( _("Allow edition of DNS and MX:") ,$allow_dns_and_mx_change_selector,0);
 	$user_data .= dtcFormLineDraw( _("Allow edition of subdomains:") ,$allow_subdomain_edit_selector);
 	$user_data .= dtcFormLineDraw( _("Allow the use of the package installer:") ,$pkg_install_selector,0);
 	$user_data .= dtcFormLineDraw( _("Shared hosting security:"),$shared_hosting_security_popup);
+	$user_data .= dtcFormLineDraw( _("Is this administrator ENABLED:"),$admin_enabled_selector,0);
 	$user_data .= dtcFromOkDraw()."</table></form>";
+
+	$out=$user_data;
+	return $out;
+}
+////////////////////////////////////////////////////////////////////////////
+// Draw the form for configuring global admin account info (path, etc...) //
+////////////////////////////////////////////////////////////////////////////
+function drawEditAdminDomains($admin){
+	global $pro_mysql_vps_server_table;
+	global $pro_mysql_vps_ip_table;
+	global $pro_mysql_vps_table;
+	global $pro_mysql_product_table;
+	global $pro_mysql_dedicated_table;
+	global $pro_mysql_custom_product_table;
+	global $cc_code_popup;
+
+	global $adm_login;
+	global $adm_pass;
+	global $rub;
+	global $conf_hide_password;
+	global $conf_post_or_get;
+	global $idn;
+	
+	$info = $admin["info"];
+	if(isset($admin["data"])){
+		$data = $admin["data"];
+	}
+
+	$adm_cur_pass = $info["adm_pass"];
+	$adm_path = $info["path"];
+	$adm_max_email = $info["max_email"];
+	$adm_max_ftp = $info["max_ftp"];
+	$adm_quota = $info["quota"];
+	$bandwidth_per_month_mb = $info["bandwidth_per_month_mb"];
+	$adm_id_client = $info["id_client"];
+	$expire = $info["expire"];
+	$prod_id = $info["prod_id"];
+
+	$allow_add_domain = $info["allow_add_domain"];
+	$max_domain = $info["max_domain"];
+	$restricted_ftp_path = $info["restricted_ftp_path"];
+	$allow_dns_and_mx_change = $info["allow_dns_and_mx_change"];
+	$allow_mailing_list_edit = $info["allow_mailing_list_edit"];
+	$allow_subdomain_edit = $info["allow_subdomain_edit"];
+	$resseller_flag = $info["resseller_flag"];
+	$ssh_login_flag = $info["ssh_login_flag"];
+	$ftp_login_flag = $info["ftp_login_flag"];
+	$edit_domain_custom = $info["edit_domain_custom"];
+	$pkg_install_flag = $info["pkg_install_flag"];
+	$shared_hosting_security = $info["shared_hosting_security"];
+
 
 	// Generate the admin tool configuration module
 	// Deletion of domains :
@@ -368,16 +502,45 @@ function drawEditAdmin($admin){
 		<td><select name=\"country\">$cc_code_popup</select></td>
 	<tr><td></td><td>".dtcApplyButton()."</td></tr></table></form>";
 
-	$out = "<font size=\"-1\">
-<table>
- <tr>
-  <td>$domain_conf</td><td background=\"gfx/border_2.gif\">&nbsp;</td>
-  <td>$user_data</td>
- </tr>
-</table>
-</font>
-";
-	return $out;
+	// Deletion of custom products
+	$q = "SELECT *,$pro_mysql_custom_product_table.id as delid FROM $pro_mysql_custom_product_table,$pro_mysql_product_table WHERE product_id=$pro_mysql_product_table.id and owner='$adm_login';";
+	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysql_num_rows($r);
+	if($n > 0){
+		$domain_conf .= "<br><br><h3>". _("Delete one of the admin custom products:") ."</h3><br>";
+		for($i=0;$i<$n;$i++){
+			$a = mysql_fetch_array($r);
+			if($i > 0){
+				$domain_conf .= " - ";
+			}
+			$domain_conf .= "<a href=\"?adm_login=$adm_login&adm_pass=$adm_pass&rub=$rub&action=delete_a_custom_product&id=".$a["delid"]."\"><b>".$a["name"].".".$a["domain"]."</b></a>";
+		}
+	}
+
+	// Creation of Custom Products
+	$q = "SELECT * FROM $pro_mysql_product_table WHERE heb_type='custom' AND renew_prod_id='0';";
+	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysql_num_rows($r);
+	$num_prods_vps = $n;
+	$server_prods = "";
+	for($i=0;$i<$n;$i++){
+		$a = mysql_fetch_array($r);
+		$server_prods .= "<option value=\"".$a["id"]."\">".$a["name"]."</option>";
+	}
+	$domain_conf .= "<br><br><h3>". _("Add a custom product for this admin:") ."</h3>
+	<form method=\"$conf_post_or_get\" action=\"?\">
+	<input type=\"hidden\" name=\"rub\" value=\"$rub\">
+	<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
+	<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">
+	<input type=\"hidden\" name=\"action\" value=\"add_custom_to_user\">
+	<table border=\"0\">
+	<tr><td style=\"text-align: right; white-space: nowrap;\">". _("Product: ")."</td>
+		<td><select name=\"product_id\">$server_prods</select></td></tr>
+	<tr><td style=\"text-align: right; white-space: nowrap;\">". _("Domain: ") ."</td>
+		<td><input type=\"text\" name=\"server_hostname\" value=\"\"></td>
+	<tr><td></td><td>".dtcApplyButton()."</td></tr></table></form>";
+
+	return $domain_conf;
 }
 /////////////////////////////////////////////////////////////////
 // Generate a tool for configuring all domain of one sub-admin //
@@ -422,10 +585,25 @@ function drawDomainConfig($admin){
 			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 			updateUsingCron("gen_vhosts='yes',restart_apache='yes',gen_named='yes',reload_named ='yes'");
 		}
+		$title = " ";
+		if ( $domains[0]["total_quota"] > $domains[0]["adm_quota"]){
+			$title .= "<font color=\"FF0000\">";
+		}
+		$title .= _("Quota:")." ".$domains[0]["total_quota"]."/".$domains[0]["adm_quota"];
+		if ( $domains[0]["total_quota"] > $domains[0]["adm_quota"]){
+			$title .= "</font>";
+		}
+		if ( $domains[0]["total_email"] > $domains[0]["adm_email"]){
+			$title .= "<font color=\"FF0000\">";
+		}
+		$title .= " "._("Emails:")." ".$domains[0]["total_email"]."/".$domains[0]["adm_email"];
+		if ( $domains[0]["total_email"] > $domains[0]["adm_email"]){
+			$title .= "</font>";
+		}
 		$dsc = array(
 			"table_name" => $pro_mysql_domain_table,
-			"title" => _("Domain Configuration"),
 			"action" => "change_domain_config",
+			"title" => _("Domain Configuration").$title,
 			"forward" => array("rub","adm_login","adm_pass"),
 			"skip_deletion" => "yes",
 			"skip_creation" => "yes",
@@ -711,8 +889,8 @@ function drawDomainConfig($admin){
 
 		$dsc = array(
 			"table_name" => $pro_mysql_dedicated_table,
-			"title" => "",
-			"action" => _("Configuration of the dedicated servers") ,
+			"title" => _("Configuration of the dedicated servers") ,
+			"action" => "change_dedicated_config",
 			"forward" => array("rub","adm_login","adm_pass"),
 			"skip_deletion" => "yes",
 			"skip_creation" => "yes",
@@ -785,8 +963,8 @@ function drawDomainConfig($admin){
 
 		$dsc = array(
 			"table_name" => $pro_mysql_custom_product_table,
-			"title" => "",
-			"action" => _("Configuration of the Custom product") ,
+			"title" => _("Configuration of the Custom product"),
+			"action" => "change_custom_config" ,
 			"forward" => array("rub","adm_login","adm_pass"),
 			"skip_deletion" => "yes",
 			"skip_creation" => "yes",

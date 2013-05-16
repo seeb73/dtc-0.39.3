@@ -36,6 +36,10 @@ require_once("genfiles/genfiles.php");
 echo date("Y m d / H:i:s T",$script_start_time)." Starting DTC cron job\n";
 $keep_mail_generate_flag = "no";
 $keep_dns_generate_flag = "no";
+if (isset($argv[1])){
+	$cron_recursing = $argv[1];
+}
+global $conf_cron_recurse;
 
 // Set to yes if you want to check for qmail pop3d availability and relaunch
 // it if needed. Note that you can have to customise that cron script part
@@ -669,7 +673,69 @@ function printEndTime () {
 	echo date("Y m d / H:i:s T")." DTC cron job finished (exec time=".$ex_min.":".$ex_sec.")\n\n";
 }
 
+function checkDisableAdmins() {
+//	
+        global $pro_mysql_admin_table;
+        global $pro_mysql_domain_table;
+        global $pro_mysql_client_table;
 
+        global $conf_webmaster_email_addr;
+        global $conf_shared_renewal_disable_admin;
+	global $conf_global_extend;
+	global $conf_auto_enable_admin_on_expire_change;
+        global $dtcshared_path;
+
+        global $send_email_header;
+
+        $now_timestamp = mktime();
+        $one_day = 3600 * 24;
+	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adddate(expire,permanent_extend+temporary_extend+".$conf_global_extend.")<='".date("Y-m-d",$now_timestamp - $one_day*$conf_shared_renewal_disable_admin)."' and disabled='no';";
+	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+        $n = mysql_num_rows($r);
+        for($i=0;$i<$n;$i++){
+		$admin=mysql_fetch_array($r) or die("Cannot fetch record line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		echo "Disabling ".$admin["adm_login"]."\n";
+        	$s = "UPDATE $pro_mysql_admin_table SET disabled='yes' WHERE adm_login='".$admin["adm_login"]."';";
+        	$t = mysql_query($s)or die("Cannot query $s line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	}
+	if ($conf_auto_enable_admin_on_expire_change == 'yes') {
+        	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adddate(expire,permanent_extend+temporary_extend+".$conf_global_extend.")>'".date("Y-m-d",$now_timestamp - $one_day*$conf_shared_renewal_disable_admin)."' and disabled='yes';";
+        	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+        	$n = mysql_num_rows($r);
+        	for($i=0;$i<$n;$i++){
+			$admin=mysql_fetch_array($r) or die("Cannot fetch record line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			echo "Enabling ".$admin["adm_login"]."\n";
+        		$s = "UPDATE $pro_mysql_admin_table SET disabled='no' WHERE adm_login='".$admin["adm_login"]."';";
+        		$t = mysql_query($s)or die("Cannot query $s line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		}
+	}
+}
+
+function checkArchiveOrDeleteNewAdmins(){
+	global $pro_mysql_new_admin_table;
+	global $conf_action_on_old_new_admin;
+	global $conf_new_admin_old_age;
+
+	if ($conf_action_on_old_new_admin == 'archive' or $conf_action_on_old_new_admin == 'delete') {
+		$now_timestamp = mktime();
+		$one_day = 3600 * 24;
+		$q = "SELECT id, reqadm_login FROM $pro_mysql_new_admin_table WHERE to_days(date) < to_days('".
+			date("Y-m-d",$now_timestamp - $one_day*$conf_new_admin_old_age)."') and archive='no';";
+		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysql_num_rows($r);
+		for($i=0;$i<$n;$i++){
+			$admin=mysql_fetch_array($r) or die("Cannot fetch record line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			if ($conf_action_on_old_new_admin == 'delete') {
+				echo "Deleting old new_admin ".$admin["reqadm_login"]."\n";
+				$s = "DELETE FROM $pro_mysql_new_admin_table WHERE id='".$admin["id"]."';";
+			}else{
+				echo "Archiving old new_admin ".$admin["reqadm_login"]."\n";
+				$s = "UPDATE $pro_mysql_new_admin_table SET archive='yes' WHERE id='".$admin["id"]."';";
+			}
+			$t = mysql_query($s)or die("Cannot query $s line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		}
+	}
+}
 
 // Edit the following if you want to disable some services...
 checkLockFlag();
@@ -680,6 +746,7 @@ checkPop3dStarted();
 checkSSHCronService();
 checkApacheCronService();
 checkNagiosCronService();
+checkDisableAdmins();
 $cronjob_table_content = getCronFlags();
 if($cronjob_table_content["gen_backup"] == "yes"){
 	echo "Generating backup script\n";
@@ -694,6 +761,7 @@ if(($start_stamps%(60*60*24))< 60*10)	updateAllDomainsStats();
 // updateAllDomainsStats();
 // Update all list archives
 if(($start_stamps%(60*60))< 60*10){	updateAllListWebArchive();	}
+if(($start_stamps%(60*60))< 60*10){	checkArchiveOrDeleteNewAdmins();	}
 
 // Re-read cronjob values as long as they could have change
 // during this long job calculation !
@@ -706,6 +774,18 @@ echo("Report for this job:\n");
 echo( str_replace("<br>","\n",$console));
 printEndTime();
 $_inprogress = FALSE;
+$cron_final=getCronFlags();
+if(($cron_final["qmail_newu"] == 'yes' || $cron_final["restart_qmail"] == 'yes' || $cron_final["reload_named"] == 'yes' || $cron_final["restart_apache"] == 'yes' || $cron_final["gen_vhosts"] == 'yes' || $cron_final["gen_named"] == 'yes' || $cron_final["gen_reverse"] == 'yes' || $cron_final["gen_fetchmail"] == 'yes' || $cron_final["gen_qmail"] == 'yes' || $cron_final["gen_webalizer"] == 'yes' || $cron_final["gen_backup"] == 'yes' || $cron_final["gen_ssh"] == 'yes' || $cron_final["gen_nagios"] == 'yes' || $cron_final["gen_user_cron"] == 'yes') && $cron_recursing != "end"){
+	if($cron_final["lock_flag"] == 'finished'){
+		if ($cron_recursing < $conf_cron_recurse){
+			$cron_recursing = $cron_recursing + 1;
+			echo("Recursing cron.php: $cron_recursing time.\n");
+			system(__FILE__." $cron_recursing");
+		}else{
+			echo("Not recursing cron.php: Max recursion limit reached.");
+		}
+	}
+}
 exit();
 
 ?>

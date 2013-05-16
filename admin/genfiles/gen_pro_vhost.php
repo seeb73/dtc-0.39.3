@@ -184,6 +184,7 @@ function pro_vhost_generate(){
 	global $conf_force_use_https;
 
 	global $conf_shared_renewal_shutdown;
+	global $conf_global_extend;
 
 	global $conf_use_nated_vhost;
 	global $conf_nated_vhost_ip;
@@ -203,6 +204,11 @@ function pro_vhost_generate(){
 	global $conf_autogen_webmail_alias;
 	global $conf_autogen_webmail_type;
 	global $conf_autogen_webmail_protocol;
+	global $conf_autogen_webmail_host;
+	global $conf_autogen_webmail_hostname;
+
+	global $conf_autogen_admin_host;
+	global $conf_autogen_admin_hostname;
 
 	global $conf_dtc_system_username;
 	global $conf_dtc_system_groupname;
@@ -531,13 +537,16 @@ AND $pro_mysql_admin_table.id_client != '0'";
 		if($expire_stored == "0000-00-00"){
 			$site_expired = "no";
 		}else{
-			$calc_expire_date = calculateExpirationDate($expire_stored,"0000-00-$conf_shared_renewal_shutdown");
+			$calc_expire_date = calculateExpirationDate($expire_stored,"0000-00-".$conf_shared_renewal_shutdown+$conf_global_extend+$webadmin["permanent_extend"]+$webadmin["temporary_extend"]);
 			$calc_expire_date_array = explode("-",$calc_expire_date);
 			$expire_timestamp = mktime(1,1,1,$calc_expire_date_array[1],$calc_expire_date_array[2],$calc_expire_date_array[0]);
 			if($expire_timestamp < mktime()){
 				$site_expired = "yes";
 			}else{
 				$site_expired = "no";
+			}
+			if ($webadmin["disabled"] == "yes" or $webadmin["disabled"] == "always-yes"){
+				$site_expired = "yes";
 			}
 		}
 
@@ -556,10 +565,18 @@ AND $pro_mysql_admin_table.id_client != '0'";
 		$result2 = mysql_query ($query2)or die("Cannot execute query \"$query2\"");
 		$num_rows2 = mysql_num_rows($result2);
 
+		$webmail_hostname_exists = "no";
+		$admin_hostname_exists = "no";
 		unset($temp_array_subs);
 		$temp_array_subs = array();
 		for($j=0;$j<$num_rows2;$j++){
 			$temp_array_subs[] = mysql_fetch_array($result2) or die ("Cannot fetch user line ".__LINE__." file ".__FILE__);
+			if ($temp_array_subs[$j] == $conf_autogen_webmail_hostname) {
+				$webmail_hostname_exists = "yes";
+			}
+			if ($temp_array_subs[$j] == $conf_autogen_admin_hostname) {
+				$admin_hostname_exists = "yes";
+			}
 		}
 
 		// We get the default subdomain and we add it at the end of the array. The goal is to have the
@@ -569,6 +586,26 @@ AND $pro_mysql_admin_table.id_client != '0'";
 		$my_num_rows = mysql_num_rows($result2);
 		if($my_num_rows == 1){
 			$temp_array_subs[] = mysql_fetch_array($result2) or die ("Cannot fetch user".__LINE__." file ".__FILE__);
+			$num_rows2++;
+		}
+
+		if ($conf_autogen_webmail_host == "yes" and $webmail_hostname_exists == "no") {
+			$temp_array_subs[] = $temp_array_subs[0];
+			$temp_array_subs[$num_rows2]["subdomain_name"] = $conf_autogen_webmail_hostname;
+			$temp_array_subs[$num_rows2]["redirect_url"] = "$conf_autogen_webmail_protocol//$conf_administrative_site/$conf_autogen_webmail_type";
+			$temp_array_subs[$num_rows2]["generate_vhost"] = "yes";
+			$temp_array_subs[$num_rows2]["ip"] = "default";
+			$temp_array_subs[$num_rows2]["ssl_ip"] = "none";
+			$num_rows2++;
+		}
+
+		if ($conf_autogen_admin_host == "yes" and $admin_hostname_exists == "no") {
+			$temp_array_subs[] = $temp_array_subs[0];
+			$temp_array_subs[$num_rows2]["subdomain_name"] = $conf_autogen_admin_hostname;
+			$temp_array_subs[$num_rows2]["redirect_url"] = "http://".$conf_administrative_site."/dtc";
+			$temp_array_subs[$num_rows2]["generate_vhost"] = "yes";
+			$temp_array_subs[$num_rows2]["ip"] = "default";
+			$temp_array_subs[$num_rows2]["ssl_ip"] = "none";
 			$num_rows2++;
 		}
 
@@ -692,9 +729,13 @@ AND $pro_mysql_admin_table.id_client != '0'";
 						$vhost_file .= "	SSLCertificateChainFile ".$conf_generated_file_path."/ssl/new.cert.ca\n";
 					}
 				}
-				vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/html");
-				vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/logs");
-				vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/cgi-bin");
+				if (($conf_autogen_webmail_host == "yes" && $webmail_hostname_exists == "no" && $web_subname == $conf_autogen_webmail_hostname) || ($conf_autogen_admin_host == "yes" && $admin_hostname_exists == "no" && $web_subname == $conf_autogen_admin_hostname)){
+					//Not generate subdirs for virtual aliases
+				}else{
+					vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/html");
+					vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/logs");
+					vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/cgi-bin");
+				}
 				if ( $conf_unix_type == "bsd" ) {
 					$vhost_file .= "	Alias /phpmyadmin ".$conf_tools_prefix."/phpMyAdmin\n";
 				}else{
@@ -738,9 +779,11 @@ AND $pro_mysql_admin_table.id_client != '0'";
 			$vhost_file .= $php_more_conf . "
 	DocumentRoot $web_path/$web_name/subdomains/$web_subname/html
 	<Directory $web_path/$web_name/subdomains/$web_subname/html>
+		DirectoryIndex index.php
 		Allow from all
 	</Directory>
 	<Directory $web_path/$web_name/subdomains/$web_subname/logs>
+		DirectoryIndex index.php
 		Allow from all
 	</Directory>
 # No ScriptAlias: we want to use system's /usr/lib/cgi-bin !!!
@@ -792,19 +835,31 @@ $vhost_file .= "
                                 } else if ($domain_parking != "no-parking" && $domain_parking_type == "serveralias") {
                                         // do nothing here, as serveralias parking will be injected throughout the generation of the main domain
 				}else{
-					vhost_chk_dir_sh("$web_path/$domain_to_get/subdomains/$web_subname/logs");
-					vhost_chk_dir_sh("$web_path/$domain_to_get/subdomains/$web_subname/html");
-					vhost_chk_dir_sh("$web_path/$domain_to_get/subdomains/$web_subname/cgi-bin");
+					if (($conf_autogen_webmail_host == "yes" && $webmail_hostname_exists == "no" && $web_subname == $conf_autogen_webmail_hostname) || ($conf_autogen_admin_host == "yes" && $admin_hostname_exists == "no" && $web_subname == $conf_autogen_admin_hostname)){
+						//Not generate subdirs for virtual aliases
+					}else{
+						vhost_chk_dir_sh("$web_path/$domain_to_get/subdomains/$web_subname/logs");
+						vhost_chk_dir_sh("$web_path/$domain_to_get/subdomains/$web_subname/html");
+						vhost_chk_dir_sh("$web_path/$domain_to_get/subdomains/$web_subname/cgi-bin");
+					}
 					// We need to make it for both in case of a domain parking
 					if($domain_to_get != $web_name){
-						vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/logs");
-						vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/html");
-						vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/cgi-bin");
+						if (($conf_autogen_webmail_host == "yes" && $webmail_hostname_exists == "no" && $web_subname == $conf_autogen_webmail_hostname) || ($conf_autogen_admin_host == "yes" && $admin_hostname_exists == "no" && $web_subname == $conf_autogen_admin_hostname)){
+							//Not generate subdirs for virtual aliases
+						}else{
+							vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/logs");
+							vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/html");
+							vhost_chk_dir_sh("$web_path/$web_name/subdomains/$web_subname/cgi-bin");
+						}
 					}
 					if($webadmin["shared_hosting_security"] == 'sbox_aufs' || ($webadmin["shared_hosting_security"] == 'mod_php' && $subdomain["shared_hosting_security"] == 'sbox_aufs')){
-						vhost_chk_dir_sh("$web_path/$web_name/subdomains.aufs");
-						vhost_chk_dir_sh("$web_path/$web_name/subdomains.aufs/".$web_subname);
-						$aufs_list .= "$web_path/$web_name/subdomains/".$web_subname."\n";
+						if (($conf_autogen_webmail_host == "yes" && $webmail_hostname_exists == "no" && $web_subname == $conf_autogen_webmail_hostname) || ($conf_autogen_admin_host == "yes" && $admin_hostname_exists == "no" && $web_subname == $conf_autogen_admin_hostname)){
+							//Not generate subdirs for virtual aliases
+						}else{
+							vhost_chk_dir_sh("$web_path/$web_name/subdomains.aufs");
+							vhost_chk_dir_sh("$web_path/$web_name/subdomains.aufs/".$web_subname);
+							$aufs_list .= "$web_path/$web_name/subdomains/".$web_subname."\n";
+						}
 					}
 					$iteration_table = array();
 					$iteration_table[] = "normal";
@@ -871,7 +926,7 @@ $vhost_file .= "
 						$iteration_table[]="shared_ssl";
 					}
 					if (preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $subdomain["redirect_url"])) {
-						$vhost_more_conf .= "Redirect / ".$subdomain["redirect_url"]."\n";
+						$vhost_more_conf .= "	Redirect / ".$subdomain["redirect_url"]."\n";
 					}
 					if($web_subname == "$web_default_subdomain"){
 						if ($domain_parking == "no-parking"){
@@ -962,6 +1017,10 @@ $vhost_file .= "
 						$vhost_file .= "	ServerName $web_subname.$web_name
 	Alias /stats $web_path/$web_name/subdomains/$web_subname/logs
 	Alias /awstats-icon /usr/share/awstats/icon\n";
+						if (($conf_autogen_webmail_host == "yes" && $webmail_hostname_exists == "no" && $web_subname == $conf_autogen_webmail_hostname) || ($conf_autogen_admin_host == "yes" && $admin_hostname_exists == "no" && $web_subname == $conf_autogen_admin_hostname)){
+							//Not generate subdirs for virtual aliases
+							$vhost_file .= $vhost_more_conf;
+						}else{
 						// Disable the site if expired
 						if($site_expired == "yes"){
 							$document_root = $conf_generated_file_path."/expired_site";
@@ -1010,6 +1069,10 @@ $vhost_file .= "
 	ErrorDocument 406 /sbox404/406.php
 	ErrorDocument 500 /sbox404/406.php
 	ErrorDocument 501 /sbox404/406.php
+	<Directory $web_path/$domain_to_get/subdomains.aufs/$web_subname/html>
+		AllowOverride AuthConfig Indexes Limit
+		AllowOverrideList ErrorDocument LanguagePriority AddCharset AddEncoding AddLanguage RemoveCharset RemoveEncoding SetEnvIf SetEnvIfNoCase BrowserMatch RewriteEngine RewriteOptions RewriteBase RewriteCond RewriteRule Redirect RedirectTemp RedirectPermanent RedirectMatch
+	</Directory>
 	Options +ExecCGI\n";
 							}
 							$vhost_file .= get_defaultCharsetDirective($subdomain["add_default_charset"]);
@@ -1030,6 +1093,7 @@ $vhost_file .= "
 
 						if ($create_mail_autoconfig && ($domain_default_sub_server_alias == "yes") && ($web_subname == "$web_default_subdomain")) {
 							$vhost_file .= "	AliasMatch ^/.well-known/autoconfig/mail/config-v1.1.xml\$ $conf_generated_file_path/config-v1.1.xml\n";
+						}
 						}
 	
 						$vhost_file .= "</VirtualHost>\n\n";

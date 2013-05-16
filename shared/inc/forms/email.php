@@ -97,29 +97,28 @@ function drawAdminTools_emailAccount($mailbox){
 </tr></table>
 <br><br>";
 
-	if($mailbox["data"]["vacation_flag"] == "yes"){
-		$use_vacation_msg_yes_checked = " checked ";
-		$use_vacation_msg_no_checked = " ";
-	}else{
-		$use_vacation_msg_yes_checked = " ";
-		$use_vacation_msg_no_checked = " checked ";
-	}
+	if($mailbox["data"]["permit_redir"] == "yes"){
+		if($mailbox["data"]["vacation_flag"] == "yes"){
+			$use_vacation_msg_yes_checked = " checked ";
+			$use_vacation_msg_no_checked = " ";
+		}else{
+			$use_vacation_msg_yes_checked = " ";
+			$use_vacation_msg_no_checked = " checked ";
+		}
 
-	if (!$cyrus_used){
-  	$left .= "<h3>" . _("Vacation message") . "</h3>
-  	".$form_start."<input type=\"hidden\" name=\"action\" value=\"dtcemail_vacation_msg\">
-  <input type=\"radio\" name=\"use_vacation_msg\" value=\"yes\" $use_vacation_msg_yes_checked>"._("Yes")."<input type=\"radio\" name=\"use_vacation_msg\" value=\"no\" $use_vacation_msg_no_checked>"._("No")."
+		if (!$cyrus_used){
+	  		$left .= "<h3>" . _("Vacation message") . "</h3>
+  		".$form_start."<input type=\"hidden\" name=\"action\" value=\"dtcemail_vacation_msg\">
+  	<input type=\"radio\" name=\"use_vacation_msg\" value=\"yes\" $use_vacation_msg_yes_checked>"._("Yes")."<input type=\"radio\" name=\"use_vacation_msg\" value=\"no\" $use_vacation_msg_no_checked>"._("No")."
   <br>
   <textarea cols=\"40\" rows=\"7\" name=\"vacation_msg_txt\">".$mailbox["data"]["vacation_text"]."</textarea><br>
   ". drawSubmitButton( _("Ok") ) ."</form>";
-  }
-	if($mailbox["data"]["localdeliver"] == "yes"){
-		$deliverUrl = "$url_start&action=dtcemail_set_deliver_local&setval=no\"><font color=\"green\">"._("Yes")."</font></a>";
-	}else{
-		$deliverUrl = "$url_start&action=dtcemail_set_deliver_local&setval=yes\"><font color=\"red\">"._("No")."</font></a>";
-	}
-	if (!$cyrus_used){
-    	$right = "<h3>". _("Edit your mailbox redirections:") ."</h3>
+			if($mailbox["data"]["localdeliver"] == "yes"){
+				$deliverUrl = "$url_start&action=dtcemail_set_deliver_local&setval=no\"><font color=\"green\">"._("Yes")."</font></a>";
+			}else{
+				$deliverUrl = "$url_start&action=dtcemail_set_deliver_local&setval=yes\"><font color=\"red\">"._("No")."</font></a>";
+			}
+    			$right = "<h3>". _("Edit your mailbox redirections:") ."</h3>
     ". _("Deliver messages locally in INBOX: ") ." $deliverUrl
     <table cellpadding=\"0\" cellspacing=\"0\">
     <tr>
@@ -131,29 +130,72 @@ function drawAdminTools_emailAccount($mailbox){
     </tr><tr>
     	<td></td><td>". drawSubmitButton( _("Ok") ) ."</form></td>
     </tr></table><br><br>";
+		}else{
+			$right ="";
+		}
+	}
 
-    	if($mailbox["data"]["spam_mailbox_enable"] == "yes"){
-    		$spambox_yes_checked = " checked ";
-    		$spambox_no_checked = " ";
-    	}else{
-    		$spambox_yes_checked = " ";
-    		$spambox_no_checked = " checked ";
-    	}
-
-    	$right .= "<h3>" . _("Anti-SPAM control") . "</h3>
+    	if($mailbox["data"]["permit_spam"] == "yes" ) {
+		if($mailbox["data"]["spam_mailbox_enable"] == "yes"){
+    			$spambox_yes_checked = " checked ";
+    			$spambox_no_checked = " ";
+    		}else{
+    			$spambox_yes_checked = " ";
+    			$spambox_no_checked = " checked ";
+    		}
+    		if($mailbox["data"]["spam_lover"] == "Y"){
+    			$spam_lover_yes_checked = " checked ";
+    			$spam_lover_no_checked = " ";
+    		}else{
+    			$spam_lover_yes_checked = " ";
+    			$spam_lover_no_checked = " checked ";
+    		}
+	
+    		$right .= "<h3>" . _("Anti-SPAM control") . "</h3>
     <table cellpadding=\"0\" cellspacing=\"0\">
     <tr>
-    	<td align=\"right\">Deliver spam to spambox:</td><td>".$form_start."<input type=\"hidden\" name=\"action\" value=\"dtcemail_spambox\">
+    	<td align=\"right\">" . _("Enable SPAM filtering: ") . "</td><td>".$form_start."<input type=\"hidden\" name=\"action\" value=\"dtcemail_spambox\">
     <input type=\"radio\" name=\"spam_mailbox_enable\" value=\"yes\" $spambox_yes_checked>"._("Yes")."<input type=\"radio\" name=\"spam_mailbox_enable\" value=\"no\" $spambox_no_checked>"._("No")."</td>
     </tr><tr>
-    	<td align=\"right\">" . _("SPAM mailbox name") . ":</td><td><input type=\"text\" name=\"spam_mailbox\" value=\"".$mailbox["data"]["spam_mailbox"]."\"></td>
+    	<td align=\"right\">" . _("SPAM mailbox name") . ":</td><td><input type=\"text\" name=\"spam_mailbox\" value=\"".htmlspecialchars($mailbox["data"]["spam_mailbox"])."\"></td>
+    </tr><tr>
+<!--spam tag level-->
+    	<td align=\"right\">" . _("Spam tag level (possible spam)") . ":</td><td><input type=\"text\" name=\"spam_tag_level\" value=\"".htmlspecialchars($mailbox["data"]["spam_tag_level"])."\"></td>
+    </tr><tr>
+    	<td align=\"right\">" . _("Subject for possible spam") . ":</td><td><input type=\"text\" name=\"spam_subject_tag\" value=\"".htmlspecialchars($mailbox["data"]["spam_subject_tag"])."\"></td>
+    </tr><tr>
+<!--tag2 level-->
+    	<td align=\"right\">" . _("Spam tag2 level (spam)") . ":</td><td><input type=\"text\" name=\"spam_tag2_level\" value=\"".htmlspecialchars($mailbox["data"]["spam_tag2_level"])."\"></td>
+    </tr><tr>
+    	<td align=\"right\">" . _("Subject for spam") . ":</td><td><input type=\"text\" name=\"spam_subject_tag2\" value=\"".htmlspecialchars($mailbox["data"]["spam_subject_tag2"])."\"></td>
+    </tr><tr>
+<!--tag3 level-->
+    	<td align=\"right\">" . _("Spam tag3 level (extreme spam)") . ":</td><td><input type=\"text\" name=\"spam_tag3_level\" value=\"".htmlspecialchars($mailbox["data"]["spam_tag3_level"])."\"></td>
+    </tr><tr>
+    	<td align=\"right\">" . _("Subject for extreme spam (only Amavis above V2.7)") . ":</td><td><input type=\"text\" name=\"spam_subject_tag3\" value=\"".htmlspecialchars($mailbox["data"]["spam_subject_tag3"])."\"></td>
+    </tr><tr>
+<!--kill level-->
+    	<td align=\"right\">" . _("Spam kill level (discart or bounce mails above this level)") . ":</td><td><input type=\"text\" name=\"spam_kill_level\" value=\"".htmlspecialchars($mailbox["data"]["spam_kill_level"])."\"></td>
+    </tr><tr>
+<!--spam lover-->
+    	<td align=\"right\">" . _("Receive spam mails (even above kill level)") . ":</td><td>    <input type=\"radio\" name=\"spam_lover\" value=\"Y\" $spam_lover_yes_checked>"._("Yes")."<input type=\"radio\" name=\"spam_lover\" value=\"N\" $spam_lover_no_checked>"._("No")."
+</td>
+    </tr><tr>
+<!--quarantine spam to email-->
+    	<td align=\"right\">" . _("Quarantine spam to email") . ":</td><td><input type=\"text\" name=\"spam_quarantine_to\" value=\"".htmlspecialchars($mailbox["data"]["spam_quarantine_to"])."\"></td>
+    </tr><tr>
+<!--do not quarantine above this level-->
+    	<td align=\"right\">" . _("Quarantine cutoff level (Do not quarantine above this level)") . ":</td><td><input type=\"text\" name=\"quarantine_cutoff_level\" value=\"".htmlspecialchars($mailbox["data"]["quarantine_cutoff_level"])."\"></td>
+    </tr><tr>
+<!--addr extension for spam mails-->
+    	<td align=\"right\">" . _("Add this extension to the receivers mail address (above tag2 level)") . ":</td><td><input type=\"text\" name=\"addr_extension_spam\" value=\"".htmlspecialchars($mailbox["data"]["addr_extension_spam"])."\"></td>
     </tr><tr>
     	<td></td><td>". drawSubmitButton( _("Ok") ) ."</form></td></tr></table>";
 	}
-	else { $right=""; }
-	
+	else { $right.=""; }
+		
 	// Output the form
-	$out = "<table width=\"100%\" heigh=\"1\">
+	$out = "<table width=\"100%\" height=\"1\">
 <tr>
 	<td width=\"50%\" valign=\"top\">".$left."</td>
 	<td width=\"4\" background=\"gfx/border_2.gif\"></td>
@@ -412,6 +454,7 @@ function drawAdminTools_Emails($domain){
 	global $conf_hide_password;
 	global $pro_mysql_pop_table;
 	global $conf_post_or_get;
+	global $conf_addr_mail_server;
 
 	checkLoginPassAndDomain($adm_login,$adm_pass,$domain["name"]);
 
@@ -441,34 +484,33 @@ function drawAdminTools_Emails($domain){
 				"type" => "id",
 				"display" => "no",
 				"legend" => _("Login:") ),
+                        "login_title" => array("type" => "title", "legend" => _("Mailbox") ),
 			"id" => array(
 				"type" => "text",
 				"disable_edit" => "yes",
 				"check" => "dtc_login",
 				"happen" => "@".$domain["name"],
 				"fixup" => 'strtolower',
+				"placeholder" => "mailboxname",
 				"legend" => _("Login:") ),
-			"memo" => array (
-				"type" => "text",
-				"help" => _("This text is just a memo for yourself, and will not really be used."),
-				"legend" => _("Name:") ),
 			"passwd" => array(
 				"type" => "password",
 				"check" => "dtc_pass",
 				"legend" => _("Password:") ),
-			"spam_mailbox_enable" => array(
-				"type" => "checkbox",
-				"help" => _("If selected, spam will be saved in a SPAM folder and won't reach your inbox. Later you may check this folder with webmail or an IMAP client."),
-				"values" => array( "yes","no"),
-				"legend" => _("Enable SPAM filtering: ") ),
-			"spam_mailbox" => array(
+			"memo" => array (
 				"type" => "text",
-				"help" => _("Name of the SPAM folder (the above option has to be activated)."),
-				"default" => "SPAM",
-				"legend" => _("SPAM mailbox destination: ") ),
+				"help" => _("This text is just a memo for yourself, and will not really be used."),
+				"placeholder" => "John Doe",
+				"legend" => _("Name:") ),
+			"active" => array(
+				"type" => "checkbox",
+				"values" => array("1","0"),
+				"legend" => _("Mail Account ACTIVE: ") ),
 			)
 		);
+
 	if($cyrus_used) {
+		$dsc["cols"]["quota_title"] = array( "type" => "title", "legend" => _("Quota limit") );
 		$dsc["cols"]["quota_size"] = array(
 			"type" => "text",
 			"check" => "number",
@@ -481,6 +523,7 @@ function drawAdminTools_Emails($domain){
 			"happen" => _("MBytes"),
 			"legend" => _("Used quota: ") );
 	} else {
+		$dsc["cols"]["quota_title"] = array( "type" => "title", "legend" => _("Quota limit") );
 		$dsc["cols"]["quota_size"] = array(
 			"type" => "text",
 			"check" => "max_value_2096",
@@ -494,22 +537,30 @@ function drawAdminTools_Emails($domain){
 			"default" => "1024",
 			"happen" => _("files"),
 			"legend" => _("Mailbox max files quota: ") );
+                $dsc["cols"]["delivery_title"] = array( "type" => "title", "legend" => _("Delivery configuration") );
+		$dsc["cols"]["permit_redir"] = array(
+			"type" => "checkbox",
+			"values" => array("yes","no"),
+			"legend" => _("Allow Users to edit Redirection Information: ") );
+		$dsc["cols"]["localdeliver"] = array(
+			"type" => "checkbox",
+			"values" => array( "yes","no"),
+			"legend" => _("Deliver messages locally in INBOX: ") );
 		$dsc["cols"]["redirect1"] = array(
 			"type" => "text",
 			"check" => "email",
 			"can_be_empty" => "yes",
 			"empty_makes_sql_null" => "yes",
+			"placeholder" => "mailbox@example.com",
 			"legend" => _("Redirection 1: ") );
 		$dsc["cols"]["redirect2"] = array(
 			"type" => "text",
 			"check" => "email",
 			"can_be_empty" => "yes",
 			"empty_makes_sql_null" => "yes",
+			"placeholder" => "mailbox2@example.com",
 			"legend" => _("Redirection 2: ") );
-		$dsc["cols"]["localdeliver"] = array(
-			"type" => "checkbox",
-			"values" => array( "yes","no"),
-			"legend" => _("Deliver messages locally in INBOX: ") );
+                $dsc["cols"]["vacation_title"] = array("type" => "title", "legend" => _("Vacation bounce message") );
 		$dsc["cols"]["vacation_flag"] = array(
 			"type" => "checkbox",
 			"values" => array( "yes","no"),
@@ -521,6 +572,226 @@ function drawAdminTools_Emails($domain){
 			"cols" => "40",
 			"rows" => "7");
 	}
+	$dsc["cols"]["spam_title"] = array("type" => "title","legend" => _("SPAM control"));
+	$dsc["cols"]["permit_spam"] = array(
+		"type" => "checkbox",
+		"values" => array("yes","no"),
+		"legend" => _("Allow Users to edit SPAM Configuration Information: ") );
+	$dsc["cols"]["spam_mailbox_enable"] = array(
+		"type" => "checkbox",
+		"help" => _("If selected, spam will be saved in a SPAM folder and won't reach your inbox. Later you may check this folder with webmail or an IMAP client."),
+		"values" => array( "yes","no"),
+		"legend" => _("Enable SPAM filtering: ") );
+	$dsc["cols"]["spam_mailbox"] = array(
+		"type" => "text",
+		"help" => _("Name of the SPAM folder (the above option has to be activated)."),
+		"default" => "SPAM",
+		"check" => "IMAPMailbox",
+		"can_be_empty" => "yes",
+		"legend" => _("SPAM mailbox destination: ") );
+	$dsc["cols"]["virus_lover"] = array(
+		"type" => "checkbox",
+		"help" => _("If selected, virus infected messages will be delivered to your inbox"),
+		"values" => array( "Y","N"),
+		"legend" => _("Receive virus infected messages: ") );
+	$dsc["cols"]["spam_lover"] = array(
+		"type" => "checkbox",
+		"help" => _("If selected, spam  messages will be delivered to your inbox even if they where tagged above the kill level, which normally would discart them. Keep in mind, that you still can move them to a separate folder by activating that option."),
+		"values" => array( "Y","N"),
+		"legend" => _("Receive spam messages: ") );
+	$dsc["cols"]["banned_files_lover"] = array(
+		"type" => "checkbox",
+		"help" => _("If selected, messages containing banned_files will be delivered to your inbox."),
+		"values" => array( "Y","N"),
+		"legend" => _("Receive messages containing banned_files: ") );
+	$dsc["cols"]["bad_header_lover"] = array(
+		"type" => "checkbox",
+		"help" => _("If selected, messages containing bad_headers will be delivered to your inbox."),
+		"values" => array( "Y","N"),
+		"legend" => _("Receive messages containing bad_headers: ") );
+	$dsc["cols"]["spam_tag_level"] = array(
+		"type" => "text",
+		"help" => _("Tag mails above this level as possible spam. (No further actions taken - you can define a subject tag that should be added to the messages though.) Typical values are -999.99 - 4.00"),
+		"default" => "-999.99",
+		"check" => "numeric",
+		"can_be_empty" => "yes",
+		"legend" => _("Spam tag level: ") );
+	$dsc["cols"]["spam_tag2_level"] = array(
+		"type" => "text",
+		"help" => _("Tag mails above this level as spam. (defined spam actions apply. e.g. Mails will be tagged as spam or be forwarded... You can also define a subject tag that should be added to the messages.) Typical values are 4.01 - 5.99"),
+		"default" => "4.3",
+		"check" => "numeric",
+		"can_be_empty" => "yes",
+		"legend" => _("Spam tag2 level: ") );
+	$dsc["cols"]["spam_tag3_level"] = array(
+		"type" => "text",
+		"help" => _("Tag mails above this level as extreme spam. (The same actions apply as the ones for tag2 level mails. You can define a separate subject tag that should be added to the messages.) !Only works with Amavis-New above 2.7 otherwise this level and subject are ignored! Typical values are 6.00 - 10.00"),
+		"default" => "5.00",
+		"check" => "numeric",
+		"can_be_empty" => "yes",
+		"legend" => _("Spam tag3 level: ") );
+	$dsc["cols"]["spam_kill_level"] = array(
+		"type" => "text",
+		"help" => _("discart or bounce mails above this level. (If you did not check the option to receive spam mails, these mails will be deleted or bounced following your dsn-cutoff-level.) Typical values are 6.00 - 12.00"),
+		"default" => "6.00",
+		"check" => "numeric",
+		"can_be_empty" => "yes",
+		"placeholder" => "9",
+		"legend" => _("Spam kill level: ") );
+	$dsc["cols"]["spam_dsn_cutoff_level"] = array(
+		"type" => "text",
+		"help" => _("Up to this level bounce messages will be send. If you do not want to inform spammers that  their mails where tagged as spam, set this level to the kill level."),
+		"default" => "6.0",
+		"check" => "numeric",
+		"can_be_empty" => "yes",
+		"legend" => _("DSN cutoff level: ") );
+	$dsc["cols"]["quarantine_cutoff_level"] = array(
+		"type" => "text",
+		"help" => _("Up to this level mails will be put into quarantine due to your settings. Typical values are 15.00 - 20.00"),
+		"default" => "20.00",
+		"check" => "numeric",
+		"can_be_empty" => "yes",
+		"legend" => _("Quarantine cutoff level: ") );
+	$dsc["cols"]["spam_modifies_subj"] = array(
+		"type" => "checkbox",
+		"values" => array("Y","N"),
+		"legend" => _("Allows to modify mail subject with SPAM information: ") );
+	$dsc["cols"]["spam_subject_tag"] = array(
+		"type" => "text",
+		"help" => _("Add this tag to the subject of mails above tag level."),
+		"default" => "",
+		"check" => "ExtendedPassword",
+		"can_be_empty" => "yes",
+		"placeholder" => "[possible spam] ",
+		"legend" => _("Spam subject tag: ") );
+	$dsc["cols"]["spam_subject_tag2"] = array(
+		"type" => "text",
+		"help" => _("Add this tag to the subject of mails above tag2 level."),
+		"default" => "",
+		"check" => "ExtendedPassword",
+		"can_be_empty" => "yes",
+		"placeholder" => "***spam*** ",
+		"legend" => _("Spam subject tag2: ") );
+	$dsc["cols"]["spam_subject_tag3"] = array(
+		"type" => "text",
+		"help" => _("Add this tag to the subject of mails above tag3 level. (Only works with Amavis-New above 2.7)"),
+		"default" => "",
+		"check" => "ExtendedPassword",
+		"can_be_empty" => "yes",
+		"placeholder" => "[extreme spam] ",
+		"legend" => _("Spam subject tag3: ") );
+	$dsc["cols"]["newvirus_admin"] = array(
+		"type" => "text",
+		"help" => _("Email address of an admin to inform about new viruses."),
+		"default" => "",
+		"check" => "email",
+		"can_be_empty" => "yes",
+		"placeholder" => _("mailbox@example.com"),
+		"legend" => _("New virus admin email: ") );
+	$dsc["cols"]["virus_admin"] = array(
+		"type" => "text",
+		"help" => _("Email address of an admin to inform about viruses."),
+		"default" => "",
+		"check" => "email",
+		"can_be_empty" => "yes",
+		"placeholder" => _("mailbox@example.com"),
+		"legend" => _("Virus admin email: ") );
+	$dsc["cols"]["spam_admin"] = array(
+		"type" => "text",
+		"help" => _("Email address of an admin to inform about spam."),
+		"default" => "",
+		"check" => "email",
+		"can_be_empty" => "yes",
+		"placeholder" => _("mailbox@example.com"),
+		"legend" => _("Spam admin email: ") );
+	$dsc["cols"]["banned_admin"] = array(
+		"type" => "text",
+		"help" => _("Email address of an admin to inform about mails containing banned_files."),
+		"default" => "",
+		"check" => "email",
+		"can_be_empty" => "yes",
+		"placeholder" => _("mailbox@example.com"),
+		"legend" => _("Banned_files admin email: ") );
+	$dsc["cols"]["bad_header_admin"] = array(
+		"type" => "text",
+		"help" => _("Email address of an admin to inform about mails containing bad_headers."),
+		"default" => "",
+		"check" => "email",
+		"can_be_empty" => "yes",
+		"placeholder" => _("mailbox@example.com"),
+		"legend" => _("Bad header admin email: ") );
+	$dsc["cols"]["virus_quarantine_to"] = array(
+		"type" => "text",
+		"help" => _("Quarantine virus mails to this email address."),
+		"default" => "",
+		"check" => "email",
+		"can_be_empty" => "yes",
+		"placeholder" => _("mailbox@example.com"),
+		"legend" => _("Quarantine viruses to email: ") );
+	$dsc["cols"]["spam_quarantine_to"] = array(
+		"type" => "text",
+		"help" => _("Quarantine spam mails to this email address."),
+		"default" => "",
+		"check" => "email",
+		"can_be_empty" => "yes",
+		"placeholder" => _("mailbox@example.com"),
+		"legend" => _("Quarantine spam to email: ") );
+	$dsc["cols"]["banned_quarantine_to"] = array(
+		"type" => "text",
+		"help" => _("Quarantine mails containing banned_files to this email address."),
+		"default" => "",
+		"check" => "email",
+		"can_be_empty" => "yes",
+		"placeholder" => _("mailbox@example.com"),
+		"legend" => _("Quarantine banned_files to email: ") );
+	$dsc["cols"]["bad_header_quarantine_to"] = array(
+		"type" => "text",
+		"help" => _("Quarantine mails containing bad_headers to this email address."),
+		"default" => "",
+		"check" => "email",
+		"can_be_empty" => "yes",
+		"placeholder" => _("mailbox@example.com"),
+		"legend" => _("Quarantine bad_headers to email: ") );
+	$dsc["cols"]["message_size_limit"] = array(
+		"type" => "text",
+		"help" => _("Only process filters on mails up to this size."),
+		"default" => "0",
+		"check" => "number",
+		"can_be_empty" => "yes",
+		"happen" => _("Bytes"),
+		"legend" => _("Message size limit for filters: ") );
+	$dsc["cols"]["addr_extension_virus"] = array(
+		"type" => "text",
+		"help" => _("Add this extension to the receivers email address of virus mails."),
+		"default" => "",
+		"check" => "IMAPMailbox",
+		"can_be_empty" => "yes",
+		"placeholder" => "virus",
+		"legend" => _("Virus address extension: ") );
+	$dsc["cols"]["addr_extension_spam"] = array(
+		"type" => "text",
+		"help" => _("Add this extension to the receivers email address of spam mails."),
+		"default" => "",
+		"check" => "IMAPMailbox",
+		"can_be_empty" => "yes",
+		"placeholder" => "spam",
+		"legend" => _("Spam address extension: ") );
+	$dsc["cols"]["addr_extension_banned"] = array(
+		"type" => "text",
+		"help" => _("Add this extension to the receivers email address of mails containing banned_files."),
+		"default" => "",
+		"check" => "IMAPMailbox",
+		"can_be_empty" => "yes",
+		"placeholder" => "banned-files",
+		"legend" => _("Banned_files address extension: ") );
+	$dsc["cols"]["addr_extension_bad_header"] = array(
+		"type" => "text",
+		"help" => _("Add this extension to the receivers email address of mails containing bad_headers."),
+		"default" => "",
+		"check" => "IMAPMailbox",
+		"can_be_empty" => "yes",
+		"placeholder" => "bad-header",
+		"legend" => _("Bad_headers address extension: ") );
         $list_items = dtcListItemsEdit($dsc);
 
         // We have to query again, in case something has changed
@@ -537,6 +808,9 @@ function drawAdminTools_Emails($domain){
 		}
 		$catch_popup .= "<option value=\"".$a["id"]."\" $selected>".$a["id"]."</option>";
         }
+	if ( $domain["primary_mx"] == $conf_addr_mail_server ) {
+		$out .= "<font color=\"#FF0000\"><br><br><b>". _("WARNING! You are in SMTP relay mode, the mails received will not be stored in these mailboxes. Use this screen only to set anti-SPAM and anti-VIRUS preferences.") ."</b><br><br></font>";
+	}
 	$out .= "<b><u>". _("Catch-all email set to deliver to") .":</u></b><br>";
 	$out .= "<form method=\"$conf_post_or_get\" action=\"?\" method=\"post\">
 	<input type=\"hidden\" name=\"adm_login\" value=\"$adm_login\">
