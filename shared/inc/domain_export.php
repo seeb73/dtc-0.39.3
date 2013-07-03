@@ -284,33 +284,84 @@ function domainImport($path_from,$adm_login,$adm_pass){
 		return;
 	}
 
-	// Because of an issue of the programming of older versions of DTC,
-	// if there was multiple domains in the XLM file, then we have things like this,
-	// as PHP assotiative array, once Unserialize() is done:
-	// <dtc-export-file version="0.1">
-	//   <domains>
-        //      <item>
-	//         <example.com>
-	//           ........
-	//         </example.com>
-	//      </item>
-	//   </domains
-	// </dtc-export-file>
-	// the below code will remove the <item> thing that is on the way,
-	// and quite annoying for using array_keys().
 	if( isset($dom_ar["domains"]["item"]) ){
-		$nbr_domains = sizeof($dom_ar["domains"]["item"]);
-		$my_domains = array();
-		for($doms=0;$doms<$nbr_domains;$doms++){
-			$mykey = array_keys($dom_ar["domains"]["item"][$doms]);
-			$my_domains["domains"][ $mykey[0] ] = $dom_ar["domains"]["item"][$doms][$mykey[0]];
+		if( isset($dom_ar["domains"]["item"][0]["domain_config"]) || isset($dom_ar["domains"]["item"]["domain_config"]) ){
+			// We are in the case where we have multiple domain names starting with a number.
+			// In that case, we have:
+			// <dtc-export-file version="0.1">
+			//   <domains>
+		        //      <item>
+			//         <domain_config>
+			//           <name>1example.com</name>
+			//           ........
+			//         </domain_config>
+			//      </item>
+		        //      <item>
+		        //         <domain_config>
+		        //           <name>2example.com</name>
+			//           ........
+			//      </item>
+			//   </domains>
+			// </dtc-export-file>
+
+			// We make a new clear array to replace the unserialized one
+			$new_dom_ar = array();
+			if( isset($dom_ar["mysql"])){
+				$new_dom_ar["mysql"] = $dom_ar["mysql"];
+			}
+
+			$my_domains = array();
+			$nbr_domains = sizeof($dom_ar["domains"]);
+			$mykey = array_keys($dom_ar["domains"]);
+			for($doms=0;$doms<$nbr_domains;$doms++){
+				if( $mykey [ $doms ] != "item" ){
+					// If the entry isn't in an <item> tag, then it's a normal entry, and it shall be
+					// just copied over
+					$new_dom_ar["domains"] [ $mykey [ $doms ] ] = $dom_ar["domains"] [ $mykey [ $doms ] ];
+				}
+			}
+			// We are in the case of multiple domains using the <item> thing, so we have item[0], item[1], etc.
+			if( isset($dom_ar["domains"]["item"][0]["domain_config"]) ){
+				$nbr_domains = sizeof( $dom_ar["domains"]["item"] );
+				for($doms=0;$doms<$nbr_domains;$doms++){
+					$new_dom_ar["domains"][   $dom_ar["domains"]["item"][$doms]["domain_config"]["name"]   ] = $dom_ar["domains"]["item"][$doms];
+				}
+			// There's only a single item entry
+			}else{
+				$new_dom_ar["domains"][   $dom_ar["domains"]["item"]["domain_config"]["name"]   ] = $dom_ar["domains"]["item"];
+			}
+			$dom_ar = $new_dom_ar;
+			$all_domains = array_keys($dom_ar["domains"]);
+			$nbr_domains = sizeof($all_domains);
+		}else{
+			// Because of an issue of the programming of older versions of DTC,
+			// if there was multiple domains in the XLM file, then we have things like this,
+			// as PHP assotiative array, once Unserialize() is done:
+			// <dtc-export-file version="0.1">
+			//   <domains>
+		        //      <item>
+			//         <example.com>
+			//           ........
+			//         </example.com>
+			//      </item>
+			//   </domains
+			// </dtc-export-file>
+			// the below code will remove the <item> thing that is on the way,
+			// and quite annoying for using array_keys().
+			$nbr_domains = sizeof($dom_ar["domains"]["item"]);
+			$my_domains = array();
+			for($doms=0;$doms<$nbr_domains;$doms++){
+				$mykey = array_keys($dom_ar["domains"]["item"][$doms]);
+				$my_domains["domains"][ $mykey[0] ] = $dom_ar["domains"]["item"][$doms][$mykey[0]];
+			}
+			$dom_ar = $my_domains;
+			$all_domains = array_keys($dom_ar["domains"]);
 		}
-		$dom_ar = $my_domains;
-		$all_domains = array_keys($dom_ar["domains"]);
 	}else{
 		$all_domains = array_keys($dom_ar["domains"]);
 		$nbr_domains = sizeof($all_domains);
 	}
+
 	// Iterate on all domains of the file (if there's only one, it's fine too...)
 	for($doms=0;$doms<$nbr_domains;$doms++){
 		// We will work on each domains one by one
