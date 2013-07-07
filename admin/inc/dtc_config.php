@@ -1388,6 +1388,15 @@ function drawGeneralConfig(){
 				"legend" => _("Apache DirectoryIndex Config: "),
 				"size" => "50",
 				"type" => "text"),
+			"use_cband_user_exceeded_url" => array(
+				"legend" => _("Redirect the bandwidth exceded sites (instad of giving a 503 error): "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"cband_user_exceeded_url" => array(
+				"legend" => _("Url to redirect the bandwidth exceded sites: "),
+				"size" => "50",
+				"type" => "text"),
 		        )
 		);
 	$out .= configEditorTemplate ($dsc);

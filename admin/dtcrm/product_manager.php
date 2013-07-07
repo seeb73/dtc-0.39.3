@@ -164,6 +164,60 @@ function productManager(){
 				"values" => array('mod_php','sbox_copy','sbox_aufs'),
 				"default" => "sbox_copy"
 				),
+			"cbanduserspeed_kbps" => array(
+				"type" => "text",
+				"legend" => _("Maximal transfer speed"),
+				"help" => _("Specifies maximal transfer speed in kbps or kB/s for the domains of an admin."),
+				"size" => "5"
+				),
+			"cbanduserspeed_rps" => array(
+				"type" => "text",
+				"legend" => _("Maximal requests per second"),
+				"help" => _("Specifies maximal requests per second for the domains of an admin."),
+				"size" => "3"
+				),
+			"cbanduserspeed_conn" => array(
+				"type" => "text",
+				"legend" => _("Maximal number of simultaneous connections"),
+				"help" => _("Specifies maximal number of simultaneous connections for the domains of an admin."),
+				"size" => "3"
+				),
+			"cbanduserexceededspeed_kbps" => array(
+				"type" => "text",
+				"legend" => _("Exceeded maximal transfer speed"),
+				"help" => _("Specifies maximal transfer speed in kbps or kB/s to which mod_cband slows down user when the configured transfer limit is exceeded."),
+				"size" => "5"
+				),
+			"cbanduserexceededspeed_rps" => array(
+				"type" => "text",
+				"legend" => _("Exceeded maximal requests per second"),
+				"help" => _("Specifies maximal requests per second to which mod_cband slows down user when the configured transfer limit is exceeded."),
+				"size" => "3"
+				),
+			"cbanduserexceededspeed_conn" => array(
+				"type" => "text",
+				"legend" => _("Exceeded maximal number of simultaneous connections"),
+				"help" => _("Specifies maximal number of simultaneous connections to which mod_cband slows down user when the configured transfer limit is exceeded."),
+				"size" => "3"
+				),
+			"cbandremoteSpeed_kbps" => array(
+				"type" => "text",
+				"legend" => _("Remote maximal transfer speed"),
+				"help" => _("Specifies maximal transfer speed in [kMG]bps or [kMG]B/s for any remote client."),
+				"size" => "5"
+				),
+			"cbandremoteSpeed_rps" => array(
+				"type" => "text",
+				"legend" => _("Remote maximal requests per second"),
+				"help" => _("Specifies maximal requests per second for any remote client."),
+				"size" => "3"
+				),
+			"cbandremoteSpeed_conn" => array(
+				"type" => "text",
+				"legend" => _("Remote maximal number of simultaneous connections"),
+				"help" => _("Specifies maximal number of simultaneous connections for any remote client."),
+				"size" => "3"
+				),
 			"private" => array(
 				"type" => "checkbox",
 				"legend" => _("Private") ,
