@@ -27,6 +27,7 @@ $paypal_server_script = "/cgi-bin/webscr";
 // post back to PayPal system to validate
 $header = "";
 $header .= "POST $paypal_server_script HTTP/1.0\r\n";
+$header .="Host: www.paypal.com\r\n";
 $header .= "Content-Type: application/x-www-form-urlencoded\r\n";
 $header .= "Content-Length: " . strlen($req) . "\r\n\r\n";
 $fp = fsockopen ($paypal_server_hostname, 80, $errno, $errstr, 30);
