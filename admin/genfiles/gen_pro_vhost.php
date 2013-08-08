@@ -1083,7 +1083,7 @@ $vhost_file .= "
 	ErrorDocument 501 /sbox404/406.php
 	<Directory $web_path/$domain_to_get/subdomains.aufs/$web_subname/html>
 		AllowOverride AuthConfig Indexes Limit
-		AllowOverrideList ErrorDocument LanguagePriority AddCharset AddEncoding AddLanguage RemoveCharset RemoveEncoding SetEnvIf SetEnvIfNoCase BrowserMatch RewriteEngine RewriteOptions RewriteBase RewriteCond RewriteRule Redirect RedirectTemp RedirectPermanent RedirectMatch Header AddType AddEncoding AddDefaultCharset
+		AllowOverrideList ErrorDocument LanguagePriority AddCharset AddEncoding AddLanguage RemoveCharset RemoveEncoding SetEnvIf SetEnvIfNoCase BrowserMatch RewriteEngine RewriteOptions RewriteBase RewriteCond RewriteRule Redirect RedirectTemp RedirectPermanent RedirectMatch Header AddType AddEncoding AddDefaultCharset FileETag
 	</Directory>
 	Options +ExecCGI\n";
 							}
