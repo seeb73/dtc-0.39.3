@@ -1001,7 +1001,11 @@ $vhost_file .= "
 							$vhost_file .= "<VirtualHost ".$backup_ip_addr.":80>\n";
 							break;
 						case "normal":
-							$vhost_file .= "<VirtualHost ".$ip_to_write.":80>\n";
+							if($subdomain["ssl_ip"] != "none"){
+								$vhost_file .= "<VirtualHost ".$subdomain["ssl_ip"].":80>\n";
+							}else{
+								$vhost_file .= "<VirtualHost ".$ip_to_write.":80>\n";
+							}
 							break;
 						case "ssl":
 							//if($conf_use_nated_vhost=="no"){
