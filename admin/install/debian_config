@@ -156,7 +156,16 @@ PATH_AMAVISD_CONF=/etc/amavis/amavisd.conf
 PATH_CLAMAV_CONF=/etc/clamav/clamd.conf
 PATH_CGIBIN=/usr/lib/cgi-bin
 
-PATH_SASLLIB=/usr/lib/sasl2
+set - `echo /usr/lib/sasl2/*.so`
+if [ $# -gt 1 ]; then
+	PATH_SASLLIB=/usr/lib/sasl2
+fi
+
+set - `echo /usr/lib/x86_64-linux-gnu/sasl2/*.so`
+if [ $# -gt 1 ]; then
+	PATH_SASLLIB=/usr/lib/x86_64-linux-gnu/sasl2
+fi
+
 
 PATH_BASH=/bin/bash
 

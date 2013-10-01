@@ -3071,7 +3071,7 @@ OPTIONS=\"--domain=\`cat /var/lib/dtc/etc/local_domains | tr \\\\\\r\\\\\\n ,,\`
 " >/etc/sysconfig/dkimproxy_out
 	fi
 
-	if [ "$UNIX_TYPE" = "debian" -a -f $DKIMPROXY_CONF ] ; then
+	if [ "$UNIX_TYPE" = "debian" -a "$DKIMPROXY_CONF" != "" -a -f $DKIMPROXY_CONF ] ; then
 		echoIfVerbose "===> adding dkimproxy config to $DKIMPROXY_CONF"
 		sed -i "s/#*DKIMPROXY_IN_MIN_SERVERS=.*/DKIMPROXY_IN_MIN_SERVERS=$maxproc/" $DKIMPROXY_CONF
 		sed -i "s/#*DKIMPROXY_OUT_MIN_SERVERS=.*/DKIMPROXY_OUT_MIN_SERVERS=$maxproc/" $DKIMPROXY_CONF
@@ -3319,7 +3319,13 @@ modifyDovecotConfig () {
 		echoIfVerbose "Detecting dovecot version..."
 		DOVECOT_VERSION=`dovecot --version`
 		DOVECOT_POSTONE=false
+		DOVECOT_POSTTWO=false
 		case $DOVECOT_VERSION in
+			2.*)
+				echoIfVerbose "Found version 2.0 or greater"
+				DOVECOT_POSTONE=true
+				DOVECOT_POSTTWO=false
+				;;
 			1.*)
 				echoIfVerbose "Found version 1.0 or greater"
 				DOVECOT_POSTONE=true
@@ -3352,8 +3358,28 @@ modifyDovecotConfig () {
 				else
 					dovecot_env_directive="default_mail_env"
 				fi
+				if [ "${DOVECOT_MAJOR}" -ge 2 -a "${DOVECOT_MINOR}" -ge 0 ] ; then
+					dovecot_protocol_list="imap pop3"					
+				else
+					dovecot_protocol_list="imap imaps pop3 pop3s"
+				fi
 				if [ ""$conf_gen_ssl_cert = "true" ] ; then
-					DOVECOT_SSL_CERT_CONF="## SSL settings
+					# debian package comes with a preconfigured ssl configuration which conflicts with DTCs
+					if [ -f /etc/dovecot/conf.d/10-ssl.conf ]; then
+						echo "Removing package SSL configuration for dovecot..."
+						rm /etc/dovecot/conf.d/10-ssl.conf
+					fi
+					if [ "${DOVECOT_MAJOR}" -ge 2 -a "${DOVECOT_MINOR}" -ge 0 ] ; then
+						DOVECOT_SSL_CERT_CONF="## SSL settings
+ssl_cert = <$PATH_DTC_ETC/ssl/dovecot/new.cert.cert
+ssl_key = <$PATH_DTC_ETC/ssl/dovecot/new.cert.key
+#ssl_ca_file = 
+#ssl_verify_client_cert = no
+#ssl_parameters_regenerate = 168
+#ssl_cipher_list = ALL:!LOW:!SSLv2
+#verbose_ssl = no"
+					else
+						DOVECOT_SSL_CERT_CONF="## SSL settings
 ssl_cert_file = $PATH_DTC_ETC/ssl/dovecot/new.cert.cert
 ssl_key_file = $PATH_DTC_ETC/ssl/dovecot/new.cert.key
 #ssl_ca_file = 
@@ -3361,17 +3387,22 @@ ssl_key_file = $PATH_DTC_ETC/ssl/dovecot/new.cert.key
 #ssl_parameters_regenerate = 168
 #ssl_cipher_list = ALL:!LOW:!SSLv2
 #verbose_ssl = no"
+					fi
 				else
 					DOVECOT_SSL_CERT_CONF=""
 				fi
 				if [ ""$conf_use_sieve = "true" ] ; then
-					MGSIEVESET="managesieve"
+					if [ "${DOVECOT_MAJOR}" -ge 2 -a "${DOVECOT_MINOR}" -ge 0 ] ; then
+						MGSIEVESET="sieve"
 					else
+						MGSIEVESET="managesieve"
+					fi
+				else
 					MGSIEVESET=""
 				fi
 				echo "
 # Configured by DTC v0.x : Please don't touch this line !
-protocols = imap imaps pop3 pop3s ${MGSIEVESET}
+protocols = ${dovecot_protocol_list} ${MGSIEVESET}
 ${dovecot_env_directive} = maildir:%h/Maildir
 pop3_uidl_format = %08Xu%08Xv
 maildir_copy_with_hardlinks = yes
@@ -3385,10 +3416,20 @@ protocol pop3 {
 " > $PATH_DOVECOT_CONF
 			# if we also have sieve, we should use it too!
 			if [ ""$conf_use_sieve = "true" ] ; then
-				echo "protocol managesieve {" >> $PATH_DOVECOT_CONF
+				echo "protocol ${MGSIEVESET} {" >> $PATH_DOVECOT_CONF
 				echo "    managesieve_logout_format = bytes ( in=%i : out=%o )
 }" >> $PATH_DOVECOT_CONF
-				echo "protocol lda {
+				if [ "${DOVECOT_MAJOR}" -ge 2 -a "${DOVECOT_MINOR}" -ge 0 ] ; then
+					echo "protocol lda {
+  postmaster_address = $conf_postmaster_email
+  mail_plugin_dir = /usr/lib/dovecot/modules
+  auth_socket_path = /var/run/dovecot-auth-master
+  log_path = /var/log/sieve.log
+  info_log_path = /var/log/sieve.info
+  mail_plugins = sieve quota
+} " >> $PATH_DOVECOT_CONF
+				else
+					echo "protocol lda {
   postmaster_address = $conf_postmaster_email
   mail_plugin_dir = /usr/lib/dovecot/modules/lda
   auth_socket_path = /var/run/dovecot-auth-master
@@ -3396,7 +3437,33 @@ protocol pop3 {
   info_log_path = /var/log/sieve.info
   mail_plugins = sieve quota
 } " >> $PATH_DOVECOT_CONF
+				fi
 			fi
+			if [ "${DOVECOT_MAJOR}" -ge 2 -a "${DOVECOT_MINOR}" -ge 0 ] ; then
+echo "
+service auth {
+  unix_listener /var/run/dovecot-auth-master {
+    mode = 0600
+    user = $CONF_DTC_SYSTEM_USERNAME
+  }
+  unix_listener dovecot-auth-client {
+    mode = 0666
+  }
+  user = root
+}
+userdb {
+  driver = prefetch
+}
+userdb {
+  args = $PATH_DTC_ETC/dovecot-mysql.conf
+  driver = sql
+}
+userdb {
+  driver = passwd
+}
+" >> $PATH_DOVECOT_CONF
+			
+			else
 echo "
 auth default {
   mechanisms = plain
@@ -3432,6 +3499,9 @@ auth default {
     }
   }
 }
+" >> $PATH_DOVECOT_CONF
+			fi
+echo "			
 plugin {
    ## Quota
    quota = maildir
