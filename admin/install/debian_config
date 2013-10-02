@@ -161,9 +161,10 @@ if [ $# -gt 1 ]; then
 	PATH_SASLLIB=/usr/lib/sasl2
 fi
 
-set - `echo /usr/lib/x86_64-linux-gnu/sasl2/*.so`
+MULTIARCH_TUPLE=`dpkg-architecture -qDEB_HOST_MULTIARCH`
+set - `echo /usr/lib/${MULTIARCH_TUPLE}/sasl2/*.so`
 if [ $# -gt 1 ]; then
-	PATH_SASLLIB=/usr/lib/x86_64-linux-gnu/sasl2
+	PATH_SASLLIB=/usr/lib/${MULTIARCH_TUPLE}/sasl2
 fi
 
 

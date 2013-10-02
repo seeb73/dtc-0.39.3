@@ -11,7 +11,62 @@ Homepage: http://www.gplhost.com/software-dtc.html
 
 Package: dtc-common
 Architecture: all
-Depends: ${misc:Depends}, apache2, aufs-tools, bind9, bzip2, ca-certificates, chrootuid, cpio, cron, curl, debconf, debootstrap, file, gawk, libapache2-mod-log-sql-mysql, libapache2-mod-php5, libnss-mysql-bg | libnss-mysql, libnusoap-php, libpam-mysql, libsasl2-modules-sql, libpam-unix2, locales-all | language-pack-en, lsb-release, mhonarc, mime-support, mlmmj, mysql-client, ncftp, net-tools, openssl, p7zip, php5, php5-cli, php5-gd, php5-imagick, php5-mysql, php-pear, php-fpdf, php-crypt-cbc, php-mail-mime, php5-curl, php-net-ipv4, php-xml-serializer, postfix, postfix-mysql, pure-ftpd-mysql | proftpd-mysql | proftpd-mod-mysql, rrdtool, sasl2-bin, sbox-dtc, ssh, sudo, unzip, webalizer, zip, patch
+Depends: apache2,
+         aufs-tools,
+         bind9,
+         bzip2,
+         ca-certificates,
+         chrootuid,
+         cpio,
+         cron,
+         curl,
+         debconf,
+         debootstrap,
+         dpkg-dev,
+         file,
+         gawk,
+         libapache2-mod-log-sql-mysql,
+         libapache2-mod-php5,
+         libnss-mysql-bg | libnss-mysql,
+         libnusoap-php,
+         libpam-mysql,
+         libpam-unix2,
+         libsasl2-modules-sql,
+         locales-all | language-pack-en,
+         lsb-release,
+         mhonarc,
+         mime-support,
+         mlmmj,
+         mysql-client,
+         ncftp,
+         net-tools,
+         openssl,
+         p7zip,
+         patch,
+         php-crypt-cbc,
+         php-fpdf,
+         php-mail-mime,
+         php-net-ipv4,
+         php-pear,
+         php-xml-serializer,
+         php5,
+         php5-cli,
+         php5-curl,
+         php5-gd,
+         php5-imagick,
+         php5-mysql,
+         postfix,
+         postfix-mysql,
+         pure-ftpd-mysql | proftpd-mysql | proftpd-mod-mysql,
+         rrdtool,
+         sasl2-bin,
+         sbox-dtc,
+         ssh,
+         sudo,
+         unzip,
+         webalizer,
+         zip,
+         ${misc:Depends}
 Recommends: libapache2-mod-bwshare
 Breaks: dtc (<< 0.25.1), dtc-postfix-courier (<< 0.25.1)
 Suggests: dtc-postfix-courier | dtc-cyrus
@@ -33,7 +88,7 @@ Description: web control panel for admin and accounting hosting services (common
 
 Package: dtc-dos-firewall
 Architecture: all
-Depends: ${misc:Depends}, iptables, lsb-base
+Depends: iptables, lsb-base, ${misc:Depends}
 Description: small anti-DoS firewall script for your web, ftp and mail servers
  If running in a production environment, you might want to have a basic
  firewall running on your server to avoid having DoS attack. This is not the
@@ -41,7 +96,22 @@ Description: small anti-DoS firewall script for your web, ftp and mail servers
 
 Package: dtc-postfix-dovecot
 Architecture: all
-Depends: ${misc:Depends}, amavisd-new, clamav, clamav-daemon, clamav-freshclam, courier-maildrop | maildrop, dtc-core (=${binary:Version}), dovecot-imapd, dovecot-pop3d, dovecot-antispam, courier-authlib-mysql, courier-authlib-userdb, courier-authdaemon, mysql-server, spamassassin, spamc
+Depends: amavisd-new,
+         clamav,
+         clamav-daemon,
+         clamav-freshclam,
+         courier-authdaemon,
+         courier-authlib-mysql,
+         courier-authlib-userdb,
+         courier-maildrop | maildrop,
+         dovecot-antispam,
+         dovecot-imapd,
+         dovecot-pop3d,
+         dtc-core (=${binary:Version}),
+         mysql-server,
+         spamassassin,
+         spamc,
+         ${misc:Depends}
 Description: meta package to setup a minimal DTC server with Dovecot
  Domain Technologie Control (DTC) is a control panel aiming at commercial
  hosting. Using a web GUI for the administration and accounting all hosting
@@ -60,10 +130,24 @@ Description: meta package to setup a minimal DTC server with Dovecot
 
 Package: dtc-core
 Architecture: all
-Depends: ${misc:Depends}, dtc-common (=${binary:Version}), mysql-client, libsasl2-2, libsasl2-modules
-Suggests: courier-authmysql, courier-authlib-mysql, dovecot, mysql-server, mysqmail, awstats, courier-base, sqwebmail, cyrus-admin-2.2, cyrus-clients-2.2, cyrus-common-2.2
-Conflicts: dtc-postfix-courier, dtc-cyrus
-Replaces: dtc-postfix-courier, dtc-cyrus
+Depends: dtc-common (=${binary:Version}),
+         libsasl2-2,
+         libsasl2-modules,
+         mysql-client,
+         ${misc:Depends}
+Suggests: awstats,
+          courier-authlib-mysql,
+          courier-authmysql,
+          courier-base,
+          cyrus-admin-2.2,
+          cyrus-clients-2.2,
+          cyrus-common-2.2,
+          dovecot,
+          mysql-server,
+          mysqmail,
+          sqwebmail
+Conflicts: dtc-cyrus, dtc-postfix-courier
+Replaces: dtc-cyrus, dtc-postfix-courier
 Description: web control panel for admin and accounting hosting services (fewer depends)
  Domain Technologie Control (DTC) is a control panel aiming at commercial
  hosting. Using a web GUI for the administration and accounting all hosting
@@ -83,10 +167,32 @@ Description: web control panel for admin and accounting hosting services (fewer 
 
 Package: dtc-cyrus
 Architecture: all
-Depends: ${misc:Depends}, amavisd-new, clamav, clamav-daemon, clamav-freshclam, dtc-common (=${binary:Version}), mysql-client, mysql-server, libsasl2-2, libsasl2-modules , cyrus-admin-2.2, cyrus-clients-2.2, cyrus-common-2.2, cyrus-imapd-2.2, cyrus-pop3d-2.2, libsasl2-modules-sql | libpam-mysql, spamassassin, spamc
-Suggests: courier-authmysql, courier-authlib-mysql, mysqmail, awstats, courier-base, sqwebmail
-Conflicts: dtc-postfix-courier, dtc-core
-Replaces: dtc-postfix-courier, dtc-core
+Depends: amavisd-new,
+         clamav,
+         clamav-daemon,
+         clamav-freshclam,
+         cyrus-admin-2.2,
+         cyrus-clients-2.2,
+         cyrus-common-2.2,
+         cyrus-imapd-2.2,
+         cyrus-pop3d-2.2,
+         dtc-common (=${binary:Version}),
+         libsasl2-2,
+         libsasl2-modules,
+         libsasl2-modules-sql | libpam-mysql,
+         mysql-client,
+         mysql-server,
+         spamassassin,
+         spamc,
+         ${misc:Depends}
+Suggests: awstats,
+          courier-authlib-mysql,
+          courier-authmysql,
+          courier-base,
+          mysqmail,
+          sqwebmail
+Conflicts: dtc-core, dtc-postfix-courier
+Replaces: dtc-core, dtc-postfix-courier
 Description: web control panel for admin and accounting hosting services (cyrus depends)
  Domain Technologie Control (DTC) is a control panel aiming at commercial
  hosting. Using a web GUI for the administration and accounting all hosting
@@ -108,7 +214,25 @@ Description: web control panel for admin and accounting hosting services (cyrus 
 
 Package: dtc-postfix-courier
 Architecture: all
-Depends: ${misc:Depends}, amavisd-new, clamav, clamav-daemon, clamav-freshclam, dtc-common (=${binary:Version}), courier-maildrop | maildrop , courier-authdaemon (>= 0.50) | courier-authmysql (>= 0.37.3), courier-authlib-mysql | courier-authmysql, courier-authlib-userdb, courier-imap, courier-imap-ssl, courier-pop, courier-pop-ssl, libsasl2-modules, mysql-client, mysql-server, spamassassin, spamc
+Depends: amavisd-new,
+         clamav,
+         clamav-daemon,
+         clamav-freshclam,
+         courier-authdaemon (>= 0.50) | courier-authmysql (>= 0.37.3),
+         courier-authlib-mysql | courier-authmysql,
+         courier-authlib-userdb,
+         courier-imap,
+         courier-imap-ssl,
+         courier-maildrop | maildrop,
+         courier-pop,
+         courier-pop-ssl,
+         dtc-common (=${binary:Version}),
+         libsasl2-modules,
+         mysql-client,
+         mysql-server,
+         spamassassin,
+         spamc,
+         ${misc:Depends}
 Conflicts: dtc-core, dtc-cyrus
 Replaces: dtc-core, dtc-cyrus
 Suggests: mysqmail
@@ -134,7 +258,10 @@ Description: web control panel for admin and accounting hosting services (more d
 
 Package: dtc-stats-daemon
 Architecture: all
-Depends: ${misc:Depends}, dtc-core | dtc-postfix-courier | dtc-cyrus, lsb-base, php5-cli
+Depends: dtc-core | dtc-postfix-courier | dtc-cyrus,
+         lsb-base,
+         php5-cli,
+         ${misc:Depends}
 Description: dtc-xen VM statistics for the dtc web control panel
  Domain Technologie Control (DTC) is a control panel aiming at commercial
  hosting. This small daemon will query all the dtc-xen servers that you have
@@ -143,7 +270,20 @@ Description: dtc-xen VM statistics for the dtc web control panel
 
 Package: dtc-toaster
 Architecture: all
-Depends: ${misc:Depends}, dtc-postfix-dovecot (=${binary:Version}) | dtc-postfix-courier (=${binary:Version}), fetchmail, libnet-xwhois-perl, mailgraph, phpmyadmin, roundcube-sqlite | squirrelmail, roundcube | squirrelmail, tumgreyspf, visitors, dkimproxy, dtc-dos-firewall, extplorer, smtpprox-loopprevent
+Depends: dkimproxy,
+         dtc-dos-firewall,
+         dtc-postfix-dovecot (=${binary:Version}) | dtc-postfix-courier (=${binary:Version}),
+         extplorer,
+         fetchmail,
+         libnet-xwhois-perl,
+         mailgraph,
+         phpmyadmin,
+         roundcube | squirrelmail,
+         roundcube-sqlite | squirrelmail,
+         smtpprox-loopprevent,
+         tumgreyspf,
+         visitors,
+         ${misc:Depends}
 Description: web control panel for admin and accounting hosting services (metapackage)
  Domain Technologie Control (DTC) is a control panel aiming at commercial
  hosting. Using a web GUI for the administration and accounting all hosting
