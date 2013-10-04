@@ -102,6 +102,8 @@ debianGetDebconfValues () {
 	conf_eth2monitor=$RET
 	db_get dtc/conf_max_receive_process
 	conf_max_receive_process=$RET
+	db_get dtc/conf_submission_ports
+	conf_submission_ports=$RET
 	db_unregister dtc/conf_mysqlpass
 	db_unregister dtc/conf_mysql_change_root
 	db_unregister dtc/conf_admlogin
@@ -154,7 +156,17 @@ PATH_AMAVISD_CONF=/etc/amavis/amavisd.conf
 PATH_CLAMAV_CONF=/etc/clamav/clamd.conf
 PATH_CGIBIN=/usr/lib/cgi-bin
 
-PATH_SASLLIB=/usr/lib/sasl2
+set - `echo /usr/lib/sasl2/*.so`
+if [ $# -gt 1 ]; then
+	PATH_SASLLIB=/usr/lib/sasl2
+fi
+
+MULTIARCH_TUPLE=`dpkg-architecture -qDEB_HOST_MULTIARCH`
+set - `echo /usr/lib/${MULTIARCH_TUPLE}/sasl2/*.so`
+if [ $# -gt 1 ]; then
+	PATH_SASLLIB=/usr/lib/${MULTIARCH_TUPLE}/sasl2
+fi
+
 
 PATH_BASH=/bin/bash
 

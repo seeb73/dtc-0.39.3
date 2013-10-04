@@ -268,3 +268,10 @@ _Description: SMTP receive process quantity
  How many SMTP and dependent process you want to run (smtpd,
  smtpprox-loop, amavis, dkimproxy).
  Each additional process adds 60Mb to memory used by the server.
+
+Template: dtc/conf_submission_ports
+Type:string
+Default: 587
+_Description: SMTP submission ports
+ Choose what ports are used for the submission service.
+ If you choose more than one, separate them with commas.

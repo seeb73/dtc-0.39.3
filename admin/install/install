@@ -91,6 +91,7 @@ preseed_default_conf_values () {
 	conf_mta_type=postfix
 	conf_postmaster_email="postmaster@${conf_mx_mail}.${main_domain_name}"
 	conf_max_receive_process=5
+	conf_submission_ports=587
 }
 
 

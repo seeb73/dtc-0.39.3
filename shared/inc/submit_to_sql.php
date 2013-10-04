@@ -332,7 +332,7 @@ login: ";
 				if($i>0){
 					$old_expire .= "|";
 				}
-				$old_expire = $dedicated_entry["expire_date"];
+				$old_expire .= $dedicated_entry["expire_date"];
 				$dedi_expire = $dedicated_entry["expire_date"];
 				$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$atrs[2]."';";
 				$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
@@ -360,7 +360,7 @@ login: ";
 				if($i>0){
 					$old_expire .= "|";
 				}
-				$old_expire = $custom_entry["expire_date"];
+				$old_expire .= $custom_entry["expire_date"];
 				$custom_expire = $custom_entry["expire_date"];
 				$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$atrs[2]."';";
 				$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
@@ -373,6 +373,34 @@ login: ";
 				$product = mysql_fetch_array($r);
 				$date_expire = calculateExpirationDate($custom_expire,$product["period"]);
 				$q = "UPDATE $pro_mysql_custom_product_table SET expire_date='$date_expire' WHERE domain='".$atrs[1]."';";
+				$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				break;
+			case "shared":
+				$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$renew_entry["adm_login"]."';";
+				$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$n = mysql_num_rows($r);
+				if($n != 1){
+					$submit_err = "Could not find custom product id in table line ".__LINE__." file ".__FILE__;
+					$commit_flag = "no";
+					return false;
+				}
+				$shared_entry = mysql_fetch_array($r);
+				if($i>0){
+					$old_expire .= "|";
+				}
+				$old_expire .= $shared_entry["expire"];
+				$shared_expire = $shared_entry["expire"];
+				$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$atrs[2]."';";
+				$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$n = mysql_num_rows($r);
+				if($n != 1){
+					$submit_err = "Could not find product in table line ".__LINE__." file ".__FILE__;
+					$commit_flag = "no";
+					return false;
+				}
+				$product = mysql_fetch_array($r);
+				$date_expire = calculateExpirationDate($shared_expire,$product["period"]);
+				$q = "UPDATE $pro_mysql_admin_table SET expire='$date_expire' WHERE adm_login='".$renew_entry["adm_login"]."';";
 				$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 				break;
 			default:

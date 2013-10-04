@@ -214,6 +214,10 @@ function pro_vhost_generate(){
 	global $conf_dtc_system_groupname;
 
 	global $conf_use_shared_ssl;
+
+	global $conf_use_cband_user_exceeded_url;
+	global $conf_cband_user_exceeded_url;
+
 	$vhost_file = "";
 
 	$aufs_list = "";
@@ -420,9 +424,13 @@ AND $pro_mysql_admin_table.adm_login=$pro_mysql_domain_table.owner;";
 	# mod_cband user generation #
 	#############################
 	$vhost_file .= "<IfModule mod_cband.c>\n";
-	$q = "SELECT DISTINCT adm_login,$pro_mysql_product_table.bandwidth FROM $pro_mysql_domain_table,$pro_mysql_admin_table,$pro_mysql_product_table
+	$q = "SELECT DISTINCT adm_login, pt.bandwidth,
+pt.cbanduserspeed_kbps, pt.cbanduserspeed_rps, pt.cbanduserspeed_conn,
+pt.cbanduserexceededspeed_kbps, pt.cbanduserexceededspeed_rps, pt.cbanduserexceededspeed_conn,
+pt.cbandremoteSpeed_kbps, pt.cbandremoteSpeed_rps, pt.cbandremoteSpeed_conn
+FROM $pro_mysql_domain_table,$pro_mysql_admin_table,$pro_mysql_product_table as pt
 WHERE $pro_mysql_domain_table.owner=$pro_mysql_admin_table.adm_login
-AND $pro_mysql_product_table.id=$pro_mysql_admin_table.prod_id
+AND pt.id=$pro_mysql_admin_table.prod_id
 AND $pro_mysql_admin_table.prod_id != '0'
 AND $pro_mysql_admin_table.id_client != '0'";
 	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
@@ -431,12 +439,16 @@ AND $pro_mysql_admin_table.id_client != '0'";
 		$a = mysql_fetch_array($r);
 		$vhost_file .= "
 <CBandUser ".$a["adm_login"].">
-	CBandUserSpeed 10Mbps 10 30
+	CBandUserSpeed ".$a["cbanduserspeed_kbps"]." ".$a["cbanduserspeed_rps"]." ".$a["cbanduserspeed_conn"]."
 	CBandUserLimit ".$a["bandwidth"]."M
 	CBandUserPeriod 4W
 	CBandUserPeriodSlice 1W
-	CBandUserExceededSpeed 32kbps 2 5
-	CBandUserScoreboard /var/lib/dtc/etc/cband_scores/".$a["adm_login"]."
+	CBandUserExceededSpeed ".$a["cbanduserexceededspeed_kbps"]." ".$a["cbanduserexceededspeed_rps"]." ".$a["cbanduserexceededspeed_conn"]."
+	CBandUserScoreboard /var/lib/dtc/etc/cband_scores/".$a["adm_login"];
+		if ($conf_use_cband_user_exceeded_url == "yes") {
+			$vhost_file .= "\nCBandExceededURL ".$conf_cband_user_exceeded_url."\n";
+		}
+		$vhost_file .= "
 </CBandUser>
 ";
 	}
@@ -989,7 +1001,11 @@ $vhost_file .= "
 							$vhost_file .= "<VirtualHost ".$backup_ip_addr.":80>\n";
 							break;
 						case "normal":
-							$vhost_file .= "<VirtualHost ".$ip_to_write.":80>\n";
+							if($subdomain["ssl_ip"] != "none"){
+								$vhost_file .= "<VirtualHost ".$subdomain["ssl_ip"].":80>\n";
+							}else{
+								$vhost_file .= "<VirtualHost ".$ip_to_write.":80>\n";
+							}
 							break;
 						case "ssl":
 							//if($conf_use_nated_vhost=="no"){
@@ -1071,7 +1087,7 @@ $vhost_file .= "
 	ErrorDocument 501 /sbox404/406.php
 	<Directory $web_path/$domain_to_get/subdomains.aufs/$web_subname/html>
 		AllowOverride AuthConfig Indexes Limit
-		AllowOverrideList ErrorDocument LanguagePriority AddCharset AddEncoding AddLanguage RemoveCharset RemoveEncoding SetEnvIf SetEnvIfNoCase BrowserMatch RewriteEngine RewriteOptions RewriteBase RewriteCond RewriteRule Redirect RedirectTemp RedirectPermanent RedirectMatch
+		AllowOverrideList ErrorDocument LanguagePriority AddCharset AddEncoding AddLanguage RemoveCharset RemoveEncoding SetEnvIf SetEnvIfNoCase BrowserMatch RewriteEngine RewriteOptions RewriteBase RewriteCond RewriteRule Redirect RedirectTemp RedirectPermanent RedirectMatch Header AddType AddEncoding AddDefaultCharset FileETag
 	</Directory>
 	Options +ExecCGI\n";
 							}
@@ -1088,7 +1104,7 @@ $vhost_file .= "
 	</IfModule>
 	<IfModule mod_cband.c>
 		CBandUser $web_owner
-		CBandRemoteSpeed 2Mbps 3 3
+		CBandRemoteSpeed ".$a["cbandremoteSpeed_kbps"]." ".$a["cbandremoteSpeed_rps"]." ".$a["cbandremoteSpeed_conn"]."
 	</IfModule>\n";
 
 						if ($create_mail_autoconfig && ($domain_default_sub_server_alias == "yes") && ($web_subname == "$web_default_subdomain")) {

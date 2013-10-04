@@ -38,6 +38,8 @@ $keep_mail_generate_flag = "no";
 $keep_dns_generate_flag = "no";
 if (isset($argv[1])){
 	$cron_recursing = $argv[1];
+}else{
+	$cron_recursing = 0;
 }
 global $conf_cron_recurse;
 
@@ -775,7 +777,7 @@ echo( str_replace("<br>","\n",$console));
 printEndTime();
 $_inprogress = FALSE;
 $cron_final=getCronFlags();
-if(($cron_final["qmail_newu"] == 'yes' || $cron_final["restart_qmail"] == 'yes' || $cron_final["reload_named"] == 'yes' || $cron_final["restart_apache"] == 'yes' || $cron_final["gen_vhosts"] == 'yes' || $cron_final["gen_named"] == 'yes' || $cron_final["gen_reverse"] == 'yes' || $cron_final["gen_fetchmail"] == 'yes' || $cron_final["gen_qmail"] == 'yes' || $cron_final["gen_webalizer"] == 'yes' || $cron_final["gen_backup"] == 'yes' || $cron_final["gen_ssh"] == 'yes' || $cron_final["gen_nagios"] == 'yes' || $cron_final["gen_user_cron"] == 'yes') && $cron_recursing != "end"){
+if(($cron_final["qmail_newu"] == 'yes' || $cron_final["restart_qmail"] == 'yes' || $cron_final["reload_named"] == 'yes' || $cron_final["restart_apache"] == 'yes' || $cron_final["gen_vhosts"] == 'yes' || $cron_final["gen_named"] == 'yes' || $cron_final["gen_reverse"] == 'yes' || $cron_final["gen_fetchmail"] == 'yes' || $cron_final["gen_qmail"] == 'yes' || $cron_final["gen_webalizer"] == 'yes' || $cron_final["gen_backup"] == 'yes' || $cron_final["gen_ssh"] == 'yes' || $cron_final["gen_nagios"] == 'yes' || $cron_final["gen_user_cron"] == 'yes')){
 	if($cron_final["lock_flag"] == 'finished'){
 		if ($cron_recursing < $conf_cron_recurse){
 			$cron_recursing = $cron_recursing + 1;

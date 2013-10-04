@@ -1300,7 +1300,7 @@ function drawGeneralConfig(){
 				"values" => array("yes","no"),
 				"display_replace" => array(_("Yes"),_("No"))),
 			"action_on_old_new_admin" => array (
-				"legend" => _("show upgrade product button: "),
+				"legend" => _("action on old new admin: "),
 				"type" => "radio",
 				"values" => array("archive","delete","nothing"),
 				"display_replace" => array(_("Archive"),_("Delete"),_("No Action Taken"))),
@@ -1386,6 +1386,15 @@ function drawGeneralConfig(){
                                 "type" => "text"),
 			"apache_directoryindex" => array(
 				"legend" => _("Apache DirectoryIndex Config: "),
+				"size" => "50",
+				"type" => "text"),
+			"use_cband_user_exceeded_url" => array(
+				"legend" => _("Redirect the bandwidth exceded sites (instad of giving a 503 error): "),
+				"type" => "radio",
+				"values" => array("yes","no"),
+				"display_replace" => array(_("Yes"),_("No"))),
+			"cband_user_exceeded_url" => array(
+				"legend" => _("Url to redirect the bandwidth exceded sites: "),
 				"size" => "50",
 				"type" => "text"),
 		        )

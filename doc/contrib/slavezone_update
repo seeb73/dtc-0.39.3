@@ -38,7 +38,7 @@ mkdir -p /var/lib/dtc/etc/slave_reverse_zones
 if [ $UPDATE_FORWARD -eq 1 ]
 then
 
-	/usr/bin/wget --no-check-certificate -O ${TEMP_OUTFILE} "https://${DTC_PANEL_URL}/dtc/list_domains.php?login=${BACKUP_LOGIN}&pass=${BACKUP_PASSWORD}&action=list_dns"
+	/usr/bin/wget --quiet --no-check-certificate -O ${TEMP_OUTFILE} "https://${DTC_PANEL_URL}/dtc/list_domains.php?login=${BACKUP_LOGIN}&pass=${BACKUP_PASSWORD}&action=list_dns"
 
 	if [ $? -ne 0 ]
 	then
@@ -58,7 +58,7 @@ then
 	if [ $FILESIZE -gt 0 ]; then
         	/bin/mv ${TEMP_OUTFILE2} /etc/bind/named.slavezones.conf
 		chown bind.bind /etc/bind/named.slavezones.conf
-        	/usr/sbin/rndc reload
+        	/usr/sbin/rndc reload >>/dev/null
 	fi
 
 fi
@@ -66,7 +66,7 @@ fi
 if [ $UPDATE_REVERSE -eq 1 ]
 then
 
-	/usr/bin/wget --no-check-certificate -O ${TEMP_OUTFILE} "https://${DTC_PANEL_URL}/dtc/list_domains.php?login=${BACKUP_LOGIN}&pass=${BACKUP_PASSWORD}&action=list_reverse_dns"
+	/usr/bin/wget --quiet --no-check-certificate -O ${TEMP_OUTFILE} "https://${DTC_PANEL_URL}/dtc/list_domains.php?login=${BACKUP_LOGIN}&pass=${BACKUP_PASSWORD}&action=list_reverse_dns"
 
 	if [ $? -ne 0 ]
 	then
@@ -87,7 +87,7 @@ then
 	if [ $FILESIZE -gt 0 ]; then
         	/bin/mv ${TEMP_OUTFILE2} /etc/bind/named.reverse.slavezones.conf
 		chown bind.bind /etc/bind/named.reverse.slavezones.conf
-        	/usr/sbin/rndc reload
+        	/usr/sbin/rndc reload >>/dev/null
 	fi
 
 fi

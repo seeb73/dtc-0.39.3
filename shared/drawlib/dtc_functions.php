@@ -619,7 +619,7 @@ function isMailPassword($login){
 }
 
 function isDTCPassword($pass){
-	$reg = "/^([a-zA-Z0-9]){4,255}\$/";
+	$reg = "/^([-a-zA-Z0-9!#_]){4,255}\$/";
 	if(!preg_match($reg,$pass))	return false;
 	else			return true;
 }

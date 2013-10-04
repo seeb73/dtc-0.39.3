@@ -183,6 +183,20 @@ function drawAdminTools_Subdomain($admin,$domain){
 	}
 	$txt .= "<tr><td align=\"right\">". _("Generate a ServerAlias for the root of the domain:")." </td><td><input type=\"radio\" name=\"default_sub_server_alias\" value=\"yes\"$yes_flag>"._("Yes")."<input type=\"radio\" name=\"default_sub_server_alias\" value=\"no\"$no_flag>"._("No")."</td></tr>";
 
+	$txt .= "<tr><td align=\"right\">". _("Generate automatic subdomains for this domain:")." </td><td><input type=\"radio\" name=\"autogen_subdomain\" value=\"no\"";
+	if ($domain["autogen_subdomain"] == 'no'){
+		$txt .= " checked";
+	}
+	$txt .= ">". _("No") . "<input type=\"radio\" name=\"autogen_subdomain\" value=\"default\"";
+	if ($domain["autogen_subdomain"] == 'default'){
+		$txt .= " checked";
+	}
+	$txt .= ">". _("Default") . "<input type=\"radio\" name=\"autogen_subdomain\" value=\"thisserver\"";
+	if ($domain["autogen_subdomain"] == 'thisserver'){
+		$txt .= " checked";
+	}
+	$txt .= ">". _("This Server") ."</td></tr>";
+
 	// Apply button
 	$txt .= "<tr><td></td><td><input type=\"hidden\" name=\"subdomaindefault\" value=\"Ok\"><input type=\"image\" src=\"gfx/stock_apply_20.png\"></td></tr></table></form>";
 	$txt .= $frm."";

@@ -105,7 +105,15 @@ function renew_form(){
 					return $ret;
 				}
 				if ( $secpayconf_use_products_for_renewal == 'yes'){
-					$p = $vps;
+					$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$vps["product_id"]."';";
+					$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+					$num = mysql_num_rows($r);
+					if($num != 1 && $secpayconf_use_products_for_renewal == 'no'){
+						$ret["err"] = 3;
+						$ret["mesg"] = "<font color=\"red\">"._("Error: VPS product ID not found.")."</font>";
+						return $ret;
+					}
+					$p = mysql_fetch_array($r);
 				}else{
 					$p = mysql_fetch_array($r);
 				}
@@ -150,7 +158,15 @@ function renew_form(){
 					return $ret;
 				}
 				if ( $secpayconf_use_products_for_renewal == 'yes'){
-					$p = $dedi;
+					$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$dedi["product_id"]."';";
+					$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+					$num = mysql_num_rows($r);
+					if($num != 1 && $secpayconf_use_products_for_renewal == 'no'){
+						$ret["err"] = 3;
+						$ret["mesg"] = "<font color=\"red\">"._("Error: dedicated server product ID not found.")."</font>";
+						return $ret;
+					}
+					$p = mysql_fetch_array($r);
 				}else{
 					$p = mysql_fetch_array($r);
 				}
@@ -166,7 +182,7 @@ function renew_form(){
 					$ret["mesg"] = "<font color=\"red\">"._("Error: wrong service_host format.")."</font>";
 					return $ret;
 				}
-				// Check if the dedicated is really owned by $adm_login
+				// Check if the custom product is really owned by $adm_login
 				$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE owner='$adm_login' AND domain='$host';";
 				$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
 				$num = mysql_num_rows($r);
@@ -179,7 +195,7 @@ function renew_form(){
 				if($i > 0){
 					$country .= "|";
 				}
-				$country .= $dedi["country_code"];
+				$country .= $custom["country_code"];
 				if(!isRandomNum($_REQUEST["custom:".str_replace(".","_",$host)])){
 					$ret["err"] = 3;
 					$ret["mesg"] = "<font color=\"red\">"._("Error: custom product renewal product format is wrong.")."</font>";
@@ -195,7 +211,15 @@ function renew_form(){
 					return $ret;
 				}
 				if ( $secpayconf_use_products_for_renewal == 'yes'){
-					$p = $custom;
+					$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$custom["product_id"]."';";
+					$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+					$num = mysql_num_rows($r);
+					if($num != 1 && $secpayconf_use_products_for_renewal == 'no'){
+						$ret["err"] = 3;
+						$ret["mesg"] = "<font color=\"red\">"._("Error: custom product ID not found.")."</font>";
+						return $ret;
+					}
+					$p = mysql_fetch_array($r);
 				}else{
 					$p = mysql_fetch_array($r);
 				}
@@ -203,6 +227,53 @@ function renew_form(){
 					$services .= "|";
 				}
 				$services .= "custom:".$host.":".$pid;
+				break;
+			case "shared":
+				// Check if the shared is really owned by $adm_login
+				$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
+				$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+				$num = mysql_num_rows($r);
+				if($num != 1){
+					$ret["err"] = 3;
+					$ret["mesg"] = "<font color=\"red\">"._("Error: you do not own this hosting.")."</font>";
+					return $ret;
+				}
+				$shared = mysql_fetch_array($r);
+				if($i > 0){
+					$country .= "|";
+				}
+				$country .= $shared["country_code"];
+				if(!isRandomNum($_REQUEST["shared:".str_replace(".","_",$host)])){
+					$ret["err"] = 3;
+					$ret["mesg"] = "<font color=\"red\">"._("Error: hosting renewal product format is wrong.")."</font>";
+					return $ret;
+				}
+				$pid = $_REQUEST["shared:".str_replace(".","_",$host)];
+				$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$shared["prod_id"]."' AND id='$pid';";
+				$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+				$num = mysql_num_rows($r);
+				if($num != 1 &&  $secpayconf_use_products_for_renewal == 'no'){
+					$ret["err"] = 3;
+					$ret["mesg"] = "<font color=\"red\">"._("Error: hosting renewal product ID not found.")."</font>";
+					return $ret;
+				}
+				if ( $secpayconf_use_products_for_renewal == 'yes'){
+					$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$shared["prod_id"]."';";
+					$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+					$num = mysql_num_rows($r);
+					if($num != 1 && $secpayconf_use_products_for_renewal == 'no'){
+						$ret["err"] = 3;
+						$ret["mesg"] = "<font color=\"red\">"._("Error: shared hosting product ID not found.")."</font>";
+						return $ret;
+					}
+					$p = mysql_fetch_array($r);
+				}else{
+					$p = mysql_fetch_array($r);
+				}
+				if($i > 0){
+					$services .= "|";
+				}
+				$services .= "shared:".$host.":".$pid;
 				break;
 			default:
 				$ret["err"] = 3;

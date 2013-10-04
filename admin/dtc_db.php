@@ -334,7 +334,9 @@ $dtc_database = array(
 			"show_invoice_info" => "enum('yes','no') NOT NULL default 'yes'",
 			"global_extend" => "int(12) NOT NULL default '0'",
 			"cron_recurse" => "int(12) NOT NULL default '4'",
-			"show_past_payments" => "varchar(255) NOT NULL default 'default'"
+			"show_past_payments" => "varchar(255) NOT NULL default 'default'",
+			"use_cband_user_exceeded_url" => "enum('yes','no') NOT NULL default 'no'",
+			"cband_user_exceeded_url" => "varchar(255) NOT NULL default 'http://'"
 		),
 		"keys" => array(
 			"unicrow" => "(unicrow)"
@@ -508,6 +510,7 @@ $dtc_database = array(
 			"windows_compat" => "enum('yes','no') NOT NULL default 'no'",
 			"custom_part" => "text",
 			"spf_txt_entry" => "varchar(128) NOT NULL default 'v=spf1 mx ~all'",
+			"autogen_subdomain" => "enum('no','default','thisserver') NOT NULL default 'thisserver'",
 			"mail_relay_host" => "varchar(128) NOT NULL default ''"
 		),
 		"primary" => "(id)",
@@ -969,7 +972,16 @@ $dtc_database = array(
 			"private" => "enum('yes','no') NOT NULL default 'no'",
 			"use_radius" => "enum('yes','no') NOT NULL default 'no'",
 			"custom_heb_type" => "int(11) NOT NULL default '0'",
-			"custom_heb_type_fld" => "text"
+			"custom_heb_type_fld" => "text",
+			"cbanduserspeed_kbps" => "varchar(255) NOT NULL default '10Mbps'",
+			"cbanduserspeed_rps" => "int(11) NOT NULL default '10'",
+			"cbanduserspeed_conn" => "int(11) NOT NULL default '30'",
+			"cbanduserexceededspeed_kbps" => "varchar(255) NOT NULL default '32kbps'",
+			"cbanduserexceededspeed_rps" => "int(11) NOT NULL default '2'",
+			"cbanduserexceededspeed_conn" => "int(11) NOT NULL default '5'",
+			"cbandremoteSpeed_kbps" => "varchar(255) NOT NULL default '2Mbps'",
+			"cbandremoteSpeed_rps" => "int(11) NOT NULL default '3'",
+			"cbandremoteSpeed_conn" => "int(11) NOT NULL default '3'"
 		),
 		"primary" => "(id)",
 		"keys" => array(

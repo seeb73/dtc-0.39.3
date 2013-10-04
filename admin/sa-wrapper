@@ -42,7 +42,7 @@ sub trim
 	return wantarray ? @out : $out[0];
 }
 
-my ($spamham, $sender) = @ARGV;
+my ($spamham, $sender, $client_addr) = @ARGV;
 
 sub recurs
 {
@@ -69,10 +69,15 @@ sub recurs
 	}
 }
 
-my ($domain) = $sender =~ /\@(.*)$/;
-unless (grep { $_ eq $domain } @DOMAINS) {
-	die "$sender, I don't recognize your domain ($domain)!";
+unless (defined $sender && length $sender > 0) {
+	$sender = '';
 }
+
+my ($domain) = $sender =~ /\@(.*)$/;
+(defined $domain && grep { $_ eq $domain } @DOMAINS) or
+	(defined $client_addr && $client_addr =~ /127\.0\.0\.1$/) or
+	die "You must authenticate to use this service.";
+
 
 if ($DEBUG) {
 	MIME::Tools->debugging(1);
