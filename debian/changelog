@@ -1,3 +1,12 @@
+dtc (0.38.2-1) experimental; urgency=low
+
+  * New upstream release with the following changes:
+
+  [ Damien Mascord ]
+  * Fixes Dovecot 2.x authentication issue.
+
+ -- Thomas Goirand <zigo@debian.org>  Fri, 04 Oct 2013 10:30:04 +0800
+
 dtc (0.38.1-1) experimental; urgency=low
 
   * New upstream release with the following changes:
