@@ -3451,6 +3451,13 @@ service auth {
   }
   user = root
 }
+passdb {
+  args = $PATH_DTC_ETC/dovecot-mysql.conf
+  driver = sql
+}
+passdb {
+  driver = pam
+}
 userdb {
   driver = prefetch
 }
