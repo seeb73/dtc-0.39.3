@@ -5,6 +5,9 @@ dtc (0.38.2-1) experimental; urgency=low
   [ Damien Mascord ]
   * Fixes Dovecot 2.x authentication issue.
 
+  [ Thomas Goirand ]
+  * Adds gcc as depends so that we can detect the GNU triplet.
+
  -- Thomas Goirand <zigo@debian.org>  Fri, 04 Oct 2013 10:30:04 +0800
 
 dtc (0.38.1-1) experimental; urgency=low
