@@ -3581,7 +3581,7 @@ connect = host=$DOVECOT_MYSQL dbname=$conf_mysql_db user=dtcdaemons password=${M
 driver = mysql
 default_pass_scheme = PLAIN
 password_query = SELECT passwd as password FROM pop_access,domain,admin,config WHERE pop_access.active=1 and mbox_host=name AND owner=adm_login AND (disabled='no' or disabled='always-no' or disabled='') AND pop_access.id = '%n' AND case when config.main_domain_mail_without_domain='yes' and '%d'='' THEN mbox_host=config.main_domain ELSE (mbox_host='%d' or mbox_host in (select domain_parking from domain where name='%d' and domain_parking_type='redirect')) END
-user_query = SELECT home, uid, gid, 'maildir:~/Maildir' FROM pop_access,domain,admin,config WHERE pop_access.active=1 and mbox_host=name AND owner=adm_login AND (disabled='no' or disabled='always-no' or disabled='') AND pop_access.id = '%n' AND case when config.main_domain_mail_without_domain='yes' and '%d'='' then mbox_host=config.main_domain else (mbox_host='%d' or mbox_host in (select domain_parking from domain where name='%d' and domain_parking_type='redirect')) end
+user_query = SELECT home, uid, gid, 'maildir:~/Maildir' AS mail FROM pop_access,domain,admin,config WHERE pop_access.active=1 and mbox_host=name AND owner=adm_login AND (disabled='no' or disabled='always-no' or disabled='') AND pop_access.id = '%n' AND case when config.main_domain_mail_without_domain='yes' and '%d'='' then mbox_host=config.main_domain else (mbox_host='%d' or mbox_host in (select domain_parking from domain where name='%d' and domain_parking_type='redirect')) end
 " > $PATH_DTC_ETC/dovecot-mysql.conf
 			else
 				echo "
