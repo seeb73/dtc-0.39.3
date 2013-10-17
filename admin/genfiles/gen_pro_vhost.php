@@ -763,7 +763,10 @@ AND $pro_mysql_admin_table.id_client != '0'";
 	Alias /roundcube /var/lib/roundcube
 	Alias /extplorer /usr/share/extplorer
 	AliasMatch ^/autodiscover/autodiscover\.xml\$ $conf_generated_file_path/autodiscover.xml.php
-	php_admin_value sendmail_from webmaster@$web_name";
+	php_admin_value sendmail_from webmaster@$web_name
+	<FilesMatch \".+\.ph(p[345]?|t|tml)$\">
+		SetHandler application/x-httpd-php
+	</FilesMatch>";
 
 			$php_more_conf = "\n";
 			if($subdomain["register_globals"] == "yes"){
