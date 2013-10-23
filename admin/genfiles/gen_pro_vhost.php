@@ -1071,7 +1071,10 @@ $vhost_file .= "
 	php_admin_value sendmail_from phpmailfunction$web_subname@$web_name
 	php_admin_value sendmail_path \"/usr/sbin/sendmail -t -i -f phpmailfunction$web_subname@$domain_to_get\"
 	php_value session.save_path $web_path/$domain_to_get/subdomains/$web_subname/tmp".$my_open_basedir."
-	$cgi_directive\n";
+	$cgi_directive
+	<FilesMatch \".+\.ph(p[345]?|t|tml)$\">
+		SetHandler application/x-httpd-php
+	</FilesMatch>\n";
 							}else{
 								$vhost_file .= "$vhost_more_conf	ScriptAlias /cgi-bin /usr/lib/cgi-bin
 	php_admin_flag engine off
