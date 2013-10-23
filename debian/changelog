@@ -1,11 +1,12 @@
-dtc (0.38.5-1) experimental; urgency=low
+dtc (0.38.6-1) experimental; urgency=low
 
   * New upstream release with the following changes:
 
   [ Thomas Goirand ]
   * Enables php5 for the non sbox sites (using mod_php).
+  * Fixed dovecot delivery options.
 
- -- Thomas Goirand <zigo@debian.org>  Wed, 23 Oct 2013 15:57:47 +0800
+ -- Thomas Goirand <zigo@debian.org>  Wed, 23 Oct 2013 16:32:46 +0800
 
 dtc (0.38.4-1) experimental; urgency=low
 

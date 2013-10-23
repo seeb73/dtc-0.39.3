@@ -2864,8 +2864,11 @@ pickup fifo n - n 60 1 pickup
 				fi
 				# if we also have sieve, we should use it too!
 				if [ ""$conf_use_sieve = "true" ] ; then
+					if [ "${DOVECOT_POSTTWO}" != "true" ] ; then
+						PRETWO_OPTS="-n -s "
+					fi
 					echo "dovecot unix    -       n       n       -       -      pipe
-    flags=DRhu user=${CONF_DTC_SYSTEM_USERNAME} argv=$PATH_DOVECOT_DELIVER -f \${sender} -d \${user}@\${nexthop} -n -s -m \${extension} -a \${recipient}
+    flags=DRhu user=${CONF_DTC_SYSTEM_USERNAME} argv=$PATH_DOVECOT_DELIVER -f \${sender} -d \${user}@\${nexthop} ${PRETWO_OPTS}-m \${extension} -a \${recipient}
 
 " >> $TMP_FILE2
 					touch /var/log/sieve.log
