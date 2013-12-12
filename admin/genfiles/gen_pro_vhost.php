@@ -763,7 +763,10 @@ AND $pro_mysql_admin_table.id_client != '0'";
 	Alias /roundcube /var/lib/roundcube
 	Alias /extplorer /usr/share/extplorer
 	AliasMatch ^/autodiscover/autodiscover\.xml\$ $conf_generated_file_path/autodiscover.xml.php
-	php_admin_value sendmail_from webmaster@$web_name";
+	php_admin_value sendmail_from webmaster@$web_name
+	<FilesMatch \".+\.ph(p[345]?|t|tml)$\">
+		SetHandler application/x-httpd-php
+	</FilesMatch>";
 
 			$php_more_conf = "\n";
 			if($subdomain["register_globals"] == "yes"){
@@ -1068,7 +1071,10 @@ $vhost_file .= "
 	php_admin_value sendmail_from phpmailfunction$web_subname@$web_name
 	php_admin_value sendmail_path \"/usr/sbin/sendmail -t -i -f phpmailfunction$web_subname@$domain_to_get\"
 	php_value session.save_path $web_path/$domain_to_get/subdomains/$web_subname/tmp".$my_open_basedir."
-	$cgi_directive\n";
+	$cgi_directive
+	<FilesMatch \".+\.ph(p[345]?|t|tml)$\">
+		SetHandler application/x-httpd-php
+	</FilesMatch>\n";
 							}else{
 								$vhost_file .= "$vhost_more_conf	ScriptAlias /cgi-bin /usr/lib/cgi-bin
 	php_admin_flag engine off

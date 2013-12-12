@@ -144,9 +144,9 @@ for($i=0;$i<$nbr_tables;$i++){
 			}
 		}
 		if( isset( $t["max_rows"] )){
-			$qc .= "\n)MAX_ROWS=1 TYPE=MyISAM\n";
+			$qc .= "\n)MAX_ROWS=1 ENGINE=MyISAM\n";
 		}else{
-			$qc .= "\n)TYPE=MyISAM\n";
+			$qc .= "\n)ENGINE=MyISAM\n";
 		}
 		// echo $q;
 		$r = mysql_query($qc)or die("Cannot execute query: \"$qc\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysql_error());

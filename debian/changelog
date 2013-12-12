@@ -1,3 +1,43 @@
+dtc (0.38.6-1) experimental; urgency=low
+
+  * New upstream release with the following changes:
+
+  [ Thomas Goirand ]
+  * Enables php5 for the non sbox sites (using mod_php).
+  * Fixed dovecot delivery options.
+
+ -- Thomas Goirand <zigo@debian.org>  Wed, 23 Oct 2013 16:32:46 +0800
+
+dtc (0.38.4-1) experimental; urgency=low
+
+  * New upstream release with the following changes:
+
+  [ Thomas Goirand ]
+  * Enables php5 for the admin subdomain.
+
+ -- Thomas Goirand <zigo@debian.org>  Thu, 17 Oct 2013 15:59:24 +0800
+
+dtc (0.38.3-1) experimental; urgency=low
+
+  * New upstream release with the following changes:
+
+  [ Damien Mascord ]
+  * Fixed the user_query for the maildir problem.
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 08 Oct 2013 12:32:37 +0800
+
+dtc (0.38.2-1) experimental; urgency=low
+
+  * New upstream release with the following changes:
+
+  [ Damien Mascord ]
+  * Fixes Dovecot 2.x authentication issue.
+
+  [ Thomas Goirand ]
+  * Adds gcc as depends so that we can detect the GNU triplet.
+
+ -- Thomas Goirand <zigo@debian.org>  Fri, 04 Oct 2013 10:30:04 +0800
+
 dtc (0.38.1-1) experimental; urgency=low
 
   * New upstream release with the following changes:
