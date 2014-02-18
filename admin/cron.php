@@ -689,7 +689,7 @@ function checkDisableAdmins() {
 
         global $send_email_header;
 
-        $now_timestamp = mktime();
+        $now_timestamp = time();
         $one_day = 3600 * 24;
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adddate(expire,permanent_extend+temporary_extend+".$conf_global_extend.")<='".date("Y-m-d",$now_timestamp - $one_day*$conf_shared_renewal_disable_admin)."' and disabled='no';";
 	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
@@ -719,7 +719,7 @@ function checkArchiveOrDeleteNewAdmins(){
 	global $conf_new_admin_old_age;
 
 	if ($conf_action_on_old_new_admin == 'archive' or $conf_action_on_old_new_admin == 'delete') {
-		$now_timestamp = mktime();
+		$now_timestamp = time();
 		$one_day = 3600 * 24;
 		$q = "SELECT id, reqadm_login FROM $pro_mysql_new_admin_table WHERE to_days(date) < to_days('".
 			date("Y-m-d",$now_timestamp - $one_day*$conf_new_admin_old_age)."') and archive='no';";
