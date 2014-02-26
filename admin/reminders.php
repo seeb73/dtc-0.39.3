@@ -77,7 +77,7 @@ function sendVPSReminderEmail($remaining_days,$file,$send_webmaster_copy="no"){
 
 	global $send_email_header;
 
-	$now_timestamp = mktime();
+	$now_timestamp = time();
 	$one_day = 3600 * 24;
 	$q = "SELECT * FROM $pro_mysql_vps_table WHERE expire_date='".date("Y-m-d",$now_timestamp + $one_day*$remaining_days)."';";
 	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
@@ -174,7 +174,7 @@ function sendDedicatedReminderEmail($remaining_days,$file,$send_webmaster_copy="
 
 	global $send_email_header;
 
-	$now_timestamp = mktime();
+	$now_timestamp = time();
 	$one_day = 3600 * 24;
 	$q = "SELECT * FROM $pro_mysql_dedicated_table WHERE expire_date='".date("Y-m-d",$now_timestamp + $one_day*$remaining_days)."';";
 	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
@@ -266,7 +266,7 @@ function sendSharedHostingReminderEmail($remaining_days,$file,$send_webmaster_co
 
 	global $send_email_header;
 
-	$now_timestamp = mktime();
+	$now_timestamp = time();
 	$one_day = 3600 * 24;
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE expire='".date("Y-m-d",$now_timestamp + $one_day*$remaining_days)."';";
 	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
@@ -345,7 +345,7 @@ function sendCustomProductsReminderEmail($remaining_days,$file,$cust_heb_type_id
 
 	global $send_email_header;
 
-	$now_timestamp = mktime();
+	$now_timestamp = time();
 	$one_day = 3600 * 24;
 	$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE expire_date='".date("Y-m-d",$now_timestamp + $one_day*$remaining_days)."' and custom_heb_type='".$cust_heb_type_id."';";
 	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
