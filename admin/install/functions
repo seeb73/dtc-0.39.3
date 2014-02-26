@@ -1304,6 +1304,10 @@ changeApacheUserAndGroup () {
 		cat <$TMP_FILE >$PATH_HTTPD_CONF
 	fi
 	rm -f ${TMP_FILE}
+	# Set the correct user for the /var/lock/apache2 folder in Debian
+	if [ -d "/var/lock/apache2" ]; then
+		chown -R ${CONF_DTC_SYSTEM_USERNAME}:root /var/lock/apache2
+	fi
 }
 
 createApachePIDSymLink () {
@@ -2083,21 +2087,19 @@ setupAmavisConf () {
                 	echo "\$daemon_user  = '$AMAVISD_USER';" >> $TMP_FILE
                 	echo "\$daemon_group  = '$AMAVISD_USER';" >> $TMP_FILE
 			echo "\$max_servers=$maxproc;" >> $TMP_FILE
-	echo "\$first_infected_stops_scan = 1;  # default is false, all scanners in a section" >> $TMP_FILE
+			echo "\$first_infected_stops_scan = 1;  # default is false, all scanners in a section" >> $TMP_FILE
 			echo "\$sa_mail_body_size_limit = 150*1024;" >> $TMP_FILE
                 	echo "\$final_virus_destiny = D_DISCARD;" >> $TMP_FILE
                 	echo "\$final_spam_destiny = D_BOUNCE; #we set this to bounce to let users decide if the sender should be notified. If dsn_cutoff is not higher than kill_level, bounce will be changed to discart automatically!" >> $TMP_FILE
                 	echo "\$final_banned_destiny = D_DISCARD; #to let users discard messages we default to discart and overrule this by setting all users to lovers which is the same as passing through." >> $TMP_FILE
                 	echo "\$final_bad_header_destiny = D_DISCARD; #again we discard to let users decide on their own what to do." >> $TMP_FILE
-echo "@banned_files_lovers_maps = ('Y');" >> $TMP_FILE
-echo "@bad_header_lovers_maps = ('Y');" >> $TMP_FILE
-                	echo "\$warnvirussender = 0;" >> $TMP_FILE
-                	echo "\$warnspamsender = 1; #senders only will be warned if dsn_cutoff is higher than kill_level! Be default this is not true so warning is turned off." >> $TMP_FILE
-	echo "\$warnbannedsender = 0;" >> $TMP_FILE
-	echo "\$warnbadhsender = 0;" >> $TMP_FILE
-	echo "\$insert_received_line = 1;       # behave like MTA: insert 'Received:' header" >> $TMP_FILE
-	echo "\$sa_spam_level_char = '*';  # char for X-Spam-Level bar, defaults to '*';" >> $TMP_FILE
-	echo "\$sa_spam_modifies_subj = 1; # or specify individual settings in @spam_modifies_subj_maps, default is true" >> $TMP_FILE
+			echo "@banned_files_lovers_maps = ('Y');" >> $TMP_FILE
+			echo "@bad_header_lovers_maps = ('Y');" >> $TMP_FILE
+			echo "\$warnbannedsender = 0;" >> $TMP_FILE
+			echo "\$warnbadhsender = 0;" >> $TMP_FILE
+			echo "\$insert_received_line = 1;       # behave like MTA: insert 'Received:' header" >> $TMP_FILE
+			echo "\$sa_spam_level_char = '*';  # char for X-Spam-Level bar, defaults to '*';" >> $TMP_FILE
+			echo "\$sa_spam_modifies_subj = 1; # or specify individual settings in @spam_modifies_subj_maps, default is true" >> $TMP_FILE
 
 			echo " # kill level and subject defaults 
 @spam_tag_level_maps = ('-999');
@@ -2124,7 +2126,7 @@ echo "@bad_header_lovers_maps = ('Y');" >> $TMP_FILE
 \$recipient_delimiter = \"$conf_recipient_delim\";
 " >> $TMP_FILE
 
-	echo "\$sa_spam_report_header = 0; # insert X-Spam-Report header field? default false" >> $TMP_FILE
+			echo "\$sa_spam_report_header = 0; # insert X-Spam-Report header field? default false" >> $TMP_FILE
 			# if we have a list of postfix relay domains, we may check them to virii etc...
 			# If you enable this, it will tag ***SPAM*** twice... not very good looking :)
 	 		# if [ -e "$PATH_DTC_ETC/postfix_relay_domains" ] ; then
@@ -2168,7 +2170,6 @@ if (defined @\$ref)
 \$sql_select_white_black_list = undef;  # undef disables SQL white/blacklisting
 #
 # for logging and debugging:
-\$syslog_priority = \"info\";  # we set the log to info instead of debug which is the amavis default. switch to debug and uncomment the next line to activate debug output, etc
 #\$log_level = 5;  #uncomment to get full debugging information if logging is set to debug.
 #
 " >> $TMP_FILE
@@ -2865,10 +2866,11 @@ pickup fifo n - n 60 1 pickup
 				# if we also have sieve, we should use it too!
 				if [ ""$conf_use_sieve = "true" ] ; then
 					if [ "${DOVECOT_POSTTWO}" != "true" ] ; then
-						PRETWO_OPTS="-n -s "
+						# With the -n and -s parameters, the dovecot delivery fails !
+						PRETWO_OPTS="-o lda_mailbox_autosubscribe=yes"
 					fi
 					echo "dovecot unix    -       n       n       -       -      pipe
-    flags=DRhu user=${CONF_DTC_SYSTEM_USERNAME} argv=$PATH_DOVECOT_DELIVER -f \${sender} -d \${user}@\${nexthop} ${PRETWO_OPTS}-m \${extension} -a \${recipient}
+    flags=DRhu user=${CONF_DTC_SYSTEM_USERNAME} argv=$PATH_DOVECOT_DELIVER -f \${sender} -d \${user}@\${nexthop} -m \${extension} -a \${recipient} ${PRETWO_OPTS}
 
 " >> $TMP_FILE2
 					touch /var/log/sieve.log
@@ -3616,7 +3618,7 @@ db_client_flags = 0
 						echo $conf_cert_locality;
 						echo $conf_cert_organization;
 						echo $conf_cert_unit;
-						echo $dtc_admin_subdomain"."$main_domain_name;
+						echo $conf_mx_mail"."$main_domain_name;
 						echo $conf_cert_email;
 						echo $conf_cert_challenge_pass;
 						echo $conf_cert_organization; ) | openssl req -passout file:$CERTPASS_TMP_FILE -new > new.cert.csr ) || 
