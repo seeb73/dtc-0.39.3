@@ -206,7 +206,7 @@ function genDotSieveFile($home,$id,$domain_full_name,$spam_mailbox_enable,$spam_
 # time the cron job generates the mail accounts
 
 require ["fileinto", "include", "variables", "vacation", "envelope", "imap4flags", "subaddress", "copy", "mailbox"];
-include "custom.sieve";
+include "custom";
 
 MAILFILTER_EOF;
 	// Manage the redirections
