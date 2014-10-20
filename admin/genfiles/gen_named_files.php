@@ -1478,7 +1478,7 @@ $more_dns_server
 					if($web_subname == $web_default_subdomain && $wildcard_dns == "yes"){
 						$wildcard_dns_txt = "*        $sub_ttl        IN      $the_ip_writed\n";
 					}
-					if( substr($web_subname,0,1) != "_" ){
+					if( substr($web_subname,0,1) != "_" && strstr($web_subname, "._") === FALSE ){
 						$this_site_file .= "$web_subname	$sub_ttl	IN	$the_ip_writed\n";
 					}
 				}
