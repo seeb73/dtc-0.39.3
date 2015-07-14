@@ -1,3 +1,18 @@
+dtc (0.38.7-1) experimental; urgency=low
+
+  * New upstream release with the below fixes:
+    - Do not generate IN A record in a subdomain which has "._" (which are
+      needed for TXT records).
+    - Added ForceType into AllowOverrideList
+    - Fixes sieve include name from "include custom.sieve" to "include custom"
+      which broke (at least) redirections and vacation messages.
+    - mktime() -> time() in admin/reminders.php
+    - Applied Gregory Fardel patches.
+    - Fixes mktime -> time
+    - Added OpenSRS module, thanks to Martin Vasilev <martin@mreja.net>
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 14 Jul 2015 17:11:35 +0200
+
 dtc (0.38.6-1) experimental; urgency=low
 
   * New upstream release with the following changes:
