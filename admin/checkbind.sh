@@ -16,11 +16,11 @@ binduser=`cat /etc/passwd | cut -f 1 -d: | grep named`
 #fi
 
 if [ -z "$bindgroup" ] ; then
-	bindgroup=`cat /etc/group | cut -f 1 -d: | grep bind`
+	bindgroup=`cat /etc/group | cut -f 1 -d: | grep ^bind`
 fi
 
 if [ -z "$binduser" ] ; then
-        binduser=`cat /etc/passwd | cut -f 1 -d: | grep bind`
+        binduser=`cat /etc/passwd | cut -f 1 -d: | grep ^bind`
 fi
 
 if [ -n "$bindgroup" ]; then
