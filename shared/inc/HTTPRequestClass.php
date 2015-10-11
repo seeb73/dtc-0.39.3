@@ -78,7 +78,7 @@ class dtc_HTTPRequest
         
         
         // fetch from URL
-        $this->_fp = fsockopen(($this->_protocol == 'https' ? 'ssl://' : '') . $this->_host, $this->_port, $errno, $errstr, $this->_timeout);
+        $this->_fp = fsockopen(($this->_protocol == 'https' ? 'sslv3://' : '') . $this->_host, $this->_port, $errno, $errstr, $this->_timeout);
         fwrite($this->_fp, $req);
         
         $a_vers = explode(".",phpversion());
