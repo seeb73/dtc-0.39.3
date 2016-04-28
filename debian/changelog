@@ -6,7 +6,7 @@ dtc (0.38.7-1) experimental; urgency=low
     - Added ForceType into AllowOverrideList
     - Fixes sieve include name from "include custom.sieve" to "include custom"
       which broke (at least) redirections and vacation messages.
-    - mktime() -> time() in admin/reminders.php
+    - time() -> time() in admin/reminders.php
     - Applied Gregory Fardel patches.
     - Fixes mktime -> time
     - Added OpenSRS module, thanks to Martin Vasilev <martin@mreja.net>

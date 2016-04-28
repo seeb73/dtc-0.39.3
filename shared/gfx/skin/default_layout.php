@@ -173,7 +173,7 @@ function skin_LayoutAdminPage_Default (){
 			$rand = $adm_pass;
 		}else{
 			$rand = getRandomValue();
-			$expirationTIME = mktime() + (60 * $conf_session_expir_minute);
+			$expirationTIME = time() + (60 * $conf_session_expir_minute);
 			$q = "UPDATE $pro_mysql_config_table SET root_admin_random_pass='$rand', pass_expire='$expirationTIME';";
 			$r = mysql_query($q)or die("Cannot execute query \"$q\" !");
 		}

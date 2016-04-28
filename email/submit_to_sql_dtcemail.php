@@ -18,14 +18,14 @@ function pass_check_email(){
 	$tbl = explode('@',$adm_email_login);
 	$user = $tbl[0];
 	$host = $tbl[1];
-	$q = "SELECT * FROM $pro_mysql_pop_table WHERE id='$user' AND mbox_host='$host' AND (passwd='".$adm_email_pass."' OR (pass_next_req='".$adm_email_pass."' AND pass_expire > '".mktime()."') );";
+	$q = "SELECT * FROM $pro_mysql_pop_table WHERE id='$user' AND mbox_host='$host' AND (passwd='".$adm_email_pass."' OR (pass_next_req='".$adm_email_pass."' AND pass_expire > '".time()."') );";
 	$res_mailbox = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 	$n = mysql_num_rows($res_mailbox);
 	if($n == 1){
 		if( !isset($adm_email_random_pass)){
 			$adm_email_random_pass = getRandomValue();
 			$adm_email_pass = $adm_email_random_pass;
-			$expirationTIME = mktime() + (60 * $conf_session_expir_minute);
+			$expirationTIME = time() + (60 * $conf_session_expir_minute);
 			$q = "UPDATE $pro_mysql_pop_table SET pass_next_req='$adm_email_random_pass', pass_expire='$expirationTIME' WHERE id='$user' AND mbox_host='$host'";
 			$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 		}

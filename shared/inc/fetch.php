@@ -334,7 +334,7 @@ function randomizePassword($adm_login,$adm_input_pass){
 		return $ret;
 	}
 
-	$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login' AND ((adm_pass='$adm_input_pass' OR adm_pass=SHA1('$adm_input_pass')) OR (pass_next_req='$adm_pass' AND pass_expire > '".mktime()."'));";
+	$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login' AND ((adm_pass='$adm_input_pass' OR adm_pass=SHA1('$adm_input_pass')) OR (pass_next_req='$adm_pass' AND pass_expire > '".time()."'));";
 	$result = mysql_query ($query);
 	if (!$result)
 	{
@@ -345,7 +345,7 @@ function randomizePassword($adm_login,$adm_input_pass){
 	$num_rows = mysql_num_rows($result);
 
 	if($num_rows != 1){
-		$q = "SELECT * FROM $pro_mysql_tik_admins_table WHERE pass_next_req='$adm_input_pass' AND pass_expire > '".mktime()."';";
+		$q = "SELECT * FROM $pro_mysql_tik_admins_table WHERE pass_next_req='$adm_input_pass' AND pass_expire > '".time()."';";
 		$r = mysql_query($q);
 		if (!$r)
 		{
@@ -391,7 +391,7 @@ function randomizePassword($adm_login,$adm_input_pass){
 	// This stuff is rotating passwords helping NOT to save passwords on users browsers.
 	$rand = getRandomValue();
 	$adm_random_pass = $rand;
-	$expirationTIME = mktime() + (60 * $conf_session_expir_minute);
+	$expirationTIME = time() + (60 * $conf_session_expir_minute);
 	if($panel_type == "admin" && $is_root_admin == "yes"){
 		$q = "UPDATE $pro_mysql_tik_admins_table SET pass_next_req='$rand', pass_expire='$expirationTIME' WHERE pseudo='".$_SERVER["PHP_AUTH_USER"]."';";
 		$r = mysql_query($q);

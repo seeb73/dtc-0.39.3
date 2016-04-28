@@ -552,7 +552,7 @@ AND $pro_mysql_admin_table.id_client != '0'";
 			$calc_expire_date = calculateExpirationDate($expire_stored,"0000-00-".$conf_shared_renewal_shutdown+$conf_global_extend+$webadmin["permanent_extend"]+$webadmin["temporary_extend"]);
 			$calc_expire_date_array = explode("-",$calc_expire_date);
 			$expire_timestamp = mktime(1,1,1,$calc_expire_date_array[1],$calc_expire_date_array[2],$calc_expire_date_array[0]);
-			if($expire_timestamp < mktime()){
+			if($expire_timestamp < time()){
 				$site_expired = "yes";
 			}else{
 				$site_expired = "no";

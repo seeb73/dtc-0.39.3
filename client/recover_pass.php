@@ -73,7 +73,7 @@ function send_password_recover_token(){
 	}else{
 		$a = mysql_fetch_array($r);
 		$my_token = "tok".getRandomValue().getRandomValue();
-		$timestamp_expire = mktime() + (60*60);	// The timestamp expires in 1 hour from now
+		$timestamp_expire = time() + (60*60);	// The timestamp expires in 1 hour from now
 		$q = "UPDATE $pro_mysql_admin_table SET recovery_token='$my_token',recovery_timestamp='$timestamp_expire' WHERE adm_login='".$_REQUEST["adm_lost_login"]."';";
 		$r = mysql_query($q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 
@@ -137,7 +137,7 @@ function do_recovery_validate_recovery(){
 		return _("Cannot find the recovery token in the database");
 	}else{
 		$a = mysql_fetch_array($r);
-		if(mktime() > $a["recovery_timestamp"]){
+		if(time() > $a["recovery_timestamp"]){
 			return _("The recovery password procedure has timed out: you wont be able to reset your password.");
 		}else{
 			if($conf_enforce_adm_encryption == "yes"){

@@ -6,7 +6,7 @@ if(function_exists("date_default_timezone_set") and function_exists("date_defaul
 
 
 $script_start_time = time();
-$start_stamps = mktime();
+$start_stamps = time();
 $panel_type="cronjob";
 
 chdir(dirname(__FILE__));

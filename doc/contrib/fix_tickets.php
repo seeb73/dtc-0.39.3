@@ -6,7 +6,7 @@
 // Drop this file in /usr/share/dtc/admin, then run php fix_tickets.php and you are good.
 
 $script_start_time = time();
-$start_stamps = mktime();
+$start_stamps = time();
 $panel_type="cronjob";
 
 chdir(dirname(__FILE__));

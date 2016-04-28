@@ -37,7 +37,7 @@ function calculateAge($date,$time){
 	$exp_date = explode("-",$date);
 	$exp_time = explode(":",$time);
 	$timestamp = mktime($exp_time[0],$exp_time[1],$exp_time[2],$exp_date[1],$exp_date[2],$exp_date[0]);
-	$age_timestamp = mktime() - $timestamp;
+	$age_timestamp = time() - $timestamp;
 	$age =  round($age_timestamp/(60*60*24)) ." j " .round(($age_timestamp/(60*60))%24) ." h " .round(($age_timestamp/60)%60) ." m " . $age_timestamp%60 . " s";
 	return $age;
 }
@@ -46,7 +46,7 @@ function numOfDays($date,$time="00:00:00"){
 	$exp_date = explode("-",$date);
 	$exp_time = explode(":",$time);
 	$timestamp = mktime($exp_time[0],$exp_time[1],$exp_time[2],$exp_date[1],$exp_date[2],$exp_date[0]);
-	$age_timestamp = mktime() - $timestamp;
+	$age_timestamp = time() - $timestamp;
 	$age =  round($age_timestamp/(60*60*24));
 	return $age;
 }
@@ -834,7 +834,7 @@ dtcFormLineDraw("","
 		}else{
 			$rand = getRandomValue();
 			$adm_random_pass = $rand;
-			$expirationTIME = mktime() + (60 * $conf_session_expir_minute);
+			$expirationTIME = time() + (60 * $conf_session_expir_minute);
 			$q = "UPDATE $pro_mysql_tik_admins_table SET pass_next_req='$rand', pass_expire='$expirationTIME' WHERE pseudo='".$_SERVER["PHP_AUTH_USER"]."';";
 			$r = mysql_query($q)or die("Cannot execute query \"$q\" !");
 		}
