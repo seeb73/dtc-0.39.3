@@ -89,10 +89,10 @@ function migrate_dump_all_dbs($dir){
 	$script .= "echo -n \"Dumping all dbs to $dir:\"\n";
 
 	$q = "SHOW DATABASES";
-	$r = mysql_query($q)or die("Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$name = $a["Database"];
 		if($name != "information_schema" && $name != "mysql" && $name != "test"){
 			$cmd = "mysqldump -u$conf_mysql_login -p$conf_mysql_pass -c --add-drop-table --skip-extended-insert --routines --databases $name >$dir/$name.sql\n";
@@ -135,10 +135,10 @@ Use mysql;
 
 ";
 	$q = "SELECT * FROM mysql.user WHERE User NOT LIKE 'root' AND User NOT LIKE 'debian-sys-maint' AND User NOT LIKE 'dtcdaemons'";
-	$r = mysql_query($q)or die("Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$mdb .= "# User ".$a["User"]." host ".$a["Host"]." password ".$a["Password"]."
 
 INSERT IGNORE INTO mysql.user
@@ -189,10 +189,10 @@ WHERE Host='".$a["Host"]."' AND User='".$a["User"]."';
 
 	$mdb .= "# Dumping table rights\n\n";
 	$q = "SELECT * FROM mysql.db WHERE Db NOT LIKE 'test%'";
-	$r = mysql_query($q)or die("Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$mdb .= "# User ".$a["User"]." db ".$a["Db"]." host ".$a["Host"]."
 INSERT IGNORE INTO mysql.db
 (Host,Db,User,Select_priv,Insert_priv,

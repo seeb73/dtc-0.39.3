@@ -10,10 +10,10 @@ function getExDomTableData($table,$w_cond,$key,$vars){
 	$n_vars = sizeof($vars_ar);
 
 	$q = "SELECT $key,$vars FROM $table WHERE $w_cond;";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$my_ar[ $i ][ $key ] = $a[ $key ];
 		for($j=0;$j<$n_vars;$j++){
 			$my_ar[ $i ][ $vars_ar[$j] ] = $a[ $vars_ar[$j] ];
@@ -29,12 +29,12 @@ function getExDomRowValues($table,$w_cond,$vars){
 	$n_vars = sizeof($vars_ar);
 
 	$q = "SELECT $vars FROM $table WHERE $w_cond;";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find raw line when calling $q ".__LINE__." file ".__FILE__);
 	}
-	$a = mysql_fetch_array($r);
+	$a = mysqli_fetch_array($r);
 	for($j=0;$j<$n_vars;$j++){
 		$my_ar[ $vars_ar[$j] ] = $a[ $vars_ar[$j] ];
 	}
@@ -119,29 +119,29 @@ function exportAllDomain($adm_login){
 
 	// Export all domains
 	$q = "SELECT name FROM $pro_mysql_domain_table WHERE owner='$adm_login';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$dom_ar["domains"][ $a["name"] ] = getDomainData($a["name"],$adm_login);
 	}
 
 	// Get the MySQL user infos
 	$q = "SELECT DISTINCT User,Password FROM mysql.user WHERE dtcowner='$adm_login';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		if($i == 0){
 			$dom_ar["mysql"] = array();
 		}
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$dom_ar["mysql"][ $a["User"] ]["password"] = $a["Password"];
 
 		$q2 = "SELECT DISTINCT Db FROM mysql.db WHERE User='".$a["User"]."';";
-		$r2 = mysql_query($q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n2 = mysql_num_rows($r2);
+		$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n2 = mysqli_num_rows($r2);
 		for($j=0;$j<$n2;$j++){
-			$a2 = mysql_fetch_array($r2);
+			$a2 = mysqli_fetch_array($r2);
 			if( ! isset($dom_ar["mysql"][ $a["User"] ]["dbs"])){
 				$dom_ar["mysql"][ $a["User"] ]["dbs"] = array();
 			}
@@ -180,13 +180,13 @@ function updateRowValue($table,$w_cond,$ar,$vars){
 		}
 	}
 	$q = "UPDATE $table SET $sets WHERE $w_cond;";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 }
 
 function recreateAllRows($table,$delete_cond,$ar,$vars,$added_var,$added_val){
 	// Delete old records if any...
 	$q = "DELETE FROM $table WHERE $delete_cond;";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 
 	$vars_ar = explode(",",$vars);
 	$nbr_vars = sizeof($vars_ar);
@@ -209,7 +209,7 @@ function recreateAllRows($table,$delete_cond,$ar,$vars,$added_var,$added_val){
 				}
 			}
 			$q = "INSERT IGNORE INTO $table ($vars $added_var) VALUES ($values $added_val);";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 		}
 	}elseif(isset($ar["item"])){
 		$vars = "";
@@ -227,7 +227,7 @@ function recreateAllRows($table,$delete_cond,$ar,$vars,$added_var,$added_val){
 			}
 		}
 		$q = "INSERT IGNORE INTO $table ($vars $added_var) VALUES ($values $added_val);";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	}
 }
 
@@ -377,8 +377,8 @@ function domainImport($path_from,$adm_login,$adm_pass){
 
 		// Check if the domain exists, if not, add it to the user
 		$q = "SELECT * FROM $pro_mysql_domain_table WHERE name='$dom_name';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n == 0){
 			addDomainToUser($adm_login,$adm_pass,$dom_name);
 		}
@@ -408,14 +408,14 @@ function domainImport($path_from,$adm_login,$adm_pass){
 			"login,crypt,password,homedir",",hostname",",'$dom_name'");
 		// Fixes the UID / GID for ssh, ftp and email accounts
 		$q = "UPDATE $pro_mysql_pop_table SET uid='$conf_dtc_system_uid',gid='$conf_dtc_system_gid' WHERE mbox_host='$dom_name';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 		$q = "UPDATE $pro_mysql_ftp_table SET uid='$conf_dtc_system_uid',gid='$conf_dtc_system_gid' WHERE hostname='$dom_name';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 		$q = "UPDATE $pro_mysql_ssh_table SET uid='$conf_dtc_system_uid',gid='$conf_dtc_system_gid' WHERE hostname='$dom_name';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 		// Fixes the pop_access fullemail field.
 		$q = "UPDATE $pro_mysql_pop_table SET fullemail = concat( `id`,  '@', `mbox_host` ) WHERE mbox_host='$dom_name';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 	}
 	if( isset($dom_ar["mysql"])){
 		$n_user = sizeof($dom_ar["mysql"]);
@@ -434,7 +434,7 @@ function domainImport($path_from,$adm_login,$adm_pass){
 			Alter_routine_priv,Create_user_priv,dtcowner)
 			VALUES ('%','$username','$password','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N',
 			'N','N','N','N','N','N','N','N','$adm_login');";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 
 			$q = "INSERT IGNORE INTO mysql.user
 			(Host,User,Password,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Reload_priv,Shutdown_priv,Process_priv,File_priv,
@@ -443,7 +443,7 @@ function domainImport($path_from,$adm_login,$adm_pass){
 			Alter_routine_priv,Create_user_priv,dtcowner)
 			VALUES ('localhost','$username','$password','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N',
 			'N','N','N','N','N','N','N','N','$adm_login');";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 
 			if( isset($user["dbs"])){
 				$n_db = sizeof($user["dbs"]);
@@ -455,18 +455,18 @@ function domainImport($path_from,$adm_login,$adm_pass){
 					References_priv,Index_priv,Alter_priv,Create_tmp_table_priv,Lock_tables_priv,Create_view_priv,
 					Show_view_priv,Create_routine_priv,Alter_routine_priv,Execute_priv)
 					VALUES('%','$db','$username','Y','Y','Y','Y','Y','Y','N','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y');";
-					$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+					$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 
 					$q = "INSERT IGNORE INTO mysql.db (Host,Db,User,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Grant_priv,
 					References_priv,Index_priv,Alter_priv,Create_tmp_table_priv,Lock_tables_priv,Create_view_priv,
 					Show_view_priv,Create_routine_priv,Alter_routine_priv,Execute_priv)
 					VALUES('localhost','$db','$username','Y','Y','Y','Y','Y','Y','N','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y');";
-					$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+					$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 				}
 			}
 		}
 		$q = "FLUSH PRIVILEGES;";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	}
 	return;
 }

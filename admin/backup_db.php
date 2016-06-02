@@ -49,10 +49,9 @@ if($argc > 6){
 	}
 }
 
-mysql_connect("$pro_mysql_host", "$pro_mysql_login", "$pro_mysql_pass")or die ("Cannot connect to $pro_mysql_host");
-mysql_select_db("$pro_mysql_db")or die ("Cannot select db: $pro_mysql_db");
+$mysql_connection = mysql_connect("$pro_mysql_host", "$pro_mysql_login", "$pro_mysql_pass","$pro_mysql_db" )or die ("Cannot connect to $pro_mysql_host, with db: $pro_mysql_db");
 
-$result = mysql_list_tables($pro_mysql_db);
+$result = mysqli_list_tables($mysql_connection,$pro_mysql_db);
 
 if (!$result) {
    echo "DB Error, could not list tables\n";
@@ -66,16 +65,16 @@ $out .= "<?php
 \$dtc_database = array(
 \"version\" => \"1.0.0\",
 \"tables\" => array(\n";
-$num = mysql_num_rows($result);
+$num = mysqli_num_rows($result);
 for($j=0;$j<$num;$j++){
 	$row = mysql_fetch_row($result);
 	$out .= "\t\"$row[0]\" => array(\n";
 	$q = "DESCRIBE $row[0];";
-	$r = mysql_query($q)or die("Cannot query \"$q\" !\nError in ".__FILE__." line ".__LINE__.": ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" !\nError in ".__FILE__." line ".__LINE__.": ".mysql_error());
+	$n = mysqli_num_rows($r);
 	$out .= "\t\t\"vars\" => array(\n";
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 //		echo $a['Field'].": ".$a['Type']."\n";
 		$out .= "\t\t\t\"".$a['Field']."\" => \"".$a['Type'];
 		if($a['Null'] == 'YES')
@@ -91,8 +90,8 @@ for($j=0;$j<$num;$j++){
 			$out .= "\n\t\t\t)";
 	}
 	$q = "SHOW INDEX FROM $row[0];";
-        $r = mysql_query($q)or die("Cannot query \"$q\" !\nError in ".__FILE__." line ".__LINE__.": ".mysql_error());
-        $n = mysql_num_rows($r);
+        $r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" !\nError in ".__FILE__." line ".__LINE__.": ".mysql_error());
+        $n = mysqli_num_rows($r);
 	if($i > 0){
 		$out .= ",\n";
 		// Get all the keys and index in memory for the given table
@@ -100,7 +99,7 @@ for($j=0;$j<$num;$j++){
 		unset($keys);
 		unset($indexes);
 		for($i=0;$i<$n;$i++){
-        	        $a = mysql_fetch_array($r);
+        	        $a = mysqli_fetch_array($r);
 			if($a['Key_name'] == "PRIMARY"){
 				$primaries[] = $a['Column_name'];
 			}else{

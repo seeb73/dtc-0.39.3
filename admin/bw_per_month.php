@@ -42,12 +42,12 @@ if(isDTCLogin($_REQUEST["adm_pass"])){
 checkLoginPass($adm_login,$adm_pass);
 
 $q = "SELECT id_client FROM admin WHERE adm_login='$adm_login'";
-$r = mysql_query($q);
-$n = mysql_num_rows($r);
+$r = mysqli_query($mysql_connection,$q);
+$n = mysqli_num_rows($r);
 if($n != 1){
 	die("Admin not found");
 }else{
-	$a = mysql_fetch_array($r);
+	$a = mysqli_fetch_array($r);
 	$cid = $a["id_client"];
 }
 
@@ -71,19 +71,19 @@ for($m=0;$m<12;$m++){
 
 /*
 $q = "SELECT bw_quota_per_month_gb FROM $pro_mysql_client_table WHERE id='".$_REQUEST["cid"]."';";
-$r = mysql_query($q)or die("Cannot query $q in ".__FILE__." line ".__LINE__.mysql_error());
-$n = mysql_num_rows($r);
+$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__.mysql_error());
+$n = mysqli_num_rows($r);
 if($n!=1)die("Client not found!");
-$c = mysql_fetch_array($r);
+$c = mysqli_fetch_array($r);
 $bpquota = $c["bw_quota_per_month_gb"];
 */
 
 $q = "SELECT * FROM $pro_mysql_client_table WHERE id='$cid';";
 //echo $q;
-$r = mysql_query($q)or die("Cannot query $q !");
-$n = mysql_num_rows($r);
+$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q !");
+$n = mysqli_num_rows($r);
 if($n != 1)die("Client not found!");
-$c = mysql_fetch_array($r);
+$c = mysqli_fetch_array($r);
 $bpquota = $c["bw_quota_per_month_gb"] * 1024 * 1024 * 1024;
 
 $cur_month = date("m");
@@ -105,10 +105,10 @@ AND subdomain.domain_name=domain.name
 AND http_accounting.vhost=subdomain.subdomain_name
 AND http_accounting.domain=subdomain.domain_name
 AND year='$year' AND month='$month'";
-	$r = mysql_query($q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." MySql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." MySql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 1){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$tr_tbl[$m] += $a["sent"];
 	}
 
@@ -117,10 +117,10 @@ WHERE admin.id_client='".$cid."'
 AND domain.owner=admin.adm_login
 AND $pro_mysql_acc_ftp_table.sub_domain=domain.name
 AND year='$year' AND month='$month';";
-	$r = mysql_query($q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." SQL said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." SQL said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 1){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$tr_tbl[$m] += $a["sent"];
 	}
 
@@ -130,10 +130,10 @@ WHERE admin.id_client='".$cid."'
 AND domain.owner=admin.adm_login
 AND $pro_mysql_acc_email_table.domain_name=domain.name
 AND $pro_mysql_acc_email_table.year='$year' AND $pro_mysql_acc_email_table.month='$month';";
-	$r = mysql_query($q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." SQL said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." SQL said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 1){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$tr_tbl[$m] += $a["sent"];
 //		$tr_tbl[$m] += $a["smtp_trafic"];
 //		$tr_tbl[$m] += $a["pop_trafic"];

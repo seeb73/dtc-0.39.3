@@ -150,9 +150,9 @@ define host {
 	$q .= "ON $pro_mysql_vps_table.vps_xen_name = $pro_mysql_vps_ip_table.vps_xen_name ";
 	$q .= "AND $pro_mysql_vps_table.vps_server_hostname = $pro_mysql_vps_ip_table.vps_server_hostname;";
 
-	$r  = mysql_query($q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r  = mysqli_query($mysql_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 
-	while($line = mysql_fetch_array($r,MYSQL_ASSOC)){
+	while($line = mysqli_fetch_array($r,MYSQL_ASSOC)){
 		if( !isset($line['monitoring_email']) || ! $line['monitoring_email'] ){
 			continue;
 		}

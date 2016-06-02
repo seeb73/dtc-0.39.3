@@ -52,10 +52,10 @@ for($m=0;$m<12;$m++){
 // Get all the stats info
 $q = "SELECT * FROM $pro_mysql_vps_table WHERE vps_server_hostname='".$_REQUEST["vps_node"]."' AND vps_xen_name='".$_REQUEST["vps_name"]."';";
 //echo $q;
-$r = mysql_query($q)or die("Cannot query $q !");
-$n = mysql_num_rows($r);
+$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q !");
+$n = mysqli_num_rows($r);
 if($n != 1)die("Client not found!");
-$c = mysql_fetch_array($r);
+$c = mysqli_fetch_array($r);
 
 $cur_month = date("m");
 $cur_year = date("Y");
@@ -73,10 +73,10 @@ for($m=0;$m<12;$m++){
 	AND vps_xen_name='xen".$_REQUEST["vps_name"]."'
 	AND month='$month'
 	AND year='$year';";
-	$r = mysql_query($q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." MySql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." MySql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 1){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		if(isset($a["cpu_usage"])){
 			$tr_tbl[$m] += $a["cpu_usage"];
 		}

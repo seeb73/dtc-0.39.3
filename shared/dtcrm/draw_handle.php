@@ -3,24 +3,24 @@
 function getContactsArrayFromID($owner_id,$billing_id,$admin_id,$tech_id){
 	global $pro_mysql_handle_table;
 	$query = "SELECT * FROM $pro_mysql_handle_table WHERE id='$owner_id';";
-	$result = mysql_query($query)or die("Cannot query \"$query\" !!! ".mysql_error());
-	if(mysql_num_rows($result) != 1)	die("Handle ID not found !");
-	$contacts["owner"] = mysql_fetch_array($result)or die("Cannot fetch array !");
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!! ".mysql_error());
+	if(mysqli_num_rows($result) != 1)	die("Handle ID not found !");
+	$contacts["owner"] = mysqli_fetch_array($result)or die("Cannot fetch array !");
 
 	$query = "SELECT * FROM $pro_mysql_handle_table WHERE id='$billing_id';";
-	$result = mysql_query($query)or die("Cannot query \"$query\" !!! ".mysql_error());
-	if(mysql_num_rows($result) != 1)	die("Handle ID not found !");
-	$contacts["billing"] = mysql_fetch_array($result)or die("Cannot fetch array !");
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!! ".mysql_error());
+	if(mysqli_num_rows($result) != 1)	die("Handle ID not found !");
+	$contacts["billing"] = mysqli_fetch_array($result)or die("Cannot fetch array !");
 
 	$query = "SELECT * FROM $pro_mysql_handle_table WHERE id='$admin_id';";
-	$result = mysql_query($query)or die("Cannot query \"$query\" !!! ".mysql_error());
-	if(mysql_num_rows($result) != 1)	die("Handle ID not found !");
-	$contacts["admin"] = mysql_fetch_array($result)or die("Cannot fetch array !");
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!! ".mysql_error());
+	if(mysqli_num_rows($result) != 1)	die("Handle ID not found !");
+	$contacts["admin"] = mysqli_fetch_array($result)or die("Cannot fetch array !");
 
 	$query = "SELECT * FROM $pro_mysql_handle_table WHERE id='$tech_id';";
-	$result = mysql_query($query)or die("Cannot query \"$query\" !!! ".mysql_error());
-	if(mysql_num_rows($result) != 1)        die("Handle ID not found !");
-	$contacts["teck"] = mysql_fetch_array($result)or die("Cannot fetch array !");
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!! ".mysql_error());
+	if(mysqli_num_rows($result) != 1)        die("Handle ID not found !");
+	$contacts["teck"] = mysqli_fetch_array($result)or die("Cannot fetch array !");
 	return $contacts;
 }
 
@@ -34,11 +34,11 @@ function whoisHandleSelection($admin,$show_info="no",$owner=-1,$billing=-1,$admi
 	$link_create = "<a href=\"?adm_login=$adm_login&adm_pass=$adm_pass&addrlink=myaccount/nickhandles\">". _("Create a new handle") ."</a>";
 
 	$query = "SELECT * FROM $pro_mysql_handle_table WHERE owner='$adm_login';";
-	$result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
-	$num_rows = mysql_num_rows($result);
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+	$num_rows = mysqli_num_rows($result);
 	unset($rows);
 	for($i=0;$i<$num_rows;$i++){
-		$rows[] = mysql_fetch_array($result);
+		$rows[] = mysqli_fetch_array($result);
 	}
 
 	$out = "";
@@ -200,36 +200,36 @@ _("Email: ") . $infoz["email"] ."<br>";
 function nickHandleCreateCallback($id){
 	global $pro_mysql_handle_table;
 	$q = "SELECT * FROM $pro_mysql_handle_table WHERE id='$id';";
-	$r = mysql_query($q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find created nick handle line ".__LINE__." file ".__FILE__);
 	}
-	$a = mysql_fetch_array($r);
+	$a = mysqli_fetch_array($r);
 	return registry_create_nick_handle($a);
 }
 
 function nickHandleDeleteCallback($id){
 	global $pro_mysql_handle_table;
 	$q = "SELECT * FROM $pro_mysql_handle_table WHERE id='$id';";
-	$r = mysql_query($q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find created nick handle line ".__LINE__." file ".__FILE__);
 	}
-	$a = mysql_fetch_array($r);
+	$a = mysqli_fetch_array($r);
 	return registry_delete_nick_handle($a);
 }
 
 function nickHandleEditCallback($id){
 	global $pro_mysql_handle_table;
 	$q = "SELECT * FROM $pro_mysql_handle_table WHERE id='$id';";
-	$r = mysql_query($q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find created nick handle line ".__LINE__." file ".__FILE__);
 	}
-	$a = mysql_fetch_array($r);
+	$a = mysqli_fetch_array($r);
 	return registry_edit_nick_handle($a);
 }
 
@@ -355,10 +355,10 @@ function drawAdminTools_NickHandles($admin){
 	$out = "<b><u>List of your whois nick handles:</u></b><br>";
 
 	$query = "SELECT * FROM $pro_mysql_handle_table WHERE owner='$adm_login';";
-	$result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
-	$num_rows = mysql_num_rows($result);
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+	$num_rows = mysqli_num_rows($result);
 	for($i=0;$i<$num_rows;$i++){
-		$row = mysql_fetch_array($result);
+		$row = mysqli_fetch_array($result);
 		if($i != 0){
 			$out .= " - ";
 		}
@@ -369,8 +369,8 @@ function drawAdminTools_NickHandles($admin){
 		$hdl_id = $_REQUEST["hdl_id"];
 		// Edit currently selected ID.
 		$query = "SELECT * FROM $pro_mysql_handle_table WHERE id='$hdl_id' AND owner='$adm_login';";
-		$result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
-		$hdl = mysql_fetch_array($result);
+		$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+		$hdl = mysqli_fetch_array($result);
 		$out .= "<br><br><a href=\"?adm_login=$adm_login&adm_pass=$adm_pass&addrlink=$addrlink\">New handle</a><br>
 		<b><u>Edit existing nick-handle ".$hdl["name"].":</u></b><br>";
 		$hidden_inputs = "<input type=\"hidden\" name=\"action\" value=\"update_nickhandle\">";

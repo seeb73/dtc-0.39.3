@@ -19,7 +19,7 @@ function newWhois($domain_name,$owner_id,$billing_id,$admin_id,$teck_id,$period,
 	owner_id='$owner_id',admin_id='$admin_id',billing_id='$billing_id',teck_id='$teck_id',
 	creation_date='$now',modification_date='$now',expiration_date='$expir',registrar='$registrar',
 	primary_dns='".$ns_ar[0]."',other_dns='".$ns_ar[1].$ns_values."' WHERE name='$domain_name';";
-	$result = mysql_query($query)or die("Cannot query \"$query\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 }
 
 function drawAdminTools_Whois($admin,$eddomain){
@@ -61,24 +61,24 @@ function drawAdminTools_Whois($admin,$eddomain){
 			}
 
 		        $query = "SELECT * FROM $pro_mysql_handle_table WHERE id='$owner_id' AND owner='$adm_login';";
-			$result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
-		        if(mysql_num_rows($result) != 1)        die("Handle ID not found !");
-		        $contacts["owner"] = mysql_fetch_array($result)or die("Cannot fetch array !");
+			$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+		        if(mysqli_num_rows($result) != 1)        die("Handle ID not found !");
+		        $contacts["owner"] = mysqli_fetch_array($result)or die("Cannot fetch array !");
 
 		        $query = "SELECT * FROM $pro_mysql_handle_table WHERE id='$billing_id' AND owner='$adm_login';";
-			$result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
-		        if(mysql_num_rows($result) != 1)        die("Handle ID not found !");
-		        $contacts["billing"] = mysql_fetch_array($result)or die("Cannot fetch array !");
+			$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+		        if(mysqli_num_rows($result) != 1)        die("Handle ID not found !");
+		        $contacts["billing"] = mysqli_fetch_array($result)or die("Cannot fetch array !");
 
 		        $query = "SELECT * FROM $pro_mysql_handle_table WHERE id='$admin_id' AND owner='$adm_login';";
-		        $result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
-		        if(mysql_num_rows($result) != 1)        die("Handle ID not found !");
-		        $contacts["admin"] = mysql_fetch_array($result)or die("Cannot fetch array !");
+		        $result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+		        if(mysqli_num_rows($result) != 1)        die("Handle ID not found !");
+		        $contacts["admin"] = mysqli_fetch_array($result)or die("Cannot fetch array !");
 
 		        $query = "SELECT * FROM $pro_mysql_handle_table WHERE id='$teck_id' AND owner='$adm_login';";
-		        $result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
-		        if(mysql_num_rows($result) != 1)        die("Handle ID not found !");
-		        $contacts["teck"] = mysql_fetch_array($result)or die("Cannot fetch array !");
+		        $result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+		        if(mysqli_num_rows($result) != 1)        die("Handle ID not found !");
+		        $contacts["teck"] = mysqli_fetch_array($result)or die("Cannot fetch array !");
 
 			$regz = registry_update_whois_info($adm_login,$adm_pass,$domain_name,$contacts);
 
@@ -90,14 +90,14 @@ function drawAdminTools_Whois($admin,$eddomain){
 "._("Server said:")." <i>" . $regz["response_text"] . "</i><br>
 ";
 				$query = "UPDATE $pro_mysql_domain_table SET owner_id='$owner_id',billing_id='$billing_id',admin_id='$admin_id',teck_id='$teck_id' WHERE name='$domain_name';";
-				$result = mysql_query($query)or die("Cannot query: \"$query\" !!!".mysql_error());
+				$result = mysqli_query($mysql_connection,$query)or die("Cannot query: \"$query\" !!!".mysql_error());
 		        }
 		}
 
 		$query = "SELECT * FROM $pro_mysql_domain_table WHERE name='".$eddomain["name"]."';";
-		$result = mysql_query($query)or die("Cannot query: \"$query\" !!!".mysql_error());
-		if(mysql_num_rows($result) != 1) die("Whois row not found !");
-		$row = mysql_fetch_array($result);
+		$result = mysqli_query($mysql_connection,$query)or die("Cannot query: \"$query\" !!!".mysql_error());
+		if(mysqli_num_rows($result) != 1) die("Whois row not found !");
+		$row = mysqli_fetch_array($result);
 		$out .= "<br><h3>". _("Your domain name whois data:") ."</h3>
 ";
 

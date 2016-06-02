@@ -9,7 +9,7 @@
 function getAdminOb($adm_login){
 	global $pro_mysql_admin_table;
 	$q = "SELECT adm_login,ob_head,ob_next,ob_tail FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	$n = mysql_num_rows($r);
 	if($n != 1){
 		return 1;
@@ -25,7 +25,7 @@ function setAdminOb($ob){
 		ob_tail='".$ob["ob_tail"]."',
 		ob_next='".$ob["ob_next"]."'
 		WHERE adm_login='".$ob["adm_login"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 }
 
 // Returns a getAdminOb() array, 1 if error

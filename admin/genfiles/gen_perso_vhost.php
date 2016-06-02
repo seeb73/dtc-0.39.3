@@ -14,8 +14,8 @@ function perso_vhost_generate(){
 	// Recuperations des infos
 
 	$query = "SELECT login,homedir,hostname,vhost_ip FROM $perso_mysql_table WHERE another_perso='yes' AND hostname='anotherlight.com' ORDER BY hostname,login";
-	$result = mysql_query ($query)or die("Cannot execute query \"$query\"");
-	$num_rows = mysql_num_rows($result);
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot execute query \"$query\"");
+	$num_rows = mysqli_num_rows($result);
 
 	if($num_rows < 1){
 		die("No account to generate");
@@ -23,7 +23,7 @@ function perso_vhost_generate(){
 
 	$vhost_file = "";
 	for($i=0;$i<$num_rows;$i++){
-	        $row = mysql_fetch_array($result) or die ("Cannot fetch user");
+	        $row = mysqli_fetch_array($result) or die (__FILE__ . "Cannot fetch user");
 	        $qm_id = $row["login"];
 	        $qm_home = $row["homedir"];
 	        $qm_mbox_host = $row["hostname"];

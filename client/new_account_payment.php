@@ -78,15 +78,15 @@ function select_user(){
 	$sqls_username = mysql_real_escape_string($_REQUEST['username']);
 	$sqls_password = mysql_real_escape_string($_REQUEST['password']);
 	$q = "SELECT id FROM $pro_mysql_new_admin_table WHERE reqadm_login='".$sqls_username."' AND reqadm_pass='".$sqls_password."';";
-	$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$ret["mesg"] = _("User or password invalid.");
 		$ret["err"] = 1;
 		$ret["form"] = select_user_form($ret["mesg"]);
 		return $ret;
 	}
-	$adm = mysql_fetch_array($r);
+	$adm = mysqli_fetch_array($r);
 	$ret["id"] = $adm["id"];
 	return $ret;
 }

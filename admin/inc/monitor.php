@@ -7,19 +7,20 @@ function drawAdminMonitor (){
 	global $adm_realpass;
 	global $adm_pass;
 	global $adm_random_pass;
+	global $mysql_connection;
 
 	$out = "";
 	// For each clients
 	$q = "SELECT * FROM $pro_mysql_client_table WHERE 1 ORDER BY familyname,christname";
-	$r = mysql_query($q)or die("Cannot query: \"$q\" !".mysql_error()." line ".__LINE__." in file ".__FILE__);
-	$nr = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query: \"$q\" !".mysql_error()." line ".__LINE__." in file ".__FILE__);
+	$nr = mysqli_num_rows($r);
 	$out .= '<br><table border="1" width="100%" height="1" cellpadding="1" cellspacing="1">';
 	$out .=
 "<tr><td><b>". _("User") ."</b></td><td><b>". _("Transfer") ." / ". _("BW Quota") ."</b></td><td><b>". _("Transfer per Month") ."</b></td><td><b>". _("Disk Usage") ." / ". _("Quota") ."</b></td></tr>";
 	$total_box_transfer = 0;
 	$total_box_hits = 0;
 	for($i=0;$i<$nr;$i++){
-		$ar = mysql_fetch_array($r);
+		$ar = mysqli_fetch_array($r);
 		$transfer = 0;
 		$total_hits = 0;
 		$du = 0;
@@ -29,12 +30,12 @@ function drawAdminMonitor (){
 		mysql_select_db($conf_mysql_db);
 		// For each of it's admins
 		$q2 = "SELECT * FROM $pro_mysql_admin_table WHERE id_client='".$ar["id"]."';";
-		$r2 = mysql_query($q2)or die("Cannot query: \"$q2\" !".mysql_error()." line ".__LINE__." in file ".__FILE__);
-		$nr2 = mysql_num_rows($r2);
+		$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query: \"$q2\" !".mysql_error()." line ".__LINE__." in file ".__FILE__);
+		$nr2 = mysqli_num_rows($r2);
 		$admin=array();
 		$admin_stats=array();
 		for($j=0;$j<$nr2;$j++){
-			$ar2 = mysql_fetch_array($r2);
+			$ar2 = mysqli_fetch_array($r2);
 			$adm_realpass = $ar2["adm_pass"];
 			$adm_pass = $ar2["adm_pass"];
 			$adm_random_pass = $ar2["adm_pass"];

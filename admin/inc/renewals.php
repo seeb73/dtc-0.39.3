@@ -11,10 +11,10 @@ function dateSelector($table,$mysql_date_field,$http_query_field){
 
 	if( !isset($_REQUEST[$http_query_field])){
 		$q = "SELECT DISTINCT(CONCAT_WS('-',YEAR($mysql_date_field),MONTH($mysql_date_field))) FROM `$table` WHERE 1 ORDER BY $mysql_date_field DESC LIMIT 1";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 0){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$exploded = explode("-",$a[0]);
 			$using_date = $exploded[0];
 			if(strlen($exploded[1]) < 2){
@@ -41,10 +41,10 @@ function dateSelector($table,$mysql_date_field,$http_query_field){
 	}
 
 	$q = "SELECT DISTINCT(CONCAT_WS('-',YEAR($mysql_date_field),MONTH($mysql_date_field))) FROM `$table` WHERE 1 ORDER BY $mysql_date_field ";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$exploded = explode("-",$a[0]);
 		$using_date = $exploded[0];
 		if(strlen($exploded[1]) < 2){
@@ -88,6 +88,7 @@ function drawRenewalTables (){
 	global $pro_mysql_new_admin_table;
 	global $pro_mysql_custom_product_table;
 	global $pro_mysql_custom_heb_types_table;
+	global $mysql_connection;
 
 	global $secpayconf_currency_letters;
 	global $rub;
@@ -141,43 +142,43 @@ function drawRenewalTables (){
 		$where_condition = $ret["where_condition"];
 
 		$q = "SELECT * FROM $pro_mysql_spent_providers_table ";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		$prov_popup_id = array();
 		$prov_popup_names = array();
 		for($i=0;$i<$n;$i++){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$prov_popup_id[] = $a["id"];
 			$prov_popup_names[] = $a["quick_name"];
 		}
 		$q = "SELECT * FROM $pro_mysql_spent_type_table ";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		$spent_type_popup_id = array();
 		$spent_type_names = array();
 		for($i=0;$i<$n;$i++){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$spent_type_popup_id[] = $a["id"];
 			$spent_type_names[] = $a["label"];
 		}
 		$q = "SELECT * FROM $pro_mysql_companies_table ";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		$company_paying_popup_id = array();
 		$company_paying_names = array();
 		for($i=0;$i<$n;$i++){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$company_paying_popup_id[] = $a["id"];
 			$company_paying_names[] = $a["name"];
 		}
 
 		$q = "SELECT * FROM $pro_mysql_spent_bank_table ";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		$bank_popup_id = array();
 		$bank_names = array();
 		for($i=0;$i<$n;$i++){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$bank_popup_id[] = $a["id"];
 			$bank_names[] = $a["acct_name"];
 		}
@@ -263,12 +264,12 @@ function drawRenewalTables (){
 		break;
 	case "bank":
 		$q = "SELECT * FROM $pro_mysql_companies_table ";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		$company_paying_popup_id = array();
 		$company_paying_names = array();
 		for($i=0;$i<$n;$i++){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$company_paying_popup_id[] = $a["id"];
 			$company_paying_names[] = $a["name"];
 		}
@@ -422,10 +423,10 @@ function drawRenewalTables (){
 				remoteVPSAction($_REQUEST["server_hostname"],$_REQUEST["vps_name"],"kill_vps_disk");
 				// Delete the admin
 				$q = "DELETE FROM $pro_mysql_admin_table WHERE adm_login='".$_REQUEST["adm_login"]."';";
-				$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 				// And the client
 				$q = "DELETE FROM $pro_mysql_client_table WHERE id='".$_REQUEST["client_id"]."';";
-				$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 				break;
 			default:
 				break;
@@ -439,14 +440,14 @@ function drawRenewalTables (){
 			$where_condition = $ret["where_condition"];
 
 			$q = "SELECT id,name FROM $pro_mysql_product_table ";
-			$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			$prod_ids = array();
 			$prod_names = array();
 			$prod_ids[] = 0;
 			$prod_names[] = _("Multiple renewals");
 			for($i=0;$i<$n;$i++){
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 				$prod_ids[] = $a["id"];
 				$prod_names[] = $a ["name"];
 			}
@@ -575,11 +576,11 @@ function drawRenewalTables (){
 			// Allow nuke of bad payment (hackers?) to have accounting done correctly
 			if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "nuke_payment"){
 				$q = "DELETE FROM $pro_mysql_completedorders_table WHERE id='".$_REQUEST["completedorders_id"]."';";
-				$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 			}
 
-			$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			if($n < 1){
 				$out .= _("No past payments for this period") ."<br>";
 			}else{
@@ -589,44 +590,44 @@ function drawRenewalTables (){
 				<td>". _("VAT Collected")."</td><td>". _("Period")."</td><td>". _("Payment Date")."</td><td>"._("Total")."</td><td>". _("Payment Method")."</td>
 				<td>". _("Action") ."</td></tr>";
 				for($i=0;$i<$n;$i++){
-					$a = mysql_fetch_array($r);
+					$a = mysqli_fetch_array($r);
 					if($a["id_client"] == 0){
 						$client_name = _("No client id");
 							$client_id_txt = _("No client id");
 					}else{
 						$q2 = "SELECT * FROM $pro_mysql_client_table WHERE id='".$a["id_client"]."';";
-						$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-						$n2 = mysql_num_rows($r2);
+						$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+						$n2 = mysqli_num_rows($r2);
 						if($n2 != 1){
 							$client_name = _("N/A");
 							$client_id_txt = _("N/A");
 							$client_country = _("N/A");
 						}else{
-							$a2 = mysql_fetch_array($r2);
+							$a2 = mysqli_fetch_array($r2);
 							$client_name = $a2["company_name"].":".$a2["christname"].", ".$a2["familyname"];
 							$client_id_txt = $a["id_client"];
 							$client_country = $a2["country"];
 						}
 					}
 					$q2 = "SELECT * FROM $pro_mysql_product_table WHERE id='".$a["product_id"]."';";
-					$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-					$n2 = mysql_num_rows($r2);
+					$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+					$n2 = mysqli_num_rows($r2);
 					if($n2 != 1){
 						$product_txt = _("Product not found");
 					}else{
-						$a2 = mysql_fetch_array($r2);
+						$a2 = mysqli_fetch_array($r2);
 						$product_txt = $a2["name"];
 						$product_period_size = $a2["period"];
 					}
 					$q2 = "SELECT * FROM $pro_mysql_pay_table WHERE id='".$a["payment_id"]."';";
-					$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-					$n2 = mysql_num_rows($r2);
+					$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+					$n2 = mysqli_num_rows($r2);
 					if($n2 != 1){
 						$payment_txt = _("Payment not found");
 						$payment_type = _("Payment not found");
 						$vat_collected = _("VAT not found");
 					}else{
-						$a2 = mysql_fetch_array($r2);
+						$a2 = mysqli_fetch_array($r2);
 						$payment_txt = $a2["paiement_total"]. " " . $a2["currency"];
 						$payment_type = $a2["paiement_type"];
 						if($payment_type == "online"){
@@ -662,8 +663,8 @@ function drawRenewalTables (){
 		WHERE $pro_mysql_product_table.id = $pro_mysql_admin_table.prod_id
 		AND $pro_mysql_product_table.heb_type='shared'
 		AND $pro_mysql_admin_table.expire != '0000-00-00'";
-		$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		$total_shared = 0;
 		$cant_shared = 0;
 		$cant_shared_expired = 0;
@@ -673,7 +674,7 @@ function drawRenewalTables (){
 		$total_shared_plans = array();
 		$cant_shared_plans = array();
 		for($i=0;$i<$n;$i++){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$period = $a["period"];
 			$price = $a["price_dollar"];
 			$id = $a["id"];
@@ -722,17 +723,17 @@ function drawRenewalTables (){
 
 		// Calculate how much SSL IPs have been taken
 		$q = "SELECT count(id) as num_ssl FROM $pro_mysql_ssl_ips_table WHERE available='no'";
-		$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		$total_ssl = 0;
 		$cant_ssl = 0;
 		if($n != 0){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$q = "SELECT price_dollar FROM $pro_mysql_product_table WHERE heb_type='ssl'";
-			$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			if($n != 0){
-				$b = mysql_fetch_array($r);
+				$b = mysqli_fetch_array($r);
 				$total_ssl = $a["num_ssl"] * $b["price_dollar"] / 12;
 				$cant_ssl++;
 			}
@@ -743,8 +744,8 @@ function drawRenewalTables (){
 		TO_DAYS($pro_mysql_vps_table.expire_date) as expire, TO_DAYS(NOW()) as now, $pro_mysql_product_table.name
 		FROM $pro_mysql_product_table,$pro_mysql_vps_table
 		WHERE $pro_mysql_product_table.id = $pro_mysql_vps_table.product_id";
-		$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		$total_vps = 0;
 		$cant_vps = 0;
 		$cant_vps_expired = 0;
@@ -754,7 +755,7 @@ function drawRenewalTables (){
 		$total_vps_plans = array();
 		$cant_vps_plans = array();
 		for($i=0;$i<$n;$i++){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$period = $a["period"];
 			$price = $a["price_dollar"];
 			$id = $a["id"];
@@ -806,8 +807,8 @@ function drawRenewalTables (){
 		TO_DAYS($pro_mysql_dedicated_table.expire_date) as expire, TO_DAYS(NOW()) as now, $pro_mysql_product_table.name
 		FROM $pro_mysql_product_table,$pro_mysql_dedicated_table
 		WHERE $pro_mysql_product_table.id = $pro_mysql_dedicated_table.product_id";
-		$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		$total_dedicated = 0;
 		$cant_dedicated = 0;
 		$cant_dedicated_expired = 0;
@@ -817,7 +818,7 @@ function drawRenewalTables (){
 		$total_dedicated_plans = array();
 		$cant_dedicated_plans = array();
 		for($i=0;$i<$n;$i++){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$period = $a["period"];
 			$price = $a["price_dollar"];
 			$id = $a["id"];
@@ -871,8 +872,8 @@ function drawRenewalTables (){
 		FROM $pro_mysql_product_table,$pro_mysql_custom_product_table
 		WHERE $pro_mysql_product_table.id = $pro_mysql_custom_product_table.product_id
 		ORDER BY $pro_mysql_custom_product_table.custom_heb_type";
-		$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		$total_custom = 0;
 		$cant_custom = 0;
 		$cant_custom_expired = 0;
@@ -883,7 +884,7 @@ function drawRenewalTables (){
 		$cant_custom_plans = array();
 		$hebtype_totals = array();
 		for($i=0;$i<$n;$i++){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$period = $a["period"];
 			$price = $a["price_dollar"];
 			$id = $a["id"];
@@ -939,11 +940,11 @@ function drawRenewalTables (){
 		}
 		$q = "SELECT $pro_mysql_custom_heb_types_table.id,$pro_mysql_custom_heb_types_table.name
 		FROM $pro_mysql_custom_heb_types_table";
-		$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		$custom_categories = array();
 		for($i=0;$i<$n;$i++){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$custom_categories[$a["id"]] = $a["name"];
 		}
 
@@ -1088,13 +1089,13 @@ foreach($cant_dedicated_plans as $plan => $arr)
 			AND $pro_mysql_pay_table.valid='yes'";
 			if ($selected_country != "") $q2 .= " AND $pro_mysql_completedorders_table.country_code='$selected_country'";
 			$q2 .= ";";
-			$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n2 = mysql_num_rows($r2);
+			$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n2 = mysqli_num_rows($r2);
 			$vat_collected = 0;
 			$month_total =0;
 			$cost_total=0;
 			for($j=0;$j<$n2;$j++){
-				$a2 = mysql_fetch_array($r2);
+				$a2 = mysqli_fetch_array($r2);
 				$tt = $a2["paiement_total"];
 				$vat = $a2["vat_rate"];
 				$vat_collected += $tt * $vat / 100;
@@ -1109,10 +1110,10 @@ foreach($cant_dedicated_plans as $plan => $arr)
 			AND $pro_mysql_pay_table.valid='yes'";
 			if ($selected_country != "") $q2 .= " AND $pro_mysql_completedorders_table.country_code='$selected_country'";
 			$q2 .= ";";
-			$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n2 = mysql_num_rows($r2);
+			$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n2 = mysqli_num_rows($r2);
 			if($n2 > 0){
-				$a2 = mysql_fetch_array($r2);
+				$a2 = mysqli_fetch_array($r2);
 				$cost_total += $a2["paiement_cost"];
 				$month_total += $a2["paiement_total"];
 				$profit = $month_total - $cost_total - $vat_collected;
@@ -1235,10 +1236,10 @@ foreach($cant_dedicated_plans as $plan => $arr)
 			$p_history .= "<a href=\"?rub=$rub\">"._("ALL")."</a> ";	
 		}
 		$q2 = "SELECT distinct(country_code) from $pro_mysql_completedorders_table;";
-		$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n2 = mysql_num_rows($r2);
+		$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n2 = mysqli_num_rows($r2);
 		for($j=0;$j<$n2;$j++){
-			$a2 = mysql_fetch_array($r2);
+			$a2 = mysqli_fetch_array($r2);
 			$country = $a2["country_code"];
 			if(isset($_REQUEST["country"]) && $country == $_REQUEST["country"]){
 				$p_history .= "$country ";
@@ -1259,8 +1260,8 @@ foreach($cant_dedicated_plans as $plan => $arr)
 
 		$out .= "<h3>". _("Shared Hosting Renewals:") ."</h3>";
 		$q = "SELECT * FROM $pro_mysql_admin_table WHERE expire < '".date("Y-m-d")."' AND id_client!='0' AND expire !='0000-00-00' ORDER BY expire;";
-		$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__);
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__);
+		$n = mysqli_num_rows($r);
 		if($n < 1){
 			$out .= _("No expired shared accounts.") ."<br>";
 		}else{
@@ -1275,19 +1276,19 @@ foreach($cant_dedicated_plans as $plan => $arr)
 				}else{
 					$td = "td  class=\"dtcDatagrid_table_flds_alt\"";
 				}
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 				$q2 = "SELECT * FROM $pro_mysql_client_table WHERE id='".$a["id_client"]."';";
-				$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 != 1){
 					$client_name = _("Client name not found.");
 				}else{
-					$a2 = mysql_fetch_array($r2);
+					$a2 = mysqli_fetch_array($r2);
 					$client_name = $a2["company_name"].":".$a2["christname"].", ".$a2["familyname"];
 				}
 				$q2 = "SELECT * FROM $pro_mysql_domain_table WHERE owner='".$a["adm_login"]."';";
-				$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__);
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__);
+				$n2 = mysqli_num_rows($r2);
 				if($n2 > 0){
 					$out .= "<tr><$td>".$a["adm_login"]."</td><$td>$client_name</td><$td>".$a2["email"]."</td><$td>".$a["expire"]."</td></tr>";
 				}
@@ -1298,8 +1299,8 @@ foreach($cant_dedicated_plans as $plan => $arr)
 		// List of expired expired SSL IPs
 		$out .= "<h3>". _("SSL IP Renewals:") ."</h3>";
 		$q = "SELECT * FROM $pro_mysql_ssl_ips_table WHERE expire < '".date("Y-m-d")."' AND available='no' ORDER BY expire";
-		$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n < 1){
 			$out .= _("No expired SSL IPs.") ."<br>";
 		}else{
@@ -1314,22 +1315,22 @@ foreach($cant_dedicated_plans as $plan => $arr)
 				}else{
 					$td = "td  class=\"dtcDatagrid_table_flds_alt\"";
 				}
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 				$q2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$a["adm_login"]."';";
-				$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 != 1){
 					die("Cannot find admin name ".$a["adm_login"]." line ".__LINE__." file ".__FILE__);
 				}else{
-					$admin = mysql_fetch_array($r2);
+					$admin = mysqli_fetch_array($r2);
 				}
 				$q2 = "SELECT * FROM $pro_mysql_client_table WHERE id='".$admin["id_client"]."';";
-				$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 != 1){
 					$client_name = _("Client name not found.");
 				}else{
-					$a2 = mysql_fetch_array($r2);
+					$a2 = mysqli_fetch_array($r2);
 					$client_name = $a2["company_name"].":".$a2["christname"].", ".$a2["familyname"];
 				}
 				$out .= "<tr><$td>".$a["adm_login"]."</td><$td>$client_name</td><$td>".$a2["email"]."</td><$td>".$a["expire"]."</td></tr>";
@@ -1340,8 +1341,8 @@ foreach($cant_dedicated_plans as $plan => $arr)
 		// List if expired VPS
 		$out .= "<h3>". _("VPS Renewals:") ."</h3>";
 		$q = "SELECT * FROM $pro_mysql_vps_table WHERE expire_date < '".date("Y-m-d")."' ORDER BY expire_date";
-		$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n < 1){
 			$out .= _("No VPS expired") ."<br>";
 		}else{
@@ -1361,40 +1362,40 @@ foreach($cant_dedicated_plans as $plan => $arr)
 				}else{
 					$td = "td  class=\"dtcDatagrid_table_flds_alt\"";
 				}
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 
 				$q2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$a["owner"]."';";
-				$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 != 1){
 					die("Cannot find admin name ".$a["owner"]." line ".__LINE__." file ".__FILE__);
 				}else{
-					$admin = mysql_fetch_array($r2);
+					$admin = mysqli_fetch_array($r2);
 				}
 				$q2 = "SELECT * FROM $pro_mysql_client_table WHERE id='".$admin["id_client"]."';";
-				$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 != 1){
 					$client_name = _("Client name not found.");
 				}else{
-					$a2 = mysql_fetch_array($r2);
+					$a2 = mysqli_fetch_array($r2);
 					$client_name = $a2["company_name"].":".$a2["christname"].", ".$a2["familyname"];
 				}
 				$q2 = "SELECT adm_login FROM $pro_mysql_admin_table WHERE id_client='".$admin["id_client"]."'";
-				$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 == 1){
 					$q2 = "SELECT * FROM $pro_mysql_vps_table WHERE owner='".$admin["adm_login"]."'";
-					$r2 = mysql_query($q2)or die("Cannot querry ".$q2." line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-					$n2 = mysql_num_rows($r2);
+					$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry ".$q2." line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+					$n2 = mysqli_num_rows($r2);
 					if($n2 == 1){
 						$q2 = "SELECT * FROM $pro_mysql_dedicated_table WHERE owner='".$admin["adm_login"]."'";
-						$r2 = mysql_query($q2)or die("Cannot querry ".$q2." line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-						$n2 = mysql_num_rows($r2);
+						$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry ".$q2." line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+						$n2 = mysqli_num_rows($r2);
 						if($n2 == 0){
 							$q2 = "SELECT * FROM $pro_mysql_domain_table WHERE owner='".$admin["adm_login"]."'";
-							$r2 = mysql_query($q2)or die("Cannot querry ".$q2." line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-							$n2 = mysql_num_rows($r2);
+							$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry ".$q2." line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+							$n2 = mysqli_num_rows($r2);
 							if($n2 == 0){
 								$kill_owner_txt = "<a href=\"?action=kill_vps_and_owner&adm_login=".$admin["adm_login"]."&client_id=".$admin["id_client"]."&vps_name=".$a["vps_xen_name"]."&server_hostname=".$a["vps_server_hostname"]."&vps_id=".$a["id"]."\">"._("Delete VPS and Owner")."</a>";
 							}else{
@@ -1429,8 +1430,8 @@ foreach($cant_dedicated_plans as $plan => $arr)
 		// List expired dedicated servers
 		$out .= "<h3>". _("Dedicated Server Renewals:") ."</h3>";
 		$q = "SELECT * FROM $pro_mysql_dedicated_table WHERE expire_date < '".date("Y-m-d")."' ORDER BY expire_date";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n < 1){
 			$out .= _("No expired dedicated servers.") ."<br>";
 		}else{
@@ -1446,22 +1447,22 @@ foreach($cant_dedicated_plans as $plan => $arr)
 				}else{
 					$td = "td  class=\"dtcDatagrid_table_flds_alt\"";
 				}
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 				$q2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$a["owner"]."';";
-				$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 != 1){
 					die("Cannot find admin name ".$a["owner"]." line ".__LINE__." file ".__FILE__);
 				}else{
-					$admin = mysql_fetch_array($r2);
+					$admin = mysqli_fetch_array($r2);
 				}
 				$q2 = "SELECT * FROM $pro_mysql_client_table WHERE id='".$admin["id_client"]."';";
-				$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 != 1){
 					$client_name = _("Client name not found.");
 				}else{
-					$a2 = mysql_fetch_array($r2);
+					$a2 = mysqli_fetch_array($r2);
 					$client_name = $a2["company_name"].":".$a2["christname"].", ".$a2["familyname"];
 				}
 				$out .= "<tr><$td>".$a["owner"]."</td><$td>".$a["server_hostname"]."</td><$td>$client_name</td><$td>".$a2["email"]."</td><$td>".$a["expire_date"]."</td></tr>";
@@ -1471,8 +1472,8 @@ foreach($cant_dedicated_plans as $plan => $arr)
 		// List expired custom products
 		$out .= "<h3>". _("Custom Products Renewals:") ."</h3>";
 		$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE expire_date < '".date("Y-m-d")."' ORDER BY expire_date";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n < 1){
 			$out .= _("No expired custom products.") ."<br>";
 		}else{
@@ -1488,22 +1489,22 @@ foreach($cant_dedicated_plans as $plan => $arr)
 				}else{
 					$td = "td  class=\"dtcDatagrid_table_flds_alt\"";
 				}
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 				$q2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$a["owner"]."';";
-				$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 != 1){
 					die("Cannot find admin name ".$a["owner"]." line ".__LINE__." file ".__FILE__);
 				}else{
-					$admin = mysql_fetch_array($r2);
+					$admin = mysqli_fetch_array($r2);
 				}
 				$q2 = "SELECT * FROM $pro_mysql_client_table WHERE id='".$admin["id_client"]."';";
-				$r2 = mysql_query($q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot querry $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 != 1){
 					$client_name = _("Client name not found.");
 				}else{
-					$a2 = mysql_fetch_array($r2);
+					$a2 = mysqli_fetch_array($r2);
 					$client_name = $a2["company_name"].":".$a2["christname"].", ".$a2["familyname"];
 				}
 				$out .= "<tr><$td>".$a["owner"]."</td><$td>".$a["domain"]."</td><$td>$client_name</td><$td>".$a2["email"]."</td><$td>".$a["expire_date"]."</td></tr>";

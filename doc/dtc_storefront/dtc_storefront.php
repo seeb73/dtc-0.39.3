@@ -4,7 +4,7 @@ require("dtc_storefront/dbconnect.php");
 
 function getProductPrice($prod_id){
   $q = "SELECT * FROM product WHERE id='$prod_id';";
-  $r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".msyql_error());
+  $r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".msyql_error());
   $n = mysql_num_rows($r);
   if($n != 1){
     return false;
@@ -16,7 +16,7 @@ function getProductPrice($prod_id){
 
 function getTestimonials(){
   $q = "SELECT * FROM testimonials WHERE publish='yes' ORDER BY id";
-  $r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".msyql_error());
+  $r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".msyql_error());
   $n = mysql_num_rows($r);
   $out = array();
   for($i=0;$i<$n;$i++){
@@ -62,7 +62,7 @@ function drawTestimonialsForm($destination_script){
 function recordTestimonials($validation_script,$deletion_script,$administrator_email){
   $out = "Recording your query in database...<br>";
   $q = "INSERT INTO testimonials (url,company,comment) VALUES ('".mysql_real_escape_string($_REQUEST["addr_web"])."','".mysql_real_escape_string($_REQUEST["comp_name"])."','".mysql_real_escape_string($_REQUEST["comment"])."');";
-  $r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+  $r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
   $reqid = mysql_insert_id();
 
   $out .= "Sending your query by mail for manual checking...<br><br>";
@@ -88,7 +88,7 @@ Host: ".$_SERVER["REMOTE_ADDR"]."
 function validateTestimonials(){
   $out = "Validating testimonial id ".$_REQUEST["id"];
   $q = "UPDATE testimonials SET publish='yes' WHERE id='".mysql_real_escape_string($_REQUEST["id"])."' AND publish='no';";
-  $r = mysql_query($q)or die("Cannot query $q line ".__line__." file ".__FILE__." mysql said: ".mysql_error());
+  $r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__line__." file ".__FILE__." mysql said: ".mysql_error());
   $out .= "...done<br>";
   return $out;
 }
@@ -96,7 +96,7 @@ function validateTestimonials(){
 function deleteTestimonials(){
   $out = "Deleting testimonial id '".$_REQUEST["id"]."'<br>";
   $q = "DELETE FROM testimonials WHERE id='".mysql_real_escape_string($_REQUEST["id"])."' AND publish='no' LIMIT 1;";
-  $r = mysql_query($q)or die("Cannot query $q line ".__line__." file ".__FILE__." mysql said: ".mysql_error());
+  $r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__line__." file ".__FILE__." mysql said: ".mysql_error());
   $out .= "...done<br>";
   return $out;
 }

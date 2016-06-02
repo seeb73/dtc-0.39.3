@@ -122,7 +122,7 @@ function configEditorTemplate ($dsc,$conftype="config"){
 			$vals .= $keys[$i]."='".$my_value."'";
 		}
 		$q = "UPDATE $sql_table SET $vals WHERE 1;";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said: ".mysql_error());
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said: ".mysql_error());
 	}
 
 	if(isset($dsc["edit_callback"])){
@@ -372,17 +372,17 @@ function drawDedicatedIPConfig(){
 	$out = "";
 
 	$q = "SELECT server_hostname FROM $pro_mysql_dedicated_table ORDER BY server_hostname";
-	$r = mysql_query($q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	$popup_vals = array();
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$popup_vals[] = $a["server_hostname"];
 	}
 
 	$q = "SELECT * FROM $pro_mysql_ip_pool_table";
-	$r = mysql_query($q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 0){
 		$out .= "<font color=\"red\">". _("Warning: no IP pool in the database") ."</font>";
 	}
@@ -393,7 +393,7 @@ function drawDedicatedIPConfig(){
 	$my_pool_values[] = 0;
 	$my_pool_text[] = _("Not set");
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$my_pool_values[] = $a["id"];
 		$my_pool_text[] = $a["location"] . " " . $a["ip_addr"] . " " . $a["netmask"];
 	}
@@ -502,21 +502,21 @@ function drawIPPoolConfig(){
 	if(isset($_REQUEST["editpool"])){
 		if(isset($_REQUEST["action"]) && $_REQUEST["action"] = "edit_custom_rdns_text"){
 			$q = "UPDATE $pro_mysql_ip_pool_table SET custom_part='".$_REQUEST["custom_part"]."' WHERE id='".$_REQUEST["editpool"]."';";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__file__." sql said: ".mysql_error());
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__file__." sql said: ".mysql_error());
 			$q = "UPDATE $pro_mysql_dedicated_ips_table SET rdns_regen='yes' WHERE ip_pool_id='".$_REQUEST["editpool"]."';";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__file__." sql said: ".mysql_error());
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__file__." sql said: ".mysql_error());
 			$q = "UPDATE $pro_mysql_vps_ip_table SET rdns_regen='yes' WHERE ip_pool_id='".$_REQUEST["editpool"]."';";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__file__." sql said: ".mysql_error());
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__file__." sql said: ".mysql_error());
 			$q = "UPDATE $pro_mysql_cronjob_table SET reload_named='yes',gen_named='yes' WHERE 1;";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__file__." sql said: ".mysql_error());
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__file__." sql said: ".mysql_error());
 		}
 		$q = "SELECT * FROM $pro_mysql_ip_pool_table WHERE id='".$_REQUEST["editpool"]."';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__file__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__file__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$out .= "<font color=\"red\">"._("Error: no IP pool by that ID.")."</font>";
 		}else{
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$out .= "<h3>"._("Custom RDNS entries for the IP pool")." " .$a["location"] . " (" . $a["ip_addr"] . " / " . $a["netmask"] . "):</h3>";
 			$out .= _("The following will be appened at the end of the reverse zone file.");
 			$out .= "<form method=\"$conf_post_or_get\" action=\"?\">
@@ -597,20 +597,20 @@ function drawTicketConfig(){
 	$domains = array();
 	$domains[] = "default";
 	$q = "SELECT name FROM $pro_mysql_domain_table;";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said ".mysql_error());
+	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$domains[] = $a["name"];
 	}
 
 	$all_lists = array();
 	$domains[] = _("no list selected");
 	$q = "SELECT * FROM $pro_mysql_list_table WHERE domain='$conf_all_customers_list_domain' ORDER BY name;";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said ".mysql_error());
+	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$all_lists[] = $a["name"];
 	}
 
@@ -636,12 +636,12 @@ function drawTicketConfig(){
 
 	if( isset($_REQUEST["action"]) && $_REQUEST["action"] == "resubscript_all_users"){
 		$q = "SELECT owner FROM $pro_mysql_domain_table WHERE name='$conf_all_customers_list_domain';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 1){
 			die("No domain by this name: $conf_all_customers_list_domain line ".__LINE__." file ".__FILE__);
 		}
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$admpath = getAdminPath($a["owner"]);
 		$subs_path = $admpath . "/$conf_all_customers_list_domain/lists/" . $conf_all_customers_list_domain . "_" . $conf_all_customers_list_email . "/subscribers.d";
 		if( !is_dir($subs_path)){
@@ -669,10 +669,10 @@ function drawTicketConfig(){
 			$q = "SELECT DISTINCT email FROM $pro_mysql_client_table ORDER BY email";
 			// This is all customer having a domain name (so, shared accounts)
 			//$q = "SELECT DISTINCT clients.email FROM clients,admin,domain WHERE clients.id=admin.id_client AND domain.owner=admin.adm_login ORDER BY email";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			for($i=0;$i<$n;$i++){
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 				$fname = strtolower( substr($a["email"],0,1) );
 				if($fname == $old_file || $old_file == ""){
 					$addr_list .= $a["email"]."\n";
@@ -898,11 +898,11 @@ function checkIPAssigned(){
 		}else{
 			$q = "SELECT * FROM $pro_mysql_vps_server_table WHERE dom0_ips LIKE '%$test_ip%';";
 		}
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__file__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__file__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 0){
 			for($j=0;$j<$n;$j++){
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 				// Checking all IPs of the SQL record
 				$q_all_dom0_ips = explode("|",$a["dom0_ips"]);
 				$q_nbr_ips = sizeof($q_all_dom0_ips);
@@ -922,10 +922,10 @@ function checkIPAssigned(){
 		}else{
 			$q = "SELECT * FROM $pro_mysql_vps_ip_table WHERE ip_addr='$test_ip';";
 		}
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__file__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__file__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 0){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$action_error_txt = _("The IP address $test_ip is already assigned to a VPS: cannot assign this one!");
 			$action_error_txt .= "<br>xen" . $a["vps_xen_name"] . " " . $a["vps_server_hostname"];
 			$ret_val = false;
@@ -937,10 +937,10 @@ function checkIPAssigned(){
 		}else{
 			$q = "SELECT * FROM $pro_mysql_dedicated_ips_table WHERE ip_addr='$test_ip';";
 		}
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__file__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__file__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 0){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$action_error_txt = _("The IP address $test_ip is already assigned to a dedicated server: cannot assign this one!");
 			$action_error_txt .= "<br>". _("Server hostname: ") . $a["dedicated_server_hostname"];
 			$ret_val = false;
@@ -953,8 +953,8 @@ function checkIPAssigned(){
 		}else{
 			$q = "SELECT * FROM $pro_mysql_ssl_ips_table WHERE ip_addr='$test_ip';";
 		}
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__file__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__file__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 0){
 			echo $action_error_txt = _("The IP address $test_ip is already assigned to an SSL site: cannot assign this one!");
 			$ret_val = false;
@@ -1030,8 +1030,8 @@ function drawVPSServerConfig(){
 
 	if(isset($_REQUEST["edithost"])){
 		$q = "SELECT * FROM $pro_mysql_ip_pool_table";
-		$r = mysql_query($q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n == 0){
 			$out .= "<font color=\"red\">". _("Warning: no IP pools in the database.") ."</font>";
 		}
@@ -1042,13 +1042,13 @@ function drawVPSServerConfig(){
 		$my_pool_values[] = 0;
 		$my_pool_text[] = _("Not set");
 		for($i=0;$i<$n;$i++){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$my_pool_values[] = $a["id"];
 			$my_pool_text[] = $a["location"] . " " . $a["ip_addr"] . " " . $a["netmask"];
 		}
 		$q = "SELECT * FROM $pro_mysql_vps_server_table WHERE id='".$_REQUEST["edithost"]."';";
-		$r = mysql_query($q);
-		$a = mysql_fetch_array($r);
+		$r = mysqli_query($mysql_connection,$q);
+		$a = mysqli_fetch_array($r);
 		$dsc = array(
 			"table_name" => $pro_mysql_vps_ip_table,
 			"title" => _("VPS IPs for ").$a["hostname"].":",
@@ -1088,19 +1088,19 @@ function drawVPSServerConfig(){
 		$out .= dtcDatagrid($dsc);
 		$out .= "<br><br>";
 		$q = "SELECT name FROM $pro_mysql_list_table WHERE domain='$conf_main_domain';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n == 0){
 			$out .= _("Create a mailing list @").$conf_main_domain._(" if you want to write to all users of this VPS server.");
 		}else{
 			$out .= "<h3>" . _("Owners of the VPS of") . " <i>".$a["hostname"]."</i> " . _("are subscribed automatically to the following mailing list:") . "</h3>";
 			$q2 = "SELECT * FROM $pro_mysql_vps_server_lists_table WHERE hostname='".$a["hostname"]."' ORDER BY list_name;";
-			$r2 = mysql_query($q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n2 = mysql_num_rows($r2);
+			$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n2 = mysqli_num_rows($r2);
 			$out .= _("Click on the list name to remove the list from the server:<br><br>");
 			$conditions = "";
 			for($i=0;$i<$n2;$i++){
-				$a2 = mysql_fetch_array($r2);
+				$a2 = mysqli_fetch_array($r2);
 				if($i != 0){
 					$out .= " - ";
 				}
@@ -1109,11 +1109,11 @@ function drawVPSServerConfig(){
 			}
 			$out .= "<br><br>";
 			$q = "SELECT * FROM $pro_mysql_list_table WHERE domain='$conf_main_domain' $conditions ORDER BY name;";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			$out .= _("Click on the list name to add the list to the server:")."<br><br>";
 			for($i=0;$i<$n;$i++){
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 				if($i != 0){
 					$out .= " - ";
 				}
@@ -1145,10 +1145,11 @@ function drawRegistrySelection(){
 function generalDaemonCallback(){
         global $pro_mysql_domain_table;
         global $pro_mysql_cronjob_table;
+	global $mysql_connection;
         #$q = "UPDATE $pro_mysql_domain_table SET generate_flag='yes';";
-        #$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+        #$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
         $q = "UPDATE $pro_mysql_cronjob_table SET restart_apache='yes', gen_vhosts='yes', gen_named='yes', reload_named='yes';";
-        $r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+        $r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 }
 
 function drawGeneralConfig(){
@@ -1578,9 +1579,9 @@ function namedEditionCallback(){
 	global $pro_mysql_domain_table;
 	global $pro_mysql_cronjob_table;
 	$q = "UPDATE $pro_mysql_domain_table SET generate_flag='yes';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	$q = "UPDATE $pro_mysql_cronjob_table SET reload_named='yes', gen_named='yes';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 }
 
 function drawNamedConfig(){
@@ -2451,12 +2452,12 @@ function drawDTCradiusConfig(){
 	$out .= "<BR><BR>";
 
         $q = "SELECT * FROM $pro_mysql_radgroup_table WHERE 1;";
-        $r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-        $n = mysql_num_rows($r);
+        $r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+        $n = mysqli_num_rows($r);
         $group_names = array(_("Please select"));
         $group_ids = array(0);
         for($i=0;$i<$n;$i++){
-                $a = mysql_fetch_array($r);
+                $a = mysqli_fetch_array($r);
                 $group_names[] = $a["GroupName"];
 //		echo $a["GroupName"];
                 $group_ids[] = $a["id"];
@@ -2530,24 +2531,24 @@ function drawDTCradiusConfig(){
 	$out .= "<BR><BR>";
 
         $q = "SELECT * FROM $pro_mysql_raduser_table WHERE 1;";
-        $r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-        $n = mysql_num_rows($r);
+        $r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+        $n = mysqli_num_rows($r);
         $user_names = array(_("Please select"));
         $user_ids = array(0);
         for($i=0;$i<$n;$i++){
-                $a = mysql_fetch_array($r);
+                $a = mysqli_fetch_array($r);
                 $user_names[] = $a["UserName"];
 //		echo $a["UserName"];
                 $user_ids[] = $a["id"];
         }
 
         $q = "SELECT server_hostname,$pro_mysql_dedicated_table.id FROM $pro_mysql_dedicated_table,$pro_mysql_product_table WHERE $pro_mysql_dedicated_table.product_id=$pro_mysql_product_table.id and use_radius='yes';";
-        $r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-        $n = mysql_num_rows($r);
+        $r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+        $n = mysqli_num_rows($r);
         $dedicated_names = array(_("None"));
         $dedicated_ids = array(0);
         for($i=0;$i<$n;$i++){
-                $a = mysql_fetch_array($r);
+                $a = mysqli_fetch_array($r);
                 $dedicated_names[] = $a["server_hostname"];
 //		echo $a["server_hostname"];
                 $dedicated_ids[] = $a["id"];
@@ -2851,12 +2852,12 @@ function drawInvoicingConfig(){
 	$out = "";
 
 	$q = "SELECT * FROM $pro_mysql_companies_table WHERE 1;";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	$comp_names = array(_("Please select"));
 	$comp_ids = array(0);
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$comp_names[] = $a["name"];
 		$comp_ids[] = $a["id"];
 	}

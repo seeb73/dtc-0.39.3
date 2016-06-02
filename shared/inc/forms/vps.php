@@ -68,8 +68,8 @@ function drawAdminTools_VPS($admin,$vps){
 
 	// Display the current contract
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$vps["product_id"]."';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$vps_prod = mysql_fetch_array($r);
 		$contract = $vps_prod["name"];
@@ -78,16 +78,16 @@ function drawAdminTools_VPS($admin,$vps){
 	}
 	// Get current admin
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$admin = mysql_fetch_array($r);
 	}
 
 	$out .= "<br><h3>". _("Description: ") ."</h3><br>". _("Current contract: ") ."$contract<br>";
 	$q = "SELECT location FROM $pro_mysql_vps_server_table WHERE hostname='$vps_node';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$location = "Cannot find VPS server $vps_node<br>";
 	}else{
@@ -114,7 +114,7 @@ function drawAdminTools_VPS($admin,$vps){
 	$out .= " ".calculateExpirationDate($vps["expire_date"],$period)."<br>";
 
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."'";
-	$r = mysql_query($q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	$admin = mysql_fetch_array($r);
 
 	if($admin["show_invoice_info"] == 'yes' && $conf_show_invoice_info == 'yes'){
@@ -122,8 +122,8 @@ function drawAdminTools_VPS($admin,$vps){
 		$out .= "<br>". _("Please renew with one of the following options: ") ."<br>";
 		if ($secpayconf_use_products_for_renewal == 'yes'){
 			$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$vps["product_id"]."';";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			if($n == 1){
 				$a = mysql_fetch_array($r);
 				$out .= "<br><br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
@@ -138,8 +138,8 @@ function drawAdminTools_VPS($admin,$vps){
 		}
 
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$vps["product_id"]."';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		for($i=0;$i<$n;$i++){
 			$a = mysql_fetch_array($r);
 			$out .= "<br><br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">

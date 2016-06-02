@@ -65,13 +65,13 @@ function register_user($adding_service="no"){
 		return $ret;
 	}
 	$q = "SELECT $pro_mysql_product_table.*, $pro_mysql_custom_heb_types_table.reqdomain FROM $pro_mysql_product_table LEFT JOIN $pro_mysql_custom_heb_types_table ON $pro_mysql_product_table.custom_heb_type = $pro_mysql_custom_heb_types_table.id WHERE $pro_mysql_product_table.id='$esc_product_id';";
-	$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$ret["err"] = 2;
 		$ret["mesg"] = _("Product not found in database") ;
 	}else{
-		$db_product = mysql_fetch_array($r);
+		$db_product = mysqli_fetch_array($r);
 	}
 
 	// Do field format checking and escaping for all fields
@@ -123,16 +123,16 @@ function register_user($adding_service="no"){
 		    "server" => "server_hostname",
 		    "custom" => "domain");
 		$q = "SELECT ".$heb_type_fields[$db_product["heb_type"]]." FROM ".$heb_type_tables[$db_product["heb_type"]]." WHERE ".$heb_type_fields[$db_product["heb_type"]]."='".$_REQUEST["domain_name"].$_REQUEST["domain_tld"]."';";
-		$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n > 0){
 			$ret["err"] = 3;
 			$ret["mesg"] = _("Domain name already taken. Try again.") ;
 			return $ret;
 		}
 		$q = "SELECT domain_name FROM $pro_mysql_new_admin_table WHERE domain_name='".$_REQUEST["domain_name"].$_REQUEST["domain_tld"]."';";
-		$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n > 0){
 			$ret["err"] = 3;
 			$ret["mesg"] = _("Domain name already taken. Try again.") ;
@@ -156,8 +156,8 @@ function register_user($adding_service="no"){
 			return $ret;
 		}
 		$q = "SELECT * FROM $pro_mysql_vps_server_table WHERE hostname='".mysql_real_escape_string($_REQUEST["vps_server_hostname"])."';";
-		$r = mysql_query($q)or die("Cannot query $q ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$ret["err"] = 2;
 			$ret["mesg"] = _("Could not find the VPS server in database") ;
@@ -313,16 +313,16 @@ function register_user($adding_service="no"){
 	}
 
 	$q = "SELECT adm_login FROM $pro_mysql_admin_table WHERE adm_login='".$_REQUEST["reqadm_login"]."';";
-	$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n > 0){
 		$ret["err"] = 3;
 		$ret["mesg"] = _("Username already taken. Try again.") ;
 		return $ret;
 	}
 	$q = "SELECT reqadm_login FROM $pro_mysql_new_admin_table WHERE reqadm_login='".$_REQUEST["reqadm_login"]."';";
-	$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n > 0){
 		$ret["err"] = 3;
 		$ret["mesg"] = _("Username already taken. Try again.") ;
@@ -378,12 +378,12 @@ function register_user($adding_service="no"){
 	// end MaxMind
 
 	$q = "SELECT * FROM $pro_mysql_custom_fld_table ORDER BY widgetorder;";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n > 0){
 		$cust_fld_val = "";
 		for($i=0;$i<$n;$i++){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			if( !isset($_REQUEST[ $a["varname"] ]) || $_REQUEST[ $a["varname"] ] == ""){
 				if($a["mandatory"] == "yes"){
 					$ret["err"] = 2;
@@ -458,20 +458,20 @@ VALUES('".$_REQUEST["reqadm_login"]."',
 '".date("H:i:s")."',
 '".$gettext_lang."',
 '".mysql_real_escape_string(serialize($maxmind_output))."'$vps_add2)";
-	$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
 	$id = mysql_insert_id();
 	$ret["err"] = 0;
 	$ret["mesg"] = "Query ok!";
 	$ret["id"] = $id;
 
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='$esc_product_id';";
-	$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		echo "<font color=\"red\">". _("Cannot find product ID.") ."</font>";
 		$the_prod = $esc_product_id." (0 $secpayconf_currency_letters)";
 	}else{
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$the_prod = $a["name"]." (".$a["price_dollar"]." $secpayconf_currency_letters)";
 	}
 
@@ -584,8 +584,8 @@ function registration_form(){
 
 	if(isset($_REQUEST["product_id"]) && isRandomNum($_REQUEST["product_id"])){
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$_REQUEST["product_id"]."';";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 1){
 			if ($conf_restrict_new_account_form == "yes" and $conf_new_account_restrict_action == 'redirect') {
 				header("Location: $conf_new_account_restrict_message");
@@ -594,7 +594,7 @@ function registration_form(){
 				die("Product ID not found here line ".__LINE__." file ".__FILE__);
 			}
 		}
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$heb_type_condition = " heb_type='".$a["heb_type"]."' ";
 		$heb_type = $a["heb_type"];
 	}else{
@@ -627,11 +627,11 @@ function registration_form(){
             $q .= "AND $pro_mysql_product_table.id='".$_REQUEST["product_id"]."' ";
         }
         $q .= "ORDER BY id";
-        $r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+        $r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	$prod_popup .= "<option value=\"-1\">"._("Please select.")."</optioon>";
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		if ($a["heb_type"] == "custom"){
 			if($a["reqdomain"] == "yes"){
 				if($conf_require_valid_tld_on_custom == "yes"){
@@ -664,11 +664,11 @@ function registration_form(){
 	WHERE $pro_mysql_vps_ip_table.vps_server_hostname=$pro_mysql_vps_server_table.hostname
 	AND $pro_mysql_vps_ip_table.available='yes'
 	GROUP BY $pro_mysql_vps_server_table.location;";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	$vps_location_popup = "<option value=\"-1\">Please select!</optioon>";
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		if(isset($_REQUEST["vps_server_hostname"]) && $_REQUEST["vps_server_hostname"] == $a["hostname"]){
 			$selected = " selected ";
 		}else{
@@ -872,12 +872,12 @@ function registration_form(){
 	// Manage the output of custom fields.
 	$cust_out = "";
 	$q = "SELECT * FROM $pro_mysql_custom_fld_table ORDER BY widgetorder;";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n > 0){
 		$cust_out .= "<table>";
 		for($i=0;$i<$n;$i++){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$cust_out .= "<tr><td style=\"white-space: nowrap;text-align: right;\">";
 			$cust_out .= $a["question"];
 			if($a["mandatory"] == "yes"){
@@ -1089,22 +1089,22 @@ function new_account_payment($reguser){
 	$form = "";
 	$print_form = "yes";
 	$q = "SELECT * FROM $pro_mysql_new_admin_table WHERE id='".$reguser["id"]."';";
-	$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$form .= _("Cannot reselect user: registration failed.") ;//"Cannot reselect user: registration failed.";
 	}else{
 		// Get the recorded new admin in the new_admin table, and process the display of payment buttons
-		$newadmin = mysql_fetch_array($r);
+		$newadmin = mysqli_fetch_array($r);
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$newadmin["product_id"]."';";
-		$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$form = _("Cannot reselect product: registration failed.") ;//"Cannot reselect product: registration failed.";
 			$print_form = "no";
 			$service_location = $conf_this_server_country_code;
 		}else{
-			$product = mysql_fetch_array($r);
+			$product = mysqli_fetch_array($r);
 		}
 		switch($product["heb_type"]){
 		default:
@@ -1114,13 +1114,13 @@ function new_account_payment($reguser){
 			break;
 		case "vps":
 			$q = "SELECT * FROM $pro_mysql_vps_server_table WHERE hostname='".$newadmin["vps_location"]."'";
-			$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 			if($n != 1){
 				$form = _("Cannot reselect product: registration failed.") ;//"Cannot reselect product: registration failed!";
 				$print_form = "no";
 				$service_location = $conf_this_server_country_code;
 			}else{
-				$vps_server = mysql_fetch_array($r);
+				$vps_server = mysqli_fetch_array($r);
 				$service_location = $vps_server["country_code"];
 			}
 			break;
@@ -1128,12 +1128,12 @@ function new_account_payment($reguser){
 		if($print_form == "yes"){
 			$company_invoicing_id = findInvoicingCompany ($service_location,$newadmin["country"]);
 			$q = "SELECT * FROM $pro_mysql_companies_table WHERE id='$company_invoicing_id';";
-			$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 			if($n != 1){
 				$form = "Cannot find company invoicing line ".__LINE__." file ".__FILE__;
 				$print_form = "no";
 			}else{
-				$company_invoicing = mysql_fetch_array($r);
+				$company_invoicing = mysqli_fetch_array($r);
 				// If VAT is set, use it.
 				if($company_invoicing["vat_rate"] == 0 || $company_invoicing["vat_number"] == ""){
 					$vat_rate = 0;
@@ -1154,7 +1154,7 @@ function new_account_payment($reguser){
 				}
 				$payid = createCreditCardPaiementID($product["price_dollar"] + $product["setup_fee"],$reguser["id"],$product["name"]." (login: ".$newadmin["reqadm_login"].")","yes",$product["id"],$vat_rate);
 				$q = "UPDATE $pro_mysql_new_admin_table SET paiement_id='$payid' WHERE id='".$reguser["id"]."';";
-				$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 				$return_url = htmlentities($_SERVER["PHP_SELF"])."?action=return_from_pay&regid=$payid";
 				$paybutton =paynowButton($payid,$product["price_dollar"] + $product["setup_fee"],$product["name"]." (login: ".$newadmin["reqadm_login"].")",$return_url,$vat_rate,$secpayconf_use_paypal_recurring);
 			}

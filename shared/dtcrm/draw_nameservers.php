@@ -23,8 +23,8 @@ function drawAdminTools_NameServers($admin){
 			$out .= "<font color=\"green\"><b>". _("Registration of your name server was succesful") ."</b></font><br>
 ". _("Server said: ") ."<i>" . $regz["response_text"] . "</i><br>";
 			$query = "SELECT * FROM $pro_mysql_subdomain_table WHERE domain_name='$domain_name' AND subdomain_name='$subdomain';";
-			$result = mysql_query($query)or die("Cannot query \"query\" !!!".mysql_error());
-			$num_rows = mysql_num_rows($result);
+			$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"query\" !!!".mysql_error());
+			$num_rows = mysqli_num_rows($result);
 			if($num_rows == 0){
 				$query = "INSERT INTO $pro_mysql_subdomain_table (id,
 domain_name,subdomain_name,webalizer_generate,ip)VALUES('','$domain_name','$subdomain','no','$ip');";
@@ -34,11 +34,11 @@ domain_name,subdomain_name,webalizer_generate,ip)VALUES('','$domain_name','$subd
 			}else{
 				die("Subdomain table problem: twice the same subdomain !");
 			}
-			mysql_query($query)or die("Cannot query: \"$query\" !!!".mysql_error());
+			mysqli_query($mysql_connection,$query)or die("Cannot query: \"$query\" !!!".mysql_error());
 			$query = "INSERT INTO $pro_mysql_nameservers_table(id,
 owner,domain_name,subdomain,ip)VALUES(
 '','$adm_login','$domain_name','$subdomain','$ip');";
-			mysql_query($query)or die("Cannot query: \"$query\" !!!".mysql_error());
+			mysqli_query($mysql_connection,$query)or die("Cannot query: \"$query\" !!!".mysql_error());
 		}else{
 			$out .= "<font color=\"red\"><b>". _("Registration of your name server failed") ."</b></font><br>
 ". _("Server said: ") ."<i>" . $regz["response_text"] . "</i><br>";
@@ -52,10 +52,10 @@ owner,domain_name,subdomain,ip)VALUES(
 ". _("Server said: ") ."<i>" . $regz["response_text"] . "</i><br>";
 			$query = "UPDATE $pro_mysql_subdomain_table SET ip='$ip'
 				WHERE domain_name='$domain_name' AND subdomain_name='$subdomain' LIMIT 1;";
-			mysql_query($query)or die("Cannot query: \"$query\" !!!".mysql_error());
+			mysqli_query($mysql_connection,$query)or die("Cannot query: \"$query\" !!!".mysql_error());
 			$query = "UPDATE $pro_mysql_nameservers_table SET ip='$ip'
 				WHERE domain_name='$domain_name' AND subdomain='$subdomain' LIMIT 1;";
-			mysql_query($query)or die("Cannot query: \"$query\" !!!".mysql_error());
+			mysqli_query($mysql_connection,$query)or die("Cannot query: \"$query\" !!!".mysql_error());
 		}else{
 			$out .= "<font color=\"red\"><b>". _("Addition of name server failed") ."</b></font><br>
 ". _("Server said: ") ."<i>" . $regz["response_text"] . "</i><br>";
@@ -70,7 +70,7 @@ owner,domain_name,subdomain,ip)VALUES(
 ". _("Server said: ") ."<i>" . $regz["response_text"] . "</i><br>";
 			$query="DELETE FROM $pro_mysql_nameservers_table
 				WHERE domain_name='$domain_name' AND subdomain='$subdomain' LIMIT 1";
-			mysql_query($query)or die("Cannot query: \"$query\" !!!".mysql_error());
+			mysqli_query($mysql_connection,$query)or die("Cannot query: \"$query\" !!!".mysql_error());
 		}else{
 			$out .= "<font color=\"red\"><b>". _("Deletion of name server failed") ."</b></font><br>
 ". _("Server said: ") ."<i>" . $regz["response_text"] . "</i><br>";
@@ -80,10 +80,10 @@ owner,domain_name,subdomain,ip)VALUES(
 	$out .= "<b><u>". _("List of your registred name-servers:") ."</u></b><br>";
 
 	$query = "SELECT * FROM $pro_mysql_nameservers_table WHERE owner='$adm_login';";
-	$result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
-        $num_rows = mysql_num_rows($result);
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+        $num_rows = mysqli_num_rows($result);
         for($i=0;$i<$num_rows;$i++){
-		$row = mysql_fetch_array($result);
+		$row = mysqli_fetch_array($result);
 		if($i > 0){
 			$out .= " - ";
 		}
@@ -93,9 +93,9 @@ owner,domain_name,subdomain,ip)VALUES(
 
 	if(isset($_REQUEST["edit_id"]) && $_REQUEST["edit_id"] != ""){
 		$query = "SELECT * FROM $pro_mysql_nameservers_table WHERE id='". $_REQUEST["edit_id"] ."' AND owner='$adm_login';";
-		$result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
-		if(mysql_num_rows($result) != 1) die("Nameserver not found !!!");
-		$row = mysql_fetch_array($result);
+		$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+		if(mysqli_num_rows($result) != 1) die("Nameserver not found !!!");
+		$row = mysqli_fetch_array($result);
 		$out .= "<br><br><a href=\"?adm_login=$adm_login&adm_pass=$adm_pass&addrlink=$addrlink\">New name server</a><br>
 <b><u>". _("Edit a name server:") ."</u></b><br>
 <form method=\"$conf_post_or_get\" action=\"?\">
@@ -131,12 +131,12 @@ owner,domain_name,subdomain,ip)VALUES(
 <input type=\"hidden\" name=\"action\" value=\"new_nameserver\">
 <input type=\"text\" name=\"subdomain\" value=\"\"><br>";
 		$query = "SELECT * FROM $pro_mysql_domain_table WHERE owner='$adm_login';";
-		$result = mysql_query($query)or die("Cannot query: \"$query\" !!!".mysql_error());
-		$num_rows = mysql_num_rows($result);
+		$result = mysqli_query($mysql_connection,$query)or die("Cannot query: \"$query\" !!!".mysql_error());
+		$num_rows = mysqli_num_rows($result);
 		$out .= _("Select one of your domain names to use as an additional name server with the domain registry:") ."<br>
 		<select name=\"domain_name\">";
 		for($i=0;$i<$num_rows;$i++){
-			$row = mysql_fetch_array($result);
+			$row = mysqli_fetch_array($result);
 			$out .= "<option value=\"" . $row["name"] . "\">" . $row["name"] . "</option>";
 		}
 		$out .= "</select><br>

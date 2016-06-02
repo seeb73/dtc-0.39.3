@@ -22,7 +22,7 @@ require_once ("/usr/share/dtc/shared/dtcrm/modules/opensrs/opensrs/openSRS_loade
 	global $pro_mysql_domain_table;
 	
 	$q = "SELECT owner,registrar_password FROM $pro_mysql_domain_table WHERE name = '$domain';";
-	$r = mysql_query($q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	$a = mysql_fetch_array($r);
 	$login = $a["owner"];
 	$pass = $a["registrar_password"];

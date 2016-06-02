@@ -66,7 +66,7 @@ $q = "SELECT $pro_mysql_client_table.email FROM $pro_mysql_client_table,$pro_mys
 WHERE $select_where_condition 
 AND $pro_mysql_client_table.id=$pro_mysql_admin_table.id_client
 AND $pro_mysql_admin_table.adm_login=$pro_mysql_vps_table.owner";
-$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 $n = mysql_num_rows($r);
 for($i=0;$i<$n;$i++){
         $a = mysql_fetch_array($r);

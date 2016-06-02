@@ -6,6 +6,7 @@ function DTCRMlistClients(){
 	global $pro_mysql_client_table;
 	global $pro_mysql_admin_table;
 	global $conf_post_or_get;
+	global $mysql_connection;
 
 	// The popup value is stored in the session, let's manage it
 	if(isset($_REQUEST["clientlist_type"]) && $_REQUEST["clientlist_type"] != ""){
@@ -32,8 +33,8 @@ function DTCRMlistClients(){
 		$query = "SELECT * FROM $pro_mysql_client_table ORDER BY familyname";
 	}
 
-	$result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
-	$num_rows = mysql_num_rows($result);
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+	$num_rows = mysqli_num_rows($result);
 	$client_list = array();
 	if(isset($id_client) && $_REQUEST["id"] == 0){
 		$selected = "yes";
@@ -45,11 +46,11 @@ function DTCRMlistClients(){
 		"link" => "?rub=crm&id=0",
 		"selected" => $selected);
 	for($i=0;$i<$num_rows;$i++){
-		$row = mysql_fetch_array($result);
+		$row = mysqli_fetch_array($result);
 		if($clientlist_type == "hide-no-admins"){
 			$qa = "SELECT adm_login FROM $pro_mysql_admin_table WHERE id_client='".$row["id"]."';";
-			$ra = mysql_query($qa)or die("Cannot query $qa line ".__LINE__." file ".__FILE__." sql said: ".mysql_error()); 
-			$rn = mysql_num_rows($ra);
+			$ra = mysqli_query($mysql_connection,$qa)or die("Cannot query $qa line ".__LINE__." file ".__FILE__." sql said: ".mysql_error()); 
+			$rn = mysqli_num_rows($ra);
 			if($rn == 0){
 				$do_display = "no";
 			}else{
@@ -134,19 +135,19 @@ function DTCRMclientAdmins(){
 	global $conf_post_or_get;
 
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE id_client='".$_REQUEST["id"]."'";
-	$r = mysql_query($q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysql_error());
-        $n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysql_error());
+        $n = mysqli_num_rows($r);
 	$text = "<br><h3>". _("Remove an administrator for this customer:") ."</h3><br>";
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		if($i > 0)
 			$text .= " - ";
 		$text .= "<a href=\"?rub=crm&id=".$_REQUEST["id"]."&action=remove_admin_from_client&adm_name=".$a["adm_login"]."\">".$a["adm_login"]."</a>";
 	}
 
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE id_client='0'";
-	$r = mysql_query($q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysql_error());
-        $n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysql_error());
+        $n = mysqli_num_rows($r);
 	$text .= "<br><br><h3>". _("Add an administrator to this customer:") ."</h3><br>";
 	$text .= "<form method=\"$conf_post_or_get\" action=\"?\">
 <table cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr><td><input type=\"hidden\" name=\"rub\" value=\"".$_REQUEST["rub"]."\">
@@ -154,7 +155,7 @@ function DTCRMclientAdmins(){
 <input type=\"hidden\" name=\"action\" value=\"add_admin_to_client\">
 <select name=\"adm_name\">";
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		if($i > 0)
 			$text .= " - ";
 		$text .= "<option value=\"".$a["adm_login"]."\">".$a["adm_login"]."</option>";
@@ -172,6 +173,7 @@ function DTCRMeditClients(){
 	global $pro_mysql_client_table;
 	global $pro_mysql_custom_fld_table;
 	global $conf_post_or_get;
+	global $mysql_connection;
 
 	if(isset($_REQUEST["id"])){
 		$cid = $_REQUEST["id"];	// current customer id
@@ -183,12 +185,12 @@ function DTCRMeditClients(){
 	$iscomp_no = "";
 	if($cid != 0 && isset($cid) && $cid != ""){
 		$query = "SELECT * FROM $pro_mysql_client_table WHERE id='".$_REQUEST["id"]."';";
-	        $result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
-	        $num_rows = mysql_num_rows($result);
+	        $result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+	        $num_rows = mysqli_num_rows($result);
 		if($num_rows != 1){
 			return "<font color=\"red\">Error : no row by that client ID (".$_REQUEST["id"].") !!!</font>";
 		}
-		$row = mysql_fetch_array($result);
+		$row = mysqli_fetch_array($result);
 		$hidden_inputs = "<input type=\"hidden\" name=\"action\" value=\"edit_client\">";
 		if($row["is_company"] == "no"){
 			$iscomp_yes = "";
@@ -268,12 +270,12 @@ cc_code_popup($row["country"])."</select>",0);
 	}
 
 	$q = "SELECT * FROM $pro_mysql_custom_fld_table WHERE 1 ORDER BY widgetorder;";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	$init_alt = 1;
 
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		if($init_alt == 1){
 			$init_alt = 0;
 			$css_class = "dtcDatagrid_input_alt_color";

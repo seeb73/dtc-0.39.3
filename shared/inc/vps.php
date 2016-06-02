@@ -4,8 +4,8 @@ function checkVPSAdmin($adm_login,$adm_pass,$vps_node,$vps_name){
 	global $pro_mysql_vps_table;
 	checkLoginPass($adm_login,$adm_pass);
 	$q = "SELECT * FROM $pro_mysql_vps_table WHERE owner='$adm_login' AND vps_server_hostname='".mysql_real_escape_string($vps_node)."' AND vps_xen_name='".mysql_real_escape_string($vps_name)."';";
-	$r = mysql_query($q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 1){
 		return true;
 	}else{
@@ -16,12 +16,12 @@ function checkVPSAdmin($adm_login,$adm_pass,$vps_node,$vps_name){
 function connectToVPSServer($vps_node){
 	global $pro_mysql_vps_server_table;
 	$q = "SELECT * FROM $pro_mysql_vps_server_table WHERE hostname='$vps_node';";
-	$r = mysql_query($q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find hostname $vps_node of VPS server line ".__LINE__." file ".__FILE__);
 	}
-	$a = mysql_fetch_array($r);
+	$a = mysqli_fetch_array($r);
 	$port = 8089;
 	$soap_client = new nusoap_client("https://$vps_node:$port/");
 	$err = $soap_client->getError();
@@ -42,12 +42,12 @@ function connectToVPSServer($vps_node){
 function isVPSNodeLVMEnabled($vps_node){
 	global $pro_mysql_vps_server_table;
 	$q = "SELECT * FROM $pro_mysql_vps_server_table WHERE hostname='$vps_node';";
-	$r = mysql_query($q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find hostname of VPS server line ".__LINE__." file ".__FILE__);
 	}
-	$a = mysql_fetch_array($r);
+	$a = mysqli_fetch_array($r);
 	if (isset($a["lvmenable"])){
 		return $a["lvmenable"];
 	}else{

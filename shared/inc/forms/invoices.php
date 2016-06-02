@@ -15,28 +15,28 @@ function drawAdminTools_Invoices($admin){
 	$out = "";
 
 	$q = "SELECT * FROM $pro_mysql_companies_table WHERE 1;";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 0){
 		$out = _("There is no company defined: impossible to show invoices. Contact your administrator.");
 		return $out;
 	}
 
 	$q = "SELECT * FROM $pro_mysql_companies_table WHERE id='".$conf_default_company_invoicing."';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 0){
 		$out = _("There is no default invoincing company set: impossible to show invoices. Contact your administrator.");
 		return $out;
 	}
 
 	$q = "SELECT * FROM $pro_mysql_completedorders_table WHERE id_client='".$admin["client"]["id"]."' ORDER BY date;";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n > 0){
 		// Update the password for enabling downloads of PDF
 		$q = "UPDATE $pro_mysql_completedorders_table SET download_pass='$adm_pass' WHERE id_client='".$admin["client"]["id"]."';";
-		$r2 = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r2 = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 
 		$out .= "<br><br>".dtcFormTableAttrs()."
 <tr><td class=\"dtcDatagrid_table_titles\">". _("Date") ."</td>
@@ -54,8 +54,8 @@ function drawAdminTools_Invoices($admin){
 			$a = mysql_fetch_array($r);
 			if($a["product_id"] != 0){
 				$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$a["product_id"]."';";
-				$r2 = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 != 1){
 					$product_name = _("Product not found.");
 				}else{
@@ -87,8 +87,8 @@ function drawAdminTools_Invoices($admin){
 							break;
 						}
 						$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$attrs[$ind]."';";
-						$r2 = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-						$n2 = mysql_num_rows($r2);
+						$r2 = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+						$n2 = mysqli_num_rows($r2);
 						if($n2 != 1){
 							$product_name .= _("Product not found.");
 						}else{
@@ -99,8 +99,8 @@ function drawAdminTools_Invoices($admin){
 				}
 			}
 			$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='".$a["payment_id"]."';";
-			$r2 = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n2 = mysql_num_rows($r2);
+			$r2 = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n2 = mysqli_num_rows($r2);
 			if($n2 != 1){
 				$total = _("Not found!");
 				$gate = _("Not found!");

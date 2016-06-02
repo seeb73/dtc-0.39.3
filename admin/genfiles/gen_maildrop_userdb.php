@@ -33,6 +33,8 @@ function mail_account_generate_maildrop(){
 
 	global $panel_type;
 
+	global $mysql_connection;
+
 	if( file_exists("/etc/courier/userdb") ){
 		$path_userdb="/etc/courier/userdb";
 	}elseif( file_exists("/usr/local/etc/userdb") ){
@@ -68,11 +70,11 @@ function mail_account_generate_maildrop(){
 
 	// This is a rewrite of this function that should be faster and better.
 	$q2 = "SELECT name,domain_parking FROM $pro_mysql_domain_table";
-	$r2 = mysql_query($q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n2 = mysql_num_rows($r2);
+	$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n2 = mysqli_num_rows($r2);
 	$userdb_file = "";
 	for($j=0;$j<$n2;$j++){
-		$a2 = mysql_fetch_array($r2);
+		$a2 = mysqli_fetch_array($r2);
 		$name = $a2["name"];
 
 		// This handles domain parking delivery
@@ -89,10 +91,10 @@ function mail_account_generate_maildrop(){
 		AND $pro_mysql_domain_table.name='$query_dom_name'
 		AND ($pro_mysql_admin_table.disabled='no' or $pro_mysql_admin_table.disabled='always-no' or $pro_mysql_admin_table.disabled='')
 		ORDER BY $pro_mysql_pop_table.id";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		for($i=0;$i<$n;$i++){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$boxpath = $a["path"]."/".$a["name"]."/Mailboxs/".$a["id"];
 			$userdb_file .= $a["id"]."@".$a2["name"]."\t".'home='.$boxpath.'|mail='.$boxpath."|uid=".$a["uid"].'|gid='.$a["gid"].'|quota='.$a["quota_couriermaildrop"]."\n";
 			$quota_maildrop=$a["quota_couriermaildrop"];

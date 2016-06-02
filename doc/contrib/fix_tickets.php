@@ -15,12 +15,12 @@ require("../shared/autoSQLconfig.php"); // Our main configuration file
 require_once("$dtcshared_path/dtc_lib.php");
 
 $q = "SELECT * FROM $pro_mysql_tik_queries_table WHERE initial_ticket='yes';";
-$r = mysql_query($q);
+$r = mysqli_query($mysql_connection,$q);
 $n = mysql_num_rows($r);
 for($i=0;$i<$n;$i++){
 	$a = mysql_fetch_array($r);
 	$qz = "UPDATE $pro_mysql_tik_queries_table SET hash='".createSupportHash()."' WHERE id='".$a["id"]."';";
-	$rz = mysql_query($qz);
+	$rz = mysqli_query($mysql_connection,$qz);
 }
 
 ?>

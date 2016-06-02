@@ -62,8 +62,8 @@ echo "Period: $START_INVOICE to $END_INVOICE\n";
 
 $q = "SELECT * FROM $pro_mysql_completedorders_table WHERE date >= '".$START_INVOICE."' AND DATE <= '".$END_INVOICE."' ORDER BY date;";
 echo $q."\n";
-$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-$n = mysql_num_rows($r);
+$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+$n = mysqli_num_rows($r);
 
 if($n == 0){
 	echo "Found no invoices to save for this period: exiting\n";
@@ -75,27 +75,27 @@ mkdir($temp_dir);
 
 echo "Found $n invoices\n";
 for($i=0;$i<$n;$i++){
-	$comp = mysql_fetch_array($r);
+	$comp = mysqli_fetch_array($r);
 	$q2 = "SELECT * FROM $pro_mysql_pay_table WHERE id='".$comp["payment_id"]."';";
-	$r2 = mysql_query($q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n2 = mysql_num_rows($r2);
+	$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n2 = mysqli_num_rows($r2);
 	if($n2 != 1){
 		echo "Completed order ".$comp["id"]." has no corresponding payment entry in payment table!\n";
 		continue;
 	}
-	$payment = mysql_fetch_array($r2);
+	$payment = mysqli_fetch_array($r2);
 	$q2 = "SELECT * FROM $pro_mysql_client_table WHERE id='".$comp["id_client"]."';";
-	$r2 = mysql_query($q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n2 = mysql_num_rows($r2);
+	$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n2 = mysqli_num_rows($r2);
 	if($n2 != 1){
 		echo "Completed order ".$comp["id"]." has no corresponding client entry in client table!\n";
 		continue;
 	}
-	$client = mysql_fetch_array($r2);
+	$client = mysqli_fetch_array($r2);
 
 	$random_val = getRandomValue();
 	$q2 = "UPDATE $pro_mysql_completedorders_table SET download_pass='".$random_val."' WHERE id='".$comp["id"]."';";
-	$r2 = mysql_query($q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	if($client["is_company"] == "yes"){
 		$client_name = $client["company_name"]."_".$client["familyname"]."_".$client["christname"];
 	}else{

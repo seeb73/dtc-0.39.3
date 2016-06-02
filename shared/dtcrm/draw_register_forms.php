@@ -4,11 +4,11 @@ function make_registration_tld_popup(){
 	global $pro_mysql_registrar_domains_table;
 
 	$q = "SELECT tld FROM $pro_mysql_registrar_domains_table WHERE 1;";
-	$r = mysql_query($q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	$reg_tld_popup = "";
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$reg_tld_popup .= "<option value=\"".$a["tld"]."\">".$a["tld"]."</option>";
 	}
 	$form_enter_domain_name = "<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\">

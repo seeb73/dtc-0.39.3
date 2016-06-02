@@ -46,10 +46,10 @@ $TMDarray_name = "array";		// Name of the key that will handle all the tree desc
  *
  */
 function TMDfetchAllRawsInArray($query_string){
-	$result = mysql_query($query_string) or die("Cannot query : \"$query_string\" !".mysql_error());
-	$num_rows = mysql_num_rows($result);
+	$result = mysqli_query($mysql_connection,$query_string) or die("Cannot query : \"$query_string\" !".mysql_error());
+	$num_rows = mysqli_num_rows($result);
 	for($i=0;$i<$num_rows;$i++){
-		$table[] = mysql_fetch_array($result);
+		$table[] = mysqli_fetch_array($result);
 	}
 	return $table;
 }
@@ -59,7 +59,7 @@ function TMDfetchAllRawsInArray($query_string){
  * Fetch an object from DB to memory
  *
  * @param id ID of the object that will be fetched in $TMDtbl_content
- * @return the object itself in an associative table form (mysql_fetch_array())
+ * @return the object itself in an associative table form (mysqli_fetch_array())
  *
  */
 function TDMtreeFetchObject($id){
@@ -82,7 +82,7 @@ function TMDgetFieldList(){
 	global $TMDarray_name;
 
 	$query = "SELECT * FROM $TMDtbl_content";
-	$result= mysql_query($query) or die("Cannot query $query<br>".mysql_error());
+	$result= mysqli_query($mysql_connection,$query) or die("Cannot query $query<br>".mysql_error());
 	$num_fields= mysql_num_fields($result);
 	for($i=0;$i<$num_fields;$i++){
 		$field_name= mysql_field_name($result,$i);
@@ -142,9 +142,9 @@ function TMDgetTreeID($name){
 	global $TMDtbl_tree;
 
 	$query = "SELECT id FROM $TMDtbl_tree WHERE name='$name';";
-	$result = mysql_query($query) or die("Cannot query $query<br>".mysql_error());
-	if(mysql_num_rows($result) != 1) return false;
-	$tree = mysql_fetch_array($result);
+	$result = mysqli_query($mysql_connection,$query) or die("Cannot query $query<br>".mysql_error());
+	if(mysqli_num_rows($result) != 1) return false;
+	$tree = mysqli_fetch_array($result);
 	return $tree["id"];
 }
 
@@ -163,16 +163,16 @@ function TMDnewTree($name){
 	if(TMDgetTreeID($name) != false) return false;
 
 	$query = "INSERT INTO $TMDtbl_tree (id,name,root_object_id)VALUES('','$name','0')";
-	$result = mysql_query($query) or die("Cannot query $query<br>".mysql_error());
+	$result = mysqli_query($mysql_connection,$query) or die("Cannot query $query<br>".mysql_error());
 	$tree_id = mysql_insert_id();
 
 	$query = "INSERT INTO $TMDtbl_content (id,ob_head,ob_tail,ob_next,tree_id)
 								VALUES('','0','0','0','$tree_id')";
-	$result = mysql_query($query) or die("Cannot query $query<br>".mysql_error());
+	$result = mysqli_query($mysql_connection,$query) or die("Cannot query $query<br>".mysql_error());
 	$root_node_id = mysql_insert_id();
 
 	$query = "UPDATE $TMDtbl_tree SET root_object_id='$root_node_id' WHERE id='$tree_id';";
-	$result = mysql_query($query) or die("Cannot query $query<br>".mysql_error());
+	$result = mysqli_query($mysql_connection,$query) or die("Cannot query $query<br>".mysql_error());
 	return $tree_id;
 }
 
@@ -188,10 +188,10 @@ function TMDtreeDelete($treeID){
 	global $TMDtbl_tree;
 	global $TMDtbl_content;
 	$query = "DELETE FROM $TMDtbl_tree WHERE id='$treeID';";
-	$result = mysql_query($query) or die("Cannot query $query<br>".mysql_error());
+	$result = mysqli_query($mysql_connection,$query) or die("Cannot query $query<br>".mysql_error());
 
 	$query = "DELETE FROM $TMDtbl_content WHERE tree_id='$treeID';";
-	$result = mysql_query($query) or die("Cannot query $query<br>".mysql_error());
+	$result = mysqli_query($mysql_connection,$query) or die("Cannot query $query<br>".mysql_error());
 }
 
 /////////////////////////////
@@ -218,7 +218,7 @@ function TDMtreeMemToDBUpdateDataFields($node_id,$node_to_add){
 		$vars_update .= $TMDfield_list[$i]."='". $node_to_add[$TMDfield_list[$i]] ."'";
 	}
 	$query = "UPDATE $TMDtbl_content SET $vars_update WHERE id='$node_id';";
-	$result = mysql_query($query) or die("Cannot query $query<br>".mysql_error());
+	$result = mysqli_query($mysql_connection,$query) or die("Cannot query $query<br>".mysql_error());
 }
 
 /**
@@ -243,11 +243,11 @@ function TMDtreeMemToDBRecursion($treeID,$root_id,$nodes_to_add){
 
 		$query = "INSERT INTO $TMDtbl_content (id,ob_head,ob_tail,ob_next,tree_id)
 										VALUES ('','0','0','$root_id','$treeID');";
-		$result = mysql_query($query) or die("Cannot query $query<br>".mysql_error());
+		$result = mysqli_query($mysql_connection,$query) or die("Cannot query $query<br>".mysql_error());
 		$node_id = mysql_insert_id();
 
 		$query = "UPDATE $TMDtbl_content SET ob_head='$node_id',ob_tail='$node_id' WHERE id='$root_id' AND tree_id='$treeID';";
-		$result = mysql_query($query) or die("Cannot query $query<br>".mysql_error());
+		$result = mysqli_query($mysql_connection,$query) or die("Cannot query $query<br>".mysql_error());
 
 		TDMtreeMemToDBUpdateDataFields($node_id,$cur_node);
 
@@ -263,24 +263,24 @@ function TMDtreeMemToDBRecursion($treeID,$root_id,$nodes_to_add){
 
 		$query = "INSERT INTO $TMDtbl_content (id,ob_head,ob_tail,ob_next,tree_id)
 										VALUES ('','0','0','0','$treeID');";
-		$result = mysql_query($query) or die("Cannot query $query<br>".mysql_error());
+		$result = mysqli_query($mysql_connection,$query) or die("Cannot query $query<br>".mysql_error());
 		$node_id = mysql_insert_id();
 
 		if($i == 0){
 			$query = "UPDATE $TMDtbl_content SET ob_head='$node_id' WHERE id='$root_id' AND tree_id='$treeID';";
-			$result = mysql_query($query) or die("Cannot query $query<br>".mysql_error());
+			$result = mysqli_query($mysql_connection,$query) or die("Cannot query $query<br>".mysql_error());
 		}
 
 		if(isset($last_node_id)){
 			$query = "UPDATE $TMDtbl_content SET ob_next='$node_id' WHERE id='$last_node_id' AND tree_id='$treeID';";
-			$result = mysql_query($query) or die("Cannot query $query<br>".mysql_error());
+			$result = mysqli_query($mysql_connection,$query) or die("Cannot query $query<br>".mysql_error());
 		}
 		// If last node, then update the parent node
 		if($i == $node_nbr-1){
 			$query = "UPDATE $TMDtbl_content SET ob_next='$root_id' WHERE id='$node_id' AND tree_id='$treeID';";
-			$result = mysql_query($query) or die("Cannot query $query<br>".mysql_error());
+			$result = mysqli_query($mysql_connection,$query) or die("Cannot query $query<br>".mysql_error());
 			$query = "UPDATE $TMDtbl_content SET ob_tail='$node_id' WHERE id='$root_id' AND tree_id='$treeID';";
-			$result = mysql_query($query) or die("Cannot query $query<br>".mysql_error());
+			$result = mysqli_query($mysql_connection,$query) or die("Cannot query $query<br>".mysql_error());
 		}
 		TDMtreeMemToDBUpdateDataFields($node_id,$cur_node);
 
@@ -307,17 +307,17 @@ function TMDtreeMemToDB($treeID,$tree){
 
 	// Delete all rows of the current menu
 	$query = "DELETE FROM $TMDtbl_content WHERE tree_id='$treeID';";
-	mysql_query($query);
+	mysqli_query($mysql_connection,$query);
 
 	// Insert the root node, and fetch it's ID
 	$query = "INSERT INTO $TMDtbl_content (id,ob_head,ob_tail,ob_next,tree_id) VALUES
 										('','0','0','0','$treeID');";
-	$result = mysql_query($query) or die("Cannot query: \"$query\" !".mysql_error());
+	$result = mysqli_query($mysql_connection,$query) or die("Cannot query: \"$query\" !".mysql_error());
 	$root_id = mysql_insert_id();
 
 	// Modify the "tree" table to have the correct (newly created) root node ID
 	$query = "UPDATE $TMDtbl_tree SET root_object_id='$root_id' WHERE id='$treeID';";
-	$result = mysql_query($query) or die("Cannot query: \"$query\" !".mysql_error());
+	$result = mysqli_query($mysql_connection,$query) or die("Cannot query: \"$query\" !".mysql_error());
 
 	// Now, add ALL nodes to the root node
 	TMDtreeMemToDBRecursion($treeID,$root_id,$tree);
@@ -384,10 +384,10 @@ function TDMtreeDBToMemRecurtion($object_id){
 
 	$query = "SELECT * FROM $TMDtbl_content WHERE id='$object_id';";
 //	echo "<br>Staring one level with query : $query<br>";
-	$result = mysql_query($query) or die("Cannot query $query<br>".mysql_error());
-	$nbr_rows = mysql_num_rows($result);
+	$result = mysqli_query($mysql_connection,$query) or die("Cannot query $query<br>".mysql_error());
+	$nbr_rows = mysqli_num_rows($result);
 	if($nbr_rows != 1)		return false;
-	$ob = mysql_fetch_array($result);
+	$ob = mysqli_fetch_array($result);
 
 	if($ob["ob_head"] == 0){
 		return $ob;
@@ -419,10 +419,10 @@ function TDMtreeDBToMem($tree_id){
 	global $TMDarray_name;
 
 	$query = "SELECT root_object_id FROM $TMDtbl_tree WHERE id='$tree_id';";
-	$result = mysql_query($query) or die("Cannot query $query<br>".mysql_error());
-	$nbr_rows = mysql_num_rows($result);
+	$result = mysqli_query($mysql_connection,$query) or die("Cannot query $query<br>".mysql_error());
+	$nbr_rows = mysqli_num_rows($result);
 	if($nbr_rows != 1)		return false;
-	$row = mysql_fetch_array($result);
+	$row = mysqli_fetch_array($result);
 	$all_the_tree = TDMtreeDBToMemRecurtion($row["root_object_id"]);
 	$tree = $all_the_tree["$TMDarray_name"];
 	$tree = TDMcleanChilds($tree);

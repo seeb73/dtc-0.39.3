@@ -28,8 +28,8 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	// Check owner and fetch!
 	checkDedicatedAdmin($adm_login,$adm_pass,$dedicated_server_hostname);
 	$q = "SELECT * FROM $pro_mysql_dedicated_table WHERE server_hostname='$dedicated_server_hostname';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$out .= _("Server not found!");
 	}
@@ -37,8 +37,8 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 
 	// Display the current contract
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$dedicated["product_id"]."';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$server_prod = mysql_fetch_array($r);
 		$contract = $server_prod["name"];
@@ -47,8 +47,8 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	}
 	// Get the current admin
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$admin = mysql_fetch_array($r);
 	}
@@ -71,15 +71,15 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	$out .= " ".calculateExpirationDate($dedicated["expire_date"],$period)."<br>";
 
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."'";
-	$r = mysql_query($q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	$admin = mysql_fetch_array($r);
 
 	if($admin["show_invoice_info"] == 'yes' && $conf_show_invoice_info == 'yes'){
 		$out .= "<br>". _("Please renew it with one of the following options") ."<br>";
 		if ($secpayconf_use_products_for_renewal == 'yes'){
 			$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$dedicated["product_id"]."';";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			if($n == 1){
 				$a = mysql_fetch_array($r);
 				$out .= "<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
@@ -94,8 +94,8 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 		}
 
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$dedicated["product_id"]."';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		for($i=0;$i<$n;$i++){
 			$a = mysql_fetch_array($r);
 			$out .= "<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
@@ -119,8 +119,8 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	if ( $server_prod["use_radius"] == 'yes' ) {
 		$out .= '<BR><BR>';
 		$q = "SELECT * FROM $pro_mysql_raduser_table WHERE dedicated_id='".$dedicated["id"]."';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		$user_ok = 'no';
 		if($n == 1){
 			$radius_user = mysql_fetch_array($r);
@@ -154,8 +154,8 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	$out .= "<br><br><h3>"._("IP addresses: ")."</h3>";
 
 	$q = "SELECT * FROM $pro_mysql_dedicated_ips_table WHERE dedicated_server_hostname='$dedicated_server_hostname'";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 
 	$out .= dtcFormTableAttrs();
 

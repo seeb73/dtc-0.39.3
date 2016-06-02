@@ -3,6 +3,7 @@
 function fetchmail_generate() {
 	global $conf_generated_file_path;
 	global $console;
+	global $mysql_connection;
 
 	$filename=$conf_generated_file_path.'/fetchmailrc';
 	$console.="Generating $filename : ";
@@ -13,10 +14,10 @@ function fetchmail_generate() {
 		return false;
 	}
 
-	$result=mysql_query("SELECT * FROM fetchmail");
+	$result=mysqli_query($mysql_connection,"SELECT * FROM fetchmail");
 	$num=0;    
 	$fetchline="";
-	while ($row=mysql_fetch_assoc($result)) {
+	while ($row=mysqli_fetch_assoc($result)) {
 		if ($row['checkit'] != "yes") continue;
 		/* Yes, only pop3 yet. Must specify it, auto is *sloooow* */
 		$fetchline.="poll ${row['pop3_server']} proto POP3\n";

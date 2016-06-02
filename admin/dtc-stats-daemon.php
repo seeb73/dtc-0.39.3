@@ -107,7 +107,7 @@ function send_quota_warning_email($vps_specs,$warning_type){
 
 	// Get the admin and client records
 	$q2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$vps_specs["owner"]."';";
-	if(($r2 = mysql_query($q2)) === FALSE){
+	if(($r2 = mysqli_query($mysql_connection,$q2)) === FALSE){
 		continue;
 	}
 	$n2 = mysql_num_rows($r2);
@@ -118,7 +118,7 @@ function send_quota_warning_email($vps_specs,$warning_type){
 	mysql_free_result($r2);
 
 	$q2 = "SELECT * FROM $pro_mysql_client_table WHERE id='".$vps_admin["id_client"]."';";
-	if(($r2 = mysql_query($q2)) === FALSE){
+	if(($r2 = mysqli_query($mysql_connection,$q2)) === FALSE){
 		continue;
 	}
 	$n2 = mysql_num_rows($r2);
@@ -177,22 +177,18 @@ while (!$shutdown){
 
 	if (!mysql_ping()) {
 		fwrite($log_fp, date("Y-m-d H:i:s")." Lost connection to DB! Trying to reconnect...\n");
-		mysql_close();
-		$ressource_id = mysql_connect($conf_mysql_host, $conf_mysql_login, $conf_mysql_pass);
+		mysqli_close();
+		$ressource_id = mysqli_connect($conf_mysql_host, $conf_mysql_login, $conf_mysql_pass, $conf_mysql_db);
 		if($ressource_id === FALSE){
 			fwrite($log_fp, date("Y-m-d H:i:s")." ".mysql_error()."\n");
 			continue;
 		}else{
 			fwrite($log_fp, date("Y-m-d H:i:s")." Reconnect successful!\n");
-			$ressource_db = mysql_select_db($conf_mysql_db);
-			if($ressource_db === FALSE){
-				fwrite($log_fp, date("Y-m-d H:i:s")." ".mysql_error()."\n");
-			}
 		}
 	}
 
 	$vps_query = "SELECT * FROM $pro_mysql_vps_server_table;";
-	if( ($vps_servers_result = mysql_query($vps_query)) === FALSE){
+	if( ($vps_servers_result = mysqli_query($mysql_connection,$vps_query)) === FALSE){
 		fwrite($log_fp, date("Y-m-d H:i:s")." ".mysql_error()."\n");
 		continue;
 	}
@@ -346,7 +342,7 @@ while (!$shutdown){
 				// An INSERT IGNORE should be faster than a SELECT, then checking if the row exists...
 				$q2 = "INSERT IGNORE INTO $pro_mysql_vps_stats_table (vps_server_hostname,vps_xen_name,month,year,cpu_usage,network_in_count,network_out_count,diskio_count,swapio_count)
 VALUES ('".$vps_servers_row["hostname"]."','xen$vps_number','".date("m",$timestamp)."','".date("Y",$timestamp)."','0','0','0','0','0');";
-				if(mysql_query($q2) === FALSE){
+				if(mysqli_query($mysql_connection,$q2) === FALSE){
 					continue;
 				}
 				$q2 = "UPDATE $pro_mysql_vps_stats_table
@@ -354,12 +350,12 @@ SET cpu_usage=cpu_usage + '$vps_cpu', network_in_count=network_in_count + '$vps_
 diskio_count=diskio_count + '$vps_fs_sectors', swapio_count=swapio_count + '$vps_swap_sectors'
 WHERE vps_server_hostname='".$vps_servers_row["hostname"]."' AND vps_xen_name='xen".$vps_number."' AND month='".date("m",$timestamp)."' AND year='".date("Y",$timestamp)."'";
 				$flag = 0;
-				if(mysql_query($q2) === FALSE){
+				if(mysqli_query($mysql_connection,$q2) === FALSE){
 					continue;
 				}
 				// Find out what is the current usage
 				$q2 = "SELECT * FROM $pro_mysql_vps_stats_table WHERE vps_server_hostname='".$vps_servers_row["hostname"]."' AND vps_xen_name='xen".$vps_number."' AND month='".date("m",$timestamp)."' AND year='".date("Y",$timestamp)."'";
-				$r2 = mysql_query($q2);
+				$r2 = mysqli_query($mysql_connection,$q2);
 				if($r2 === FALSE){
 					continue;
 				}
@@ -371,7 +367,7 @@ WHERE vps_server_hostname='".$vps_servers_row["hostname"]."' AND vps_xen_name='x
 				mysql_free_result($r2);
 				// Get the quota
 				$q2 = "SELECT * FROM $pro_mysql_vps_table WHERE vps_xen_name='".$vps_number."' AND vps_server_hostname='".$vps_servers_row["hostname"]."';";
-				$r2 = mysql_query($q2);
+				$r2 = mysqli_query($mysql_connection,$q2);
 				if($r2 === FALSE){
 					continue;
 				}
@@ -386,7 +382,7 @@ WHERE vps_server_hostname='".$vps_servers_row["hostname"]."' AND vps_xen_name='x
 							&& $vps_current_use["tresh_before_warn_sent"] == "no"){
 					$q2 = "UPDATE $pro_mysql_vps_stats_table SET tresh_before_warn_sent='yes'
 					WHERE vps_server_hostname='".$vps_servers_row["hostname"]."' AND vps_xen_name='xen".$vps_number."' AND month='".date("m",$timestamp)."' AND year='".date("Y",$timestamp)."'";
-					mysql_query($q2);
+					mysqli_query($mysql_connection,$q2);
 					fwrite($log_fp, "\n" . date("Y-m-d H:i:s")." VPS is at 80% of its quota: $vps_number:".$vps_servers_row["hostname"].": sending warning email\n");
 					send_quota_warning_email($vps_specs,"vps_80_percent");
 				}
@@ -395,7 +391,7 @@ WHERE vps_server_hostname='".$vps_servers_row["hostname"]."' AND vps_xen_name='x
 							&& $vps_current_use["tresh_quota_reached_warn_sent"] == "no"){
 					$q2 = "UPDATE $pro_mysql_vps_stats_table SET tresh_quota_reached_warn_sent='yes'
 					WHERE vps_server_hostname='".$vps_servers_row["hostname"]."' AND vps_xen_name='xen".$vps_number."' AND month='".date("m",$timestamp)."' AND year='".date("Y",$timestamp)."'";
-					mysql_query($q2);
+					mysqli_query($mysql_connection,$q2);
 					fwrite($log_fp, "\n" . date("Y-m-d H:i:s")." VPS reached its quota: $vps_number:".$vps_servers_row["hostname"].": sending warning email\n");
 					send_quota_warning_email($vps_specs,"vps_quota_reached");
 				}
@@ -404,12 +400,12 @@ WHERE vps_server_hostname='".$vps_servers_row["hostname"]."' AND vps_xen_name='x
 							&& $vps_current_use["tresh_vps_shutdown"] == "no"){
 					$q2 = "UPDATE $pro_mysql_vps_stats_table SET tresh_vps_shutdown='yes'
 					WHERE vps_server_hostname='".$vps_servers_row["hostname"]."' AND vps_xen_name='xen".$vps_number."' AND month='".date("m",$timestamp)."' AND year='".date("Y",$timestamp)."'";
-					mysql_query($q2);
+					mysqli_query($mysql_connection,$q2);
 					fwrite($log_fp, "\n" . date("Y-m-d H:i:s")." VPS is a way over its quota: $vps_number:".$vps_servers_row["hostname"].": sending warning email and shutting down\n");
 					send_quota_warning_email($vps_specs,"vps_quota_shutdown");
 					// Time to shutdown the VPS...
 					$q2 = "UPDATE $pro_mysql_vps_table SET locked='yes' WHERE vps_xen_name='".$vps_number."' AND vps_server_hostname='".$vps_servers_row["hostname"]."';";
-					mysql_query($q2);
+					mysqli_query($mysql_connection,$q2);
 					remoteVPSAction($vps_servers_row["hostname"],$vps_number,"shutdown_vps");
 				}
 			}

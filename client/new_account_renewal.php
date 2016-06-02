@@ -32,14 +32,14 @@ function renew_form(){
 	}
 
 	$q = "SELECT adm_login,id_client FROM $pro_mysql_admin_table WHERE adm_login='".mysql_real_escape_string($_REQUEST["adm_login"])."';";
-	$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$ret["err"] = 3;
 		$ret["mesg"] = "Username not found in database! Try again.";
 		return $ret;
 	}else{
-		$admin = mysql_fetch_array($r);
+		$admin = mysqli_fetch_array($r);
 		$adm_login = $admin["adm_login"];
 	}
 
@@ -78,14 +78,14 @@ function renew_form(){
 				FROM $pro_mysql_vps_table,$pro_mysql_vps_server_table
 				WHERE owner='$adm_login' AND vps_server_hostname='$node' AND vps_xen_name='$vps_num'
 				AND $pro_mysql_vps_server_table.hostname = $pro_mysql_vps_table.vps_server_hostname;";
-				$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
-				$num = mysql_num_rows($r);
+				$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+				$num = mysqli_num_rows($r);
 				if($num != 1){
 					$ret["err"] = 3;
 					$ret["mesg"] = "<font color=\"red\">"._("Error: you do not own this VPS.")."</font>";
 					return $ret;
 				}
-				$vps = mysql_fetch_array($r);
+				$vps = mysqli_fetch_array($r);
 				if($i > 0){
 					$country .= "|";
 				}
@@ -97,8 +97,8 @@ function renew_form(){
 				}
 				$pid = $_REQUEST["vps:".str_replace(".","_",$node).":".$vps_num];
 				$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$vps["product_id"]."' AND id='$pid';";
-				$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
-				$num = mysql_num_rows($r);
+				$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+				$num = mysqli_num_rows($r);
 				if($num != 1 && $secpayconf_use_products_for_renewal == 'no'){
 					$ret["err"] = 3;
 					$ret["mesg"] = "<font color=\"red\">"._("Error: VPS renewal product ID not found.")."</font>";
@@ -106,16 +106,16 @@ function renew_form(){
 				}
 				if ( $secpayconf_use_products_for_renewal == 'yes'){
 					$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$vps["product_id"]."';";
-					$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
-					$num = mysql_num_rows($r);
+					$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+					$num = mysqli_num_rows($r);
 					if($num != 1 && $secpayconf_use_products_for_renewal == 'no'){
 						$ret["err"] = 3;
 						$ret["mesg"] = "<font color=\"red\">"._("Error: VPS product ID not found.")."</font>";
 						return $ret;
 					}
-					$p = mysql_fetch_array($r);
+					$p = mysqli_fetch_array($r);
 				}else{
-					$p = mysql_fetch_array($r);
+					$p = mysqli_fetch_array($r);
 				}
 				if($i > 0){
 					$services .= "|";
@@ -131,14 +131,14 @@ function renew_form(){
 				}
 				// Check if the dedicated is really owned by $adm_login
 				$q = "SELECT * FROM $pro_mysql_dedicated_table WHERE owner='$adm_login' AND server_hostname='$host';";
-				$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
-				$num = mysql_num_rows($r);
+				$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+				$num = mysqli_num_rows($r);
 				if($num != 1){
 					$ret["err"] = 3;
 					$ret["mesg"] = "<font color=\"red\">"._("Error: you do not own this dedicated server.")."</font>";
 					return $ret;
 				}
-				$dedi = mysql_fetch_array($r);
+				$dedi = mysqli_fetch_array($r);
 				if($i > 0){
 					$country .= "|";
 				}
@@ -150,8 +150,8 @@ function renew_form(){
 				}
 				$pid = $_REQUEST["server:".str_replace(".","_",$host)];
 				$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$dedi["product_id"]."' AND id='$pid';";
-				$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
-				$num = mysql_num_rows($r);
+				$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+				$num = mysqli_num_rows($r);
 				if($num != 1 &&  $secpayconf_use_products_for_renewal == 'no'){
 					$ret["err"] = 3;
 					$ret["mesg"] = "<font color=\"red\">"._("Error: dedicated server renewal product ID not found.")."</font>";
@@ -159,16 +159,16 @@ function renew_form(){
 				}
 				if ( $secpayconf_use_products_for_renewal == 'yes'){
 					$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$dedi["product_id"]."';";
-					$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
-					$num = mysql_num_rows($r);
+					$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+					$num = mysqli_num_rows($r);
 					if($num != 1 && $secpayconf_use_products_for_renewal == 'no'){
 						$ret["err"] = 3;
 						$ret["mesg"] = "<font color=\"red\">"._("Error: dedicated server product ID not found.")."</font>";
 						return $ret;
 					}
-					$p = mysql_fetch_array($r);
+					$p = mysqli_fetch_array($r);
 				}else{
-					$p = mysql_fetch_array($r);
+					$p = mysqli_fetch_array($r);
 				}
 				if($i > 0){
 					$services .= "|";
@@ -184,14 +184,14 @@ function renew_form(){
 				}
 				// Check if the custom product is really owned by $adm_login
 				$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE owner='$adm_login' AND domain='$host';";
-				$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
-				$num = mysql_num_rows($r);
+				$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+				$num = mysqli_num_rows($r);
 				if($num != 1){
 					$ret["err"] = 3;
 					$ret["mesg"] = "<font color=\"red\">"._("Error: you do not own this custom product.")."</font>";
 					return $ret;
 				}
-				$custom = mysql_fetch_array($r);
+				$custom = mysqli_fetch_array($r);
 				if($i > 0){
 					$country .= "|";
 				}
@@ -203,8 +203,8 @@ function renew_form(){
 				}
 				$pid = $_REQUEST["custom:".str_replace(".","_",$host)];
 				$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$custom["product_id"]."' AND id='$pid';";
-				$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
-				$num = mysql_num_rows($r);
+				$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+				$num = mysqli_num_rows($r);
 				if($num != 1 &&  $secpayconf_use_products_for_renewal == 'no'){
 					$ret["err"] = 3;
 					$ret["mesg"] = "<font color=\"red\">"._("Error: custom product renewal product ID not found.")."</font>";
@@ -212,16 +212,16 @@ function renew_form(){
 				}
 				if ( $secpayconf_use_products_for_renewal == 'yes'){
 					$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$custom["product_id"]."';";
-					$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
-					$num = mysql_num_rows($r);
+					$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+					$num = mysqli_num_rows($r);
 					if($num != 1 && $secpayconf_use_products_for_renewal == 'no'){
 						$ret["err"] = 3;
 						$ret["mesg"] = "<font color=\"red\">"._("Error: custom product ID not found.")."</font>";
 						return $ret;
 					}
-					$p = mysql_fetch_array($r);
+					$p = mysqli_fetch_array($r);
 				}else{
-					$p = mysql_fetch_array($r);
+					$p = mysqli_fetch_array($r);
 				}
 				if($i > 0){
 					$services .= "|";
@@ -231,14 +231,14 @@ function renew_form(){
 			case "shared":
 				// Check if the shared is really owned by $adm_login
 				$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-				$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
-				$num = mysql_num_rows($r);
+				$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+				$num = mysqli_num_rows($r);
 				if($num != 1){
 					$ret["err"] = 3;
 					$ret["mesg"] = "<font color=\"red\">"._("Error: you do not own this hosting.")."</font>";
 					return $ret;
 				}
-				$shared = mysql_fetch_array($r);
+				$shared = mysqli_fetch_array($r);
 				if($i > 0){
 					$country .= "|";
 				}
@@ -250,8 +250,8 @@ function renew_form(){
 				}
 				$pid = $_REQUEST["shared:".str_replace(".","_",$host)];
 				$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$shared["prod_id"]."' AND id='$pid';";
-				$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
-				$num = mysql_num_rows($r);
+				$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+				$num = mysqli_num_rows($r);
 				if($num != 1 &&  $secpayconf_use_products_for_renewal == 'no'){
 					$ret["err"] = 3;
 					$ret["mesg"] = "<font color=\"red\">"._("Error: hosting renewal product ID not found.")."</font>";
@@ -259,16 +259,16 @@ function renew_form(){
 				}
 				if ( $secpayconf_use_products_for_renewal == 'yes'){
 					$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$shared["prod_id"]."';";
-					$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
-					$num = mysql_num_rows($r);
+					$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+					$num = mysqli_num_rows($r);
 					if($num != 1 && $secpayconf_use_products_for_renewal == 'no'){
 						$ret["err"] = 3;
 						$ret["mesg"] = "<font color=\"red\">"._("Error: shared hosting product ID not found.")."</font>";
 						return $ret;
 					}
-					$p = mysql_fetch_array($r);
+					$p = mysqli_fetch_array($r);
 				}else{
-					$p = mysql_fetch_array($r);
+					$p = mysqli_fetch_array($r);
 				}
 				if($i > 0){
 					$services .= "|";
@@ -293,14 +293,14 @@ function renew_form(){
 		}else{
 			$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".mysql_real_escape_string($_REQUEST["product_id"])."';";
 		}
-		$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$ret["err"] = 3;
 			$ret["mesg"] = "<font color=\"red\">Cannot find product id!</font>";
 			return $ret;
 		}
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$product = $a;
 		$the_prod = $a["name"]." (".number_format($a["price_dollar"], 2)." $secpayconf_currency_letters)";
 		$prod_id = $a["id"];
@@ -323,14 +323,14 @@ function renew_form(){
 		$client_id = $_REQUEST["vps_id"];
 		$q = "SELECT country_code  FROM $pro_mysql_vps_table,$pro_mysql_vps_server_table
 		WHERE $pro_mysql_vps_table.id='".$_REQUEST["vps_id"]."' AND $pro_mysql_vps_server_table.hostname = $pro_mysql_vps_table.vps_server_hostname";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$ret["err"] = 3;
 			$ret["mesg"] = "<font color=\"red\">Cannot find vps server country</font>";
 			return $ret;
 		}
-		$ax = mysql_fetch_array($r);
+		$ax = mysqli_fetch_array($r);
 		$country = $ax["country_code"];
 		break;
 	case "shared":
@@ -358,14 +358,14 @@ function renew_form(){
 		}
 		$client_id = $_REQUEST["server_id"];
 		$q = "SELECT country_code FROM $pro_mysql_dedicated_table WHERE id='".$_REQUEST["server_id"]."';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$ret["err"] = 3;
 			$ret["mesg"] = "<font color=\"red\">Cannot find dedicated server country</font>";
 			return $ret;
 		}
-		$ax = mysql_fetch_array($r);
+		$ax = mysqli_fetch_array($r);
 		$country = $ax["country_code"];
 		break;
 	case "custom":
@@ -376,14 +376,14 @@ function renew_form(){
 		}
 		$client_id = $_REQUEST["custom_id"];
 		$q = "SELECT country_code FROM $pro_mysql_custom_product_table WHERE id='".$_REQUEST["custom_id"]."';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$ret["err"] = 3;
 			$ret["mesg"] = "<font color=\"red\">Cannot find custom service country</font>";
 			return $ret;
 		}
-		$ax = mysql_fetch_array($r);
+		$ax = mysqli_fetch_array($r);
 		$country = $ax["country_code"];
 		break;
 	default:
@@ -407,26 +407,26 @@ Service country: $country
 
 	// Get the client ID so we can get the country
 	$q = "SELECT * FROM $pro_mysql_client_table WHERE id='".$admin["id_client"]."'";
-	$r = mysql_query($q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query  \"$q\" !!! Line: ".__LINE__." File: ".__FILE__." MySQL said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$ret["err"] = 3;
 		$ret["mesg"] = _("Error: client ID not found in database.");
 		return $ret;
 	}else{
-		$client = mysql_fetch_array($r);
+		$client = mysqli_fetch_array($r);
 	}
 
 	// Get the VAT from the invoicing company
 	$company_invoicing_id = findInvoicingCompany ($country,$client["country"]);
 	$q = "SELECT * FROM $pro_mysql_companies_table WHERE id='$company_invoicing_id';";
-	$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 	if($n != 1){
 		$ret["err"] = 3;
 		$ret["mesg"] = "Cannot find company for invoicing.";
 		return $ret;
 	}
-	$company_invoicing = mysql_fetch_array($r);
+	$company_invoicing = mysqli_fetch_array($r);
 
 	// If VAT is set, use it.
 	if($company_invoicing["vat_rate"] == 0 || $company_invoicing["vat_number"] == ""){
@@ -455,8 +455,8 @@ Service country: $country
 			return $ret;
 		}
 		$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login' AND adm_pass='".$_REQUEST["validate_password"]."';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$ret["err"] = 3;
 			$ret["mesg"] = _("Error: wrong login or password.");
@@ -472,7 +472,7 @@ Service country: $country
 		$form .= "<br>"._("Remaining on your account before payment: ").$client["dollar"];
 		$form .= "<br>"._("Price: ").$price;
 		$q = "UPDATE $pro_mysql_client_table SET dollar=dollar-" . $product["price_dollar"] . " WHERE id='".$client["id"]."';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said: ".mysql_error());
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said: ".mysql_error());
 
 		if(!isset($_REQUEST["renew_id"]) || !isRandomNum($_REQUEST["renew_id"])){
 			die("Renew ID is not a number line ".__LINE__." file ".__FILE__);
@@ -503,14 +503,14 @@ Service country: $country
 		// Save the values in SQL and process the paynow buttons
 		$q = "INSERT INTO $pro_mysql_pending_renewal_table (id,adm_login,renew_date,renew_time,product_id,renew_id,heb_type,country_code,services)
 		VALUES ('','".$_REQUEST["adm_login"]."',now(),now(),'".$prod_id."','".$client_id."','".$_REQUEST["renew_type"]."','$country','$services');";
-		$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 		$renew_id = mysql_insert_id();
 
 		if($price > $client["dollar"]){
 			$payid = createCreditCardPaiementID($price,$renew_id,$prodsub." (login: ".$_REQUEST["adm_login"].")","no",$prod_id,$vat_rate,$services);
 	
 			$q = "UPDATE $pro_mysql_pending_renewal_table SET pay_id='$payid' WHERE id='$renew_id';";
-			$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 	
 			$return_url = htmlentities($_SERVER["PHP_SELF"])."?action=return_from_pay&regid=$payid";
 			$paybutton = paynowButton($payid,$price,$prodsub." (login: ".$_REQUEST["adm_login"].")",$return_url,$vat_rate);
@@ -523,7 +523,7 @@ Service country: $country
 			$payid = createCreditCardPaiementID($price,$renew_id,$prodsub." (login: ".$_REQUEST["adm_login"].")","no",$prod_id,$vat_rate,$services);
 
 			$q = "UPDATE $pro_mysql_pending_renewal_table SET pay_id='$payid' WHERE id='$renew_id';";
-			$r = mysql_query($q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 
 			$after_upgrade_remaining = $client["dollar"] - $price;
 			$out = _("After renewal, you will have") . ": " . $after_upgrade_remaining . " " .$secpayconf_currency_letters . "<br><br>";

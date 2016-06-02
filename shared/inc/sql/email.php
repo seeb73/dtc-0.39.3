@@ -8,7 +8,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "set_catchall_account"){
 
 	if($_REQUEST["catchall_popup"] == "no-mail-account"){
 		$q = "UPDATE $pro_mysql_domain_table SET catchall_email='' WHERE name='$edit_domain';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said :".mysql_error());
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said :".mysql_error());
 	}else{
 		if(!isMailbox($_REQUEST["catchall_popup"])){
 			$submit_err .= _("Incorect mail login format: it should consist of only lowercase letters, numbers, or the \"-\" sign.<br>\n") ;
@@ -17,8 +17,8 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "set_catchall_account"){
 			// Check if mail exists...
 			if($_REQUEST["catchall_popup"] != "no-mail-account"){
 				$test_query = "SELECT * FROM $pro_mysql_pop_table WHERE id='".$_REQUEST["catchall_popup"]."' AND mbox_host='$edit_domain'";
-				$test_result = mysql_query ($test_query)or die("Cannot execute query \"$test_query\"");
-				$testnum_rows = mysql_num_rows($test_result);
+				$test_result = mysqli_query($mysql_connection,$test_query)or die("Cannot execute query \"$test_query\"");
+				$testnum_rows = mysqli_num_rows($test_result);
 				if($testnum_rows != 1){
 					$submit_err .= _("Mailbox does not exist in database.<br>\n") ;
 					$commit_flag = "no";
@@ -32,7 +32,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "set_catchall_account"){
 		}	
 		if($commit_flag == "yes"){
 			$q = "UPDATE $pro_mysql_domain_table SET catchall_email='".$_REQUEST["catchall_popup"]."' WHERE name='$edit_domain';";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 			triggerMXListUpdate();
 			updateUsingCron("qmail_newu='yes',gen_qmail='yes'");
 		}

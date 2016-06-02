@@ -282,6 +282,7 @@ function dtcDatagrid($dsc){
 	global $conf_enforce_adm_encryption;
 	global $conf_post_or_get;
 	global $idn;
+	global $mysql_connection;
 
 	$nbr_forwards = sizeof($dsc["forward"]);
 	$keys_fw = array_keys($dsc["forward"]);
@@ -472,7 +473,7 @@ function dtcDatagrid($dsc){
 			break;
 		}
 		if($q != ""){
-			$r = mysql_query($q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." sql said: ".mysql_error());
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." sql said: ".mysql_error());
 		}
 	}
 
@@ -539,10 +540,10 @@ function dtcDatagrid($dsc){
 		$order_by = "";
 	}
 	$q = "SELECT $sql_fld_list FROM ".$dsc["table_name"]." $where $order_by;";
-	$r = mysql_query($q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$out .= "<tr><form name=\"".$dsc["action"]."_edit_frm_$i\" action=\"?\" method=\"$conf_post_or_get\">$fw<input type=\"hidden\" name=\"action\" value=\"".$dsc["action"]."_edit\">";
 		if(($i % 2) == 1 && isset($gfx_form_entry_label_background)){
 			$tdclass = "dtcDatagrid_table_flds_alt";
@@ -566,16 +567,16 @@ function dtcDatagrid($dsc){
 				$the_type = $the_fld["forkey_type"];
 				// Query the 1st indirection table
 				$qrent = "SELECT ".$the_fld["searchkey_1st_ind"]." FROM ".$the_fld["table_1st_ind"]." WHERE ".$the_fld["fldwhere_1st_ind"]."='".$a[ $the_fld["fldwhere_1st_ind_orig"] ]."';";
-				$rrent = mysql_query($qrent)or die("Cannot query $qrent in ".__FILE__." line ".__LINE__." sql said: ".mysql_error());
-				$nrent = mysql_num_rows($rrent);
+				$rrent = mysqli_query($mysql_connection,$qrent)or die("Cannot query $qrent in ".__FILE__." line ".__LINE__." sql said: ".mysql_error());
+				$nrent = mysqli_num_rows($rrent);
 				if($nrent == 1){
-					$arent = mysql_fetch_array($rrent);
+					$arent = mysqli_fetch_array($rrent);
 					$cid = $arent[ $the_fld["searchkey_1st_ind"] ];
 					$qcli = "SELECT ".$the_fld["display_flds_2nd_ind"]." FROM ".$the_fld["table_2nd_ind"]." WHERE ".$the_fld["fldwhere_1st_ind_orig"]."='$cid';";
-					$rcli = mysql_query($qcli)or die("Cannot query $qcli in ".__FILE__." line ".__LINE__." sql said: ".mysql_error());
-					$ncli = mysql_num_rows($rrent);
+					$rcli = mysqli_query($mysql_connection,$qcli)or die("Cannot query $qcli in ".__FILE__." line ".__LINE__." sql said: ".mysql_error());
+					$ncli = mysqli_num_rows($rrent);
 					if($ncli == 1){
-						$acli = mysql_fetch_array($rcli);
+						$acli = mysqli_fetch_array($rcli);
 						$db_value = $acli[ $the_fld["display_flds_2nd_ind"] ];
 						$fk_found = 1;
 						$fk_link_more = $cid;
@@ -585,10 +586,10 @@ function dtcDatagrid($dsc){
 					}
 				}else{
 					$qnrent = "SELECT ".$the_fld["display_flds_back"]." FROM ".$the_fld["table_back"]." WHERE ".$the_fld["fldwhere_back"]."='".$a[ $the_fld["fldwhere_back_orig"] ]."';";
-					$rnrent = mysql_query($qnrent)or die("Cannot query $qnrent in ".__FILE__." line ".__LINE__." sql said: ".mysql_error());
-					$nnrent = mysql_num_rows($rnrent);
+					$rnrent = mysqli_query($mysql_connection,$qnrent)or die("Cannot query $qnrent in ".__FILE__." line ".__LINE__." sql said: ".mysql_error());
+					$nnrent = mysqli_num_rows($rnrent);
 					if($nnrent == 1){
-						$ancli = mysql_fetch_array($rnrent);
+						$ancli = mysqli_fetch_array($rnrent);
 						$db_value = $ancli[ $the_fld["display_flds_back"] ];
 						$fk_found = 1;
 						$dbl_forkey_link = $the_fld["link_start"].$a[ $the_fld["fldwhere_back_orig"] ];
@@ -604,11 +605,11 @@ function dtcDatagrid($dsc){
 				$forkey_other_table_key = $the_fld["other_table_key"];
 				$forkey_this_table_field = $the_fld["this_table_field"];
 				$qfk = "SELECT $forkey_other_table_fld AS dtcfkfld FROM $forkey_table WHERE $forkey_other_table_key='". $a[ $forkey_this_table_field ] ."';";
-				$rfk = mysql_query($qfk)or die("Cannot query $qfk in ".__FILE__." line ".__LINE__." sql said: ".mysql_error()." when getting foreign key $forkey_fld value in table ".$the_fld["table"]);
-				$nfk = mysql_num_rows($rfk);
+				$rfk = mysqli_query($mysql_connection,$qfk)or die("Cannot query $qfk in ".__FILE__." line ".__LINE__." sql said: ".mysql_error()." when getting foreign key $forkey_fld value in table ".$the_fld["table"]);
+				$nfk = mysqli_num_rows($rfk);
 				if($nfk == 1){
 					// afk means array foreign key, not away from keyboard... :)
-					$afk = mysql_fetch_array($rfk);
+					$afk = mysqli_fetch_array($rfk);
 					$db_value = $afk["dtcfkfld"];
 					$fk_found = 1;
 				}else{
@@ -618,13 +619,13 @@ function dtcDatagrid($dsc){
 						$forkey_other_table_key = $the_fld["bk_other_table_key"];
 						$forkey_this_table_field = $the_fld["bk_this_table_field"];
 						$qfk = "SELECT $forkey_other_table_fld AS dtcfkfld FROM $forkey_table WHERE $forkey_other_table_key='". $a[ $forkey_this_table_field ] ."';";
-						$rfk = mysql_query($qfk)or die("Cannot query $qfk in ".__FILE__." line ".__LINE__." sql said: ".mysql_error()." when getting foreign key $forkey_fld value in table ".$the_fld["table"]);
-						$nfk = mysql_num_rows($rfk);
+						$rfk = mysqli_query($mysql_connection,$qfk)or die("Cannot query $qfk in ".__FILE__." line ".__LINE__." sql said: ".mysql_error()." when getting foreign key $forkey_fld value in table ".$the_fld["table"]);
+						$nfk = mysqli_num_rows($rfk);
 					}else{
 						$nfk = 0;
 					}
 					if($nfk == 1){
-						$afk = mysql_fetch_array($rfk);
+						$afk = mysqli_fetch_array($rfk);
 						$db_value = $afk["dtcfkfld"];
 						$fk_found = 2;
 					}else{
@@ -777,12 +778,12 @@ function dtcDatagrid($dsc){
 				}
 				$qa = "SELECT ".$the_fld["main_table"].".* FROM ".$the_fld["main_table"]." INNER JOIN ".$the_fld["second_table"]." ON ".$the_fld["main_join_clause"]." INNER JOIN ".$the_fld["third_table"]." ON ".$the_fld["second_join_clause"]." WHERE ".$the_fld["where_field"]." = $id ORDER BY ".$the_fld["order_field"].";";
 				//echo " | ".$qa." ";
-				$ra = mysql_query($qa)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$na = mysql_num_rows($ra);
+				$ra = mysqli_query($mysql_connection,$qa)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$na = mysqli_num_rows($ra);
 				$init_alt = 1;
 
 				for($iz=0;$iz<$na;$iz++){
-					$aa = mysql_fetch_array($ra);
+					$aa = mysqli_fetch_array($ra);
 					if(isset($customer_custom_fields[ $aa["varname"] ])){
 						$val = $customer_custom_fields[ $aa["varname"] ];
 					}else{
@@ -1001,6 +1002,7 @@ function dtcListItemsEdit($dsc){
 	global $adm_pass;
 	global $adm_email_pass;
 	global $conf_post_or_get;
+	global $mysql_connection;
 
 	$out = "<h3>".$dsc["title"]."</u></b></h3>";
 
@@ -1061,8 +1063,8 @@ function dtcListItemsEdit($dsc){
 
 	// We need the current number of items now to check against the max number for addition
 	$q = "SELECT ".$dsc["id_fld"].",".$dsc["list_fld_show"]." FROM ".$dsc["table_name"]." $where;";
-	$r_item_list = mysql_query($q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." sql said: ".mysql_error());
-	$current_num_items = mysql_num_rows($r_item_list);
+	$r_item_list = mysqli_query($mysql_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." sql said: ".mysql_error());
+	$current_num_items = mysqli_num_rows($r_item_list);
 
 	// SQL submit stuffs
 	if( isset($_REQUEST["action"]) && $_REQUEST["action"] == $dsc["action"]."_new_item" ){
@@ -1316,8 +1318,8 @@ function dtcListItemsEdit($dsc){
 				}
 			}
 			$q = "SELECT * FROM ".$dsc["table_name"]." WHERE $where_clause ";
-			$r = mysql_query($q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			if($n > 0){
 				$commit_flag = "no";
 				$commit_err = $dsc["check_unique_msg"];
@@ -1407,7 +1409,7 @@ function dtcListItemsEdit($dsc){
 		if($commit_flag == "yes"){
 			$q = "INSERT INTO ".$dsc["table_name"]." ($added_insert_names $fld_names) VALUES ($added_insert_values $values);";
 			$success = "yes";
-			$r = mysql_query($q)or $success = "no";
+			$r = mysqli_query($mysql_connection,$q)or $success = "no";
 			if($success == "yes"){
 				$insert_id = mysql_insert_id();
 				if( isset($dsc["create_item_callback"]) ){
@@ -1710,7 +1712,7 @@ function dtcListItemsEdit($dsc){
 			$out .= "<font color=\"red\">Could not commit the changes because the id is not set!</font>";
 		}else{
 			$q = "UPDATE ".$dsc["table_name"]." SET $reqs $where AND $id_fldname='$id_fld_value';";
-			$r = mysql_query($q)or $out .= "<font color=\"red\">Cannot query $q in ".__FILE__." line ".__LINE__." sql said: ".mysql_error()."</font>";
+			$r = mysqli_query($mysql_connection,$q)or $out .= "<font color=\"red\">Cannot query $q in ".__FILE__." line ".__LINE__." sql said: ".mysql_error()."</font>";
 			if(isset($dsc["edit_item_callback"])){
 				$dsc["edit_item_callback"]($id_fld_value);
 			}
@@ -1727,7 +1729,7 @@ function dtcListItemsEdit($dsc){
 				$dsc["delete_item_callback"]($id_fld_value);
 			}
 			$q = "DELETE FROM ".$dsc["table_name"]." $where AND $id_fldname='".$id_fld_value."';";
-			$r = mysql_query($q)or $out .= "<font color=\"red\">Cannot query $q in ".__FILE__." line ".__LINE__." sql said: ".mysql_error()."</font>";
+			$r = mysqli_query($mysql_connection,$q)or $out .= "<font color=\"red\">Cannot query $q in ".__FILE__." line ".__LINE__." sql said: ".mysql_error()."</font>";
 		}else{
 			$out .= "<font color=\"red\">Could not commit the deletion because the id field could not be found.</font>";
 		}
@@ -1735,8 +1737,8 @@ function dtcListItemsEdit($dsc){
 
 	// We have to query it again, in case an insert or a delete has occured!
 	$q = "SELECT ".$dsc["id_fld"].",".$dsc["list_fld_show"]." FROM ".$dsc["table_name"]." $where $order_by;";
-	$r_item_list = mysql_query($q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." sql said: ".mysql_error());
-	$current_num_items = mysql_num_rows($r_item_list);
+	$r_item_list = mysqli_query($mysql_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." sql said: ".mysql_error());
+	$current_num_items = mysqli_num_rows($r_item_list);
 
 	if(isset($dsc["max_item"])){
 		if($current_num_items >= $dsc["max_item"]){
@@ -1751,7 +1753,7 @@ function dtcListItemsEdit($dsc){
 
 	// First display a list of items
 	for($i=0;$i<$current_num_items;$i++){
-		$a = mysql_fetch_array($r_item_list);
+		$a = mysqli_fetch_array($r_item_list);
 		if($i!=0){
 			$out .= " - ";
 		}
@@ -1907,10 +1909,10 @@ function dtcListItemsEdit($dsc){
 		$out .= "<a href=\"$fw_link&subaction=".$dsc["action"]."_new_item\">".$dsc["new_item_link"]."</a><br><br>";
 		$out .= "<h3>".$dsc["edit_item_title"]."</h3><br>";
 		$q = "SELECT * FROM ".$dsc["table_name"]." $where AND ".$dsc["id_fld"]."='".mysql_real_escape_string($_REQUEST["item"])."';";
-		$r = mysql_query($q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n == 1){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$out .= "<form method=\"$conf_post_or_get\" name=\"".$dsc["action"]."_save_item_frm\" action=\"?\">$fw";
 			$out .= "<input type=\"hidden\" name=\"action\" value=\"".$dsc["action"]."_save_item\">";
 			$out .= "<input type=\"hidden\" name=\"subaction\" value=\"".$dsc["action"]."_edit_item\">";

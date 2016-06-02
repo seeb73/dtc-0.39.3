@@ -218,6 +218,8 @@ function pro_vhost_generate(){
 	global $conf_use_cband_user_exceeded_url;
 	global $conf_cband_user_exceeded_url;
 
+	global $mysql_connection;
+
 	$vhost_file = "";
 
 	$aufs_list = "";
@@ -271,8 +273,8 @@ RewriteRule .* - [F]
 
 	$num_generated_vhosts=0;
 	$query = "SELECT * FROM $pro_mysql_domain_table WHERE 1 ORDER BY name;";
-	$result = mysql_query ($query)or die("Cannot execute query \"$query\"");
-	$num_rows = mysql_num_rows($result);
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot execute query \"$query\"");
+	$num_rows = mysqli_num_rows($result);
 
 	if($num_rows < 1){
 		die("No account to generate : database has to contain AT LEAST one domain name");
@@ -282,10 +284,10 @@ RewriteRule .* - [F]
 FROM $pro_mysql_domain_table,$pro_mysql_admin_table
 WHERE $pro_mysql_domain_table.name='$conf_main_domain'
 AND $pro_mysql_admin_table.adm_login=$pro_mysql_domain_table.owner;";
-	$result2 = mysql_query ($query2)or die("Cannot execute query \"$query2\"!");
+	$result2 = mysqli_query($mysql_connection,$query2)or die("Cannot execute query \"$query2\"!");
 	$enable404feature = true;
-	//echo "Query $query2 resulted in ".mysql_num_rows($result2)."\n";
-	if(mysql_num_rows($result2) != 1){
+	//echo "Query $query2 resulted in ".mysqli_num_rows($result2)."\n";
+	if(mysqli_num_rows($result2) != 1){
 		$enable404feature=false;
 	}
 	//don't die here... 	we will try and do things to work around this bug
@@ -293,7 +295,7 @@ AND $pro_mysql_admin_table.adm_login=$pro_mysql_domain_table.owner;";
 
 	if ($enable404feature == true)
 	{
-		$a = mysql_fetch_array($result2);
+		$a = mysqli_fetch_array($result2);
 		$path_404 = $a["path"]."/$conf_main_domain/subdomains/$conf_404_subdomain";
 		// make sure the vhost_chk_dir script has the 404 entries
                 vhost_chk_dir_sh("$path_404/html");
@@ -313,12 +315,12 @@ AND $pro_mysql_admin_table.adm_login=$pro_mysql_domain_table.owner;";
 				$vhost_file_listen .= "#Listen ".$all_site_addrs[$i].":80\n";
 			}
 			$query2 = "SELECT * FROM $pro_mysql_domain_table WHERE ip_addr='".$all_site_addrs[$i]."' LIMIT 1;";
-			$result2 = mysql_query ($query2)or die("Cannot execute query \"$query\"");
-			$num_rows2 = mysql_num_rows($result2);
+			$result2 = mysqli_query($mysql_connection,$query2)or die("Cannot execute query \"$query\"");
+			$num_rows2 = mysqli_num_rows($result2);
 			if($num_rows2 > 0){
-				$vhost_file .= "NameVirtualHost ".$all_site_addrs[$i].":80\n";
+				$vhost_file .= "# Deprecated NameVirtualHost ".$all_site_addrs[$i].":80\n";
 				if ($conf_use_shared_ssl == "yes") {
-					$vhost_file .= "NameVirtualHost ".$all_site_addrs[$i].":443\n";
+					$vhost_file .= "# Deprecated NameVirtualHost ".$all_site_addrs[$i].":443\n";
 				}
 				if ($enable404feature == true){
 					$vhost_file .= "<VirtualHost ".$all_site_addrs[$i].":80>
@@ -350,7 +352,7 @@ AND $pro_mysql_admin_table.adm_login=$pro_mysql_domain_table.owner;";
 			} else {
 				$vhost_file_listen .= "#Listen ".$conf_nated_vhost_ip.":80\n";
 			}
-			$vhost_file .= "NameVirtualHost ".$conf_nated_vhost_ip.":80\n";
+			$vhost_file .= "# Deprecated NameVirtualHost ".$conf_nated_vhost_ip.":80\n";
 		}else{
 			if (test_valid_local_ip($conf_main_site_ip) && !preg_match("/Listen ".$conf_main_site_ip.":80/", $vhost_file_listen))
 			{
@@ -358,9 +360,9 @@ AND $pro_mysql_admin_table.adm_login=$pro_mysql_domain_table.owner;";
 			} else {
 				$vhost_file_listen .= "#Listen ".$conf_main_site_ip.":80\n";
 			}
-			$vhost_file .= "NameVirtualHost ".$conf_main_site_ip.":80\n";
+			$vhost_file .= "# Deprecated NameVirtualHost ".$conf_main_site_ip.":80\n";
 			if ($conf_use_shared_ssl == "yes") {
-				$vhost_file .= "NameVirtualHost ".$conf_main_site_ip.":443\n";
+				$vhost_file .= "# Deprecated NameVirtualHost ".$conf_main_site_ip.":443\n";
 			}
 		}
 		if ($enable404feature == true){
@@ -433,10 +435,10 @@ WHERE $pro_mysql_domain_table.owner=$pro_mysql_admin_table.adm_login
 AND pt.id=$pro_mysql_admin_table.prod_id
 AND $pro_mysql_admin_table.prod_id != '0'
 AND $pro_mysql_admin_table.id_client != '0'";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$vhost_file .= "
 <CBandUser ".$a["adm_login"].">
 	CBandUserSpeed ".$a["cbanduserspeed_kbps"]." ".$a["cbanduserspeed_rps"]." ".$a["cbanduserspeed_conn"]."
@@ -460,19 +462,19 @@ AND $pro_mysql_admin_table.id_client != '0'";
 	// autodiscover vhost
 	$autodiscover_hosts = array();
 	for ($i=0;$i<$num_rows;$i++) {
-		$row = mysql_fetch_array($result) or die ("Cannot fetch user");
+		$row = mysqli_fetch_array($result) or die (__FILE__ . __LINE__ . "Cannot fetch user");
 		$web_name = $row["name"];
 		if ($web_name == "" || $row['primary_mx'] != 'default' || $row['other_mx'] != 'default') {
 			continue;
 		}
 		$query2 = "SELECT COUNT(*) FROM $pro_mysql_subdomain_table WHERE domain_name='$web_name' AND subdomain_name='autodiscover';";
-		$result2 = mysql_query($query2) or die("Cannot execute query \"$query2\"");
+		$result2 = mysqli_query($mysql_connection,$query2) or die("Cannot execute query \"$query2\"");
 		if (mysql_result($result2, 0, 'COUNT(*)') > 0) {
 			continue;
 		}
 		$autodiscover_hosts[] = $web_name;
 	}			
-	mysql_data_seek($result, 0);
+	mysqli_data_seek($result, 0);
 	if (count($autodiscover_hosts) > 0) {
 		$vhost_file .= "<VirtualHost ".$conf_main_site_ip.":80>
 	ServerName autodiscover.$conf_main_domain\n";
@@ -490,7 +492,7 @@ AND $pro_mysql_admin_table.id_client != '0'";
 	}
 	
 	for($i=0;$i<$num_rows;$i++){
-		$row = mysql_fetch_array($result) or die ("Cannot fetch user");
+		$row = mysqli_fetch_array($result) or die (__FILE__ . __LINE__ . "Cannot fetch user");
 		$web_name = $row["name"];
 		if ($web_name == "")
 		{
@@ -522,7 +524,7 @@ AND $pro_mysql_admin_table.id_client != '0'";
 				$vhost_file_listen .= "#Listen ".$backup_ip_addr.":80\n";
 			}
 			if (!preg_match("/NameVirtualHost $backup_ip_addr/", $vhost_file)){
-				$vhost_file .= "NameVirtualHost ".$backup_ip_addr.":80\n";
+				$vhost_file .= "# Deprecated NameVirtualHost ".$backup_ip_addr.":80\n";
 			}
 		}
 		if($conf_use_multiple_ip == "yes"){
@@ -537,13 +539,13 @@ AND $pro_mysql_admin_table.id_client != '0'";
 
 		// Get the owner informations
 		$query2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$web_owner';";
-		$result2 = mysql_query ($query2)or die("Cannot execute query \"$query2\"");
-		$num_rows2 = mysql_num_rows($result2);
+		$result2 = mysqli_query($mysql_connection,$query2)or die("Cannot execute query \"$query2\"");
+		$num_rows2 = mysqli_num_rows($result2);
 		if($num_rows2 != 1){
 			echo("No user of that name ($web_owner)!\n");
 			continue;
 		}
-		$webadmin = mysql_fetch_array($result2) or die ("Cannot fetch user");
+		$webadmin = mysqli_fetch_array($result2) or die (__FILE__ . " " . __LINE__ . " Cannot fetch user");
 		$web_path = $webadmin["path"];
 		$expire_stored = $webadmin["expire"];
 		if($expire_stored == "0000-00-00"){
@@ -574,15 +576,15 @@ AND $pro_mysql_admin_table.id_client != '0'";
 		}else{
 			$query2 = "SELECT * FROM $pro_mysql_subdomain_table WHERE domain_name='$domain_to_get' AND ip='default' AND subdomain_name!='$web_default_subdomain' ORDER BY subdomain_name;";
 		}
-		$result2 = mysql_query ($query2)or die("Cannot execute query \"$query2\"");
-		$num_rows2 = mysql_num_rows($result2);
+		$result2 = mysqli_query($mysql_connection,$query2)or die("Cannot execute query \"$query2\"");
+		$num_rows2 = mysqli_num_rows($result2);
 
 		$webmail_hostname_exists = "no";
 		$admin_hostname_exists = "no";
 		unset($temp_array_subs);
 		$temp_array_subs = array();
 		for($j=0;$j<$num_rows2;$j++){
-			$temp_array_subs[] = mysql_fetch_array($result2) or die ("Cannot fetch user line ".__LINE__." file ".__FILE__);
+			$temp_array_subs[] = mysqli_fetch_array($result2) or die (__FILE__ . "Cannot fetch user line ".__LINE__." file ".__FILE__);
 			if ($temp_array_subs[$j] == $conf_autogen_webmail_hostname) {
 				$webmail_hostname_exists = "yes";
 			}
@@ -594,10 +596,10 @@ AND $pro_mysql_admin_table.id_client != '0'";
 		// We get the default subdomain and we add it at the end of the array. The goal is to have the
 		// wildcard subdomain be the last in the list of the vhosts.conf
 		$query2 = "SELECT * FROM $pro_mysql_subdomain_table WHERE domain_name='$domain_to_get' AND ip='default' AND subdomain_name='$web_default_subdomain';";
-		$result2 = mysql_query ($query2)or die("Cannot execute query \"$query2\"");
-		$my_num_rows = mysql_num_rows($result2);
+		$result2 = mysqli_query($mysql_connection,$query2)or die("Cannot execute query \"$query2\"");
+		$my_num_rows = mysqli_num_rows($result2);
 		if($my_num_rows == 1){
-			$temp_array_subs[] = mysql_fetch_array($result2) or die ("Cannot fetch user".__LINE__." file ".__FILE__);
+			$temp_array_subs[] = mysqli_fetch_array($result2) or die (__FILE__ . "Cannot fetch user".__LINE__." file ".__FILE__);
 			$num_rows2++;
 		}
 
@@ -623,7 +625,7 @@ AND $pro_mysql_admin_table.id_client != '0'";
 
 		for($j=0;$j<$num_rows2;$j++){
 			$subdomain = $temp_array_subs[$j];
-//			$subdomain = mysql_fetch_array($result2) or die ("Cannot fetch user");
+//			$subdomain = mysqli_fetch_array($result2) or die (__FILE__ . "Cannot fetch user");
 			$web_subname = $subdomain["subdomain_name"];
 			$shared_hosting_subdomain_security = $subdomain["shared_hosting_security"];
 			if( $subdomain["customize_vhost"] == ""){
@@ -681,29 +683,29 @@ AND $pro_mysql_admin_table.id_client != '0'";
 				// This does http://dtc.your-domain.com/unresolved-domain.com
 				// TG: added a flag to say yes/no to that alias for each domains
 				$alias_domain_query = "SELECT * FROM $pro_mysql_domain_table WHERE gen_unresolved_domain_alias='yes' ORDER BY name;";
-				$result_alias = mysql_query ($alias_domain_query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." mysql said: ".mysql_error());
-				$num_rows_alias = mysql_num_rows($result_alias);
+				$result_alias = mysqli_query($mysql_connection,$alias_domain_query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." mysql said: ".mysql_error());
+				$num_rows_alias = mysqli_num_rows($result_alias);
 				for($x=0;$x<$num_rows_alias;$x++) {
-					$rowX = mysql_fetch_array($result_alias) or die ("Cannot fetch domain for Alias");
+					$rowX = mysqli_fetch_array($result_alias) or die ("Cannot fetch domain for Alias");
 					$web_nameX = $rowX["name"];
 					$web_ownerX = $rowX["owner"];
 					$ip_addrX = $rowX["ip_addr"];
 					$backup_ip_addrX = $rowX["backup_ip_addr"];
 					$alias_user_query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$web_ownerX';";
-					$alias_user_result = mysql_query($alias_user_query) or die("Cannot fetch user for Alias");
-					$num_rows_alias_user = mysql_num_rows($alias_user_result);
+					$alias_user_result = mysqli_query($mysql_connection,$alias_user_query) or die(__FILE__ . "Cannot fetch user for Alias");
+					$num_rows_alias_user = mysqli_num_rows($alias_user_result);
 					if ($num_rows_alias_user != 1) {
 						echo("No user of that name ($web_ownerX)!\n");
 						continue;
 					}
-					$alias_path = mysql_fetch_array($alias_user_result) or die ("Cannot fetch user");
+					$alias_path = mysqli_fetch_array($alias_user_result) or die (__FILE__ . "Cannot fetch user");
 					$web_pathX = $alias_path["path"];
 					// TG: Added open_basedir restriction (for obvious security reasons)
 					$qsubdom = "SELECT * FROM $pro_mysql_subdomain_table WHERE domain_name='$web_nameX' AND ip='default';";
-					$rx = mysql_query ($qsubdom)or die("Cannot execute query \"$qsubdom\" line ".__LINE__." file ".__FILE__." mysql said: ".mysql_error());
-					$numx =  mysql_num_rows($rx);
+					$rx = mysqli_query($mysql_connection,$qsubdom)or die("Cannot execute query \"$qsubdom\" line ".__LINE__." file ".__FILE__." mysql said: ".mysql_error());
+					$numx =  mysqli_num_rows($rx);
 					for($subx=0;$subx<$numx;$subx++){
-						$ax = mysql_fetch_array($rx) or die ("Cannot fetch subdomain for Alias");
+						$ax = mysqli_fetch_array($rx) or die ("Cannot fetch subdomain for Alias");
 						$subdomx = $ax["subdomain_name"];
 						$globalx = $ax["register_globals"];
 						if($globalx == "yes"){
@@ -886,10 +888,10 @@ $vhost_file .= "
 							// Start of <krystian@ezpear.com> patch
 							if($conf_use_nated_vhost=="yes"){
 								$q="select port from $pro_mysql_ssl_ips_table where ip_addr='${subdomain["ssl_ip"]}' and available='no';";
-								$r=mysql_query($q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-								$n = mysql_num_rows($r);
+								$r=mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+								$n = mysqli_num_rows($r);
 								if($n > 0){
-									$row=mysql_fetch_array($r);
+									$row=mysqli_fetch_array($r);
 									$port=$row["port"];
 									$ip_vhost=$ip_to_write;
 									if(empty($port)){
@@ -962,8 +964,8 @@ $vhost_file .= "
 
 					// ServerAlias for parked domains
 					$q_serveralias = "select * from $pro_mysql_domain_table where domain_parking_type='serveralias' and domain_parking='$web_name'";
-					$r_serveralias = mysql_query($q_serveralias) or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-					while ($row_serveralias = mysql_fetch_array($r_serveralias)) {
+					$r_serveralias = mysqli_query($mysql_connection,$q_serveralias) or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+					while ($row_serveralias = mysqli_fetch_array($r_serveralias)) {
 						// default subdomain and wildcard subdomain settings are inherited from the main domain, not the parked domain
 						// this is because in the gui these settings are not accessable for a parked domain
 						if ($web_subname == "$web_default_subdomain") {

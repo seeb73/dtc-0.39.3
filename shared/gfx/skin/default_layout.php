@@ -175,7 +175,7 @@ function skin_LayoutAdminPage_Default (){
 			$rand = getRandomValue();
 			$expirationTIME = time() + (60 * $conf_session_expir_minute);
 			$q = "UPDATE $pro_mysql_config_table SET root_admin_random_pass='$rand', pass_expire='$expirationTIME';";
-			$r = mysql_query($q)or die("Cannot execute query \"$q\" !");
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" !");
 		}
 		$leftFrameCells[] = skin($conf_skin,adminList($rand), _("Admin List") );
 		// Make the frame
@@ -232,8 +232,8 @@ function skin_Navbar_Default() {
 	// CRM Button
 	if(!isset($rub) || $rub != "crm"){
 		$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login' AND (adm_pass='$adm_pass' OR adm_pass=SHA1('$adm_pass'));";
-		$result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
-		if(mysql_num_rows($result) == 1){
+		$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+		if(mysqli_num_rows($result) == 1){
 			$row = mysql_fetch_array($result);
 			$url_addon = "&id=".$row["id_client"];
 		}else{

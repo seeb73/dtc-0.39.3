@@ -27,8 +27,8 @@ function drawAdminTools_Custom($admin,$custom_id){
 	// Check owner and fetch!
 	checkCustomAdmin($adm_login,$adm_pass,$custom_id);
 	$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE id='$custom_id';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$out .= _("Custom id not found!");
 		return $out;
@@ -37,8 +37,8 @@ function drawAdminTools_Custom($admin,$custom_id){
 
 	// Display the current contract
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$custom_prod["product_id"]."';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$server_prod = mysql_fetch_array($r);
 		$contract = $server_prod["name"];
@@ -48,8 +48,8 @@ function drawAdminTools_Custom($admin,$custom_id){
 
 	// Get the current admin
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$admin = mysql_fetch_array($r);
 	}
@@ -57,8 +57,8 @@ function drawAdminTools_Custom($admin,$custom_id){
 	$additiona_info = "";
 	if($server_prod["custom_heb_type"] != 0){
 		$q = "SELECT * FROM $pro_mysql_custom_heb_types_table WHERE id='".$server_prod["custom_heb_type"]."'";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n == 1){
 			$custom_heb_types = mysql_fetch_array($r);
 			if($custom_heb_types["reqdomain"] == "yes"){
@@ -89,15 +89,15 @@ function drawAdminTools_Custom($admin,$custom_id){
 	$out .= " ".calculateExpirationDate($custom_prod["expire_date"],$period)."<br>";
 
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."'";
-	$r = mysql_query($q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	$admin = mysql_fetch_array($r);
 
 	if($admin["show_invoice_info"] == 'yes' && $conf_show_invoice_info == 'yes'){
 		$out .= "<br>". _("Please renew it with one of the following options") ."<br>";
 		if ($secpayconf_use_products_for_renewal == 'yes'){
 			$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$custom_prod["product_id"]."';";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			if($n == 1){
 				$a = mysql_fetch_array($r);
 				$out .= "<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
@@ -112,8 +112,8 @@ function drawAdminTools_Custom($admin,$custom_id){
 		}
 
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$custom_prod["product_id"]."';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		for($i=0;$i<$n;$i++){
 			$a = mysql_fetch_array($r);
 			$out .= "<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">

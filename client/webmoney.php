@@ -25,17 +25,17 @@ if( isset($_POST['LMI_PREREQUEST']) && $_POST['LMI_PREREQUEST'] == 1 ){
 	$paiement_type ="online"; $secpay_site="webmoney"; $reason = "wmz:".$_POST['LMI_PAYER_PURSE'].", wmid:".$_POST['LMI_PAYER_WM'];
 
 		$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='".mysql_real_escape_string($_POST['LMI_PAYMENT_NO'])."'";
-		$r = mysql_query($q)or die(logPay("Cannot query \"$q\" ! ".mysql_error()." in file ".__FILE__." line ".__LINE__));
+		$r = mysqli_query($mysql_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysql_error()." in file ".__FILE__." line ".__LINE__));
 
-		$n = mysql_num_rows($r);
+		$n = mysqli_num_rows($r);
 		if($n != 1)die(logPay("Pay id $pay_id not found in file ".__FILE__." line ".__LINE__));  else {
 
-			$ar = mysql_fetch_array($r);
+			$ar = mysqli_fetch_array($r);
 			if($ar["valid"] != "no" && $ar["valid"] != "pending")die(logPay("Paiement already validated or pending in file ".__FILE__." line ".__LINE__));
 
 
 			$q = "UPDATE $pro_mysql_pay_table SET paiement_type='$paiement_type',secpay_site='$secpay_site',valid='pending',pending_reason='$reason' WHERE id='".mysql_real_escape_string($_POST['LMI_PAYMENT_NO'])."'";
-			mysql_query($q)or die(logPay("Cannot query \"$q\" ! ".mysql_error()." in file ".__FILE__." line ".__LINE__));
+			mysqli_query($mysql_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysql_error()." in file ".__FILE__." line ".__LINE__));
 
 			echo 'YES';
 		}
@@ -46,12 +46,12 @@ if( isset($_POST['LMI_PREREQUEST']) && $_POST['LMI_PREREQUEST'] == 1 ){
 if(isset($_POST['LMI_HASH']) && $_POST['LMI_HASH']){
 
 		$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='".mysql_real_escape_string($_POST['LMI_PAYMENT_NO'])."'";
-		$r = mysql_query($q)or die(logPay("Cannot query \"$q\" ! ".mysql_error()." in file ".__FILE__." line ".__LINE__));
+		$r = mysqli_query($mysql_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysql_error()." in file ".__FILE__." line ".__LINE__));
 
-		$n = mysql_num_rows($r);
+		$n = mysqli_num_rows($r);
 		if($n != 1)die(logPay("Pay id $pay_id not found in file ".__FILE__." line ".__LINE__));
 
-		$ar = mysql_fetch_array($r);
+		$ar = mysqli_fetch_array($r);
 
 		$chkstring =  $secpayconf_webmoney_wmz.$ar['refund_amount'].$ar['id'].
 					  $_POST['LMI_MODE'].$_POST['LMI_SYS_INVS_NO'].$_POST['LMI_SYS_TRANS_NO'].$_POST['LMI_SYS_TRANS_DATE'].
@@ -78,7 +78,7 @@ if(isset($_POST['LMI_HASH']) && $_POST['LMI_HASH']){
 							secpay_custom_id='$secpay_custom_id',valid='yes' WHERE id='".mysql_real_escape_string($_POST['LMI_PAYMENT_NO'])."'";
 
 						logPay($q);
-						mysql_query($q)or die(logPay("Cannot query \"$q\" ! ".mysql_error()." in file ".__FILE__." line ".__LINE__));
+						mysqli_query($mysql_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysql_error()." in file ".__FILE__." line ".__LINE__));
 
 
 				}

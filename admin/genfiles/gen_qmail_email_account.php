@@ -44,15 +44,15 @@ function mail_account_generate_qmail(){
 	$more_rcpt = "";
 
 	$query = "SELECT * FROM $pro_mysql_admin_table WHERE disabled='no' or disabled='always-no' or disabled='' ORDER BY adm_login;";
-	$result = mysql_query ($query)or die("Cannot execute query : \"$query\"");
-	$num_rows = mysql_num_rows($result);
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot execute query : \"$query\"");
+	$num_rows = mysqli_num_rows($result);
 
 	if($num_rows < 1){
 		die("No account to generate");
 	}
 
 	for($i=0;$i<$num_rows;$i++){
-		$row = mysql_fetch_array($result) or die ("Cannot fetch user-admin");
+		$row = mysqli_fetch_array($result) or die (__FILE__ . "Cannot fetch user-admin");
 		$user_admin_name = $row["adm_login"];
 		$user_admin_pass = $row["adm_pass"];
 		$admin = fetchAdmin($user_admin_name,$user_admin_pass);

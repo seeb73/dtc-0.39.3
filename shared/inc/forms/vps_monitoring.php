@@ -94,8 +94,8 @@ function drawAdminTools_VPSMonitor($admin,$vps){
 
 	$q = "SELECT * FROM $pro_mysql_vps_stats_table WHERE vps_server_hostname='$vps_node' AND vps_xen_name='xen$vps_name'
 	AND year='".$month_ago_6_year."' AND month='".$month_ago_6."';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysql_fetch_array($r);
 		$net_total = $a["network_in_count"] + $a["network_out_count"];
@@ -107,8 +107,8 @@ function drawAdminTools_VPSMonitor($admin,$vps){
 
 	$q = "SELECT * FROM $pro_mysql_vps_stats_table WHERE vps_server_hostname='$vps_node' AND vps_xen_name='xen$vps_name'
 	AND year='".$month_ago_5_year."' AND month='".$month_ago_5."';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysql_fetch_array($r);
 		$net_total = $a["network_in_count"] + $a["network_out_count"];
@@ -120,8 +120,8 @@ function drawAdminTools_VPSMonitor($admin,$vps){
 
 	$q = "SELECT * FROM $pro_mysql_vps_stats_table WHERE vps_server_hostname='$vps_node' AND vps_xen_name='xen$vps_name'
 	AND year='".$month_ago_4_year."' AND month='".$month_ago_4."';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysql_fetch_array($r);
 		$net_total = $a["network_in_count"] + $a["network_out_count"];
@@ -133,8 +133,8 @@ function drawAdminTools_VPSMonitor($admin,$vps){
 
 	$q = "SELECT * FROM $pro_mysql_vps_stats_table WHERE vps_server_hostname='$vps_node' AND vps_xen_name='xen$vps_name'
 	AND year='".$month_ago_3_year."' AND month='".$month_ago_3."';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysql_fetch_array($r);
 		$net_total = $a["network_in_count"] + $a["network_out_count"];
@@ -146,8 +146,8 @@ function drawAdminTools_VPSMonitor($admin,$vps){
 
 	$q = "SELECT * FROM $pro_mysql_vps_stats_table WHERE vps_server_hostname='$vps_node' AND vps_xen_name='xen$vps_name'
 	AND year='$tow_month_ago_year' AND month='$tow_month_ago';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysql_fetch_array($r);
 		$net_total = $a["network_in_count"] + $a["network_out_count"];
@@ -159,8 +159,8 @@ function drawAdminTools_VPSMonitor($admin,$vps){
 
 	$q = "SELECT * FROM $pro_mysql_vps_stats_table WHERE vps_server_hostname='$vps_node' AND vps_xen_name='xen$vps_name'
 	AND year='$last_month_year' AND month='$last_month';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysql_fetch_array($r);
 		$net_total = $a["network_in_count"] + $a["network_out_count"];
@@ -172,8 +172,8 @@ function drawAdminTools_VPSMonitor($admin,$vps){
 
 	$q = "SELECT * FROM $pro_mysql_vps_stats_table WHERE vps_server_hostname='$vps_node' AND vps_xen_name='xen$vps_name'
 	AND year='$cur_year' AND month='$cur_month';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysql_fetch_array($r);
 		$net_total = $a["network_in_count"] + $a["network_out_count"];

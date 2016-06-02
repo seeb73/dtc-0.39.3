@@ -5,20 +5,21 @@ function productManager(){
         global $secpayconf_currency_symbol;
         global $pro_mysql_custom_heb_types_table;
         global $pro_mysql_custom_heb_types_fld_table;
+	global $mysql_connection;
 
         if(!isset($secpayconf_currency_symbol)){
         	get_secpay_conf();
         }
 
 		$qp = "SELECT id,name FROM $pro_mysql_product_table WHERE renew_prod_id='0' AND heb_type='shared'";
-		$rp = mysql_query($qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-		$np = mysql_num_rows($rp);
+		$rp = mysqli_query($mysql_connection,$qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$np = mysqli_num_rows($rp);
 		$renew_id_popup = array();
 		$renew_id_popup[] = 0;
 		$renew_id_replace = array();
 		$renew_id_replace[] = _("Not a renewal product");
 		for($j=0;$j<$np;$j++){
-			$ap = mysql_fetch_array($rp);
+			$ap = mysqli_fetch_array($rp);
 			$renew_id_popup[] = $ap["id"];
 			if(strlen($ap["name"]) > 20){
 				$renew_id_replace[] = $ap["id"]. ": " .substr($ap["name"],0,17)."...";
@@ -231,14 +232,14 @@ function productManager(){
 
 	// Build the product ID popup
 	$qp = "SELECT id,name FROM $pro_mysql_product_table WHERE renew_prod_id='0' AND heb_type='vps'";
-	$rp = mysql_query($qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-	$np = mysql_num_rows($rp);
+	$rp = mysqli_query($mysql_connection,$qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$np = mysqli_num_rows($rp);
 	$renew_id_popup = array();
 	$renew_id_popup[] = 0;
 	$renew_id_replace = array();
 	$renew_id_replace[] = _("Not a renewal product");
 	for($j=0;$j<$np;$j++){
-		$ap = mysql_fetch_array($rp);
+		$ap = mysqli_fetch_array($rp);
 		$renew_id_popup[] = $ap["id"];
 		if(strlen($ap["name"]) > 20){
 			$renew_id_replace[] = $ap["id"]. ": " .substr($ap["name"],0,17)."...";
@@ -324,14 +325,14 @@ function productManager(){
 
 	// Build the product ID popup
 		$qp = "SELECT id,name FROM $pro_mysql_product_table WHERE renew_prod_id='0' AND heb_type='server'";
-		$rp = mysql_query($qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-		$np = mysql_num_rows($rp);
+		$rp = mysqli_query($mysql_connection,$qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$np = mysqli_num_rows($rp);
 		$renew_id_popup = array();
 		$renew_id_popup[] = 0;
 		$renew_id_replace = array();
 		$renew_id_replace[] = _("Not a renewal product");
 	for($j=0;$j<$np;$j++){
-		$ap = mysql_fetch_array($rp);
+		$ap = mysqli_fetch_array($rp);
 		$renew_id_popup[] = $ap["id"];
 		if(strlen($ap["name"]) > 20){
 			$renew_id_replace[] = $ap["id"]. ": " .substr($ap["name"],0,17)."...";
@@ -425,14 +426,14 @@ function productManager(){
 
 	// Build the product ID popup
 	$qp = "SELECT id,name FROM $pro_mysql_product_table WHERE renew_prod_id='0' AND heb_type='ssl'";
-	$rp = mysql_query($qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-	$np = mysql_num_rows($rp);
+	$rp = mysqli_query($mysql_connection,$qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$np = mysqli_num_rows($rp);
 	$renew_id_popup = array();
 	$renew_id_popup[] = 0;
 	$renew_id_replace = array();
 	$renew_id_replace[] = _("Not a renewal product");
 	for($j=0;$j<$np;$j++){
-		$ap = mysql_fetch_array($rp);
+		$ap = mysqli_fetch_array($rp);
 		$renew_id_popup[] = $ap["id"];   
 		if(strlen($ap["name"]) > 20){
 			$renew_id_replace[] = $ap["id"]. ": " .substr($ap["name"],0,17)."...";
@@ -499,12 +500,12 @@ function productManager(){
 	$out .= dtcDatagrid($dsc);
 		// Build the product ID popup
 		$qp = "SELECT id,name FROM ".$pro_mysql_custom_heb_types_table;
-		$rp = mysql_query($qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-		$np = mysql_num_rows($rp);
+		$rp = mysqli_query($mysql_connection,$qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$np = mysqli_num_rows($rp);
 		$type_id_popup = array();
 		$type_id_replace = array();
 	for($j=0;$j<$np;$j++){
-		$ap = mysql_fetch_array($rp);
+		$ap = mysqli_fetch_array($rp);
 		$type_id_popup[] = $ap["id"];
 		if(strlen($ap["name"]) > 20){
 			$type_id_replace[] = $ap["id"]. ": " .substr($ap["name"],0,17)."...";
@@ -514,14 +515,14 @@ function productManager(){
 	}
 	// Build the product ID popup
 		$qp = "SELECT id,name FROM $pro_mysql_product_table WHERE renew_prod_id='0' AND heb_type='custom' order by custom_heb_type";
-		$rp = mysql_query($qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-		$np = mysql_num_rows($rp);
+		$rp = mysqli_query($mysql_connection,$qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$np = mysqli_num_rows($rp);
 		$renew_id_popup = array();
 		$renew_id_popup[] = 0;
 		$renew_id_replace = array();
 		$renew_id_replace[] = _("Not a renewal product");
 	for($j=0;$j<$np;$j++){
-		$ap = mysql_fetch_array($rp);
+		$ap = mysqli_fetch_array($rp);
 		$renew_id_popup[] = $ap["id"];
 		if(strlen($ap["name"]) > 20){
 			$renew_id_replace[] = $ap["id"]. ": " .substr($ap["name"],0,17)."...";

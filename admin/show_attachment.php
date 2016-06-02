@@ -25,12 +25,12 @@ function echo_the_headers($filesize,$content_type_prim,$content_type_sec){
 }
 
 $q = "SELECT * FROM tik_attach WHERE id='".$_REQUEST["id"]."'";
-$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-$n = mysql_num_rows($r);
+$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+$n = mysqli_num_rows($r);
 if($n != 1){
 	die("Attachement not found!");
 }
-$a = mysql_fetch_array($r);
+$a = mysqli_fetch_array($r);
 $content_type_prim = $a["ctype_prim"];
 $content_type_sec = $a["ctype_sec"];
 $binary = pack("H*" , $a["datahex"]);

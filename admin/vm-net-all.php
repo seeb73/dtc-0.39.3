@@ -17,8 +17,8 @@ if( $_SERVER["SCRIPT_NAME"] != "/dtc/vm-net-all.php"){
 }else{
 	checkLoginPass($adm_login,$adm_pass);
 	$q = "SELECT * FROM $pro_mysql_vps_table WHERE owner='$adm_login' AND vps_server_hostname='".$_REQUEST["vps_server_hostname"]."' AND vps_xen_name='".$_REQUEST["vps_name"]."'";
-	$r = mysql_query($q)or die();
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die();
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die( _("Access not granted line ") .__LINE__. _(" file ") .__FILE__ );
 	}

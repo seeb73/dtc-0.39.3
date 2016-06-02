@@ -67,6 +67,8 @@ function mail_account_generate_postfix(){
 	//global $conf_postfix_vmailbox_path;
 	//global $conf_postfix_virtual_uid_mapping_path;
 
+	global $mysql_connection;
+
 	// prepend the configured path here
 
 	$conf_postfix_virtual_mailbox_domains_path = $conf_generated_file_path . "/postfix_virtual_mailbox_domains";
@@ -106,15 +108,15 @@ function mail_account_generate_postfix(){
 //	}
 	// go through each admin login and find the domains associated 
 	$query = "SELECT * FROM $pro_mysql_admin_table where disabled='no' or disabled='always-no' or disabled='' ORDER BY adm_login;";
-	$result = mysql_query ($query)or die("Cannot execute query : \"$query\"");
-	$num_rows = mysql_num_rows($result);
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot execute query : \"$query\"");
+	$num_rows = mysqli_num_rows($result);
 
 	if($num_rows < 1){
 		die("No account to generate");
 	}
 
 	for($i=0;$i<$num_rows;$i++){
-		$row = mysql_fetch_array($result) or die ("Cannot fetch user-admin");
+		$row = mysqli_fetch_array($result) or die (__FILE__ . "Cannot fetch user-admin");
 		$user_admin_name = $row["adm_login"];
 		$user_admin_pass = $row["adm_pass"];
 		$adm_realpass = $row["adm_pass"];
@@ -414,10 +416,10 @@ function mail_account_generate_postfix(){
 
         foreach($relay_recipients_list as $domain){
 		$qqq = "SELECT fullemail FROM $pro_mysql_pop_table WHERE mbox_host='".$domain."';";
-        	$qqr = mysql_query($qqq)or die ("Cannot query $qqq line: ".__LINE__." file ".__FILE__." sql said:" .mysql_error());
-        	$qqn = mysql_num_rows($qqr);
+        	$qqr = mysqli_query($mysql_connection,$qqq)or die ("Cannot query $qqq line: ".__LINE__." file ".__FILE__." sql said:" .mysql_error());
+        	$qqn = mysqli_num_rows($qqr);
         	for($i=0;$i<$qqn;$i++){
-                	$a = mysql_fetch_array($qqr);
+                	$a = mysqli_fetch_array($qqr);
                        	$relay_recipients_file .= $a["fullemail"]." OK\n";
         	}
 	}

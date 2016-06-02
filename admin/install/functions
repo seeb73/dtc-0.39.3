@@ -658,6 +658,10 @@ searchMYSQL_DB_SOCKET_PATH () {
 # Param:
 #      $1 = subdomain to create
 createSubdomainDirAndFiles () {
+	if [ "$main_domain_name" = "" ]; then
+		echo "No main_domain_name configured, please double check debconf settings..."
+		exit 1
+	fi
 	# Copy newly created chroot tree to the 3 vhosts created with this installer (mx and ns don't have apache vhosts generated)
 	echoIfVerbose "===> Installing chroot file environment for "$1"."$main_domain_name
 	TMP_PATH=$conf_hosting_path"/"$conf_adm_login"/"$main_domain_name"/subdomains/"$1
@@ -1313,7 +1317,7 @@ changeApacheUserAndGroup () {
 createApachePIDSymLink () {
 	echoIfVerbose "===> Searching and symlinking to apache.pid file"
 	# If the variable is not set prior to calling this sript, then search for it!
-	if [ -z "$PATH_APACHE_PID_FILE" ] ; then
+	if [ -z "$PATH_APACHE_PID_FILE" -o ! -e "$PATH_APACHE_PID_FILE" ] ; then
 		# symlink the PidFile to our dtc location, so we can check it in our scripts
 		PATH_APACHE_PID_FILE=`grep ^PidFile $PATH_HTTPD_CONF | cut -f2 -d' '`
 		## strip the pid of " characters if they exist
@@ -1334,6 +1338,9 @@ createApachePIDSymLink () {
 			fi
 			if [ -e /var/run/$PATH_APACHE_PID_FILE ] ; then
 				PATH_APACHE_PID_FILE=/var/run/$PATH_APACHE_PID_FILE	
+			fi
+			if [ -e /var/run/apache2/apache2.pid ] ; then
+				PATH_APACHE_PID_FILE=/var/run/apache2/apache2.pid
 			fi
 		fi
 	fi
@@ -1537,6 +1544,12 @@ Include $PATH_DTC_ETC/vhosts.conf
 		if ! [ ""$conf_omit_dev_mknod = "true" ] ; then
 			echo "Listen 127.0.0.1:80
 Listen 127.0.0.1:443" >>$PATH_HTTPD_CONF
+		fi
+		# add ServerName localhost if not present
+		if grep "^ServerName" $PATH_HTTPD_CONF >/dev/null; then
+			echo "ServerName already set"
+		else
+			echo "ServerName localhost" >> $PATH_HTTPD_CONF
 		fi
 
 		# Since it will contain the password to MySQL, we don't want the file to be world readable.
@@ -4658,6 +4671,7 @@ echoEndMessage () {
 }
 
 createChrootTemplate () {
+	set -x
 	checkBsdKernel
 	if [ -z $conf_chroot_path"" ] ; then
 		CHROOT_DIR=/var/www/chroot
@@ -4928,6 +4942,9 @@ createChrootTemplate () {
 				if [ ! -e lib64 ] ; then
 					ln -s lib lib64
 				fi
+				if [ ! -e /lib/x86_64-linux-gnu ]; then
+					ln -s lib /lib/x86_64-linux-gnu
+				fi
 			fi
 			# Some libs for CentOS
 			if [ -e /lib/libdl.so.2 ] ; then
@@ -4936,17 +4953,26 @@ createChrootTemplate () {
 			if [ -e /lib64/libdl.so.2 ] ; then
 				cp -pf /lib64/libdl.so.2 lib
 			fi
+			if [ -e /lib/x86_64-linux-gnu/libdl.so.2 ] ; then
+				cp -pf /lib/x86_64-linux-gnu/libdl.so.2 lib
+			fi
 			if [ -e /lib/libc.so.6 ] ; then
 				cp -pf /lib/libc.so.6 lib
 			fi
 			if [ -e /lib64/libc.so.6 ] ; then
 				cp -pf /lib64/libc.so.6 lib
 			fi
+			if [ -e /lib/x86_64-linux-gnu/libc.so.6 ] ; then
+				cp -pf /lib/x86_64-linux-gnu/libc.so.6 lib
+			fi
 			if [ -e /lib/libtermcap.so.2 ] ; then
 				cp -pf /lib/libtermcap.so.2 lib
 			fi
 			if [ -e /lib64/libtermcap.so.2 ] ; then
 				cp -pf /lib64/libtermcap.so.2 lib
+			fi
+			if [ -e /lib/x86_64-linux-gnu/libtermcap.so.2 ] ; then
+				cp -pf /lib/x86_64-linux-gnu/libtermcap.so.2 lib
 			fi
 
 			if [ -e /lib/ld-linux.so.2 ] ; then
@@ -4982,6 +5008,9 @@ createChrootTemplate () {
 				if [ -f /lib64/${i} ] ; then
 					cp -pf  /lib64/${i} lib/
 				fi
+				if [ -f /lib/x86_64-linux-gnu/${i} ] ; then
+					cp -pf /lib/x86_64-linux-gnu/${i} lib/
+				fi
 			done
 	
 			CPY_LIBS="libncurses.so.5 libbz2.so.1.0 libmagic.so.1 libz.so.1"
@@ -4991,6 +5020,9 @@ createChrootTemplate () {
 				fi
 				if [ -f /usr/lib64/${i} ] ; then
 					cp -pf  /usr/lib64/${i} lib/
+				fi
+				if [ -f /usr/lib/x86_64-linux-gnu/${i} ] ; then
+					cp -pf /usr/lib/x86_64-linux-gnu/${i} lib/
 				fi
 			done
 

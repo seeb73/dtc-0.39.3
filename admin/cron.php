@@ -49,8 +49,9 @@ global $conf_cron_recurse;
 $CHECK_QMAIL_POP3D = "no";
 
 function markCronflagOk ($flag) {
+	global $mysql_connection;
 	$query = "UPDATE cron_job SET $flag  WHERE 1;";
-	$result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
 }
 
 function searchApachectl () {
@@ -87,11 +88,12 @@ function searchApachectl () {
 
 function getCronFlags () {
 	global $pro_mysql_cronjob_table;
+	global $mysql_connection;
 	$query = "SELECT * FROM $pro_mysql_cronjob_table WHERE 1 LIMIT 1;";
-	$result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
-	$num_rows = mysql_num_rows($result);
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+	$num_rows = mysqli_num_rows($result);
 	if($num_rows != 1)	die("No data in the cronjob table !!!");
-	$cronjob_table_content = mysql_fetch_array($result);
+	$cronjob_table_content = mysqli_fetch_array($result);
 	return $cronjob_table_content;
 }
 
@@ -101,6 +103,7 @@ function checkLockFlag () {
 	global $conf_webmaster_email_addr;
 	global $conf_send_cron_alert;
 	global $conf_mark_finished_cron;
+	global $mysql_connection;
 
 	$cronjob_table_content = getCronFlags();
 	// Lock the cron flag, in case the cron script takes more than 10 minutes
@@ -122,13 +125,14 @@ mysql --defaults-file=/etc/mysql/debian.cnf -Ddtc --execute=\"UPDATE cron_job SE
 	}
 	echo "Setting-up lock flag\n";
 	$query = "UPDATE $pro_mysql_cronjob_table SET lock_flag='inprogress' WHERE 1;";
-	$result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
 }
 
 function resetLockFlag () {
 	global $pro_mysql_cronjob_table;
+	global $mysql_connection;
 	$query = "UPDATE $pro_mysql_cronjob_table SET lock_flag='finished' WHERE 1;";
-	$result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
 }
 
 // This function call the apropriate server to tell that this server may have
@@ -184,20 +188,21 @@ function commitTriggerToRemoteInternal($a, $recipients){
 //returns 0 if the trigger wasn't done
 function checkTriggers($recipients){
 	global $pro_mysql_backup_table;
+	global $mysql_connection;
 	$returnValue = 0;
 	if ($recipients == 0){
 		$query = "SELECT * FROM $pro_mysql_backup_table WHERE type='trigger_changes' AND status='pending';";
 	} else {
 		$query = "SELECT * FROM $pro_mysql_backup_table WHERE type='trigger_mx_changes' AND status='pending';";
 	}
-	$r = mysql_query($query)or die("Cannot query \"$query\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		echo "Triggering the change to the backup server ".$a["server_addr"]." with login ".$a["server_login"]."...";
 		if(commitTriggerToRemoteInternal($a,$recipients)){
 			$q2 = "UPDATE $pro_mysql_backup_table SET status='done' WHERE id='".$a["id"]."';";
-			$r2 = mysql_query($q2)or die("Cannot query \"$q2\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+			$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query \"$q2\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 			echo "success!\n";
 			$returnValue = 1;
 		}else{
@@ -217,18 +222,18 @@ function updateAllDomainsStats(){
 	global $conf_unix_type;
 
 	$query = "SELECT * FROM $pro_mysql_admin_table WHERE 1;";
-	$result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error()." in file ".__FILE__." line ".__LINE__);
-	$num_rows = mysql_num_rows($result);
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error()." in file ".__FILE__." line ".__LINE__);
+	$num_rows = mysqli_num_rows($result);
 	for($i=0;$i<$num_rows;$i++){
-		$admin = mysql_fetch_array($result);
+		$admin = mysqli_fetch_array($result);
 		$adm_login = $admin["adm_login"];
 		echo "===> Updating statistic for user $adm_login\n";
 		$adm_path = $admin["path"];
 		$q = "SELECT * FROM $pro_mysql_domain_table WHERE owner='$adm_login';";
-		$r = mysql_query($q)or die("Cannot query \"$q\" !!!".mysql_error()." in file ".__FILE__." line ".__LINE__);
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" !!!".mysql_error()." in file ".__FILE__." line ".__LINE__);
+		$n = mysqli_num_rows($r);
 		for($j=0;$j<$n;$j++){
-			$ar = mysql_fetch_array($r);
+			$ar = mysqli_fetch_array($r);
 			$domain_name = $ar["name"];
 			echo "Calculating usage of $domain_name:";
 			echo " disk...";
@@ -242,7 +247,7 @@ function updateAllDomainsStats(){
 				$domain_du = $du_state[0];
 			}
 			$q2 = "UPDATE $pro_mysql_domain_table SET du_stat='$domain_du' WHERE name='$domain_name';";
-			mysql_query($q2)or die("Cannot query \"$q2\" !!!".mysql_error()." in file ".__FILE__." line ".__LINE__);
+			mysqli_query($mysql_connection,$q2)or die("Cannot query \"$q2\" !!!".mysql_error()." in file ".__FILE__." line ".__LINE__);
 			echo "ftp...";
 			sum_ftp($domain_name);
 			echo "done!\n";
@@ -255,17 +260,17 @@ function updateAllListWebArchive(){
 	global $pro_mysql_domain_table;
 
 	$query = "SELECT * FROM $pro_mysql_list_table WHERE webarchive='yes'";
-	$result = mysql_query ($query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__. " sql said ".mysql_error());
-	$number = mysql_num_rows($result);
-//	$row = mysql_fetch_array($result);
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__. " sql said ".mysql_error());
+	$number = mysqli_num_rows($result);
+//	$row = mysqli_fetch_array($result);
 	echo "Update of $number webarchive:\n";
 	for($j=0;$j<$number;$j++){
-		$row = mysql_fetch_array($result);
+		$row = mysqli_fetch_array($result);
 		$list_domain = $row["domain"];
 		$list_name = $row["name"];
 		$query2 = "SELECT owner FROM $pro_mysql_domain_table WHERE name='$list_domain' LIMIT 1";
-		$result2 = mysql_query ($query2)or die("Cannot execute query \"$query2\" line ".__LINE__." file ".__FILE__. " sql said ".mysql_error());
-		$row2 = mysql_fetch_array($result2);
+		$result2 = mysqli_query($mysql_connection,$query2)or die("Cannot execute query \"$query2\" line ".__LINE__." file ".__FILE__. " sql said ".mysql_error());
+		$row2 = mysqli_fetch_array($result2);
 		$list_admin = $row2["owner"];
 		echo "...webarchive updating of $list_name on $list_domain\n";
 		$admin_path = getAdminPath($list_admin);
@@ -689,26 +694,28 @@ function checkDisableAdmins() {
 
         global $send_email_header;
 
+	global $mysql_connection;
+
         $now_timestamp = time();
         $one_day = 3600 * 24;
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adddate(expire,permanent_extend+temporary_extend+".$conf_global_extend.")<='".date("Y-m-d",$now_timestamp - $one_day*$conf_shared_renewal_disable_admin)."' and disabled='no';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-        $n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+        $n = mysqli_num_rows($r);
         for($i=0;$i<$n;$i++){
-		$admin=mysql_fetch_array($r) or die("Cannot fetch record line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$admin=mysqli_fetch_array($r) or die("Cannot fetch record line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 		echo "Disabling ".$admin["adm_login"]."\n";
         	$s = "UPDATE $pro_mysql_admin_table SET disabled='yes' WHERE adm_login='".$admin["adm_login"]."';";
-        	$t = mysql_query($s)or die("Cannot query $s line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+        	$t = mysqli_query($mysql_connection,$s)or die("Cannot query $s line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	}
 	if ($conf_auto_enable_admin_on_expire_change == 'yes') {
         	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adddate(expire,permanent_extend+temporary_extend+".$conf_global_extend.")>'".date("Y-m-d",$now_timestamp - $one_day*$conf_shared_renewal_disable_admin)."' and disabled='yes';";
-        	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-        	$n = mysql_num_rows($r);
+        	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+        	$n = mysqli_num_rows($r);
         	for($i=0;$i<$n;$i++){
-			$admin=mysql_fetch_array($r) or die("Cannot fetch record line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$admin=mysqli_fetch_array($r) or die("Cannot fetch record line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 			echo "Enabling ".$admin["adm_login"]."\n";
         		$s = "UPDATE $pro_mysql_admin_table SET disabled='no' WHERE adm_login='".$admin["adm_login"]."';";
-        		$t = mysql_query($s)or die("Cannot query $s line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+        		$t = mysqli_query($mysql_connection,$s)or die("Cannot query $s line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 		}
 	}
 }
@@ -723,10 +730,10 @@ function checkArchiveOrDeleteNewAdmins(){
 		$one_day = 3600 * 24;
 		$q = "SELECT id, reqadm_login FROM $pro_mysql_new_admin_table WHERE to_days(date) < to_days('".
 			date("Y-m-d",$now_timestamp - $one_day*$conf_new_admin_old_age)."') and archive='no';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		for($i=0;$i<$n;$i++){
-			$admin=mysql_fetch_array($r) or die("Cannot fetch record line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$admin=mysqli_fetch_array($r) or die("Cannot fetch record line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 			if ($conf_action_on_old_new_admin == 'delete') {
 				echo "Deleting old new_admin ".$admin["reqadm_login"]."\n";
 				$s = "DELETE FROM $pro_mysql_new_admin_table WHERE id='".$admin["id"]."';";
@@ -734,7 +741,7 @@ function checkArchiveOrDeleteNewAdmins(){
 				echo "Archiving old new_admin ".$admin["reqadm_login"]."\n";
 				$s = "UPDATE $pro_mysql_new_admin_table SET archive='yes' WHERE id='".$admin["id"]."';";
 			}
-			$t = mysql_query($s)or die("Cannot query $s line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$t = mysqli_query($mysql_connection,$s)or die("Cannot query $s line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 		}
 	}
 }

@@ -7,29 +7,29 @@ function deleteTicketThread($delete_me){
 	$a["in_reply_of_id"] = $delete_me;
 	while($a["in_reply_of_id"] != 0){
 		$q = "SELECT * FROM $pro_mysql_tik_queries_table WHERE id='".$a["in_reply_of_id"]."';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 1){
 			die("Cannot find ticket ".$a["in_reply_of_id"]." when willing to search head thread line ".__LINE__." file ".__FILE__);
 		}
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 	}
 	$head = $a["id"];
 	$next = $a["reply_id"];
 	$q = "DELETE FROM $pro_mysql_tik_queries_table WHERE id='$head';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	while($next != 0){
 		$q = "SELECT * FROM $pro_mysql_tik_queries_table WHERE id='$next';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 1){
 			die("Cannot find ticket ".$a["in_reply_of_id"]." when willing to delete thread line ".__LINE__." file ".__FILE__);
 		}
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$head = $next;
 		$next = $a["reply_id"];
 		$q = "DELETE FROM $pro_mysql_tik_queries_table WHERE id='$head';";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	}
 }
 
@@ -101,12 +101,12 @@ $body
 	$tocustomer_subject = readCustomizedMessage("tickets/subject_admin_reply",$adm_login);
 
 	$q = "SELECT * FROM $pro_mysql_tik_admins_table WHERE pseudo='".$_SERVER["PHP_AUTH_USER"]."';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Ticket admin not found line ".__LINE__." file ".__FILE__);
 	}
-	$a = mysql_fetch_array($r);
+	$a = mysqli_fetch_array($r);
 	$realname = $a["realname"];
 	mail($adm_email,$conf_message_subject_header." ".$realname." ".$tocustomer_subject,$content,$headers);
 
@@ -139,10 +139,10 @@ The administrator decided that the issue is:
 	}
 
 	$q = "SELECT * FROM $pro_mysql_tik_admins_table WHERE available='yes';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		mail($a["email"],"$conf_message_subject_header ".$_SERVER["PHP_AUTH_USER"]." replied to the support ticket of ".$subject_line_adm_name,$adm_content,$headers);
 	}
 }
@@ -151,20 +151,20 @@ function getCustomerInfoFromLogin($login){
 	global $pro_mysql_admin_table;
 	global $pro_mysql_client_table;
 	$q = "SELECT id_client FROM $pro_mysql_admin_table WHERE adm_login='$login'";
-	$r = mysql_query($q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error()); 
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error()); 
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		return _("No login by that name in the database.");
 	}
-	$a = mysql_fetch_array($r);
+	$a = mysqli_fetch_array($r);
 	$cid = $a["id_client"];
 	$q = "SELECT is_company,company_name,familyname,christname FROM $pro_mysql_client_table WHERE id='$cid';";
-	$r = mysql_query($q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		return _("No client by that id in the database.");
 	}
-	$a = mysql_fetch_array($r);
+	$a = mysqli_fetch_array($r);
 	if($a["is_company"] == "yes"){
 		$out = $a["company_name"].", ";
 	}else{
@@ -200,6 +200,7 @@ function drawNewAdminForm(){
 	global $pro_mysql_dedicated_table;
 	global $pro_mysql_ssl_ips_table;
 	global $pro_mysql_subdomain_table;
+	global $mysql_connection;
 
 	global $secpayconf_currency_letters;
 	global $secpayconf_use_maxmind;
@@ -212,21 +213,21 @@ function drawNewAdminForm(){
 	// Resolve support ticket stuff
 	if(isset($_REQUEST["subaction"]) && $_REQUEST["subaction"] == "resolv_ticket"){
 		$q = "SELECT * FROM $pro_mysql_tik_queries_table WHERE id='".$_REQUEST["tik_id"]."';";
-		$r = mysql_query($q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 1){
 			return _("Cannot find ticket.");
 		}
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$out .= _("Subject: ") .htmlspecialchars(stripslashes($a["subject"]))."<br>";
 
 		$q2 = "SELECT * FROM $pro_mysql_tik_cats_table WHERE id='".$a["cat_id"]."';";
-		$r2 = mysql_query($q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n2 = mysql_num_rows($r2);
+		$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n2 = mysqli_num_rows($r2);
 		if($n2 != 1){
 			$tmp = _("Type not found.");
 		}else{
-			$a2 = mysql_fetch_array($r2);
+			$a2 = mysqli_fetch_array($r2);
 			$tmp = $a2["catdescript"]."<br>";
 		}
 		$out .= _("Type:") .$tmp. " <br>";
@@ -239,13 +240,13 @@ function drawNewAdminForm(){
 		$close_request = "no";
 		while($next_tikq != 0){
 			$q = "SELECT * FROM $pro_mysql_tik_queries_table WHERE adm_login='".$a["adm_login"]."' AND id='$next_tikq';";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			if($n != 1){
 				$out .= _("Cannot find ticket.");
 				break;
 			}
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$last_tik = $next_tikq;
 			$next_tikq = $a["reply_id"];
 			if($a["admin_or_user"] == "user"){
@@ -266,12 +267,12 @@ function drawNewAdminForm(){
 				for($z=0;$z<$natt;$z++){
 					$att = $attachments[$z];
 					$qatt = "SELECT * FROM tik_attach WHERE id='$att';";
-					$ratt = mysql_query($qatt)or die("Cannot query $qatt line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-					$zn = mysql_num_rows($ratt);
+					$ratt = mysqli_query($mysql_connection,$qatt)or die("Cannot query $qatt line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+					$zn = mysqli_num_rows($ratt);
 					if($zn != 1){
 						continue;
 					}
-					$at = mysql_fetch_array($ratt);
+					$at = mysqli_fetch_array($ratt);
 					$binary = pack("H*" , $at["datahex"]);
 					$chment_size = smartByte(strlen($binary));
 					$out .= "<tr><td$bg valign=\"top\"><i>".htmlspecialchars($at["ctype_prim"])."/".htmlspecialchars($at["ctype_sec"])." ".$chment_size."<br>
@@ -327,12 +328,12 @@ function drawNewAdminForm(){
 	// Reply to support ticket stuff
 	if(isset($_REQUEST["subaction"]) && $_REQUEST["subaction"] == "ticket_reply"){
 		$q = "SELECT * FROM $pro_mysql_tik_queries_table WHERE id='".$_REQUEST["tik_id"]."';";
-		$r = mysql_query($q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 1){
 			return _("Cannot find ticket!");
 		}
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		if(isset($_REQUEST["answer"])){
 			$closed = "no";
 		}else{
@@ -341,22 +342,22 @@ function drawNewAdminForm(){
 		$adm_login = $a["adm_login"];
 		if( strlen($adm_login) != 0){
 			$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-			$r = mysql_query($q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			if($n != 1){
 				return "Admin $adm_login not found line ".__LINE__." file ".__FILE__;
 			}
-			$admin = mysql_fetch_array($r);
+			$admin = mysqli_fetch_array($r);
 			if($admin["id_client"] == "0"){
 				return _("The virtual administrator for which you are trying to manage a support ticket has no client file. Create a client file in the Customer Management screen for this administrator.");
 			}
 			$q = "SELECT * FROM $pro_mysql_client_table WHERE id='".$admin["id_client"]."';";
-			$r = mysql_query($q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			if($n != 1){
 				return "Client id for admin $adm_login not found line ".__LINE__." file ".__FILE__;
 			}
-			$client = mysql_fetch_array($r);
+			$client = mysqli_fetch_array($r);
 		}else{
 			$adm_login = "";
 		}
@@ -366,20 +367,20 @@ function drawNewAdminForm(){
 		}
 		if(isset($_REQUEST["answer"]) || isset($_REQUEST["answer_close"])){
 			$qps = "SELECT * FROM $pro_mysql_tik_admins_table WHERE pseudo='".$_SERVER["PHP_AUTH_USER"]."';";
-			$rps = mysql_query($qps)or die("Cannot query $qps line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$nps = mysql_num_rows($rps);
+			$rps = mysqli_query($mysql_connection,$qps)or die("Cannot query $qps line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$nps = mysqli_num_rows($rps);
 			if($nps != 1){
 				die("Ticket admin not found line ".__LINE__." file ".__FILE__);
 			}
-			$aps = mysql_fetch_array($rps);
+			$aps = mysqli_fetch_array($rps);
 			$pseudo = $aps["pseudo"];
 
 			$q2 = "INSERT INTO $pro_mysql_tik_queries_table (id,adm_login,date,time,in_reply_of_id,reply_id,admin_or_user,subject,text,cat_id,initial_ticket,server_hostname,closed,admin_name)
 			VALUES ('','".$a["adm_login"]."','".date("Y-m-d")."','".date("H:i:s")."','".$_REQUEST["last_tik_id"]."','0','admin','".mysql_real_escape_string($a["subject"])."','".mysql_real_escape_string($_REQUEST["ticketbody"])."','".$a["cat_id"]."','no','".$a["server_hostname"]."','$closed','$pseudo');";
-			$r2 = mysql_query($q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 			$ins_id = mysql_insert_id();
 			$q2 = "UPDATE $pro_mysql_tik_queries_table SET reply_id='$ins_id' WHERE id='".$_REQUEST["last_tik_id"]."';";
-			$r2 = mysql_query($q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 			$out .= "Ticket reply sent!<br>";
 			if( strlen($adm_login) != 0){
 				mailUserTicketReply($client["email"],$a["hash"],$a["subject"],$_REQUEST["ticketbody"],$closed,$adm_login);
@@ -390,7 +391,7 @@ function drawNewAdminForm(){
 		}
 		if($closed == "yes"){
 			$q2 = "UPDATE $pro_mysql_tik_queries_table SET closed='yes' WHERE id='".$_REQUEST["tik_id"]."';";
-			$r2 = mysql_query($q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 		}
 		if( isset($_REQUEST["close"]) ){
 			if( strlen($adm_login) != 0){
@@ -423,8 +424,8 @@ dtcFromOkDraw()."
 	// Draw the list of users awaiting for an account
 	$waiting_new_users = "<h3>". _("User and domain waiting for addition:") ."</h3>";
 	$q = "SELECT * FROM $pro_mysql_new_admin_table WHERE archive='no' ORDER BY date,time";
-	$r = mysql_query($q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n < 1){
 		$waiting_new_users .= "<b>". _("No new user requests waiting.") ."</b>";
 	}else{
@@ -441,20 +442,20 @@ dtcFromOkDraw()."
 			}else{
 				$td = "td  class=\"dtcDatagrid_table_flds_alt\"";
 			}
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$waiting_new_users .= "<tr><$td style=\"white-space:nowrap\"><u>".htmlspecialchars($a["comp_name"]).":</u><br>";
 			$waiting_new_users .= htmlspecialchars($a["family_name"]).", ".htmlspecialchars($a["first_name"])."</td>";
 			$waiting_new_users .= "<$td>".$a["reqadm_login"]."</td>";
 			$prod_id = $a["product_id"];
 			$q2 = "SELECT * FROM $pro_mysql_product_table WHERE id='$prod_id';";
-			$r2 = mysql_query($q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
-			$n2 = mysql_num_rows($r2);
+			$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+			$n2 = mysqli_num_rows($r2);
 			if($n2 != 1){
 				$dom_name = _("Cannot find product in database.");
 				$prod_name = _("Cannot find product in database.");
 				$prod_price = _("Cannot find product in database.");
 			}else{
-				$a2 = mysql_fetch_array($r2);
+				$a2 = mysqli_fetch_array($r2);
 				$prod_name = $a2["name"];
 				$prod_price = $a2["price_dollar"];
 				if($a2["heb_type"] == "vps"){
@@ -469,10 +470,10 @@ dtcFromOkDraw()."
 				$waiting_new_users .= "<$td>". _("No payment ID.") ."</td>";
 			}else{
 				$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='".$a["paiement_id"]."';";
-				$r2 = mysql_query($q)or die("Cannot select $q line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q)or die("Cannot select $q line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 != 1)	echo "Numrows!=1 in $q line: ".__LINE__." file: ".__FILE__." : problems with sql tables !";
-				$a2 = mysql_fetch_array($r2);
+				$a2 = mysqli_fetch_array($r2);
 				$tt = $a2["paiement_total"];
 				$secpay_site = $a2["secpay_site"];
 				if($a2["valid"] == "yes"){
@@ -526,8 +527,8 @@ dtcFromOkDraw()."
 
 	// Draw the list of domains awaiting to be add to users
 	$q = "SELECT * FROM $pro_mysql_pending_queries_table";
-	$r = mysql_query($q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n < 1){
 		$waiting_new_users .= "<br><b>". _("No Domains Waiting.") ."</b><br>";
 	}else{
@@ -541,7 +542,7 @@ dtcFromOkDraw()."
 			}else{
 				$td = "td  class=\"dtcDatagrid_table_flds_alt\"";
 			}
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$waiting_new_users .= "<$td>".$a["adm_login"]."</td>";
 			$waiting_new_users .= "<$td>".$a["domain_name"]."</td>";
 			$waiting_new_users .= "<$td><a href=\"?action=valid_waiting_domain_to_user&reqid=".$a["id"]."\">". _("Add") ."</a>
@@ -552,8 +553,8 @@ dtcFromOkDraw()."
 
 	// Draw the list of pending renewals
 	$q = "SELECT * FROM $pro_mysql_pending_renewal_table ORDER BY renew_date,renew_time";
-	$r = mysql_query($q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n < 1){
 		$waiting_new_users .= "<b>". _("No pending renewals.") ."</b><br>";
 	}else{
@@ -570,7 +571,7 @@ dtcFromOkDraw()."
 			}else{
 				$td = "td  class=\"dtcDatagrid_table_flds_alt\"";
 			}
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$waiting_new_users .= "<tr><$td>".$a["adm_login"]."</td>";
 			if($a["heb_type"] == "multiple-services"){
 				$servs = explode("|",$a["services"]);
@@ -596,35 +597,35 @@ dtcFromOkDraw()."
 						break;
 					}
 					$q2 = "SELECT name,price_dollar,period FROM $pro_mysql_product_table WHERE id='".$attrs[$ind]."';";
-					$r2 = mysql_query($q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
-					$n2 = mysql_num_rows($r2);
+					$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+					$n2 = mysqli_num_rows($r2);
 					if($n2 != 1){
 						$prod_name .= _("Cannot find product.");
 					}else{
-						$a2 = mysql_fetch_array($r2);
+						$a2 = mysqli_fetch_array($r2);
 						$prod_name .= $a2["name"]." (".$a2["price_dollar"]." $secpayconf_currency_letters: ".$a2["period"].")";
 					}
 				}
 			}else{
 				$q2 = "SELECT name,price_dollar,period FROM $pro_mysql_product_table WHERE id='".$a["product_id"]."';";
-				$r2 = mysql_query($q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 != 1){
 					$prod_name = _("Cannot find product.");
 				}else{
-					$a2 = mysql_fetch_array($r2);
+					$a2 = mysqli_fetch_array($r2);
 					$prod_name = $a2["name"]." (".$a2["price_dollar"]." $secpayconf_currency_letters: ".$a2["period"].")";
 				}
 			}
 			$waiting_new_users .= "<$td>$prod_name</td>";
 			$waiting_new_users .= "<$td>".$a["renew_date"]." ".$a["renew_time"]."</td>";
 			$q2 = "SELECT * FROM $pro_mysql_pay_table WHERE id='".$a["pay_id"]."';";
-			$r2 = mysql_query($q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
-			$n2 = mysql_num_rows($r2);
+			$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+			$n2 = mysqli_num_rows($r2);
 			if($n2 != 1){
 				$bank = _("Cannot find payment.");
 			}else{
-				$a2 = mysql_fetch_array($r2);
+				$a2 = mysqli_fetch_array($r2);
 				switch($a2["valid"]){
 				case "yes":
 					$bank = "<font color=\"green\">"._("Yes")."</font>";
@@ -642,11 +643,11 @@ dtcFromOkDraw()."
 			switch($a["heb_type"]){
 			case "vps":
 				$q2 = "SELECT * FROM $pro_mysql_vps_table WHERE id='".$a["renew_id"]."'";
-				$r2 = mysql_query($q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
 				if($n2 != 1){
 					$heb_type = _("VPS: Cannot find VPS in database.");
 				}else{
-					$a2 = mysql_fetch_array($r2);
+					$a2 = mysqli_fetch_array($r2);
 					$heb_type = "VPS: ".$a2["vps_xen_name"]."@".$a2["vps_server_hostname"];
 				}
 				break;
@@ -668,11 +669,11 @@ dtcFromOkDraw()."
 				break;
 			case "server":
 				$q2 = "SELECT * FROM $pro_mysql_dedicated_table WHERE id='".$a["renew_id"]."'";
-				$r2 = mysql_query($q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
 				if($n2 != 1){
 					$tmp = _("Cannot find server in database.");
 				}else{
-					$a2 = mysql_fetch_array($r2);
+					$a2 = mysqli_fetch_array($r2);
 					$tmp = $a2["server_hostname"];
 				}
 				$heb_type = _("Server:") ." ".$tmp;
@@ -704,11 +705,11 @@ dtcFromOkDraw()."
 				break;
 			case "custom":
 				$q2 = "SELECT * FROM $pro_mysql_custom_product_table WHERE id='".$a["renew_id"]."'";
-				$r2 = mysql_query($q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
 				if($n2 != 1){
 					$tmp = _("Cannot find custom service in database.");
 				}else{
-					$a2 = mysql_fetch_array($r2);
+					$a2 = mysqli_fetch_array($r2);
 					$tmp = $a2["owner"];
 				}
 				$heb_type = _("Custom:") ." ".$tmp;
@@ -727,8 +728,8 @@ dtcFromOkDraw()."
 	}
 	// Ticket manager: draw all open tickets
 	$q = "SELECT * FROM $pro_mysql_tik_queries_table WHERE closed='no' AND initial_ticket='yes' ORDER BY `date`,`time`;";
-	$r = mysql_query($q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n < 1){
 		$waiting_new_users .= "<b>". _("No pending support tickets.") ."</b><br>";
 	}else{
@@ -745,7 +746,7 @@ dtcFromOkDraw()."
 			}else{
 				$td = "td  class=\"dtcDatagrid_table_flds_alt\"";
 			}
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			if( strlen($a["customer_email"]) != 0){
 				$who = $a["customer_email"];
 				if( strlen($a["adm_login"]) != 0){
@@ -756,12 +757,12 @@ dtcFromOkDraw()."
 			}
 			$waiting_new_users .= "<tr><$td>$who</td>";
 			$q2 = "SELECT * FROM $pro_mysql_tik_cats_table WHERE id='".$a["cat_id"]."'";
-			$r2 = mysql_query($q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
-			$n2 = mysql_num_rows($r2);
+			$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+			$n2 = mysqli_num_rows($r2);
 			if($n2 != 1){
 				$cat = _("Type not found.");
 			}else{
-				$a2 = mysql_fetch_array($r2);
+				$a2 = mysqli_fetch_array($r2);
 				$cat = $a2["catname"];
 			}
 			$age = calculateAge($a["date"],$a["time"]);
@@ -779,13 +780,13 @@ dtcFromOkDraw()."
 			while($next_reply_id != 0 && $loop_num < 49){
 				$loop_num++;
 				$q2 = "SELECT * FROM $pro_mysql_tik_queries_table WHERE id='$next_reply_id';";
-				$r2 = mysql_query($q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 != 1){
 					echo "Warning: couldn't find tik query $next_reply_id in last reply detection!";
 					break;
 				}
-				$a3 = mysql_fetch_array($r2);
+				$a3 = mysqli_fetch_array($r2);
 				$last_message_date = $a3["date"];
 				$last_message_time = $a3["time"];
 				if($a3["admin_or_user"] == "user"){
@@ -836,7 +837,7 @@ dtcFormLineDraw("","
 			$adm_random_pass = $rand;
 			$expirationTIME = time() + (60 * $conf_session_expir_minute);
 			$q = "UPDATE $pro_mysql_tik_admins_table SET pass_next_req='$rand', pass_expire='$expirationTIME' WHERE pseudo='".$_SERVER["PHP_AUTH_USER"]."';";
-			$r = mysql_query($q)or die("Cannot execute query \"$q\" !");
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" !");
 		}
 
 		$sr = "<h3>"._("Search result")."</h3><br>";
@@ -844,15 +845,15 @@ dtcFormLineDraw("","
 		if( isIP($_REQUEST["search_subject"]) ){
 			// Search VPS IPs
 			$q = "SELECT * FROM $pro_mysql_vps_ip_table WHERE ip_addr='".$_REQUEST["search_subject"]."';";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			for($i=0;$i<$n;$i++){
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 				$q2 = "SELECT * FROM $pro_mysql_vps_table WHERE vps_server_hostname='".$a["vps_server_hostname"]."' AND vps_xen_name='".$a["vps_xen_name"]."';";
-				$r2 = mysql_query($q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 == 1){
-					$a2 = mysql_fetch_array($r2);
+					$a2 = mysqli_fetch_array($r2);
 					$owner = $a2["owner"];
 					$sr .= _("Login:")." ".$owner."<br>";
 					$sr .= _("Customer:")." ".getCustomerInfoFromLogin($owner)."<br>";
@@ -861,15 +862,15 @@ dtcFormLineDraw("","
 			}
 			// Search Dedicated IPs
 			$q = "SELECT * FROM $pro_mysql_dedicated_ips_table WHERE ip_addr='".$_REQUEST["search_subject"]."';";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			for($i=0;$i<$n;$i++){
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 				$q2 = "SELECT * FROM $pro_mysql_dedicated_table WHERE server_hostname='".$a["dedicated_server_hostname"]."';";
-				$r2 = mysql_query($q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 == 1){
-					$a2 = mysql_fetch_array($r2);
+					$a2 = mysqli_fetch_array($r2);
 					$owner = $a2["owner"];
 					$sr .= _("Login:")." ".$owner."<br>";
 					$sr .= _("Customer:")." ".getCustomerInfoFromLogin($owner)."<br>";
@@ -878,15 +879,15 @@ dtcFormLineDraw("","
 			}
 			// Search SSL IPs
 			$q = "SELECT * FROM $pro_mysql_ssl_ips_table WHERE ip_addr='".$_REQUEST["search_subject"]."';";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			for($i=0;$i<$n;$i++){
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 				$q2 = "SELECT * FROM $pro_mysql_subdomain_table WHERE ssl_ip='".$_REQUEST["search_subject"]."';";
-				$r2 = mysql_query($q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 == 1){
-					$a2 = mysql_fetch_array($r2);
+					$a2 = mysqli_fetch_array($r2);
 					$owner = $a["adm_login"];
 					$sr .= _("Login:")." ".$owner."<br>";
 					$sr .= _("Customer:")." ".getCustomerInfoFromLogin($owner)."<br>";
@@ -896,15 +897,15 @@ dtcFormLineDraw("","
 		// Search on emails
 		}elseif( isValidEmail($_REQUEST["search_subject"]) ){
 			$q = "SELECT * FROM $pro_mysql_client_table WHERE email='".$_REQUEST["search_subject"]."';";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			for($i=0;$i<$n;$i++){
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 				$q2 = "SELECT * FROM $pro_mysql_admin_table WHERE id_client='".$a["id"]."';";
-				$r2 = mysql_query($q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 == 1){
-					$a2 = mysql_fetch_array($r2);
+					$a2 = mysqli_fetch_array($r2);
 					$owner = $a2["adm_login"];
 					$sr .= _("Login:")." ".$owner."<br>";
 					$sr .= _("Customer:")." ".getCustomerInfoFromLogin($owner)."<br>";
@@ -914,15 +915,15 @@ dtcFormLineDraw("","
 		// Search on clients
 		}else{
 			$q = "SELECT * FROM $pro_mysql_client_table WHERE (familyname LIKE '%".$_REQUEST["search_subject"]."%') OR (christname LIKE '%".$_REQUEST["search_subject"]."%') OR (company_name LIKE '%".$_REQUEST["search_subject"]."%')";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			for($i=0;$i<$n;$i++){
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 				$q2 = "SELECT * FROM $pro_mysql_admin_table WHERE id_client='".$a["id"]."';";
-				$r2 = mysql_query($q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 == 1){
-					$a2 = mysql_fetch_array($r2);
+					$a2 = mysqli_fetch_array($r2);
 					$owner = $a2["adm_login"];
 					$sr .= _("Login:")." ".$owner."<br>";
 					$sr .= _("Customer:")." ".getCustomerInfoFromLogin($owner)."<br>";

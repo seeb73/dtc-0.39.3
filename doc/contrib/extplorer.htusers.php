@@ -12,7 +12,7 @@ function dtc_db_auth() {
 	}
 	mysql_select_db($conf_mysql_db)or die("Could not connect to the DTC db!");
 	$q = "SELECT * FROM admin";
-	$r = mysql_query($q)or die("Could not query the DTC db!");
+	$r = mysqli_query($mysql_connection,$q)or die("Could not query the DTC db!");
 	$n = mysql_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysql_fetch_array($r);

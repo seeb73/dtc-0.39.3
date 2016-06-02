@@ -78,14 +78,14 @@ function drawRrdtoolGraphs (){
 		}
 		$out .= "<br><br>";
 		$q = "SELECT hostname FROM $pro_mysql_vps_server_table ORDER BY hostname";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n == 0){
 			$out .= _("No VPS server configured");
 		}else{
 			$out .= "<center><table cellspacing=\"0\" cellpadding=\"0\" border=\"0\" width=\"920\"><tr>";
 			for($i=0;$i<$n;$i++){
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 				$hostname = $a["hostname"];
 				$out .= "<tr><td width=\"33%\">"._("CPU")." $hostname<br><img src=\"vm-cpu-all.php?vps_server_hostname=$hostname&graph=$period\"></td>
 <td width=\"33%\">"._("HDD activity")." $hostname<br><img src=\"vm-io-all.php?vps_server_hostname=$hostname&graph=$period\"></td>

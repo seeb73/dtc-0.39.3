@@ -1,5 +1,7 @@
 <?php
 
+global $mysql_connection_mysql;
+
 ///////////////////////////
 // MySQL password change //
 ///////////////////////////
@@ -7,7 +9,10 @@
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_dbuser"){
 	checkLoginPass($adm_login,$adm_pass);
 	if($conf_user_mysql_type=="distant"){
-		$newid=mysql_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass) or die("Cannot connect to user SQL host");
+		if ($mysql_connection_mysql == NULL || $mysql_connection_mysql.ping() == false) 
+		{
+			$mysql_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user SQL host");
+		}
 	}
 	if(!isFtpLogin($_REQUEST["dbuser"])){
 		$submit_err .= _("Incorrect MySQL login format: please enter another login and try again.") ."<br>\n";
@@ -28,8 +33,8 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_dbuser"){
 	}
 	if($commit_flag == "yes"){
 		$query = "SELECT * FROM mysql.user WHERE User='".$dbuser."';";
-		$result = mysql_query($query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-		$num_rows = mysql_num_rows($result);
+		$result = mysqli_query($mysql_connection_mysql,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$num_rows = mysqli_num_rows($result);
 		if($num_rows > 0){
 			$submit_err .= _("A user with that name exists in the database, please select a new one.") ."<br>\n";
 			$commit_flag = "no";
@@ -38,14 +43,13 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_dbuser"){
 	if($commit_flag == "yes"){
 		$q = "INSERT INTO mysql.user (Host,User,Password,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Reload_priv,Shutdown_priv,Process_priv,File_priv,Grant_priv,References_priv,Index_priv,Alter_priv,dtcowner)
 			VALUES ('%','".$dbuser."',Password('".$_REQUEST["db_pass"]."'),'N','N','N','N','N','N','N','N','N','N','N','N','N','N','$adm_login');";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 		$q = "INSERT INTO mysql.user (Host,User,Password,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Reload_priv,Shutdown_priv,Process_priv,File_priv,Grant_priv,References_priv,Index_priv,Alter_priv,dtcowner)
 			VALUES ('localhost','". $dbuser ."',Password('".$_REQUEST["db_pass"]."'),'N','N','N','N','N','N','N','N','N','N','N','N','N','N','$adm_login');";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 	}
 	if($conf_user_mysql_type=="distant"){
-		mysql_close($newid) or die( _("Cannot close user database") );
-		connect2base();
+		mysqli_close($mysql_connection_mysql) or die( _("Cannot close user database") );
 	}
 }
 
@@ -53,7 +57,10 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_dbuser"){
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_dbuser_db"){
 	checkLoginPass($adm_login,$adm_pass);
 	if($conf_user_mysql_type=="distant"){
-		$newid=mysql_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass) or die("Cannot connect to user SQL host");
+		if ($mysql_connection_mysql == NULL || $mysql_connection_mysql.ping() == false)
+		{
+			$mysql_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user SQL host");
+		}
 	}
 	// Check the db name format and that it's one one of the forbidden dbs
 	if(!isDatabase($_REQUEST["newdb_name"])
@@ -71,8 +78,8 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_dbuser_db"){
 			$newdb_name = $_REQUEST["newdb_name"];
 		}
 		$q = "SELECT * FROM mysql.db WHERE Db='". $newdb_name ."';";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-		$num_rows = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$num_rows = mysqli_num_rows($r);
 		if($num_rows > 0){
 			$submit_err .= _("A database by that name exists, please choose another name.") ."<br>\n";
 			$commit_flag = "no";
@@ -83,8 +90,8 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_dbuser_db"){
 		$commit_flag = "no";
 	}else{
 		$query = "SELECT * FROM mysql.user WHERE User='".$_REQUEST["dbuser"]."';";
-		$result = mysql_query($query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-		$num_rows = mysql_num_rows($result);
+		$result = mysqli_query($mysql_connection_mysql,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$num_rows = mysqli_num_rows($result);
 		if($num_rows < 1){
 			$submit_err .= _("No user by that name exists in the database, or you don't own this db user. Please select a new one.") ."<br>\n";
 			$commit_flag = "no";
@@ -96,19 +103,18 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_dbuser_db"){
 	}
 	if($commit_flag == "yes"){
 		$q = "CREATE DATABASE IF NOT EXISTS `". $newdb_name ."`;";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 		$q = "INSERT INTO mysql.db ( Host,Db,User,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Grant_priv,References_priv,Index_priv,Alter_priv,Lock_tables_priv,Create_tmp_table_priv,Create_view_priv,Show_view_priv)
 		VALUES ('%','". $newdb_name ."','".$_REQUEST["dbuser"]."','Y','Y','Y','Y','Y','Y','N','Y','Y','Y','Y','Y','Y','Y');";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 		$q = "INSERT INTO mysql.db ( Host,Db,User,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Grant_priv,References_priv,Index_priv,Alter_priv,Lock_tables_priv,Create_tmp_table_priv,Create_view_priv,Show_view_priv)
 		VALUES ('localhost','". $newdb_name ."','".$_REQUEST["dbuser"]."','Y','Y','Y','Y','Y','Y','N','Y','Y','Y','Y','Y','Y','Y');";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 		$q = "FLUSH PRIVILEGES;";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 	}
 	if($conf_user_mysql_type=="distant"){
-		mysql_close($newid) or die("Cannot disconnect to user database");
-		connect2base();
+		mysql_close($mysql_connection_mysql) or die("Cannot disconnect to user database");
 	}
 	updateUsingCron("gen_backup='yes'");
 }
@@ -116,7 +122,10 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_dbuser_db"){
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "modify_dbuser_pass"){
 	checkLoginPass($adm_login,$adm_pass);
 	if($conf_user_mysql_type=="distant"){
-		$newid=mysql_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass) or die("Cannot connect to user SQL host");
+		if ($mysql_connection_mysql == NULL || $mysql_connection_mysql.ping() == false)
+		{
+			$mysql_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user SQL host");
+		}
 	}
 	// action=modify_dbuser_pass&dbuser=zigo&db_pass=bla
 	if(!isFtpLogin($_REQUEST["dbuser"])){
@@ -129,8 +138,8 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "modify_dbuser_pass"){
 	}
 	if($commit_flag == "yes"){
 		$query = "SELECT * FROM mysql.user WHERE User='".$_REQUEST["dbuser"]."' AND dtcowner='$adm_login';";
-		$result = mysql_query($query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-		$num_rows = mysql_num_rows($result);
+		$result = mysqli_query($mysql_connection_mysql,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$num_rows = mysqli_num_rows($result);
 		if($num_rows < 1){
 			$submit_err .= _("A MySQL user by that name already exists. Please choose another one.")."<br>\n";
 			$commit_flag = "no";
@@ -138,19 +147,21 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "modify_dbuser_pass"){
 	}
 	if($commit_flag == "yes"){
 		$q = "UPDATE mysql.user SET Password=PASSWORD('".$_REQUEST["db_pass"]."') WHERE User='".$_REQUEST["dbuser"]."';";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 		$q = "FLUSH PRIVILEGES;";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 	}
 	if($conf_user_mysql_type=="distant"){
-		mysql_close($newid) or die("Cannot disconnect to user database");
-		connect2base();
+		mysql_close($mysql_connection_mysql) or die("Cannot disconnect to user database");
 	}
 }
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "del_dbuser"){
 	checkLoginPass($adm_login,$adm_pass);
 	if($conf_user_mysql_type=="distant"){
-		$newid=mysql_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass) or die("Cannot connect to user SQL host");
+		if ($mysql_connection_mysql == NULL || $mysql_connection_mysql.ping() == false)
+		{
+			$mysql_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user SQL host");
+		}
 	}
 	// action=del_dbuser&dbuser=zigo
 	if(!isFtpLogin($_REQUEST["dbuser"])){
@@ -158,8 +169,8 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "del_dbuser"){
 		$commit_flag = "no";
 	}else{
 		$q = "SELECT * FROM mysql.db WHERE User='".$_REQUEST["dbuser"]."';";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-		$num_rows = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$num_rows = mysqli_num_rows($r);
 		if($num_rows > 0){
 			$submit_err .= _("That user still owns some databases. Please remove them or change the owner first.") ."<br>\n";
 			$commit_flag = "no";
@@ -167,19 +178,21 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "del_dbuser"){
 	}
 	if($commit_flag == "yes"){
 		$q = "DELETE FROM mysql.user WHERE User='".$_REQUEST["dbuser"]."' AND dtcowner='$adm_login';";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 		$q = "FLUSH PRIVILEGES;";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 	}
 	if($conf_user_mysql_type=="distant"){
-		mysql_close($newid) or die("Cannot disconnect to user database");
-		connect2base();
+		mysql_close($mysql_connection_mysql) or die("Cannot disconnect to user database");
 	}
 }
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "delete_user_db"){
 	checkLoginPass($adm_login,$adm_pass);
 	if($conf_user_mysql_type=="distant"){
-		$newid=mysql_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass) or die("Cannot connect to user SQL host");
+		if ($mysql_connection_mysql == NULL || $mysql_connection_mysql.ping() == false)
+		{
+			$mysql_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user SQL host");
+		}
 	}
 	// action=delete_user_db&dbname=clem
 	if(!isDatabase($_REQUEST["dbname"])){
@@ -187,16 +200,16 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "delete_user_db"){
 		$commit_flag = "no";
 	}else{
 		$q = "SELECT User FROM mysql.db WHERE Db='".$_REQUEST["dbname"]."';";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n < 1){
 			$submit_err .= _("Cannot reselect MySQL db name: please enter another and try again.") ."<br>\n";
 			$commit_flag = "no";
 		}else{
 			$a = mysql_fetch_array($r);
 			$q = "SELECT User FROM mysql.user WHERE User='".$a["User"]."' AND dtcowner='$adm_login';";
-			$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+			$n = mysqli_num_rows($r);
 			if($n < 1){
 				$submit_err .= _("MySql database ownership not valid: I will not let you delete this database because it doesn't seem to be owned by you.")."<br>\n";
 				$commit_flag = "no";
@@ -205,22 +218,24 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "delete_user_db"){
 	}
 	if($commit_flag == "yes"){
 		$q = "DELETE FROM mysql.db WHERE Db='".$_REQUEST["dbname"]."';";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 		$q = "DROP DATABASE IF EXISTS `".$_REQUEST["dbname"]."`;";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 		$q = "FLUSH PRIVILEGES;";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 	}
 	if($conf_user_mysql_type=="distant"){
-		mysql_close($newid) or die("Cannot disconnect to user database");
-		connect2base();
+		mysql_close($mysql_connection_mysql) or die("Cannot disconnect to user database");
 	}
 	updateUsingCron("gen_backup='yes'");
 }
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "change_db_owner"){
 	checkLoginPass($adm_login,$adm_pass);
 	if($conf_user_mysql_type=="distant"){
-		$newid=mysql_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass) or die("Cannot connect to user SQL host");
+		if ($mysql_connection_mysql == NULL || $mysql_connection_mysql.ping() == false)
+		{
+			$mysql_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user SQL host");
+		}
 	}
 	// action=change_db_owner&dbname=clem&dbuser=zigo
 	if(!isFtpLogin($_REQUEST["dbuser"])){
@@ -232,16 +247,16 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "change_db_owner"){
 		$commit_flag = "no";
 	}else{
 		$q = "SELECT User FROM mysql.db WHERE Db='".$_REQUEST["dbname"]."';";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n < 1){
 			$submit_err .= "Cannot reselect MySQL db name: please enter another and try again.<br>\n";
 			$commit_flag = "no";
 		}else{
 			$a = mysql_fetch_array($r);
 			$q = "SELECT User FROM mysql.user WHERE User='".$a["User"]."' AND dtcowner='$adm_login';";
-			$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+			$n = mysqli_num_rows($r);
 			if($n < 1){
 				$submit_err .= _("MySql database ownership not valid: I will not let you change owner of this database because it doesn't seems to be owned by you.")."<br>\n";
 				$commit_flag = "no";
@@ -250,13 +265,12 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "change_db_owner"){
 	}
 	if($commit_flag == "yes"){
 		$q = "UPDATE mysql.db SET User='".$_REQUEST["dbuser"]."' WHERE Db='".$_REQUEST["dbname"]."';";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 		$q = "FLUSH PRIVILEGES;";
-		$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 	}
 	if($conf_user_mysql_type=="distant"){
-		mysql_close($newid) or die("Cannot disconnect to user database");
-		connect2base();
+		mysql_close($mysql_connection_mysql) or die("Cannot disconnect to user database");
 	}
 }
 

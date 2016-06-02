@@ -25,6 +25,8 @@ function drawAdminTools_PackageInstaller($domain,$adm_path){
 
 	global $pkg_info;
 
+	global $mysql_connection;
+
 	$txt = "";
 	$dir = $dtcshared_path."/package-installer";
 
@@ -97,27 +99,26 @@ function drawAdminTools_PackageInstaller($domain,$adm_path){
 		}
 
 		if($pkg_info["need_database"] == "yes"){
+			global $mysql_connection_mysql;
 			if($conf_user_mysql_type=="distant"){
-				$newid=mysql_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass) or die("Cannot connect to user host");
+				$mysql_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user host");
 			}
 			// Get the database infos beffore calling the custom package installer
 			$q = "SELECT DISTINCT db.Db,db.User FROM mysql.user,mysql.db WHERE user.dtcowner='$adm_login' AND db.User=user.User AND db.Db='".mysql_real_escape_string($_REQUEST["database_name"])."';";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			if($n != 1)die("Cannot find database line ".__LINE__." file ".__FILE__);
 			$a = mysql_fetch_array($r);
 			$dtcpkg_db_login = $a["User"];
 
 			if($conf_user_mysql_type=="distant"){
-				mysql_close($newid) or die("Cannot disconnect to user database");
-				connect2base();
+				mysqli_close($mysql_connection_mysql) or die("Cannot disconnect to user database");
+				$mysql_connection = connect2base();
 			}
 		}
 
 		// Call the package specific installer php script
 		$install_ret = do_package_install();
-		// reselect the current dtc db in case another have been set
-		mysql_select_db($conf_mysql_db);
 
 		if($install_ret == 0){
 			$package_installer_console .= "Install successful !<br>";
@@ -151,24 +152,22 @@ function drawAdminTools_PackageInstaller($domain,$adm_path){
 
 		if($pkg_info["need_database"] == "yes"){
 			$txt .= "<h3>Choose a database name for setup:</h3><br>";
-
+			global $mysql_connection_mysql;
 			if($conf_user_mysql_type=="distant"){
-				$newid=mysql_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass) or die("Cannot connect to user SQL host");
+				$mysql_connection_mysql=mysql_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user SQL host, with DB: mysql");
 			}
-			mysql_select_db("mysql")or die ("Cannot select db: mysql");
 			$q = "SELECT db.Db,db.User FROM user,db
 			WHERE user.dtcowner='$adm_login'
 			AND db.User=user.User";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			if($n < 1){
 				$txt .= "You don't have any database yet. Please create one using the database tool
 				(click database in the menu, then create a user and a database for this user).";
 				if($conf_user_mysql_type=="distant"){
-					mysql_close($newid) or die("Cannot disconnect to user database");
-					connect2base();
+					mysql_close($mysql_connection_mysql) or die("Cannot disconnect to user database");
+					$mysql_connection = connect2base();
 				}
-				mysql_select_db($conf_mysql_db);
 				return $txt;
 			}
 			$txt .= "Database name: <select name=\"database_name\">";
@@ -179,10 +178,9 @@ function drawAdminTools_PackageInstaller($domain,$adm_path){
 			$txt .= "</select><br>
 				Database password: <input type=\"password\" name=\"dtcpkg_db_pass\" value=\"\"><br><br>";
 			if($conf_user_mysql_type=="distant"){
-				mysql_close($newid) or die("Cannot disconnect to user database");
-				connect2base();
+				mysql_close($mysql_connection_mysql) or die("Cannot disconnect to user database");
+				$mysql_connection = connect2base();
 			}
-			mysql_select_db($conf_mysql_db)or die ("Cannot select db: $conf_mysql_db line ".__LINE__." file ".__FILE__);
 		}
 
 		if($pkg_info["need_admin_email"] == "yes"){

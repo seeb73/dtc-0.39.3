@@ -103,12 +103,12 @@ case "enets-success":
 
 
 	$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='$extapi_pay_id';";
-	$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$form .= _("Cannot reselect transaction: registration failed!") ;//"Cannot reselect transaction for id $extapi_pay_id: registration failed!";
 	}else{
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$form .= "<h2>Your transaction status is now:</h2>";
 		if($a["valid"] != "yes"){
 			$form .= "<h3><font color=\"red\">". _("NOT VALIDATED") ."<!-- NOT VALIDATED --></font></h3>
@@ -119,12 +119,12 @@ case "enets-success":
 			$form .= "<h3><font color=\"green\">". _("TRANSACTION FINISHED AND APPROVED") ."<!-- TRANSACTION FINISHED AND APPROVED--></font></h3>";
 			if($a["new_account"] == "yes"){
 				$q2 = "SELECT * FROM $pro_mysql_new_admin_table WHERE paiement_id='$extapi_pay_id';";
-				$r2 = mysql_query($q2)or die("Cannot query \"$q2\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query \"$q2\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 != 1){
 					$form .= _("Cannot reselect user: registration failed!") ;//"Cannot reselect user: registration failed!";
 				}else{
-					$a2 = mysql_fetch_array($r2);
+					$a2 = mysqli_fetch_array($r2);
 					validateWaitingUser($a2["id"]);
 					$form .= "Your account has just been created. Please login <a href=\"/dtc\">here</a> to
 					start using your account.<br><br>
@@ -136,12 +136,12 @@ case "enets-success":
 			// If it's not a new account, then it's a renewal and there must be a record of it
 			}else{
 				$q2 = "SELECT * FROM $pro_mysql_pending_renewal_table WHERE pay_id='$extapi_pay_id';";
-				$r2 = mysql_query($q2)or die("Cannot query \"$q2\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-				$n2 = mysql_num_rows($r2);
+				$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query \"$q2\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$n2 = mysqli_num_rows($r2);
 				if($n2 != 1){
 					$form .= "Could not find your renewal order in the database!";
 				}else{
-					$a2 = mysql_fetch_array($r2);
+					$a2 = mysqli_fetch_array($r2);
 					$ret = validateRenewal($a2["id"]);
 					if($ret != true){
 						$form .= $submit_err;
@@ -187,22 +187,22 @@ case "add_new_service":
 	}
 	// Product
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$_REQUEST["product_id"]."';";
-	$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$form = _("Cannot reselect product: registration failed.") ;
 		break;
 	}
-	$product = mysql_fetch_array($r);
+	$product = mysqli_fetch_array($r);
 
 	if($product["heb_type"] == "vps"){
 		$q = "SELECT * FROM $pro_mysql_vps_server_table WHERE hostname='".$_REQUEST["vps_location"]."'";
-		$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 		if($n != 1){
 			$form = _("Cannot reselect product: registration failed.") ;//"Cannot reselect product: registration failed.";
 			break;
 		}else{
-			$vps_server = mysql_fetch_array($r);
+			$vps_server = mysqli_fetch_array($r);
 			$service_location = $vps_server["country_code"];
 		}
 	}else{
@@ -211,23 +211,23 @@ case "add_new_service":
 
 	// Admin
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$_REQUEST["adm_login"]."';";
-	$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$form .= _("Cannot reselect user: registration failed.");
 		break;
 	}
-	$admin = mysql_fetch_array($r);
+	$admin = mysqli_fetch_array($r);
 
 	// Client
 	$q = "SELECT * FROM $pro_mysql_client_table WHERE id='".$admin["id_client"]."';";
-	$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$form .= _("Cannot reselect client: registration failed.");
 		break;
 	}
-	$client = mysql_fetch_array($r);
+	$client = mysqli_fetch_array($r);
 
 	$q = "INSERT INTO $pro_mysql_new_admin_table (id,reqadm_login,reqadm_pass,domain_name,family_name,first_name,
 	comp_name,iscomp,email,
@@ -248,17 +248,17 @@ case "add_new_service":
 	'".mysql_real_escape_string($_REQUEST["custom_notes"])."','".$_REQUEST["vps_location"]."','".$_REQUEST["vps_os"]."',
 	
 	'". mysql_real_escape_string($client["vat_num"]) ."','".$_SERVER["REMOTE_ADDR"]."','".date("Y-m-d")."','".date("H:i:s")."','yes')";
-	$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 	$insert_id = mysql_insert_id();
 
 	if($product["heb_type"] == "vps"){
 		$q = "SELECT * FROM $pro_mysql_vps_server_table WHERE hostname='".$_REQUEST["vps_location"]."'";
-		$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 		if($n != 1){
 			$form = _("Cannot reselect product: registration failed.") ;//"Cannot reselect product: registration failed.";
 			break;
 		}else{
-			$vps_server = mysql_fetch_array($r);
+			$vps_server = mysqli_fetch_array($r);
 			$service_location = $vps_server["country_code"];
 		}
 	}else{
@@ -267,12 +267,12 @@ case "add_new_service":
 
 	$company_invoicing_id = findInvoicingCompany ($service_location,$client["country"]);
 	$q = "SELECT * FROM $pro_mysql_companies_table WHERE id='$company_invoicing_id';";
-	$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 	if($n != 1){
 		$form = "Cannot find company invoicing line ".__LINE__." file ".__FILE__;
 		break;
 	}
-	$company_invoicing = mysql_fetch_array($r);
+	$company_invoicing = mysqli_fetch_array($r);
 	// If VAT is set, use it.
 	if($company_invoicing["vat_rate"] == 0 || $company_invoicing["vat_number"] == ""){
 		$vat_rate = 0;
@@ -293,7 +293,7 @@ case "add_new_service":
 	}
 	$payid = createCreditCardPaiementID($product["price_dollar"] + $product["setup_fee"],$insert_id,$product["name"]." (login: ".$_REQUEST["adm_login"].")","yes",$product["id"],$vat_rate);
 	$q = "UPDATE $pro_mysql_new_admin_table SET paiement_id='$payid' WHERE id='$insert_id';";
-	$r = mysql_query($q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 	$return_url = htmlentities($_SERVER["PHP_SELF"])."?action=return_from_pay&regid=$payid";
 	$paybutton =paynowButton($payid,$product["price_dollar"] + $product["setup_fee"],$product["name"]." (login: ".$_REQUEST["adm_login"].")",$return_url,$vat_rate,$secpayconf_use_paypal_recurring);
 

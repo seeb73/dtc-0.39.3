@@ -59,7 +59,7 @@ if($admin["info"]["id_client"] != 0){
 		}else{
 			$out .= "<font color=\"green\">". _("Your account has been credited.") ."</font><br>";
 			$q = "UPDATE $pro_mysql_client_table SET dollar = dollar+".$ze_refund." WHERE id='".$admin["info"]["id_client"]."';";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 			$remaining += $ze_refund;
 		}
 	}
@@ -102,8 +102,8 @@ return $out;
 // START OF DOMAIN NAME RENEW           //
 
 	$q = "SELECT * FROM $pro_mysql_domain_table WHERE owner='$adm_login';";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n > 0){
 		$new_user = "no";
 	}else{
@@ -122,7 +122,7 @@ Server said: <i>" . $regz["response_text"] . "</i><br>";
 
 	$operation = $remaining - $fqdn_price;
 	$query = "UPDATE $pro_mysql_client_table SET dollar='$operation' WHERE id='".$admin["info"]["id_client"]."';";
-	mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
+	mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
 
 	$out .= "<font color=\"green\"><b>". _("Successfully renewed your domain name") ."</b></font><br><br>";
 

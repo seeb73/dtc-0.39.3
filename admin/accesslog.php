@@ -29,10 +29,10 @@ function delete_old_files_in_tmp(){
 	AND subdomain.ip='default'
 	AND subdomain.generate_vhost='yes'
 	ORDER BY admin.adm_login,domain.name,subdomain.subdomain_name";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		// Delete files older than 7 days (atime adds one day to the +6...)
 		$fullpath = $a["path"]."/".$a["name"]."/subdomains/".$a["subdomain_name"]."/tmp";
 		$cmd = "find $fullpath -atime +6 -exec rm {} \;";
@@ -63,10 +63,10 @@ function make_stats(){
 	AND subdomain.ip='default'
 	AND subdomain.generate_vhost='yes'
 	ORDER BY admin.adm_login,domain.name,subdomain.subdomain_name";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$fullpath = $a["path"]."/".$a["name"]."/subdomains/".$a["subdomain_name"]."/logs";
 
 		if(!file_exists("$fullpath/index.php")){
@@ -80,11 +80,11 @@ function make_stats(){
 		if(mysql_table_exists("apachelogs",$table_name)){
 			mysql_select_db("apachelogs");
 			$qus = "SHOW TABLE STATUS LIKE '".$table_name."'";
-			$res = mysql_query($qus) or die("Cannot execute query \"$qus\" line ".__LINE__." file ".__FILE__.": ".mysql_error());
-			$ars = mysql_fetch_array($res);
+			$res = mysqli_query($mysql_connection,$qus) or die("Cannot execute query \"$qus\" line ".__LINE__." file ".__FILE__.": ".mysql_error());
+			$ars = mysqli_fetch_array($res);
 			if($ars["Rows"] > 0){
 				$query = "SELECT MIN(time_stamp) AS start FROM apachelogs.`".$table_name."`";
-				$result = mysql_query($query) or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__.": ".mysql_error());
+				$result = mysqli_query($mysql_connection,$query) or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__.": ".mysql_error());
 				$start = mysql_result($result,0,"start");
 				if($start<$today_midnight){
 					echo "stats to be done!";
@@ -107,8 +107,8 @@ function make_stats(){
 
 					echo "Querying SELECT * FROM apachelogs.".$table_name."...";
 					$query_dump = "SELECT * FROM apachelogs.`".$table_name."` WHERE time_stamp>='".$start."' AND time_stamp<='".$end."' ORDER BY time_stamp";
-					$result_dump = mysql_query($query_dump) or die("Cannot execute query \"$query_dump\" file ".__FILE__." line ".__LINE__.": ".mysql_error());
-					$dump_num_rows = mysql_num_rows($result_dump);
+					$result_dump = mysqli_query($mysql_connection,$query_dump) or die("Cannot execute query \"$query_dump\" file ".__FILE__." line ".__LINE__.": ".mysql_error());
+					$dump_num_rows = mysqli_num_rows($result_dump);
 					if($dump_num_rows>0){
 						echo "$dump_num_rows records for $dump_filename...\n";
 						if(!is_dir($dump_folder)){
@@ -116,7 +116,7 @@ function make_stats(){
 						}
 						$handle = fopen ($dump_filename, "w+");
 						for($z=0;$z<$dump_num_rows;$z++){
-							$rezar = mysql_fetch_array($result_dump);
+							$rezar = mysqli_fetch_array($result_dump);
 							// in case we don't have a request_method logged
 							if (!isset($rezar["request_method"]))
 							{
@@ -220,7 +220,7 @@ fi
 					// Check if database still alive
 					$is_db_alive = "SELECT FROM apachelogs.`".$table_name."` WHERE time_stamp='".$end."' LIMIT 0,1";
 					// If not trying reconnect
-					if (!mysql_query($is_db_alive)) {
+					if (!mysqli_query($mysql_connection,$is_db_alive)) {
 						mysql_close();
 						if(connect2base() == false){
 							die("Cannot connect to database !!!");
@@ -228,19 +228,19 @@ fi
 					}
 															
 					$query_dump = "DELETE FROM apachelogs.`".$table_name."` WHERE time_stamp<='".$end."'";
-					$result_dump = mysql_query($query_dump) or die("Cannot execute query \"$query_dump\" file ".__FILE__." line ".__LINE__.": ".mysql_error());
+					$result_dump = mysqli_query($mysql_connection,$query_dump) or die("Cannot execute query \"$query_dump\" file ".__FILE__." line ".__LINE__.": ".mysql_error());
 
 					$opt_table = "OPTIMIZE TABLE apachelogs.`".$table_name."` ;";
-					mysql_query($opt_table) or die("Cannot execute query \"$opt_table\" line ".__LINE__." file ".__FILE__.": ".mysql_error());
+					mysqli_query($mysql_connection,$opt_table) or die("Cannot execute query \"$opt_table\" line ".__LINE__." file ".__FILE__.": ".mysql_error());
 
 					$qus = "SHOW TABLE STATUS LIKE '".$table_name."'";
-					$res = mysql_query($qus) or die("Cannot execute query \"$qus\" line ".__LINE__." file ".__FILE__.": ".mysql_error());
-					$ars = mysql_fetch_array($res);
+					$res = mysqli_query($mysql_connection,$qus) or die("Cannot execute query \"$qus\" line ".__LINE__." file ".__FILE__.": ".mysql_error());
+					$ars = mysqli_fetch_array($res);
 					if($ars["Rows"] == 0){
 						$start = $today_midnight;
 					}else{
 						$query = "SELECT MIN(time_stamp) AS start FROM apachelogs.`".$table_name."`";
-						$result = mysql_query($query) or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__.": ".mysql_error());
+						$result = mysqli_query($mysql_connection,$query) or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__.": ".mysql_error());
 						$start = mysql_result($result,0,"start");
 					}
 				}
@@ -269,14 +269,14 @@ function make_log_archive (){
 	AND subdomain.ip='default'
 	AND subdomain.generate_vhost='yes'
 	ORDER BY admin.adm_login,domain.name,subdomain.subdomain_name";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+	$n = mysqli_num_rows($r);
 	$cur_year = date("Y");
 	$cur_month = date("m");
 	$last_year = $cur_year - 1;
 	$before_last_year = $last_year - 1;
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$fullpath = $a["path"]."/".$a["name"]."/subdomains/".$a["subdomain_name"]."/logs";
 		for($j=0;$j<12;$j++){
 			$m = $cur_month + $j;

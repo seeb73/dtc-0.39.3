@@ -71,7 +71,7 @@ function drawPasswordChange(){
 				$new_password_encrypted = "'".$_REQUEST["new_pass1"]."'";
 			}
 			$q = "UPDATE $pro_mysql_admin_table SET adm_pass=$new_password_encrypted WHERE adm_login='$adm_login';";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
 			$pass_submit_err .= _("Your administrator password has been changed.")."<br>\n";
 		}
 	}
@@ -271,20 +271,20 @@ function drawAdminTools($admin){
 	//Draw all custom products
 	for($i=0;$i<$nbr_custom;$i++){
 		$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE id='".$admin_custom[$i]["id"]."'";
-		$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$n = mysql_num_rows($r);
+		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$custprod_name = _("Error 1 while retriving custom product name");
 		}else{
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$a["product_id"]."'";
-			$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$n = mysql_num_rows($r);
+			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$n = mysqli_num_rows($r);
 			if($n != 1){
 				$custprod_name = _("Error 2 while retriving custom product name");
 			}else{
 				$domainname = $a["domain"];
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 				$custprod_name = $a["name"].": ".$domainname;
 			}
 		}

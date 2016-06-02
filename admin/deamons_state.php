@@ -93,22 +93,23 @@ function drawClock($last_cronjob_epoch){
 
 function drawDeamonStates(){
 	global $pro_mysql_cronjob_table;
+	global $mysql_connection;
 
 	$pen = '<font color="#FF0000">' ._("Pending") .'</font>';
 	$done = '<font color="#00FF00">' ._("Ok") .'</font>';
 
 	// Fetch the cron_job table to see what's going on ! :)
 	$query = "SELECT * FROM $pro_mysql_cronjob_table WHERE 1;";
-	$result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
-	$num_rows = mysql_num_rows($result);
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+	$num_rows = mysqli_num_rows($result);
 	if($num_rows != 1) die("No cronjob table row !!!");
-	$row = mysql_fetch_array($result);
+	$row = mysqli_fetch_array($result);
 	$cron = $row;
 	$date_last_cron = $row["last_cronjob"];
 
 	$query = "SELECT UNIX_TIMESTAMP(last_cronjob) as epoch_time FROM $pro_mysql_cronjob_table";
-	$result = mysql_query($query)or die("Cannot query \"$query\" !!!".mysql_error());
-	$row = mysql_fetch_array($result);
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+	$row = mysqli_fetch_array($result);
 	$last_cronjob_epoch = $row[0];
 
 	$clock = drawClock($last_cronjob_epoch);
@@ -196,10 +197,11 @@ function checkFTP(){
 	$errTxt = "";
 
 	global $pro_mysql_ftp_table;
+	global $mysql_connection;
 
 	$q = "SELECT * FROM $pro_mysql_ftp_table WHERE 1 LIMIT 1";
-	$r = mysql_query($q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." sql said ".mysql_error());
-	$a = mysql_fetch_array($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." sql said ".mysql_error());
+	$a = mysqli_fetch_array($r);
 
 	$server = "localhost";
 	// echo "Checking FTP<br>";
@@ -255,10 +257,11 @@ function checkDNS(){
 	global $errTxt;
 
 	global $pro_mysql_domain_table;
+	global $mysql_connection;
 
 	$q = "SELECT * FROM $pro_mysql_domain_table WHERE 1 LIMIT 1";
-	$r = mysql_query($q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." sql said ".mysql_error());
-	$a = mysql_fetch_array($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." sql said ".mysql_error());
+	$a = mysqli_fetch_array($r);
 
 	$server = $a["name"];
 	// echo "Checking DNS<br>";
@@ -276,10 +279,11 @@ function checkDNS(){
 
 function checkPOP3(){
 	global $pro_mysql_pop_table;
+	global $mysql_connection;
 
 	$q = "SELECT * FROM $pro_mysql_pop_table WHERE id NOT LIKE 'cyr%' LIMIT 1";
-	$r = mysql_query($q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." sql said ".mysql_error());
-	$a = mysql_fetch_array($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." sql said ".mysql_error());
+	$a = mysqli_fetch_array($r);
 
 	if(checkMailbox($a["id"],$a["mbox_host"],$a["id"].'@'.$a["mbox_host"],
                                 "POP3","localhost",$a["id"].'@'.$a["mbox_host"],$a["passwd"])){

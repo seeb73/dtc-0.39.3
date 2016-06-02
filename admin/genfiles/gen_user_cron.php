@@ -9,12 +9,12 @@ function user_cron_generate() {
 	$console.="Generating $filename : ";
 
 	$q = "SELECT * FROM $pro_mysql_user_cron_table;";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	$f = "# /etc/cron.d/dtc-user/cron\n\n";
 
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		if(substr($a["minute"],0,2) == "is"){
 			$minute = substr($a["minute"],2);
 		}else{

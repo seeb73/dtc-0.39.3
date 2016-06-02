@@ -10,6 +10,8 @@ $console = "";
 
 $dtcshared_path = dirname(__FILE__);
 $autoconf_configfile = "mysql_config.php";
+global $mysql_connection;
+global $mysql_connection_mysql;
 
 require("$dtcshared_path/dtc_version.php");
 
@@ -19,13 +21,17 @@ function connect2base(){
 	global $conf_mysql_pass;
 	global $conf_mysql_db;
 
-	$ressource_id = mysql_connect("$conf_mysql_host", "$conf_mysql_login", "$conf_mysql_pass");
+	$ressource_id = mysqli_connect("$conf_mysql_host", "$conf_mysql_login", "$conf_mysql_pass", "$conf_mysql_db");
 	if($ressource_id == false)	return false;
-	return @mysql_select_db($conf_mysql_db)or die("Cannot select db: $conf_mysql_db");
+	return $ressource_id;
 }
 
 function createTableIfNotExists(){
 	global $console;
+	if ($mysql_connection == NULL || mysqli_ping($mysql_connection) == false)
+	{
+		$mysql_connection =connect2base();
+	}
 	if ($handle = opendir('tables/')) {
 		// Create all tables with stored table creation SQL script in .../dtc/admin/tables/*.sql
 		while (false !== ($file = readdir($handle))){
@@ -35,9 +41,9 @@ function createTableIfNotExists(){
 				fclose($fp);
 				$table_name = preg_replace ("/.sql/", "", $file);
 				$query = "SELECT * FROM $table_name WHERE 1 LIMIT 1;";
-				$result = @mysql_query($query);
+				$result = @mysqli_query($mysql_connection,$query);
 				if($result == false){
-					mysql_query($table_create_query)or die("Cannot create table $table_name when querying :<br><font color=\"#FF0000\">$table_create_query</font> !!!".mysql_error());
+					mysqli_query($mysql_connection,$table_create_query)or die("Cannot create table $table_name when querying :<br><font color=\"#FF0000\">$table_create_query</font> !!!".mysql_error());
 					$console .= "Table ".$table_name." has been created<br>";
 				}else{
 					// echo "Table ".$table_name." can be selected<br>";
@@ -48,29 +54,29 @@ function createTableIfNotExists(){
 
 		// Verify that the groups and config tables have at least one record. If not, create it using default values.
 		$query = "SELECT * FROM groups WHERE 1;";
-		$result = mysql_query($query)or die("Cannot query $query !!!".mysql_error());
-		$num_rows = mysql_num_rows($result);
+		$result = mysqli_query($mysql_connection,$query)or die("Cannot query $query !!!".mysql_error());
+		$num_rows = mysqli_num_rows($result);
 		if($num_rows < 1){
 			$query = "INSERT INTO groups (members) VALUES ('zigo')";
-			$result = mysql_query($query)or die("Cannot query $query !!!".mysql_error());
+			$result = mysqli_query($mysql_connection,$query)or die("Cannot query $query !!!".mysql_error());
 			$console .= "Default values has been inserted in groups table.<br>";
 		}
 
 		$query = "SELECT * FROM config WHERE 1;";
-		$result = mysql_query($query)or die("Cannot query $query !!!".mysql_error());
-		$num_rows = mysql_num_rows($result);
+		$result = mysqli_query($mysql_connection,$query)or die("Cannot query $query !!!".mysql_error());
+		$num_rows = mysqli_num_rows($result);
 		if($num_rows < 1){
 			$query = "INSERT INTO config () VALUES ()";
-			$result = mysql_query($query)or die("Cannot query $query !!!".mysql_error());
+			$result = mysqli_query($mysql_connection,$query)or die("Cannot query $query !!!".mysql_error());
 			$console .= "Default values has been inserted in config table.<br>";
 		}
 
 		$query = "SELECT * FROM cron_job WHERE 1;";
-		$result = mysql_query($query)or die("Cannot query $query !!!".mysql_error());
-		$num_rows = mysql_num_rows($result);
+		$result = mysqli_query($mysql_connection,$query)or die("Cannot query $query !!!".mysql_error());
+		$num_rows = mysqli_num_rows($result);
 		if($num_rows < 1){
 			$query = "INSERT INTO cron_job () VALUES ()";
-			$result = mysql_query($query)or die("Cannot query $query !!!".mysql_error());
+			$result = mysqli_query($mysql_connection,$query)or die("Cannot query $query !!!".mysql_error());
 			$console .= "Default values has been inserted in cron_job table.<br>";
 		}
 	}
@@ -81,20 +87,21 @@ function createTableIfNotExists(){
 // then a global variable called $conf_foo will be created.
 function getConfig(){
 	global $conf_mysql_db;
+	global $mysql_connection;
 	$query = "SELECT * FROM config WHERE 1 LIMIT 1;";
-	$result = mysql_query($query)or die("Cannot query $query !!!".mysql_error());
-	$num_rows = mysql_num_rows($result);
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot query $query !!!".mysql_error());
+	$num_rows = mysqli_num_rows($result);
 	if($num_rows != 1)	die("No config values in table !!!");
-	$row = mysql_fetch_array($result);
+	$row = mysqli_fetch_array($result,MYSQLI_ASSOC);
 
-	$fields = mysql_list_fields($conf_mysql_db, "config");
-	$columns = mysql_num_fields($fields);
+	$fields = mysqli_query($mysql_connection,"SELECT column_name FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name='config' ORDER BY ordinal_position");
 
-	for($i=0;$i<$columns;$i++){
-		$field_name = mysql_field_name($fields, $i);
+	while ($fields_row = $fields->fetch_row())
+	{
+		$field_name = $fields_row[0];
 		$toto = "conf_".$field_name;
 		global $$toto;
-		$$toto = $row["$field_name"];
+		$$toto = $row[$field_name];
 	}
 }
 
@@ -108,7 +115,8 @@ function getConfig(){
 // Include the config file, create it if not found
 require("$dtcshared_path/$autoconf_configfile");
 
-if(connect2base() == false){
+$mysql_connection = connect2base();
+if($mysql_connection == false){
 	die("Cannot connect to database !!!");
 }
 getConfig();
@@ -124,19 +132,19 @@ if($conf_demo_version == 'yes'){
 	if(!isset($_SESSION["demo_version_has_started"]) || $_SESSION["demo_version_has_started"] != "started"){
 		$_SESSION["demo_version_has_started"] = "started";
 		$query = "DELETE FROM admin;";
-		$result = mysql_query($query)or die("Cannot query $query !!!".mysql_error());
+		$result = mysqli_query($mysql_connection,$query)or die("Cannot query $query !!!".mysql_error());
 		$query = "DELETE FROM clients;";
-		$result = mysql_query($query)or die("Cannot query $query !!!".mysql_error());
+		$result = mysqli_query($mysql_connection,$query)or die("Cannot query $query !!!".mysql_error());
 		$query = "DELETE FROM commande;";
-		$result = mysql_query($query)or die("Cannot query $query !!!".mysql_error());
+		$result = mysqli_query($mysql_connection,$query)or die("Cannot query $query !!!".mysql_error());
 		$query = "DELETE FROM domain;";
-		$result = mysql_query($query)or die("Cannot query $query !!!".mysql_error());
+		$result = mysqli_query($mysql_connection,$query)or die("Cannot query $query !!!".mysql_error());
 		$query = "DELETE FROM ftp_access;";
-		$result = mysql_query($query)or die("Cannot query $query !!!".mysql_error());
+		$result = mysqli_query($mysql_connection,$query)or die("Cannot query $query !!!".mysql_error());
 		$query = "DELETE FROM pop_access;";
-		$result = mysql_query($query)or die("Cannot query $query !!!".mysql_error());
+		$result = mysqli_query($mysql_connection,$query)or die("Cannot query $query !!!".mysql_error());
 		$query = "DELETE FROM subdomain;";
-		$result = mysql_query($query)or die("Cannot query $query !!!".mysql_error());
+		$result = mysqli_query($mysql_connection,$query)or die("Cannot query $query !!!".mysql_error());
 
 		die("Welcom to DTC demo version. In demo version, all tables are erased at
 		launch time.<br><br>

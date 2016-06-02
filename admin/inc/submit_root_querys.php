@@ -9,45 +9,45 @@ if(!isset($submit_err)){
 //////////////////////////////////
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "delete_a_dedicated"){
 	$q = "DELETE FROM $pro_mysql_dedicated_table WHERE id='".$_REQUEST["id"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 }
 
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "delete_a_custom_product"){
 	$q = "DELETE FROM $pro_mysql_custom_product_table WHERE id='".$_REQUEST["id"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 }
 
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_custom_to_user"){
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$_REQUEST["product_id"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Didn't find the product you want to add line ".__LINE__." file ".__FILE__);
 	}
-	$prod = mysql_fetch_array($r);
+	$prod = mysqli_fetch_array($r);
 
 	$exp_date = calculateExpirationDate(date("Y-m-d"),$prod["period"]);
 
 	$q = "INSERT INTO $pro_mysql_custom_product_table (id,owner,domain,start_date,expire_date,product_id,country_code,custom_heb_type,custom_heb_type_fld)
 	VALUES('','$adm_login','".$_REQUEST["server_hostname"]."','".date("Y-m-d")."','$exp_date',".$_REQUEST["product_id"].",'".$_REQUEST["country"]."',".$prod["custom_heb_type"].",'".$prod["custom_heb_type_fld"]."');";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 }
 
 ////////////////////
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_dedicated_to_user"){
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$_REQUEST["product_id"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Didn't find the product you want to add line ".__LINE__." file ".__FILE__);
 	}
-	$prod = mysql_fetch_array($r);
+	$prod = mysqli_fetch_array($r);
 
 	$exp_date = calculateExpirationDate(date("Y-m-d"),$prod["period"]);
 
 	$q = "INSERT INTO $pro_mysql_dedicated_table (id,owner,server_hostname,start_date,expire_date,hddsize,ramsize,product_id,country_code)
 	VALUES('','$adm_login','".$_REQUEST["server_hostname"]."','".date("Y-m-d")."','$exp_date','".$prod["quota_disk"]."','".$prod["memory_size"]."','".$_REQUEST["product_id"]."','".$_REQUEST["country"]."');";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 }
 
 ////////////////////
@@ -61,7 +61,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "edit_vps_config"){
 	ramsize='".$_REQUEST["ramsize"]."',
 	product_id='".$_REQUEST["product_id"]."'
 	WHERE vps_server_hostname='".$_REQUEST["vps_server_hostname"]."' AND vps_xen_name='".$_REQUEST["vps_xen_name"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 }
 
 function deleteVPS($id){
@@ -71,20 +71,20 @@ function deleteVPS($id){
 	global $pro_mysql_cronjob_table;
 
 	$q = "SELECT * FROM $pro_mysql_vps_table WHERE id='$id';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Didn't find the VPS id you want to delete line ".__LINE__." file ".__FILE__);
 	}
-	$vps = mysql_fetch_array($r);
+	$vps = mysqli_fetch_array($r);
 	$q = "UPDATE $pro_mysql_vps_ip_table SET available='yes' WHERE vps_server_hostname='".$vps["vps_server_hostname"]."' AND vps_xen_name='".$vps["vps_xen_name"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 
 	$q = "DELETE FROM $pro_mysql_vps_table WHERE id='".$_REQUEST["id"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 
 	$q = "DELETE FROM $pro_mysql_vps_stats_table WHERE vps_server_hostname='".$vps["vps_server_hostname"]."' AND vps_xen_name='xen".$vps["vps_xen_name"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 
 	remoteVPSAction($vps["vps_server_hostname"],$vps["vps_xen_name"],"destroy_vps");
 	remoteVPSAction($vps["vps_server_hostname"],$vps["vps_xen_name"],"kill_vps_disk");
@@ -92,7 +92,7 @@ function deleteVPS($id){
 	VPS_Server_Subscribe_To_Lists($vps["vps_server_hostname"]);
 
 	$adm_query = "UPDATE $pro_mysql_cronjob_table SET gen_nagios='yes' WHERE 1;";
-	mysql_query($adm_query);
+	mysqli_query($mysql_connection,$adm_query);
 }
 
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "delete_a_vps"){
@@ -101,19 +101,19 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "delete_a_vps"){
 
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "vps_server_list_remove"){
 	$q = "SELECT * FROM $pro_mysql_vps_server_table WHERE id='".$_REQUEST["edithost"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());;
-	$a = mysql_fetch_array($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());;
+	$a = mysqli_fetch_array($r);
 	$q = "DELETE FROM $pro_mysql_vps_server_lists_table WHERE hostname='".$a["hostname"]."' AND list_name='".$_REQUEST["list_name"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	resubscribe_VPS_server_list_users($_REQUEST["list_name"]);
 }
 
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "vps_server_list_add"){
 	$q = "SELECT * FROM $pro_mysql_vps_server_table WHERE id='".$_REQUEST["edithost"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());;
-	$a = mysql_fetch_array($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());;
+	$a = mysqli_fetch_array($r);
 	$q = "INSERT INTO $pro_mysql_vps_server_lists_table (id,hostname,list_name) VALUES ('','".$a["hostname"]."','".$_REQUEST["name"]."');";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	resubscribe_VPS_server_list_users($_REQUEST["name"]);
 }
 
@@ -123,7 +123,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "vps_server_list_add"){
 // Delete a pending
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "delete_renewal"){
 	$q = "DELETE FROM $pro_mysql_pending_renewal_table WHERE id='".$_REQUEST["id"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 }
 
 // Validate a renew
@@ -134,29 +134,29 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "validate_renewal"){
 // action=add_vps_to_user&vps_server_ip=66.251.193.60&vps_mem=1&vps_hdd=1&vps_duration=0000-01-00
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_vps_to_user"){
 	$q = "SELECT * FROM $pro_mysql_vps_ip_table WHERE ip_addr='".$_REQUEST["vps_server_ip"]."' AND available='yes';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Didn't find the IP address you want to add line ".__LINE__." file ".__FILE__);
 	}
-	$a = mysql_fetch_array($r);
+	$a = mysqli_fetch_array($r);
 
 	$q = "UPDATE $pro_mysql_vps_ip_table SET available='no' WHERE vps_xen_name='".$a["vps_xen_name"]."' AND vps_server_hostname='".$a["vps_server_hostname"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$_REQUEST["product_id"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Didn't find the IP address you want to add line ".__LINE__." file ".__FILE__);
 	}
-	$prod = mysql_fetch_array($r);
+	$prod = mysqli_fetch_array($r);
 
 	$exp_date = calculateExpirationDate(date("Y-m-d"),$prod["period"]);
 
 	$q = "INSERT INTO $pro_mysql_vps_table (id,owner,vps_server_hostname,vps_xen_name,start_date,expire_date,hddsize,ramsize,bandwidth_per_month_gb,product_id)
 	VALUES('','$adm_login','".$a["vps_server_hostname"]."','".$a["vps_xen_name"]."','".date("Y-m-d")."','$exp_date','".$prod["quota_disk"]."','".$prod["memory_size"]."','".$prod["bandwidth"]."','".$_REQUEST["product_id"]."');";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 
 	// Setup the physical VPS (do the lvcreate remotly)
 	if($_REQUEST["physical_setup"] == "yes"){
@@ -188,7 +188,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "import_domain"){
 	// Tell the cron job to activate the changes
 	$adm_query = "UPDATE $pro_mysql_cronjob_table SET qmail_newu='yes',restart_qmail='yes',reload_named='yes',
 	restart_apache='yes',gen_vhosts='yes',gen_named='yes',gen_qmail='yes',gen_webalizer='yes',gen_backup='yes',gen_ssh='yes' WHERE 1;";
-	mysql_query($adm_query);
+	mysqli_query($mysql_connection,$adm_query);
 	triggerDomainListUpdate();
 }
 
@@ -197,7 +197,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "import_domain"){
 ///////////////////////////////////////////////////////////////
 if(isset($_REQUEST["reinit_named_zones"]) && $_REQUEST["reinit_named_zones"] == "1"){
 	$adm_query = "UPDATE $pro_mysql_domain_table SET generate_flag='yes' WHERE 1;";
-	mysql_query($adm_query)or die("Cannot execute query \"$adm_query\" !!!");
+	mysqli_query($mysql_connection,$adm_query)or die("Cannot execute query \"$adm_query\" !!!");
 }
 
 // Edit one domain attribute
@@ -210,11 +210,11 @@ if(isset($_REQUEST["modify_domain_config"]) && $_REQUEST["modify_domain_config"]
 	max_lists='".$_REQUEST["new_max_lists"]."', max_ftp='".$_REQUEST["new_max_ftp"]."',
 	max_subdomain='".$_REQUEST["new_max_subdomain"]."',ip_addr='".$_REQUEST["new_ip_addr"]."',backup_ip_addr='".$_REQUEST["new_backup_ip_addr"]."'
 	WHERE owner='$adm_login' AND name='".$_REQUEST["user_domain_to_modify"]."';";
-	mysql_query($adm_query)or die("Cannot execute query \"$adm_query\" !!!");
+	mysqli_query($mysql_connection,$adm_query)or die("Cannot execute query \"$adm_query\" !!!");
 
 	// Tell the cron job to activate the changes (because ip could have change)
 	$adm_query = "UPDATE $pro_mysql_cronjob_table SET gen_vhosts='yes',gen_named='yes',reload_named='yes',restart_apache='yes',gen_backup='yes',gen_webalizer='yes' WHERE 1;";
-	mysql_query($adm_query);
+	mysqli_query($mysql_connection,$adm_query);
 }
 
 /////////////////////////////////////
@@ -222,9 +222,9 @@ if(isset($_REQUEST["modify_domain_config"]) && $_REQUEST["modify_domain_config"]
 /////////////////////////////////////
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "set_vhost_custom_directives"){
 	$q = "UPDATE $pro_mysql_subdomain_table SET customize_vhost='".$_REQUEST["custom_directives"]."' WHERE domain_name='".$_REQUEST["edithost"]."' AND subdomain_name='".$_REQUEST["subdomain"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 	$adm_query = "UPDATE $pro_mysql_cronjob_table SET gen_vhosts='yes',restart_apache='yes' WHERE 1;";
-	mysql_query($adm_query);
+	mysqli_query($mysql_connection,$adm_query);
 }
 
 if(isset($_REQUEST["newdomain"]) && $_REQUEST["newdomain"] == "Ok"){
@@ -238,26 +238,26 @@ if(isset($_REQUEST["newdomain"]) && $_REQUEST["newdomain"] == "Ok"){
 }
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "valid_waiting_domain_to_user"){
 	$q = "SELECT * FROM $pro_mysql_pending_queries_table WHERE id='".$_REQUEST["reqid"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1)	die("ID of pending domain not found!");
-	$pending = mysql_fetch_array($r);
+	$pending = mysqli_fetch_array($r);
 
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$pending["adm_login"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1)	die("adm_login of pending domain not found!");
-	$a = mysql_fetch_array($r);
+	$a = mysqli_fetch_array($r);
 
 	addDomainToUser($a["adm_login"],$a["adm_pass"],$pending["domain_name"]);
 	triggerDomainListUpdate();
 
 	$q = "DELETE FROM $pro_mysql_pending_queries_table WHERE id='".$_REQUEST["reqid"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 }
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "delete_waiting_domain_to_user"){
 	$q = "DELETE FROM $pro_mysql_pending_queries_table WHERE id='".$_REQUEST["reqid"]."';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 }
 
 ///////////////////////////////////////////////////////////////
@@ -268,7 +268,7 @@ if(isset($_REQUEST["deluserdomain"]) && $_REQUEST["deluserdomain"] != ""){
 	// Tell the cron job to activate the changes
 	$adm_query = "UPDATE $pro_mysql_cronjob_table SET qmail_newu='yes',restart_qmail='yes',reload_named='yes',
 	restart_apache='yes',gen_vhosts='yes',gen_named='yes',gen_qmail='yes',gen_webalizer='yes',gen_backup='yes',gen_ssh='yes' WHERE 1;";
-	mysql_query($adm_query);
+	mysqli_query($mysql_connection,$adm_query);
 	triggerDomainListUpdate();
 }
 
@@ -277,12 +277,12 @@ if(isset($_REQUEST["deluserdomain"]) && $_REQUEST["deluserdomain"] != ""){
 ////////////////////////////////////////////////
 if(isset($_REQUEST["updateuserinfo"]) && $_REQUEST["updateuserinfo"] == "Ok"){
 	$q = "SELECT adm_pass FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-	$r = mysql_query($q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		echo "Cannot find adm_login";
 	}else{
-		$ad = mysql_fetch_array($r);
+		$ad = mysqli_fetch_array($r);
 		$old_pass = $ad["adm_pass"];
 		if($conf_enforce_adm_encryption == "yes" && $old_pass != $_REQUEST["changed_pass"]){
 			$new_encrypt_dtcadm_pass = "SHA1('".$_REQUEST["changed_pass"]."')";
@@ -312,11 +312,11 @@ if(isset($_REQUEST["updateuserinfo"]) && $_REQUEST["updateuserinfo"] == "Ok"){
 			max_email=".$_REQUEST["max_email"].",
 			show_invoice_info='".$_REQUEST["allow_invoice_info"]."'
 			WHERE adm_login='$adm_login';";
-		mysql_query($adm_query)or die("Cannot execute query \"$adm_query\" line ".__LINE__." file ".__FILE__." ".mysql_error());
+		mysqli_query($mysql_connection,$adm_query)or die("Cannot execute query \"$adm_query\" line ".__LINE__." file ".__FILE__." ".mysql_error());
 
 		// Tell the cron job to activate the changes (because the account might now be (not) expiring)
 		$adm_query = "UPDATE $pro_mysql_cronjob_table SET gen_vhosts='yes',restart_apache='yes' WHERE 1;";
-		mysql_query($adm_query);
+		mysqli_query($mysql_connection,$adm_query);
 	}
 
 }
@@ -348,7 +348,7 @@ if(isset($_REQUEST["newadminuser"]) && $_REQUEST["newadminuser"]=="Ok"){
 		$adm_query = "INSERT INTO $pro_mysql_admin_table
 (adm_login        ,adm_pass         ,path            , shared_hosting_security)VALUES
 ('".$_REQUEST["newadmin_login"]."', '".$_REQUEST["newadmin_pass"]."','$newadmin_path', 'sbox_aufs') ";
-		mysql_query($adm_query)or die("Cannot execute query \"$adm_query\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		mysqli_query($mysql_connection,$adm_query)or die("Cannot execute query \"$adm_query\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 	}else{
 		echo $submit_err;
 	}
@@ -357,17 +357,17 @@ if(isset($_REQUEST["newadminuser"]) && $_REQUEST["newadminuser"]=="Ok"){
 // action=delete_waiting_user&reqadm_login=tom
 if(isset($_REQUEST["action"]) && $_REQUEST["action"]=="delete_waiting_user"){
 	$q = "DELETE FROM $pro_mysql_new_admin_table WHERE id='".$_REQUEST["reqadm_id"]."';";
-	mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 }
 
 if(isset($_REQUEST["action"]) && $_REQUEST["action"]=="archive_waiting_user"){
 	$q = "UPDATE $pro_mysql_new_admin_table SET archive='yes' WHERE id='".$_REQUEST["reqadm_id"]."';";
-	mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 }
 
 if(isset($_REQUEST["action"]) && $_REQUEST["action"]=="archive_waiting_user"){
 	$q = "UPDATE $pro_mysql_new_admin_table SET archive='yes' WHERE id='".$_REQUEST["reqadm_id"]."';";
-	mysql_query($q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
 }
 
 // action=valid_waiting_user&reqadm_login=tom

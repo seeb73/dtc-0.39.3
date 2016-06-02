@@ -12,7 +12,7 @@
         die("Database error trying to use database 'apachelogs', does it exist?\n");
 
     if ( ! empty($argv[1]) )
-        if ( mysql_query("select count(*) from ".mysql_real_escape_string($argv[1])) )
+        if ( mysqli_query($mysql_connection,"select count(*) from ".mysql_real_escape_string($argv[1])) )
             $tablename=addslashes($argv[1]);
         else
             die("table '".$argv[1]."' not found, is this the correct table name?\n");
@@ -27,7 +27,7 @@
             $query = 'select * from '.$tablename.' where
 time_stamp>'.$tracktime;
 
-            $results = mysql_query($query, $dbc);
+            $results = mysqli_query($mysql_connection,$query, $dbc);
             if ( mysql_num_rows($results)>0 )
             {
                 while( $row=mysql_fetch_assoc($results) )

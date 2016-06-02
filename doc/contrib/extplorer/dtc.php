@@ -59,7 +59,7 @@ class ext_dtc_authentication {
 		if($ressource_id == false)      return false;
 		$sql_db_return = mysql_select_db($mysql_dtc_db)or die("Cannot select db: $conf_mysql_db");
 		$q = "SELECT * FROM admin WHERE adm_login='".mysql_real_escape_string($credentials['username'])."' AND (adm_pass='".$credentials['password']."' OR adm_pass=SHA1('".$credentials['password']."'))";
-		$r = mysql_query($q);
+		$r = mysqli_query($mysql_connection,$q);
 		$n = mysql_num_rows($r);
 		if($n != 1){
 			return false;

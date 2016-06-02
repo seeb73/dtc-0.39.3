@@ -26,8 +26,8 @@ function westernunion_display_icon($pay_id,$amount,$item_name,$return_url,$use_r
 	// We need to use a hash key otherwise anybody could set all payments as validated
 	// if we don't check for it.
 	$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='$pay_id'";
-	$r = mysql_query($q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$n = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Impossible to get the pay_id line ".__LINE__." file ".__FILE__);
 	}

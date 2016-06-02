@@ -40,6 +40,11 @@ function backup_by_ftp(){
 	global $conf_ftp_ftp_mode;
 	global $conf_ftp_7z_mode;
 	global $conf_ftp_7z_level;
+	global $mysql_connection_mysql;
+	global $mysql_connection;
+	global $conf_mysql_host;
+	global $conf_mysql_login;
+	global $conf_mysql_pass;
 	
 	$num_generated_vhosts=0;
 	$num_generated_db=0;
@@ -104,10 +109,10 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 	}
 	// Get the owner informations
 	$q = "SELECT adm_login,path FROM $pro_mysql_admin_table WHERE 1;";
-	$r = mysql_query ($q)or die("Cannot execute query \"$q\" !".mysql_error()." line ".__LINE__." file ".__FILE__);
-	$nr = mysql_num_rows($r);
+	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" !".mysql_error()." line ".__LINE__." file ".__FILE__);
+	$nr = mysqli_num_rows($r);
 	for($i=0;$i<$nr;$i++){
-		$ra = mysql_fetch_array($r);
+		$ra = mysqli_fetch_array($r);
 		$owner = $ra["adm_login"];
 		$path = $ra["path"];
 
@@ -120,10 +125,10 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 		$backup_net .= "echo \"===> Backuping all files for user $owner:\"\n";
 		$backup_net .= "cd $path\n";
 		$q2 = "SELECT name FROM $pro_mysql_domain_table WHERE owner='$owner';";
-		$r2 = mysql_query ($q2)or die("Cannot execute query \"$q2\" !".mysql_error()." line ".__LINE__." file ".__FILE__);
-		$nr2 = mysql_num_rows($r2);
+		$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot execute query \"$q2\" !".mysql_error()." line ".__LINE__." file ".__FILE__);
+		$nr2 = mysqli_num_rows($r2);
 		for($j=0;$j<$nr2;$j++){
-			$ra2 = mysql_fetch_array($r2);
+			$ra2 = mysqli_fetch_array($r2);
 			$webname = $ra2["name"];
 			$backup_net .= "echo -n \"$webname (\"\n";
 			$backup_net .= "echo -n \"mail\"\n";
@@ -131,10 +136,10 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 			$backup_net .= "echo -n \",lists\"\n";
 			$backup_net .= "if [ -d $webname/lists ] ; then tar -rf $owner.$webname.tar $webname/lists ; else echo -n \"(dir not found)\"; fi\n";
 			$q3 = "SELECT subdomain_name FROM $pro_mysql_subdomain_table WHERE domain_name='$webname';";
-			$r3 = mysql_query ($q3)or die("Cannot execute query \"$q3\" !".mysql_error()." line ".__LINE__." file ".__FILE__);
-			$nr3 = mysql_num_rows($r3);
+			$r3 = mysqli_query($mysql_connection,$q3)or die("Cannot execute query \"$q3\" !".mysql_error()." line ".__LINE__." file ".__FILE__);
+			$nr3 = mysqli_num_rows($r3);
 			for($k=0;$k<$nr3;$k++){
-				$ra3 = mysql_fetch_array($r3);
+				$ra3 = mysqli_fetch_array($r3);
 				$subdom_name = $ra3["subdomain_name"];
 				$backup_net .= "echo -n \",$subdom_name\"\n";
 				$backup_net .= "if [ -d $webname/subdomains/$subdom_name ] ; then tar -rf $owner.$webname.tar $webname/subdomains/$subdom_name ; else echo -n \"(dir not found)\"; fi\n";
@@ -180,12 +185,16 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 			$num_generated_vhosts++;
 		}
 		$backup_net .= "echo \"===> Backuping all dabatases for user $owner:\"\n";
-		mysql_select_db("mysql");
+
+		if ($mysql_connection_mysql == NULL || $mysql_connection_mysql.ping() == false)
+		{
+			$mysql_connection_mysql = mysqli_connect("$conf_mysql_host", "$conf_mysql_login", "$conf_mysql_pass", "mysql")or die ("Cannot connect to $pro_mysql_host, with db: mysql");
+		}
 		$q3 = "SELECT db.Db FROM db,user WHERE user.dtcowner='$owner' AND db.User=user.User GROUP BY db.Db;";
-		$r3 = mysql_query($q3)or die("Cannot query \"$q3\" ! Line:".__LINE__." File:".__FILE__);
-		$n3 = mysql_num_rows($r3);
+		$r3 = mysqli_query($mysql_connection_mysql,$q3)or die("Cannot query \"$q3\" ! Line:".__LINE__." File:".__FILE__);
+		$n3 = mysqli_num_rows($r3);
 		for($k=0;$k<$n3;$k++){
-			$a3 = mysql_fetch_array($r3)or die("Cannot fetch array line".__LINE__." file ".__FILE__);
+			$a3 = mysqli_fetch_array($r3)or die("Cannot fetch array line".__LINE__." file ".__FILE__);
 			$dbfilename = $owner.".userdb.".$a3["Db"].".sql";
 			$backup_net .= "echo -n \" Database ".$a3["Db"].": \"\n";
 			$backup_net .= "echo -n \" dumping...\"\n";
@@ -227,7 +236,6 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 			}
 			$num_generated_db++;
 		}
-		mysql_select_db($conf_mysql_db);
 	}
 	$backup_net .= "echo -n \"===> Backuping database dtc: \"\n";
 	$dbfilename = "dtcdb.sql";
@@ -496,6 +504,7 @@ function backup_script_generate(){
 	global $conf_bakcup_path;
 
 	global $console;
+	global $mysql_connection;
 
 	$num_generated_vhosts=0;
 
@@ -532,15 +541,15 @@ fi
 
 	// Select all domains
 	$query = "SELECT * FROM $pro_mysql_domain_table ORDER BY name;";
-	$result = mysql_query ($query)or die("Cannot execute query \"$query\"");
-	$num_rows = mysql_num_rows($result);
+	$result = mysqli_query($mysql_connection,$query)or die("Cannot execute query \"$query\"");
+	$num_rows = mysqli_num_rows($result);
 
 //	if($num_rows < 1){
 //		die("No account to generate");
 //	}
 
 	for($i=0;$i<$num_rows;$i++){
-		$row = mysql_fetch_array($result) or die ("Cannot fetch user");
+		$row = mysqli_fetch_array($result) or die (__FILE__ . "Cannot fetch user");
 		$web_name = $row["name"];
 		$web_owner = $row["owner"];
 		$web_default_subdomain = $row["default_subdomain"];
@@ -553,25 +562,25 @@ fi
 ";		
 		// Get the owner informations
 		$query2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$web_owner';";
-		$result2 = mysql_query ($query2)or die("Cannot execute query \"$query2\"");
-		$num_rows2 = mysql_num_rows($result2);
+		$result2 = mysqli_query($mysql_connection,$query2)or die("Cannot execute query \"$query2\"");
+		$num_rows2 = mysqli_num_rows($result2);
 		if($num_rows2 != 1){
 			echo("No user of that name: $web_owner!");
 			continue;
 		}
-		$webadmin = mysql_fetch_array($result2) or die ("Cannot fetch user");
+		$webadmin = mysqli_fetch_array($result2) or die (__FILE__ . "Cannot fetch user");
 		$web_path = $webadmin["path"];
 
 		// Grab all subdomains
 		$query2 = "SELECT * FROM $pro_mysql_subdomain_table WHERE domain_name='$web_name' ORDER BY subdomain_name;";
-		$result2 = mysql_query ($query2)or die("Cannot execute query \"$query2\"");
-		$num_rows2 = mysql_num_rows($result2);
+		$result2 = mysqli_query($mysql_connection,$query2)or die("Cannot execute query \"$query2\"");
+		$num_rows2 = mysqli_num_rows($result2);
 // Very bad idea: the script should never dies
 //		if($num_rows2 < 1){
 //			die("No subdomain for domain $web_name !");
 //		}
 		for($j=0;$j<$num_rows2;$j++){
-			$subdomain = mysql_fetch_array($result2) or die ("Cannot fetch user");
+			$subdomain = mysqli_fetch_array($result2) or die (__FILE__ . "Cannot fetch user");
 			$web_subname = $subdomain["subdomain_name"];
 
 			// Variable to use : $web_name $web_owner $web_subname
