@@ -46,6 +46,7 @@ function daily_maintenance (){
 	global $pro_mysql_domain_table;
 	global $pro_mysql_subdomain_table;
 	global $pro_mysql_pop_table;
+	global $mysqli_connection;
 
 	$q = "SELECT $pro_mysql_admin_table.adm_login,$pro_mysql_admin_table.path,$pro_mysql_subdomain_table.subdomain_name,$pro_mysql_subdomain_table.domain_name
 	FROM $pro_mysql_admin_table,$pro_mysql_domain_table,$pro_mysql_subdomain_table

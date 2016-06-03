@@ -2523,9 +2523,8 @@ mailbox_transport = lmtp:unix:/var/run/socket/lmtp
 				echo "virtual_mailbox_base = /
 virtual_mailbox_maps = hash:$PATH_DTC_ETC/postfix_vmailbox
 virtual_minimum_uid = 98
-virtual_uid_maps = static:${CONF_DTC_SYSTEM_UID}
 virtual_gid_maps = static:${CONF_DTC_SYSTEM_GID}
-virtual_uid_maps = hash:$PATH_DTC_ETC/postfix_virtual_uid_mapping" >> $TMP_FILE
+virtual_uid_maps = hash:$PATH_DTC_ETC/postfix_virtual_uid_mapping,static:${CONF_DTC_SYSTEM_UID}" >> $TMP_FILE
 			fi
 			# CL continue with global part
 			echo "virtual_alias_maps = hash:$PATH_DTC_ETC/postfix_virtual
@@ -2731,11 +2730,12 @@ sa-ham  unix    -       n       n       -       -       pipe
 				
 				# CL: change lmtp from chroot to non chroot, else lmtp delivery won't work
 				if [ ""$conf_use_cyrus = "true" ] ; then
-  				if [ "$UNIX_TYPE" = "debian" ] ; then  			
-    				# Fix the master.cf lmtp stuff
-    				sed -i "s/lmtp      unix  -       -       -       -       -       lmtp/lmtp      unix  -       -       n       -       -       lmtp/" $TMP_FILE2
-				  fi
-			  fi
+					if [ "$UNIX_TYPE" = "debian" ] ; then  			
+					# Fix the master.cf lmtp stuff
+						sed -i "s/lmtp      unix  -       -       -       -       -       lmtp/lmtp      unix  -       -       n       -       -       lmtp/" $TMP_FILE2
+					fi
+				fi
+
 				
 				if [ -x /usr/bin/tumgreyspf -o -x ${LOCALBASE}/bin/tumgreyspf ] ; then
 					if [ -x /usr/bin/tumgreyspf ] ; then
@@ -2977,6 +2977,14 @@ maildrop_destination_recipient_limit = 1" >> $TMP_FILE
 			fi
 
 			echo "# End of DTC configuration v0.12 : please don't touch this line !" >> $TMP_FILE
+
+			# comment out existing definitions of variables to reduce warnings
+			sed -i 's/^myhostname/# Commented by DTC - myhostnamae/' $PATH_POSTFIX_CONF
+			sed -i 's/^virtual_uid_maps/# Commented by DTC - virtual_uid_maps/' $PATH_POSTFIX_CONF
+			sed -i 's/^alias_maps/# Commented by DTC - alias_maps/' $PATH_POSTFIX_CONF
+				
+			# Fix pickup default config warning in master.cf
+			sed -i 's/^pickup    unix/pickup    fifo/' $PATH_POSTFIX_ETC/master.cf				
 
 			# now to insert it at the end of the actual main.cf
 			cat < $TMP_FILE >>$PATH_POSTFIX_CONF
