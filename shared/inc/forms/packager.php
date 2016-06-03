@@ -25,7 +25,7 @@ function drawAdminTools_PackageInstaller($domain,$adm_path){
 
 	global $pkg_info;
 
-	global $mysql_connection;
+	global $mysqli_connection;
 
 	$txt = "";
 	$dir = $dtcshared_path."/package-installer";
@@ -99,21 +99,21 @@ function drawAdminTools_PackageInstaller($domain,$adm_path){
 		}
 
 		if($pkg_info["need_database"] == "yes"){
-			global $mysql_connection_mysql;
+			global $mysqli_connection_mysql;
 			if($conf_user_mysql_type=="distant"){
-				$mysql_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user host");
+				$mysqli_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user host");
 			}
 			// Get the database infos beffore calling the custom package installer
-			$q = "SELECT DISTINCT db.Db,db.User FROM mysql.user,mysql.db WHERE user.dtcowner='$adm_login' AND db.User=user.User AND db.Db='".mysql_real_escape_string($_REQUEST["database_name"])."';";
-			$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$q = "SELECT DISTINCT db.Db,db.User FROM mysql.user,mysql.db WHERE user.dtcowner='$adm_login' AND db.User=user.User AND db.Db='".mysqli_real_escape_string($mysqli_connection,$_REQUEST["database_name"])."';";
+			$r = mysqli_query($mysqli_connection_mysql,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 			$n = mysqli_num_rows($r);
 			if($n != 1)die("Cannot find database line ".__LINE__." file ".__FILE__);
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$dtcpkg_db_login = $a["User"];
 
 			if($conf_user_mysql_type=="distant"){
-				mysqli_close($mysql_connection_mysql) or die("Cannot disconnect to user database");
-				$mysql_connection = connect2base();
+				mysqli_close($mysqli_connection_mysql) or die("Cannot disconnect to user database");
+				$mysqli_connection = connect2base();
 			}
 		}
 
@@ -152,34 +152,34 @@ function drawAdminTools_PackageInstaller($domain,$adm_path){
 
 		if($pkg_info["need_database"] == "yes"){
 			$txt .= "<h3>Choose a database name for setup:</h3><br>";
-			global $mysql_connection_mysql;
+			global $mysqli_connection_mysql;
 			if($conf_user_mysql_type=="distant"){
-				$mysql_connection_mysql=mysql_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user SQL host, with DB: mysql");
+				$mysqli_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user SQL host, with DB: mysql");
 			}
 			$q = "SELECT db.Db,db.User FROM user,db
 			WHERE user.dtcowner='$adm_login'
 			AND db.User=user.User";
-			$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$r = mysqli_query($mysqli_connection_mysql,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 			$n = mysqli_num_rows($r);
 			if($n < 1){
 				$txt .= "You don't have any database yet. Please create one using the database tool
 				(click database in the menu, then create a user and a database for this user).";
 				if($conf_user_mysql_type=="distant"){
-					mysql_close($mysql_connection_mysql) or die("Cannot disconnect to user database");
-					$mysql_connection = connect2base();
+					mysqli_close($mysqli_connection_mysql) or die("Cannot disconnect to user database");
+					$mysqli_connection = connect2base();
 				}
 				return $txt;
 			}
 			$txt .= "Database name: <select name=\"database_name\">";
 			for($i=0;$i<$n;$i++){
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 				$txt .= "<option value=\"".$a["Db"]."\">".$a["Db"]." (login: ".$a["User"].")"."</option>";
 			}
 			$txt .= "</select><br>
 				Database password: <input type=\"password\" name=\"dtcpkg_db_pass\" value=\"\"><br><br>";
 			if($conf_user_mysql_type=="distant"){
-				mysql_close($mysql_connection_mysql) or die("Cannot disconnect to user database");
-				$mysql_connection = connect2base();
+				mysqli_close($mysqli_connection_mysql) or die("Cannot disconnect to user database");
+				$mysqli_connection = connect2base();
 			}
 		}
 

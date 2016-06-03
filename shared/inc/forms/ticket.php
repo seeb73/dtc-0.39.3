@@ -11,7 +11,7 @@ function drawTickets($admin){
 	global $adm_pass;
 	global $addrlink;
 	global $conf_administrative_site;
-	global $mysql_connection;
+	global $mysqli_connection;
 
 	$out = "<br>";
 
@@ -44,11 +44,11 @@ function drawTickets($admin){
 		}
 
 		$q = "SELECT * FROM $pro_mysql_tik_cats_table WHERE 1 ORDER BY id";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		$popup_cats = "";
 		for($i=0;$i<$n;$i++){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$popup_cats .= "<option value=\"".$a["id"]."\">".$a["catdescript"]."</option>";
 		}
 
@@ -78,21 +78,21 @@ $att_frm<br><br>
 			die("Selected ticket id is not valid!");
 		}
 		$q = "SELECT * FROM $pro_mysql_tik_queries_table WHERE adm_login='$adm_login' AND id='".$_REQUEST["tik_id"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$out .= _("Ticket not found.") ;
 		}else{
-			$a_t = mysql_fetch_array($r);
+			$a_t = mysqli_fetch_array($r);
 			$out .= _("Subject:") ." ".htmlspecialchars(stripslashes($a_t["subject"]))."<br>";
 
 			$q2 = "SELECT * FROM $pro_mysql_tik_cats_table WHERE id='".$a_t["cat_id"]."';";
-			$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 			$n2 = mysqli_num_rows($r2);
 			if($n2 != 1){
 				$out .= _("Type: type not found.") ;
 			}else{
-				$a2 = mysql_fetch_array($r2);
+				$a2 = mysqli_fetch_array($r2);
 				$out .= _("Type of problem:") ." ".$a2["catdescript"]."<br>";
 			}
 			$out .= _("First query date") . ": ".$a_t["date"]." ".$a_t["time"]."<br>";
@@ -106,13 +106,13 @@ $att_frm<br><br>
 			$next_tikq = $_REQUEST["tik_id"];
 			while($next_tikq != 0){
 				$q = "SELECT * FROM $pro_mysql_tik_queries_table WHERE adm_login='$adm_login' AND id='$next_tikq';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 				$n = mysqli_num_rows($r);
 				if($n != 1){
 					$out .= _("Ticket not found.") ;
 					break;
 				}
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 				$last_tik_id = $next_tikq;
 				$next_tikq = $a["reply_id"];
 				if($a["admin_or_user"] == "user"){
@@ -122,10 +122,10 @@ $att_frm<br><br>
 				}
 				if($a["admin_or_user"] == "admin"){
 					$qr = "SELECT * FROM $pro_mysql_tik_admins_table WHERE pseudo='".$a["admin_name"]."';";
-					$rr = mysqli_query($mysql_connection,$qr)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+					$rr = mysqli_query($mysqli_connection,$qr)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 					$nr = mysqli_num_rows($rr);
 					if($nr == 1){
-						$ar = mysql_fetch_array($rr);
+						$ar = mysqli_fetch_array($rr);
 						$realname = $ar["realname"];
 					}else{
 						$realname = _("Not found!");
@@ -140,10 +140,10 @@ $att_frm<br><br>
 					$natc = sizeof($atc);
 					for($z=0;$z<$natc;$z++){
 						$qat = "SELECT * FROM $pro_mysql_tik_atc_table WHERE id='".$atc[$z]."';";
-						$rat = mysqli_query($mysql_connection,$qat)or die("Cannot query $qat line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+						$rat = mysqli_query($mysqli_connection,$qat)or die("Cannot query $qat line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 						$natr = mysqli_num_rows($rat);
 						if($natr == 1){
-							$aat = mysql_fetch_array($rat);
+							$aat = mysqli_fetch_array($rat);
 							$binary = pack("H*" , $aat["datahex"]);
 							$chment_size = smartByte(strlen($binary));
 							$atfiles .= "<br>".htmlspecialchars($aat["ctype_prim"])."/".htmlspecialchars($aat["ctype_sec"]).$chment_size."<br>".htmlspecialchars($aat["filename"]);
@@ -176,13 +176,13 @@ $att_frm<br>
 ";
 		$out .= "<br><br><h3>". _("Old tickets:") ."</h3>";
 		$q = "SELECT * FROM $pro_mysql_tik_queries_table WHERE adm_login='$adm_login' AND in_reply_of_id='0' ORDER BY date,time DESC;";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		$out .= "<font color=\"red\">". _("Replying to an already closed ticket will reopen it."). "</font><br>";
 		$out .= "<table cellspacing=\"0\" cellpadding=\"0\" border=\"1\">
 	<tr><td>". _("Date") ."</td><td>". _("Time") ."</td><td>". _("Status") ."</td><td>". _("Type") ."</td><td>". _("Hostname") ."</td><td>". _("Subject") ."</td></tr>";
 		for($i=0;$i<$n;$i++){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$out .= "<tr><td>".$a["date"]."</td><td>".$a["time"]."</td>";
 			if($a["closed"] == "yes"){
 				$out .= "<td><font color=\"green\">". _("Closed") ."</font></td>";
@@ -190,12 +190,12 @@ $att_frm<br>
 				$out .= "<td><font color=\"red\">". _("Open") ."</font></td>";
 			}
 			$q2 = "SELECT * FROM $pro_mysql_tik_cats_table WHERE id='".$a["cat_id"]."';";
-			$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 			$n2 = mysqli_num_rows($r2);
 			if($n2 != 1){
 				$out .= "<td>Cat not found!</td>";
 			}else{
-				$a2 = mysql_fetch_array($r2);
+				$a2 = mysqli_fetch_array($r2);
 				$out .= "<td>".$a2["catname"]."</td>";
 			}
 			$out .= "<td>".$a["server_hostname"]."</td><td><a href=\"?adm_login=$adm_login&adm_pass=$adm_pass&addrlink=$addrlink&subaction=view_ticket&tik_id=".$a["id"]."\">".htmlspecialchars(stripslashes($a["subject"]))."</a></td>";

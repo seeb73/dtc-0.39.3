@@ -7,7 +7,7 @@ function getSpaceSlotsRemaining(){
 	$space = array();
 
 	$q = "SELECT location FROM vps_server GROUP BY location";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysqli_fetch_array($r);
@@ -15,7 +15,7 @@ function getSpaceSlotsRemaining(){
 			WHERE vps_server.location='".$a["location"]."'
 			AND vps_server.hostname=vps_ip.vps_server_hostname
 			AND vps_ip.available='yes';";
-		$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query ".$q2." line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query ".$q2." line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 		$n2 = mysqli_num_rows($r2);
 		$space[] = array(
 			"name" => $a["location"],

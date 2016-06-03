@@ -6,7 +6,7 @@ function DTCRMlistClients(){
 	global $pro_mysql_client_table;
 	global $pro_mysql_admin_table;
 	global $conf_post_or_get;
-	global $mysql_connection;
+	global $mysqli_connection;
 
 	// The popup value is stored in the session, let's manage it
 	if(isset($_REQUEST["clientlist_type"]) && $_REQUEST["clientlist_type"] != ""){
@@ -28,12 +28,12 @@ function DTCRMlistClients(){
 		$_REQUEST["clientsearch_txt"] = '';
 	}
 	if($clientlist_type == "search" && preg_match("/^[a-zA-Z0-9\_\-\@\.\ ].*$/", $_REQUEST["clientsearch_txt"])){
-		$query = "SELECT * FROM $pro_mysql_client_table WHERE UCASE(company_name) LIKE UCASE('%".mysql_real_escape_string($_REQUEST["clientsearch_txt"])."%') OR UCASE(familyname) LIKE UCASE('%".mysql_real_escape_string($_REQUEST["clientsearch_txt"])."%') OR UCASE(christname) LIKE UCASE('%".mysql_real_escape_string($_REQUEST["clientsearch_txt"])."%') OR UCASE(email) LIKE UCASE('%".mysql_real_escape_string($_REQUEST["clientsearch_txt"])."%') OR UCASE(phone) LIKE UCASE('%".mysql_real_escape_string($_REQUEST["clientsearch_txt"])."%') OR UCASE(special_note) LIKE UCASE('%".mysql_real_escape_string($_REQUEST["clientsearch_txt"])."%') OR UCASE(customfld) LIKE UCASE('%".mysql_real_escape_string($_REQUEST["clientsearch_txt"])."%') ORDER BY familyname";
+		$query = "SELECT * FROM $pro_mysql_client_table WHERE UCASE(company_name) LIKE UCASE('%".mysqli_real_escape_string($mysqli_connection,$_REQUEST["clientsearch_txt"])."%') OR UCASE(familyname) LIKE UCASE('%".mysqli_real_escape_string($mysqli_connection,$_REQUEST["clientsearch_txt"])."%') OR UCASE(christname) LIKE UCASE('%".mysqli_real_escape_string($mysqli_connection,$_REQUEST["clientsearch_txt"])."%') OR UCASE(email) LIKE UCASE('%".mysqli_real_escape_string($mysqli_connection,$_REQUEST["clientsearch_txt"])."%') OR UCASE(phone) LIKE UCASE('%".mysqli_real_escape_string($mysqli_connection,$_REQUEST["clientsearch_txt"])."%') OR UCASE(special_note) LIKE UCASE('%".mysqli_real_escape_string($mysqli_connection,$_REQUEST["clientsearch_txt"])."%') OR UCASE(customfld) LIKE UCASE('%".mysqli_real_escape_string($mysqli_connection,$_REQUEST["clientsearch_txt"])."%') ORDER BY familyname";
 	}else{
 		$query = "SELECT * FROM $pro_mysql_client_table ORDER BY familyname";
 	}
 
-	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!!".mysqli_error());
 	$num_rows = mysqli_num_rows($result);
 	$client_list = array();
 	if(isset($id_client) && $_REQUEST["id"] == 0){
@@ -49,7 +49,7 @@ function DTCRMlistClients(){
 		$row = mysqli_fetch_array($result);
 		if($clientlist_type == "hide-no-admins"){
 			$qa = "SELECT adm_login FROM $pro_mysql_admin_table WHERE id_client='".$row["id"]."';";
-			$ra = mysqli_query($mysql_connection,$qa)or die("Cannot query $qa line ".__LINE__." file ".__FILE__." sql said: ".mysql_error()); 
+			$ra = mysqli_query($mysqli_connection,$qa)or die("Cannot query $qa line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error()); 
 			$rn = mysqli_num_rows($ra);
 			if($rn == 0){
 				$do_display = "no";
@@ -135,7 +135,7 @@ function DTCRMclientAdmins(){
 	global $conf_post_or_get;
 
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE id_client='".$_REQUEST["id"]."'";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
         $n = mysqli_num_rows($r);
 	$text = "<br><h3>". _("Remove an administrator for this customer:") ."</h3><br>";
 	for($i=0;$i<$n;$i++){
@@ -146,7 +146,7 @@ function DTCRMclientAdmins(){
 	}
 
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE id_client='0'";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
         $n = mysqli_num_rows($r);
 	$text .= "<br><br><h3>". _("Add an administrator to this customer:") ."</h3><br>";
 	$text .= "<form method=\"$conf_post_or_get\" action=\"?\">
@@ -173,7 +173,7 @@ function DTCRMeditClients(){
 	global $pro_mysql_client_table;
 	global $pro_mysql_custom_fld_table;
 	global $conf_post_or_get;
-	global $mysql_connection;
+	global $mysqli_connection;
 
 	if(isset($_REQUEST["id"])){
 		$cid = $_REQUEST["id"];	// current customer id
@@ -185,7 +185,7 @@ function DTCRMeditClients(){
 	$iscomp_no = "";
 	if($cid != 0 && isset($cid) && $cid != ""){
 		$query = "SELECT * FROM $pro_mysql_client_table WHERE id='".$_REQUEST["id"]."';";
-	        $result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+	        $result = mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!!".mysqli_error());
 	        $num_rows = mysqli_num_rows($result);
 		if($num_rows != 1){
 			return "<font color=\"red\">Error : no row by that client ID (".$_REQUEST["id"].") !!!</font>";
@@ -270,7 +270,7 @@ cc_code_popup($row["country"])."</select>",0);
 	}
 
 	$q = "SELECT * FROM $pro_mysql_custom_fld_table WHERE 1 ORDER BY widgetorder;";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	$init_alt = 1;
 

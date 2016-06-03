@@ -42,7 +42,7 @@ if(isDTCLogin($_REQUEST["adm_pass"])){
 checkLoginPass($adm_login,$adm_pass);
 
 $q = "SELECT id_client FROM admin WHERE adm_login='$adm_login'";
-$r = mysqli_query($mysql_connection,$q);
+$r = mysqli_query($mysqli_connection,$q);
 $n = mysqli_num_rows($r);
 if($n != 1){
 	die("Admin not found");
@@ -71,7 +71,7 @@ for($m=0;$m<12;$m++){
 
 /*
 $q = "SELECT bw_quota_per_month_gb FROM $pro_mysql_client_table WHERE id='".$_REQUEST["cid"]."';";
-$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__.mysql_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__.mysqli_error());
 $n = mysqli_num_rows($r);
 if($n!=1)die("Client not found!");
 $c = mysqli_fetch_array($r);
@@ -80,7 +80,7 @@ $bpquota = $c["bw_quota_per_month_gb"];
 
 $q = "SELECT * FROM $pro_mysql_client_table WHERE id='$cid';";
 //echo $q;
-$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q !");
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q !");
 $n = mysqli_num_rows($r);
 if($n != 1)die("Client not found!");
 $c = mysqli_fetch_array($r);
@@ -105,7 +105,7 @@ AND subdomain.domain_name=domain.name
 AND http_accounting.vhost=subdomain.subdomain_name
 AND http_accounting.domain=subdomain.domain_name
 AND year='$year' AND month='$month'";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." MySql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." MySql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysqli_fetch_array($r);
@@ -117,7 +117,7 @@ WHERE admin.id_client='".$cid."'
 AND domain.owner=admin.adm_login
 AND $pro_mysql_acc_ftp_table.sub_domain=domain.name
 AND year='$year' AND month='$month';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." SQL said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." SQL said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysqli_fetch_array($r);
@@ -130,7 +130,7 @@ WHERE admin.id_client='".$cid."'
 AND domain.owner=admin.adm_login
 AND $pro_mysql_acc_email_table.domain_name=domain.name
 AND $pro_mysql_acc_email_table.year='$year' AND $pro_mysql_acc_email_table.month='$month';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." SQL said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." SQL said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysqli_fetch_array($r);

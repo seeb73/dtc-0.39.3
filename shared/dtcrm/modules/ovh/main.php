@@ -554,7 +554,7 @@ try {
 }
 	if (isset($result)){
         $query = "UPDATE `$pro_mysql_handle_table` SET `ovh_passwd`='$ovh_nic_mdp', `ovh_id`='$result' WHERE `id`='$a[id]';";
-	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!! ".mysql_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!! ".mysqli_error());
         }
 }
 

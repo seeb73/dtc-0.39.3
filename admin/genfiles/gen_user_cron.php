@@ -9,7 +9,7 @@ function user_cron_generate() {
 	$console.="Generating $filename : ";
 
 	$q = "SELECT * FROM $pro_mysql_user_cron_table;";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	$f = "# /etc/cron.d/dtc-user/cron\n\n";
 

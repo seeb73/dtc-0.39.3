@@ -66,7 +66,7 @@ if (!$fp) {
 			}
 			if($_REQUEST["payment_status"] != "Completed"){
 				if($_REQUEST["payment_status"] == "Pending"){
-					setPaiemntAsPending(mysql_real_escape_string($item_number),mysql_real_escape_string($_REQUEST["pending_reason"]));
+					setPaiemntAsPending(mysqli_real_escape_string($mysqli_connection,$item_number),mysqli_real_escape_string($mysqli_connection,$_REQUEST["pending_reason"]));
 				}else{
 					logPay("Status is not completed or pending !");
 					die("Status not completed or pending...");
@@ -81,7 +81,7 @@ if (!$fp) {
 					// Ensure amount tally according to cost before adding the paypal fees
 					$refund_amount = $_REQUEST["mc_gross"];
 				}
-				validatePaiement(mysql_real_escape_string($item_number),$refund_amount,"online","paypal",mysql_real_escape_string($_REQUEST["txn_id"]),mysql_real_escape_string($_REQUEST["mc_gross"]));
+				validatePaiement(mysqli_real_escape_string($mysqli_connection,$item_number),$refund_amount,"online","paypal",mysqli_real_escape_string($mysqli_connection,$_REQUEST["txn_id"]),mysqli_real_escape_string($mysqli_connection,$_REQUEST["mc_gross"]));
 			}
 		}elseif (strcmp ($res, "INVALID") == 0) {
 			// log for manual investigation

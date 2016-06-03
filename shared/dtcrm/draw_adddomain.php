@@ -64,7 +64,7 @@ $form_start = "
 			return $out;
 		}
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$_REQUEST["product_id"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
                 $n = mysqli_num_rows($r);
                 if($n != 1){
                 	$out .= _("Cannot reselect product: registration failed!") ;
@@ -108,7 +108,7 @@ $form_start = "
 		$_REQUEST["add_domain_type"] != "hosting")){
 
 		$q = "SELECT * FROM $pro_mysql_domain_table WHERE owner='$adm_login' ORDER BY name;";
-		$r = mysqli_query($mysql_connection,$q);
+		$r = mysqli_query($mysqli_connection,$q);
 		$n = mysqli_num_rows($r);
 		if($n > 0){
 			$out .= "<br><h3>". _("Delete a domain name:") ."</h3>
@@ -143,7 +143,7 @@ $form_start";
 			$added_conditions = "";
 		}
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE private='no' AND renew_prod_id='0' AND heb_type NOT LIKE 'ssl' $added_conditions;";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		for($i=0;$i<$n;$i++){
 			$a = mysqli_fetch_array($r);
@@ -172,7 +172,7 @@ $form_start";
 		}
 		if($admin["info"]["max_domain"] != 0){
 			$maxdomq = "SELECT COUNT(name) AS numofdomains FROM $pro_mysql_domain_table WHERE owner='$adm_login';";
-			$maxdomr = mysqli_query($mysql_connection,$maxdomq)or die("Cannot query $maxdomq line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$maxdomr = mysqli_query($mysqli_connection,$maxdomq)or die("Cannot query $maxdomq line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 			$maxdoma = mysqli_fetch_array($maxdomr);
 			$num_of_installed_domains = $maxdoma["numofdomains"];
 			if($num_of_installed_domains >= $admin["info"]["max_domain"]){
@@ -190,14 +190,14 @@ $form_start
 			return _("Domain name is not in correct format. Please enter another name.") ;
 		}
 		$q = "SELECT * FROM $pro_mysql_domain_table WHERE name='".$_REQUEST["domain_name"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n > 0){
 			return _("This domain name already hosted here, please enter another name.") ;
 		}
 		if($admin["info"]["allow_add_domain"] == "check"){
 			$q = "INSERT INTO $pro_mysql_pending_queries_table (adm_login,domain_name,date) VALUES ('$adm_login','".$_REQUEST["domain_name"]."','".date("Y-m-d H:i")."');";
-			$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 			return "<br><u><b>". _("Your domain name will be soon validated:") ."</b></u><br>".
 			_("An administrator will examine your request shortly, and validate the addition of this domain name to your account. You curently don't have enough privileges to add domain names. If you often add domain names, you can ask the administrator to grant you the privilege of automatic domain name addition. To request hosting for a new domain name, without administrator validation or domain name registration, please write to:") ."<br>
 <a href=\"$conf_webmaster_email_addr?subject=[DTC] More domains\">$conf_webmaster_email_addr</a>.<br>
@@ -267,7 +267,7 @@ Have another try:<br>$form_start ".make_registration_tld_popup()."</form>";
 <input type=\"hidden\" name=\"toreg_extention\" value=\"".$_REQUEST["toreg_extention"]."\">";
 
 	$q = "SELECT * FROM $pro_mysql_domain_table WHERE name='$fqdn';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n != 0){
 		$out .= "<br>
@@ -336,13 +336,13 @@ $form_start
 
 	// Check if paiement has just occured !
 	if(isset($_REQUEST["inner_action"]) && $_REQUEST["inner_action"] == "return_from_paypal_domain_add"){
-		$ze_refund = isPayIDValidated(mysql_real_escape_string($_REQUEST["pay_id"]));
+		$ze_refund = isPayIDValidated(mysqli_real_escape_string($mysqli_connection,$_REQUEST["pay_id"]));
 		if($ze_refund == 0){
 			$out .= "<font color=\"red\">The transaction failed, please try again!</font>";
 		}else{
 			$out .= "<font color=\"green\">Funds added to your account</font>";
 			$q = "UPDATE $pro_mysql_client_table SET dollar = dollar+".$ze_refund." WHERE id='".$admin["info"]["id_client"]."';";
-			$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 			$admin["client"]["dollar"] += $ze_refund;
 		}
 	}
@@ -414,7 +414,7 @@ $form_start
 		}
 	}
 	$q = "SELECT * FROM $pro_mysql_domain_table WHERE owner='$adm_login' AND whois='here';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n > 0){
 		$new_user = "no";
@@ -434,14 +434,14 @@ Server said: <i>" . $regz["response_text"] . "</i><br>";
 
 	$operation = $remaining - $fqdn_price;
 	$query = "UPDATE $pro_mysql_client_table SET dollar='$operation' WHERE id='".$admin["info"]["id_client"]."';";
-	mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+	mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!!".mysqli_error());
 
 	addDomainToUser($adm_login,$adm_pass,$fqdn,$adm_pass);
 
 	if($regz["is_success"] == 1){
 		$id = find_registry_id($fqdn);
 		$q = "UPDATE $pro_mysql_domain_table SET registrar='".$registry_api_modules[$id]["name"]."' WHERE name='$fqdn';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 
 		unset($ns_ar);
 		$ns_ar = array();

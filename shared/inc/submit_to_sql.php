@@ -10,8 +10,8 @@ if(!isset($commit_flag)){
 function checkDedicatedAdmin($adm_login,$adm_pass,$dedicated_server_hostname){
 	global $pro_mysql_dedicated_table;
 	checkLoginPass($adm_login,$adm_pass);
-	$q = "SELECT * FROM $pro_mysql_dedicated_table WHERE owner='$adm_login' AND server_hostname='".mysql_real_escape_string($dedicated_server_hostname)."';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$q = "SELECT * FROM $pro_mysql_dedicated_table WHERE owner='$adm_login' AND server_hostname='".mysqli_real_escape_string($mysqli_connection,$dedicated_server_hostname)."';";
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n == 1){
 		return true;
@@ -23,8 +23,8 @@ function checkDedicatedAdmin($adm_login,$adm_pass,$dedicated_server_hostname){
 function checkCustomAdmin($adm_login,$adm_pass,$custom_service_id){
 	global $pro_mysql_custom_product_table;
 	checkLoginPass($adm_login,$adm_pass);
-	$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE owner='$adm_login' AND id='".mysql_real_escape_string($custom_service_id)."';";
-	$r = mysqli_query($mysql_connection,$q) or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE owner='$adm_login' AND id='".mysqli_real_escape_string($mysqli_connection,$custom_service_id)."';";
+	$r = mysqli_query($mysqli_connection,$q) or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n == 1){
 		return true;
@@ -55,7 +55,7 @@ function validateRenewal($renew_id){
 	global $send_email_header;
 
 	$q = "SELECT * FROM $pro_mysql_pending_renewal_table WHERE id='$renew_id';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$submit_err = "Could not find pending renewal in table line ".__LINE__." file ".__FILE__;
@@ -66,7 +66,7 @@ function validateRenewal($renew_id){
 
 	if($renew_entry["heb_type"] != "multiple-services"){
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$renew_entry["product_id"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n != 1 && $renew_entry["heb_type"] != 'add-money'){
 			$submit_err = "Could not find product in table line ".__LINE__." file ".__FILE__;
@@ -81,7 +81,7 @@ function validateRenewal($renew_id){
 	switch($renew_entry["heb_type"]){
 	case "vps":
 		$q = "SELECT * FROM $pro_mysql_vps_table WHERE id='".$renew_entry["renew_id"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$submit_err = "Could not find VPS id in table line ".__LINE__." file ".__FILE__;
@@ -92,7 +92,7 @@ function validateRenewal($renew_id){
 		$old_expire = $vps_entry["expire_date"];
 		$date_expire = calculateExpirationDate($old_expire,$product["period"]);
 		$q = "UPDATE $pro_mysql_vps_table SET expire_date='$date_expire' WHERE id='".$renew_entry["renew_id"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$txt_renewal_approved = "
 
 A renewal have been paid! Here is the details of the renewal:
@@ -101,7 +101,7 @@ login: ";
 		break;
 	case "shared":
 		$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$renew_entry["adm_login"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$submit_err = "Could not find admin login in table line ".__LINE__." file ".__FILE__;
@@ -112,7 +112,7 @@ login: ";
 		$old_expire = $admin["expire"];
 		$date_expire = calculateExpirationDate($old_expire,$product["period"]);
 		$q = "UPDATE $pro_mysql_admin_table SET expire='$date_expire',temporary_extend=0 WHERE adm_login='".$renew_entry["adm_login"]."'";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$txt_renewal_approved = "
 
 A renewal have been paid! Here is the details of the renewal:
@@ -121,7 +121,7 @@ login: ";
 		break;
 	case "add-money":
 		$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$renew_entry["adm_login"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$submit_err = "Could not find admin login in table line ".__LINE__." file ".__FILE__;
@@ -130,7 +130,7 @@ login: ";
 		}
 		$admin = mysqli_fetch_array($r);
 		$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='".$renew_entry["pay_id"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$submit_err = "Could not find payment in table line ".__LINE__." file ".__FILE__;
@@ -140,7 +140,7 @@ login: ";
 		$old_expire = date("Y-m-d");
 		$payment = mysqli_fetch_array($r);
 		$q = "UPDATE $pro_mysql_client_table SET dollar = dollar+".$payment["refund_amount"]." WHERE id='".$admin["id_client"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 		$txt_renewal_approved = "
 
 Money has been added to an account! Here is the details:
@@ -149,7 +149,7 @@ login: ";
 		break;
 	case "shared-upgrade":
 		$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$renew_entry["adm_login"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$submit_err = "Could not find admin login in table line ".__LINE__." file ".__FILE__;
@@ -159,7 +159,7 @@ login: ";
 		$admin = mysqli_fetch_array($r);
 
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$renew_entry["product_id"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$submit_err = "Could not find product in table line ".__LINE__." file ".__FILE__;
@@ -171,7 +171,7 @@ login: ";
 		$old_expire = date("Y-m-d");
 		$date_expire = calculateExpirationDate(date("Y-m-d"),$product["period"]);
 		$q = "UPDATE $pro_mysql_admin_table SET expire='$date_expire',temporary_extend=0,prod_id='".$renew_entry["product_id"]."',max_email=".$product["nbr_email"].",nbrdb=".$product["nbr_database"].",quota=".$product["quota_disk"].",bandwidth_per_month_mb=".$product["bandwidth"].",allow_add_domain='".$product["allow_add_domain"]."',max_domain=".$product["max_domain"].",max_ftp=".$product["max_ftp"].",max_ssh=".$product["max_ssh"]." WHERE adm_login='".$renew_entry["adm_login"]."'";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$txt_renewal_approved = "
 
 A Product Upgrade have been paid! Here is the details:
@@ -180,7 +180,7 @@ login: ";
 		break;
 	case "ssl":
 		$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$renew_entry["adm_login"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$submit_err = "Could not find admin login in table line ".__LINE__." file ".__FILE__;
@@ -189,7 +189,7 @@ login: ";
 		}
 		$admin = mysqli_fetch_array($r);
 		$q = "SELECT * FROM $pro_mysql_ssl_ips_table WHERE available='yes' LIMIT 1;";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$submit_err = "Could not find any free IP for adding SSL.";
@@ -199,7 +199,7 @@ login: ";
 		$old_expire = date("Y-m-d");
 		$date_expire = calculateExpirationDate(date("Y-m-d"),$product["period"]);
 		$q = "UPDATE $pro_mysql_ssl_ips_table SET available='no',adm_login='".$admin["adm_login"]."',expire='$date_expire' WHERE id='".$ssl_token["id"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$txt_renewal_approved = "
 
 A SSL-token have been paid! Here is the details:
@@ -208,7 +208,7 @@ login: ";
 		break;
 	case "server":
 		$q = "SELECT * FROM $pro_mysql_dedicated_table WHERE id='".$renew_entry["renew_id"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$submit_err = "Could not find dedicated server id in table line ".__LINE__." file ".__FILE__;
@@ -219,7 +219,7 @@ login: ";
 		$old_expire = $dedicated_entry["expire_date"];
 		$date_expire = calculateExpirationDate($old_expire,$product["period"]);
 		$q = "UPDATE $pro_mysql_dedicated_table SET expire_date='$date_expire' WHERE id='".$renew_entry["renew_id"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$txt_renewal_approved = "
 
 A renewal have been paid! Here is the details of the renewal:
@@ -228,7 +228,7 @@ login: ";
 		break;
 	case "custom":
 		$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE id='".$renew_entry["renew_id"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$submit_err = "Could not find custom service id in table line ".__LINE__." file ".__FILE__;
@@ -239,7 +239,7 @@ login: ";
 		$old_expire = $dedicated_entry["expire_date"];
 		$date_expire = calculateExpirationDate($old_expire,$product["period"]);
 		$q = "UPDATE $pro_mysql_custom_product_table SET expire_date='$date_expire' WHERE id='".$renew_entry["renew_id"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$txt_renewal_approved = "
 
 A renewal have been paid! Here is the details of the renewal:
@@ -249,7 +249,7 @@ login: ";
 		break;
 	case "ssl_renew":
 		$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$renew_entry["adm_login"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$submit_err = "Could not find admin login in table line ".__LINE__." file ".__FILE__;
@@ -258,7 +258,7 @@ login: ";
 		}
 		$admin = mysqli_fetch_array($r);
 		$q = "SELECT * FROM $pro_mysql_ssl_ips_table WHERE available='no' AND id='".$renew_entry["renew_id"]."' LIMIT 1;";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$submit_err = "Could not find the SSL IP to renew (id: ".$renew_entry["renew_id"].").";
@@ -269,7 +269,7 @@ login: ";
 		$old_expire = $ssl_ip["expire"];
 		$date_expire = calculateExpirationDate($old_expire,$product["period"]);
 		$q = "UPDATE $pro_mysql_ssl_ips_table SET expire='$date_expire' WHERE  id='".$ssl_ip["id"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		$txt_renewal_approved = "
 
 A renewal have been paid! Here is the details of the renewal:
@@ -293,7 +293,7 @@ login: ";
 			switch($atrs[0]){
 			case "vps":
 				$q = "SELECT * FROM $pro_mysql_vps_table WHERE vps_server_hostname='".$atrs[1]."' AND vps_xen_name='".$atrs[2]."';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 				$n = mysqli_num_rows($r);
 				if($n != 1){
 					$submit_err = "Could not find VPS id in table line ".__LINE__." file ".__FILE__;
@@ -307,7 +307,7 @@ login: ";
 				}
 				$old_expire .= $vps_entry["expire_date"];
 				$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$atrs[3]."';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 				$n = mysqli_num_rows($r);
 				if($n != 1){
 					$submit_err = "Could not find product in table line ".__LINE__." file ".__FILE__;
@@ -317,11 +317,11 @@ login: ";
 				$product = mysqli_fetch_array($r);
 				$date_expire = calculateExpirationDate($vps_expire,$product["period"]);
 				$q = "UPDATE $pro_mysql_vps_table SET expire_date='$date_expire' WHERE vps_server_hostname='".$atrs[1]."' AND vps_xen_name='".$atrs[2]."';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 				break;
 			case "server":
 				$q = "SELECT * FROM $pro_mysql_dedicated_table WHERE server_hostname='".$atrs[1]."';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 				$n = mysqli_num_rows($r);
 				if($n != 1){
 					$submit_err = "Could not find dedicated server id in table line ".__LINE__." file ".__FILE__;
@@ -335,7 +335,7 @@ login: ";
 				$old_expire .= $dedicated_entry["expire_date"];
 				$dedi_expire = $dedicated_entry["expire_date"];
 				$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$atrs[2]."';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 				$n = mysqli_num_rows($r);
 				if($n != 1){
 					$submit_err = "Could not find product in table line ".__LINE__." file ".__FILE__;
@@ -345,11 +345,11 @@ login: ";
 				$product = mysqli_fetch_array($r);
 				$date_expire = calculateExpirationDate($dedi_expire,$product["period"]);
 				$q = "UPDATE $pro_mysql_dedicated_table SET expire_date='$date_expire' WHERE server_hostname='".$atrs[1]."';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 				break;
 			case "custom":
 				$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE domain='".$atrs[1]."';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 				$n = mysqli_num_rows($r);
 				if($n != 1){
 					$submit_err = "Could not find custom product id in table line ".__LINE__." file ".__FILE__;
@@ -363,7 +363,7 @@ login: ";
 				$old_expire .= $custom_entry["expire_date"];
 				$custom_expire = $custom_entry["expire_date"];
 				$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$atrs[2]."';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 				$n = mysqli_num_rows($r);
 				if($n != 1){
 					$submit_err = "Could not find product in table line ".__LINE__." file ".__FILE__;
@@ -373,11 +373,11 @@ login: ";
 				$product = mysqli_fetch_array($r);
 				$date_expire = calculateExpirationDate($custom_expire,$product["period"]);
 				$q = "UPDATE $pro_mysql_custom_product_table SET expire_date='$date_expire' WHERE domain='".$atrs[1]."';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 				break;
 			case "shared":
 				$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$renew_entry["adm_login"]."';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 				$n = mysqli_num_rows($r);
 				if($n != 1){
 					$submit_err = "Could not find custom product id in table line ".__LINE__." file ".__FILE__;
@@ -391,7 +391,7 @@ login: ";
 				$old_expire .= $shared_entry["expire"];
 				$shared_expire = $shared_entry["expire"];
 				$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$atrs[2]."';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 				$n = mysqli_num_rows($r);
 				if($n != 1){
 					$submit_err = "Could not find product in table line ".__LINE__." file ".__FILE__;
@@ -401,7 +401,7 @@ login: ";
 				$product = mysqli_fetch_array($r);
 				$date_expire = calculateExpirationDate($shared_expire,$product["period"]);
 				$q = "UPDATE $pro_mysql_admin_table SET expire='$date_expire' WHERE adm_login='".$renew_entry["adm_login"]."';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 				break;
 			default:
 				die("Unknown heb type line ".__LINE__." file ".__FILE__);
@@ -419,7 +419,7 @@ login: ";
 	}
 
 	$q = "SELECT id_client FROM $pro_mysql_admin_table WHERE adm_login='".$renew_entry["adm_login"]."'";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		echo "Cannot find admin line ".__LINE__." file ".__FILE__;
@@ -449,10 +449,10 @@ Date: ".$renew_entry["renew_date"]." ".$renew_entry["renew_time"]."
 	// Now add a command to the user so we keep tracks of payments
 	$q = "INSERT INTO $pro_mysql_completedorders_table (id,id_client,domain_name,quantity,date,product_id,payment_id,country_code,last_expiry_date,services)
 	VALUES ('','$cid','','1','".date("Y-m-d")."','$prod_id','".$renew_entry["pay_id"]."','".$renew_entry["country_code"]."','$old_expire','".$renew_entry["services"]."');";
-	mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 
 	$q = "DELETE FROM $pro_mysql_pending_renewal_table WHERE id='$renew_id';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	return true;
 }
 
@@ -490,8 +490,8 @@ function validateWaitingUser($waiting_login_id){
 
 	if (isset($affiliatename)) {
 		//Step 1: validate that the affiliatename exists
-		$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".mysql_real_escape_string($affiliatename)."';";
-		$r = mysqli_query($mysql_connection,$q) or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".mysqli_real_escape_string($mysqli_connection,$affiliatename)."';";
+		$r = mysqli_query($mysqli_connection,$q) or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		if (mysqli_num_rows($r) != 1) { unset($affiliatename); }
 		// at this point, we should have an affiliatename
 	}
@@ -499,7 +499,7 @@ function validateWaitingUser($waiting_login_id){
 	// Get the informations from the user waiting table
 	$q = "SELECT * FROM $pro_mysql_new_admin_table WHERE id='$waiting_login_id';";
 //	$q = "SELECT * FROM $pro_mysql_new_admin_table WHERE reqadm_login='$waiting_login';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n != 1)die("I can't find username with id $waiting_login_id in the userwaiting table line: ".__LINE__." file: ".__FILE__."!");
 	$new_admin = mysqli_fetch_array($r);
@@ -508,7 +508,7 @@ function validateWaitingUser($waiting_login_id){
 
 	// Check if there is a user by that name
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$waiting_login';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($new_admin["add_service"] == "yes"){
 		if($n != 1)die("There is no user with name $waiting_login in database: I can't add a service to it line: ".__LINE__." file: ".__FILE__."!");
@@ -534,7 +534,7 @@ function validateWaitingUser($waiting_login_id){
 
 	// Get the informations from the product table
 	$q2 = "SELECT * FROM $pro_mysql_product_table WHERE id='".$new_admin["product_id"]."'";
-	$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot execute query \"$q2\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query \"$q2\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 	$n2 = mysqli_num_rows($r2);
 	if($n2 != 1)die("I can't find the product in the table line: ".__LINE__." file: ".__FILE__."!");
 	$product = mysqli_fetch_array($r2);
@@ -571,14 +571,14 @@ customfld,
 city,zipcode,state,country,phone,fax,email,
 disk_quota_mb,bw_quota_per_month_gb,
 special_note) VALUES ('','".$new_admin["iscomp"]."',
-'".mysql_real_escape_string($new_admin["comp_name"])."','".mysql_real_escape_string($new_admin["vat_num"])."','".mysql_real_escape_string($new_admin["family_name"])."','".mysql_real_escape_string($new_admin["first_name"])."',
-'".mysql_real_escape_string($new_admin["addr1"])."','".mysql_real_escape_string($new_admin["addr2"])."','".mysql_real_escape_string($new_admin["addr3"])."',
-'".mysql_real_escape_string($new_admin["customfld"])."',
-'".mysql_real_escape_string($new_admin["city"])."','".mysql_real_escape_string($new_admin["zipcode"])."','".mysql_real_escape_string($new_admin["state"])."','".mysql_real_escape_string($new_admin["country"])."','".mysql_real_escape_string($new_admin["phone"])."',
-'".mysql_real_escape_string($new_admin["fax"])."','".mysql_real_escape_string($new_admin["email"])."','".$product["quota_disk"]."','". $product["bandwidth"]/1024 ."',
-'".mysql_real_escape_string($new_admin["custom_notes"])."');";
-		$r = mysqli_query($mysql_connection,$adm_query)or die("Cannot execute query \"$adm_query\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
-		$cid = mysql_insert_id();
+'".mysqli_real_escape_string($mysqli_connection,$new_admin["comp_name"])."','".mysqli_real_escape_string($mysqli_connection,$new_admin["vat_num"])."','".mysqli_real_escape_string($mysqli_connection,$new_admin["family_name"])."','".mysqli_real_escape_string($mysqli_connection,$new_admin["first_name"])."',
+'".mysqli_real_escape_string($mysqli_connection,$new_admin["addr1"])."','".mysqli_real_escape_string($mysqli_connection,$new_admin["addr2"])."','".mysqli_real_escape_string($mysqli_connection,$new_admin["addr3"])."',
+'".mysqli_real_escape_string($mysqli_connection,$new_admin["customfld"])."',
+'".mysqli_real_escape_string($mysqli_connection,$new_admin["city"])."','".mysqli_real_escape_string($mysqli_connection,$new_admin["zipcode"])."','".mysqli_real_escape_string($mysqli_connection,$new_admin["state"])."','".mysqli_real_escape_string($mysqli_connection,$new_admin["country"])."','".mysqli_real_escape_string($mysqli_connection,$new_admin["phone"])."',
+'".mysqli_real_escape_string($mysqli_connection,$new_admin["fax"])."','".mysqli_real_escape_string($mysqli_connection,$new_admin["email"])."','".$product["quota_disk"]."','". $product["bandwidth"]/1024 ."',
+'".mysqli_real_escape_string($mysqli_connection,$new_admin["custom_notes"])."');";
+		$r = mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		$cid = mysqli_insert_id($mysqli_connection);
 
 		// Insert the admin file
 		if($conf_enforce_adm_encryption == "yes"){
@@ -592,7 +592,7 @@ last_used_lang   ,path            ,id_client,bandwidth_per_month_mb,quota,nbrdb,
 ('$waiting_login',$new_encrypted_adm_password,'$shared_hosting_security',
 '$last_used_lang','$newadmin_path','$cid','".$product["bandwidth"]."','".$product["quota_disk"]."','".$product["nbr_database"]."','".$product["allow_add_domain"]."','".$product["max_domain"]."',
 '".$product["restricted_ftp_path"]."','".$product["allow_dns_and_mx_change"]."','".$product["ftp_login_flag"]."','".$product["allow_mailing_list_edit"]."','".$product["allow_subdomain_edit"]."','".$product["nbr_email"]."'$admtbl_added2);";
-		mysqli_query($mysql_connection,$adm_query)or die("Cannot execute query \"$adm_query\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 	}else{
 		// Update the admin file
 		if($product["heb_type"] == "shared"){
@@ -602,7 +602,7 @@ last_used_lang   ,path            ,id_client,bandwidth_per_month_mb,quota,nbrdb,
 			allow_dns_and_mx_change='".$product["allow_dns_and_mx_change"]."', ftp_login_flag='".$product["ftp_login_flag"]."', allow_mailing_list_edit='".$product["allow_mailing_list_edit"]."',
 			allow_subdomain_edit='".$product["allow_subdomain_edit"]."', max_email='".$product["nbr_email"]."',shared_hosting_security='$shared_hosting_security' $admtbl_added3
 			WHERE adm_login='$waiting_login';";
-			mysqli_query($mysql_connection,$adm_query)or die("Cannot execute query \"$adm_query\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+			mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		}
 	}
 
@@ -620,7 +620,7 @@ last_used_lang   ,path            ,id_client,bandwidth_per_month_mb,quota,nbrdb,
 
 			$r = $soap_client->call("setupLVMDisks",array("vpsname" => $vps_xen_name, "hddsize" => $product["quota_disk"], "swapsize" => $product["memory_size"], "imagetype" => $image_type),"","","");
 			$qvps = "SELECT * FROM $pro_mysql_vps_ip_table WHERE vps_server_hostname='".$new_admin["vps_location"]."' AND vps_xen_name='$vps_xen_name' LIMIT 1;";
-			$rvps = mysqli_query($mysql_connection,$qvps)or die("Cannot execute query \"$qvps\" line ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+			$rvps = mysqli_query($mysqli_connection,$qvps)or die("Cannot execute query \"$qvps\" line ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 			$nvps = mysqli_num_rows($rvps);
 			if($nvps != 1){
 				echo "Cannot find VPS IP: wont be able to setup the os, please get in touch with the administrator!";
@@ -634,7 +634,7 @@ last_used_lang   ,path            ,id_client,bandwidth_per_month_mb,quota,nbrdb,
 					"ipaddr" => $avps["ip_addr"],
 					"password" => $vps_root_pass),"","","");
 				$qcountry = "SELECT * FROM $pro_mysql_vps_server_table WHERE hostname='".$new_admin["vps_location"]."';";
-				$rcountry = mysqli_query($mysql_connection,$qcountry)or die("Cannot execute query \"$qcountry\" line ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+				$rcountry = mysqli_query($mysqli_connection,$qcountry)or die("Cannot execute query \"$qcountry\" line ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 				$ncountry = mysqli_num_rows($rcountry);
 				if($ncountry != 1){
 					echo "Cannot find VPS server country!";
@@ -666,7 +666,7 @@ last_used_lang   ,path            ,id_client,bandwidth_per_month_mb,quota,nbrdb,
 		$txt_welcome_message = readCustomizedMessage("registration_msg/shared_open",$waiting_login);
 
 		$q = "UPDATE $pro_mysql_domain_table SET max_email='".$product["nbr_email"]."',quota='".$product["quota_disk"]."' WHERE name='".$new_admin["domain_name"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		break;
 	case "custom":
 		$country = $conf_this_server_country_code;
@@ -708,23 +708,23 @@ Password: ".$new_admin["reqadm_pass"];
 	// Now add a command to the user so we keep tracks of payments
 	$q = "INSERT INTO $pro_mysql_completedorders_table (id,id_client,domain_name,quantity,date,product_id,payment_id,country_code,last_expiry_date)
 	VALUES ('','$cid','".$new_admin["domain_name"]."','1','".date("Y-m-d")."','".$new_admin["product_id"]."','".$new_admin["paiement_id"]."','$country','".date("Y-d-m")."');";
-	mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 
 	if (isset($affiliatename)) {
 		// Step 2) retrieve the kickback from the products table
 		$kickback = $product["affiliate_kickback"];
-		$orderid = mysql_insert_id();
+		$orderid = mysqli_insert_id($mysqli_connection);
 		if ($kickback) {
 			// Step 3) if a kickback exists, store it in the affiliate transaction table
 			$kickback = 1.0 + $kickback - 1.0; //cast to float.  I hate PHP.
 			$xxs = "INSERT INTO affiliate_payments (adm_login,order_id,kickback) VALUES('$affiliatename',$orderid,$kickback);";
-			mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+			mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 		}
 	}
 
 	// Finaly delete the user from the userwaiting table
 	$q = "DELETE FROM $pro_mysql_new_admin_table WHERE id='$waiting_login_id';";
-	mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 
 }
 
@@ -734,12 +734,13 @@ function get_mailbox_complete_path($user,$host){
 	global $pro_mysql_pop_table;
 	global $pro_mysql_domain_table;
 	global $pro_mysql_admin_table;
+	global $mysqli_connection;
 
 	$q = "SELECT $pro_mysql_admin_table.path
 FROM $pro_mysql_domain_table,$pro_mysql_admin_table
 WHERE $pro_mysql_domain_table.name='$host'
 AND $pro_mysql_admin_table.adm_login=$pro_mysql_domain_table.owner;";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n != 1) die("Cannot find domain path in database ! line: ".__LINE__." file: ".__FILE__);
 	$a = mysqli_fetch_array($r);
@@ -754,12 +755,13 @@ function get_mailingbox_complete_path($listname,$host){
 	global $pro_mysql_pop_table;
 	global $pro_mysql_domain_table;
 	global $pro_mysql_admin_table;
+	global $mysqli_connection;
 
 	$q = "SELECT $pro_mysql_admin_table.path
 FROM $pro_mysql_domain_table,$pro_mysql_admin_table
 WHERE $pro_mysql_domain_table.name='$host'
 AND $pro_mysql_admin_table.adm_login=$pro_mysql_domain_table.owner;";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n != 1) die("Cannot find domain path in database ! line: ".__LINE__." file: ".__FILE__);
 	$a = mysqli_fetch_array($r);
@@ -772,9 +774,10 @@ function writeDotQmailFile($user,$host){
 	global $pro_mysql_pop_table;
 	global $conf_unix_type;
 	global $conf_demo_version;
+	global $mysqli_connection;
 
 	$q = "SELECT * FROM $pro_mysql_pop_table WHERE id='$user' AND mbox_host='$host';";
-	$res_mailbox = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$res_mailbox = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 	$box = mysqli_fetch_array($res_mailbox);
 
 	// Fetch the path of the mailbox
@@ -810,11 +813,12 @@ function writeDotQmailFile($user,$host){
 function writeCatchallDotQmailFile($user,$host){
 	global $pro_mysql_pop_table;
 	global $conf_demo_version;
+	global $mysqli_connection;
 
 	$qmail_file_content = "";
 
 	$q = "SELECT * FROM $pro_mysql_pop_table WHERE id='$user' AND mbox_host='$host';";
-	$res_mailbox = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$res_mailbox = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 	$box = mysqli_fetch_array($res_mailbox);
 
 	// Fetch the path of the mailbox

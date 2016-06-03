@@ -15,7 +15,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "unsubscribe_user"){
 
 	//Check if list exists...
 	$test_query = "SELECT * FROM $pro_mysql_list_table WHERE name='".$_REQUEST["edit_mailbox"]."' AND domain='$edit_domain'";
-	$test_result = mysqli_query($mysql_connection,$test_query)or die("Cannot execute query \"$test_query\" line ".__LINE__." file ".__FILE__. " sql said ".mysql_error());
+	$test_result = mysqli_query($mysqli_connection,$test_query)or die("Cannot execute query \"$test_query\" line ".__LINE__." file ".__FILE__. " sql said ".mysqli_error());
 	$testnum_rows = mysqli_num_rows($test_result);
 	if($testnum_rows != 1){
 		die("Mailing list doesn't exist in database !");
@@ -60,7 +60,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "subscribe_new_user"){
 
 	//Check if list exists...
 	$test_query = "SELECT * FROM $pro_mysql_list_table WHERE name='".$_REQUEST["edit_mailbox"]."' AND domain='$edit_domain'";
-	$test_result = mysqli_query($mysql_connection,$test_query)or die("Cannot execute query \"$test_query\" line ".__LINE__." file ".__FILE__. " sql said ".mysql_error());
+	$test_result = mysqli_query($mysqli_connection,$test_query)or die("Cannot execute query \"$test_query\" line ".__LINE__." file ".__FILE__. " sql said ".mysqli_error());
 	$testnum_rows = mysqli_num_rows($test_result);
 	if($testnum_rows != 1){
 		die("Mailing list doesn't exist in database !");
@@ -123,7 +123,7 @@ if(isset($_REQUEST["addnewlisttodomain"]) && $_REQUEST["addnewlisttodomain"] == 
 
 	// Check if mail exists in mailbox database...
 	$test_query = "SELECT * FROM $pro_mysql_pop_table WHERE id='".$_REQUEST["newlist_name"]."' AND mbox_host='$edit_domain'";
-	$test_result = mysqli_query($mysql_connection,$test_query)or die("Cannot execute query \"$test_query\"");
+	$test_result = mysqli_query($mysqli_connection,$test_query)or die("Cannot execute query \"$test_query\"");
 	$testnum_rows = mysqli_num_rows($test_result);
 	if($testnum_rows != 0){
 		die("Email address already exists in 'mailbox' database, it can't be used for the mailing list!");
@@ -131,7 +131,7 @@ if(isset($_REQUEST["addnewlisttodomain"]) && $_REQUEST["addnewlisttodomain"] == 
 	
 	// Check if mail exists in mailalias database...
 	$test_query = "SELECT * FROM $pro_mysql_mailaliasgroup_table WHERE id='".$_REQUEST["newlist_name"]."' AND domain_parent='$edit_domain'";
-	$test_result = mysqli_query($mysql_connection,$test_query)or die("Cannot execute query \"$test_query\"");
+	$test_result = mysqli_query($mysqli_connection,$test_query)or die("Cannot execute query \"$test_query\"");
 	$testnum_rows = mysqli_num_rows($test_result);
 	if($testnum_rows != 0){
 		die("Email address already exists in 'mail alias' database, it can't be used for the mailing list!");
@@ -140,8 +140,8 @@ if(isset($_REQUEST["addnewlisttodomain"]) && $_REQUEST["addnewlisttodomain"] == 
 	//Check if list exists...
 	$test_query = "SELECT * FROM $pro_mysql_list_table
 				WHERE name='".$_REQUEST["newlist_name"]."' AND domain='$edit_domain'";
-	$test_result = mysqli_query($mysql_connection,$test_query)or die("Cannot execute query \"$test_query\" line "
-				.__LINE__." file ".__FILE__. " sql said ".mysql_error());
+	$test_result = mysqli_query($mysqli_connection,$test_query)or die("Cannot execute query \"$test_query\" line "
+				.__LINE__." file ".__FILE__. " sql said ".mysqli_error());
 	$testnum_rows = mysqli_num_rows($test_result);
 	if($testnum_rows != 0){
 		die("Mailing list already exist in database!");
@@ -157,7 +157,7 @@ if(isset($_REQUEST["addnewlisttodomain"]) && $_REQUEST["addnewlisttodomain"] == 
 
 	// Insert the record in the sql
 	$adm_query = "INSERT INTO $pro_mysql_list_table(domain, name, owner) VALUES ('$edit_domain','".$_REQUEST["newlist_name"]."','".$_REQUEST["newlist_owner"]."');";
-	mysqli_query($mysql_connection,$adm_query)or die("Cannot execute query \"$adm_query\" line ".__line__." file ".__FILE__." sql said ".mysql_error());
+	mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" line ".__line__." file ".__FILE__." sql said ".mysqli_error());
 	
 	// Call the mlmmj-make-ml command to create the mailing list
 	$command = "(echo $edit_domain; echo ".$owner."; echo N;) | /usr/bin/mlmmj-make-ml -L $folder_name -s $list_path";
@@ -324,8 +324,8 @@ function tunablesWABooleanRequestCheck($list_dir,$tunable_name){
 	$admin_path = getAdminPath($adm_login);
 	if($tunable_name == "webarchive"){
 		$test_query = "SELECT webarchive FROM $pro_mysql_list_table WHERE domain='$edit_domain' AND name='$name' LIMIT 1";
-		$test_result = mysqli_query($mysql_connection,$test_query)or die("Cannot execute query \"$test_query\" line ".__LINE__." file ".__FILE__. " sql said ".mysql_error());
-		$test = mysql_fetch_array($test_result);
+		$test_result = mysqli_query($mysqli_connection,$test_query)or die("Cannot execute query \"$test_query\" line ".__LINE__." file ".__FILE__. " sql said ".mysqli_error());
+		$test = mysqli_fetch_array($test_result);
 		// If no webarchive before and we want one now, we might need to create it's folders.
 		if ($test[0] == "no" && isset($_REQUEST["webarchive"])){
 			// Check if the list folder exists
@@ -356,11 +356,11 @@ function tunablesWABooleanRequestCheck($list_dir,$tunable_name){
 			$createwa = "mhonarc".$rcfile."-outdir ".$this_list_web_path.$spammode.$archive_dir;
 			exec($createwa);
 			$adm_query = "UPDATE $pro_mysql_list_table SET webarchive='yes' WHERE domain='$edit_domain' AND name='$name';";
-			mysqli_query($mysql_connection,$adm_query)or die("Cannot execute query \"$adm_query\"");
+			mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\"");
 		}
 		if ($test[0]== "yes" && !isset($_REQUEST["webarchive"])){
 			$adm_query = "UPDATE $pro_mysql_list_table SET webarchive='no' WHERE domain='$edit_domain' AND name='$name';";
-			mysqli_query($mysql_connection,$adm_query)or die("Cannot execute query \"$adm_query\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 		}
 	}else{
 		if(isset($_REQUEST[$tunable_name])){
@@ -369,7 +369,7 @@ function tunablesWABooleanRequestCheck($list_dir,$tunable_name){
 			$tun_value = "no";
 		}
 		$q = "UPDATE $pro_mysql_list_table SET $tunable_name='$tun_value' WHERE domain='$edit_domain' AND name='$name';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	}
 }
 
@@ -381,8 +381,8 @@ function tunablesWABooleanActionsRequestCheck($list_dir){
 	$admin_path = getAdminPath($adm_login);
 	$this_list_web_path = $admin_path."/".$edit_domain."/subdomains/www/html/lists/".$name;
 	$test_query = "SELECT webarchive FROM $pro_mysql_list_table	WHERE domain='$edit_domain' AND name='$name' LIMIT 1";
-	$test_result = mysqli_query($mysql_connection,$test_query)or die("Cannot execute query \"$test_query\" line ".__LINE__." file ".__FILE__. " sql said ".mysql_error());
-	$test = mysql_fetch_array($test_result);
+	$test_result = mysqli_query($mysqli_connection,$test_query)or die("Cannot execute query \"$test_query\" line ".__LINE__." file ".__FILE__. " sql said ".mysqli_error());
+	$test = mysqli_fetch_array($test_result);
 	if ($test[0]== "no"){
 		if (isset($_REQUEST["deletewa"])){
 			if (file_exists($this_list_web_path)){
@@ -442,7 +442,7 @@ if(isset($_REQUEST["modifylistdata"]) && $_REQUEST["modifylistdata"] == "Ok"){
 	//submit to sql
 	$adm_query = "UPDATE $pro_mysql_list_table SET owner='$new_list_owner' WHERE domain='$edit_domain' AND name='$name';";
 	unset($edit_mailbox);
-	mysqli_query($mysql_connection,$adm_query)or die("Cannot execute query \"$adm_query\"");
+	mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\"");
 
 	updateUsingCron("gen_qmail='yes', qmail_newu='yes'");
 	
@@ -518,11 +518,11 @@ if(isset($_REQUEST["dellist"]) && $_REQUEST["dellist"] == "Del"){
 	// Delete list from sql database
 	$adm_query="DELETE FROM $pro_mysql_list_table WHERE domain='$edit_domain' AND name='$name' LIMIT 1";
 	unset($edit_mailbox);
-	mysqli_query($mysql_connection,$adm_query)or die("Cannot execute query \"$adm_query\"");
+	mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\"");
 
 	if($edit_domain == $conf_main_domain){
 		$adm_query = "DELETE FROM $pro_mysql_vps_server_lists_table WHERE list_name='$name';";
-		mysqli_query($mysql_connection,$adm_query)or die("Cannot execute query \"$adm_query\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	}
 
 	triggerMXListUpdate();

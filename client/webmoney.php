@@ -24,8 +24,8 @@ if( isset($_POST['LMI_PREREQUEST']) && $_POST['LMI_PREREQUEST'] == 1 ){
 
 	$paiement_type ="online"; $secpay_site="webmoney"; $reason = "wmz:".$_POST['LMI_PAYER_PURSE'].", wmid:".$_POST['LMI_PAYER_WM'];
 
-		$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='".mysql_real_escape_string($_POST['LMI_PAYMENT_NO'])."'";
-		$r = mysqli_query($mysql_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysql_error()." in file ".__FILE__." line ".__LINE__));
+		$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='".mysqli_real_escape_string($mysqli_connection,$_POST['LMI_PAYMENT_NO'])."'";
+		$r = mysqli_query($mysqli_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysqli_error()." in file ".__FILE__." line ".__LINE__));
 
 		$n = mysqli_num_rows($r);
 		if($n != 1)die(logPay("Pay id $pay_id not found in file ".__FILE__." line ".__LINE__));  else {
@@ -34,19 +34,19 @@ if( isset($_POST['LMI_PREREQUEST']) && $_POST['LMI_PREREQUEST'] == 1 ){
 			if($ar["valid"] != "no" && $ar["valid"] != "pending")die(logPay("Paiement already validated or pending in file ".__FILE__." line ".__LINE__));
 
 
-			$q = "UPDATE $pro_mysql_pay_table SET paiement_type='$paiement_type',secpay_site='$secpay_site',valid='pending',pending_reason='$reason' WHERE id='".mysql_real_escape_string($_POST['LMI_PAYMENT_NO'])."'";
-			mysqli_query($mysql_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysql_error()." in file ".__FILE__." line ".__LINE__));
+			$q = "UPDATE $pro_mysql_pay_table SET paiement_type='$paiement_type',secpay_site='$secpay_site',valid='pending',pending_reason='$reason' WHERE id='".mysqli_real_escape_string($mysqli_connection,$_POST['LMI_PAYMENT_NO'])."'";
+			mysqli_query($mysqli_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysqli_error()." in file ".__FILE__." line ".__LINE__));
 
 			echo 'YES';
 		}
-		//setPaiemntAsPending(mysql_real_escape_string($_POST['LMI_PAYMENT_NO']),mysql_real_escape_string('Payer: '.$_POST['LMI_PAYER_PURSE'].', wmid'.$_POST['LMI_PAYER_WM']));
+		//setPaiemntAsPending(mysqli_real_escape_string($mysqli_connection,$_POST['LMI_PAYMENT_NO']),mysqli_real_escape_string($mysqli_connection,'Payer: '.$_POST['LMI_PAYER_PURSE'].', wmid'.$_POST['LMI_PAYER_WM']));
 
 }
 
 if(isset($_POST['LMI_HASH']) && $_POST['LMI_HASH']){
 
-		$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='".mysql_real_escape_string($_POST['LMI_PAYMENT_NO'])."'";
-		$r = mysqli_query($mysql_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysql_error()." in file ".__FILE__." line ".__LINE__));
+		$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='".mysqli_real_escape_string($mysqli_connection,$_POST['LMI_PAYMENT_NO'])."'";
+		$r = mysqli_query($mysqli_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysqli_error()." in file ".__FILE__." line ".__LINE__));
 
 		$n = mysqli_num_rows($r);
 		if($n != 1)die(logPay("Pay id $pay_id not found in file ".__FILE__." line ".__LINE__));
@@ -70,15 +70,15 @@ if(isset($_POST['LMI_HASH']) && $_POST['LMI_HASH']){
 				&& $hash_check ) {
 
 				$secpay_custom_id="0"; $paiement_type ="online"; $secpay_site="webmoney"; $reason = "wmz:".$_POST['LMI_PAYER_PURSE'].", wmid:".$_POST['LMI_PAYER_WM'];
-				$total = mysql_real_escape_string($_POST['LMI_PAYMENT_AMOUNT']);
+				$total = mysqli_real_escape_string($mysqli_connection,$_POST['LMI_PAYMENT_AMOUNT']);
 
 						$q = "UPDATE $pro_mysql_pay_table SET paiement_type='$paiement_type',
 							secpay_site='$secpay_site',paiement_cost='$cost',paiement_total='$total',
 							valid_date='".date("Y-m-j")."', valid_time='".date("H:i:s")."',
-							secpay_custom_id='$secpay_custom_id',valid='yes' WHERE id='".mysql_real_escape_string($_POST['LMI_PAYMENT_NO'])."'";
+							secpay_custom_id='$secpay_custom_id',valid='yes' WHERE id='".mysqli_real_escape_string($mysqli_connection,$_POST['LMI_PAYMENT_NO'])."'";
 
 						logPay($q);
-						mysqli_query($mysql_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysql_error()." in file ".__FILE__." line ".__LINE__));
+						mysqli_query($mysqli_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysqli_error()." in file ".__FILE__." line ".__LINE__));
 
 
 				}

@@ -78,7 +78,7 @@ function drawRrdtoolGraphs (){
 		}
 		$out .= "<br><br>";
 		$q = "SELECT hostname FROM $pro_mysql_vps_server_table ORDER BY hostname";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n == 0){
 			$out .= _("No VPS server configured");

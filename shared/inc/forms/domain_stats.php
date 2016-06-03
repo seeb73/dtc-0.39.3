@@ -12,15 +12,15 @@ function drawAdminTools_DomainStats($admin,$eddomain){
 	
 	global $conf_htpasswd_path;
 	global $conf_post_or_get;
-	global $mysql_connection;
+	global $mysqli_connection;
 
 	$out = "<br><h3>"._("HTTP stats per subdomain")."</h3>";
 
 	$q = "SELECT vhost,bytes_sent FROM $pro_mysql_acc_http_table WHERE domain='".$eddomain["name"]."' AND month='".date("m")."' AND year='".date("Y")."' ORDER BY vhost";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){   
-	$a = mysql_fetch_array($r);
+	$a = mysqli_fetch_array($r);
 		$out .= $a["vhost"].": ".smartByte($a["bytes_sent"])."<br>";
 	}
 	$out .= "<br>";
@@ -28,36 +28,36 @@ function drawAdminTools_DomainStats($admin,$eddomain){
 //	sum_http($eddomain["name"]);
 	$query_http = "SELECT sum(bytes_sent) as bytes_sent FROM $pro_mysql_acc_http_table WHERE domain='".$eddomain["name"]."'
 	AND month='".date("n")."' AND year='".date("Y")."'";
-	$result_http = mysqli_query($mysql_connection,$query_http)or die("Cannot execute query \"$query_http\"");
+	$result_http = mysqli_query($mysqli_connection,$query_http)or die("Cannot execute query \"$query_http\"");
 	$num_rows = mysqli_num_rows($result_http);
 	if($num_rows > 0)
-		$http_amount = mysql_result($result_http,0,"bytes_sent");
+		$http_amount = mysqli_result($result_http,0,"bytes_sent");
 	else
 		$http_amount = 0;
 
 //	sum_ftp($eddomain["name"]);
 	$q = "SELECT sum(transfer) as transfer FROM $pro_mysql_acc_ftp_table WHERE sub_domain='".$eddomain["name"]."'
 	AND month='".date("m")."' AND year='".date("Y")."'";
-	$r = mysqli_query($mysql_connection,$q) or die("Cannot execute query \"$q\" !".mysql_error().
+	$r = mysqli_query($mysqli_connection,$q) or die("Cannot execute query \"$q\" !".mysqli_error().
 	" line ".__LINE__." file ".__FILE__);
 	$num_rows = mysqli_num_rows($r);
 	if($num_rows > 0)
-		$ftp_amount = mysql_result($r,0,"transfer");
+		$ftp_amount = mysqli_result($r,0,"transfer");
 	else
 		$ftp_amount = 0;
 
 //	sum_email($eddomain["name"]);
     $q = "SELECT sum(smtp_trafic) as smtp_trafic,sum(pop_trafic) as pop_trafic,sum(imap_trafic) as imap_trafic FROM $pro_mysql_acc_email_table WHERE domain_name='".$eddomain["name"]."'
 	AND month='".date("m")."' AND year='".date("Y")."'";
-    $r = mysqli_query($mysql_connection,$q) or die("Cannot execute query \"$q\" !".mysql_error().
+    $r = mysqli_query($mysqli_connection,$q) or die("Cannot execute query \"$q\" !".mysqli_error().
 	" line ".__LINE__." file ".__FILE__);
     $num_rows = mysqli_num_rows($r);
 	if($num_rows > 0){
-	    $smtp_trafic = mysql_result($r,0,"smtp_trafic");
+	    $smtp_trafic = mysqli_result($r,0,"smtp_trafic");
 	    if (is_null($smtp_trafic)) $smtp_trafic = 0;
-	    $pop_trafic = mysql_result($r,0,"pop_trafic");
+	    $pop_trafic = mysqli_result($r,0,"pop_trafic");
 	    if (is_null($pop_trafic)) $pop_trafic = 0;
-	    $imap_trafic = mysql_result($r,0,"imap_trafic");
+	    $imap_trafic = mysqli_result($r,0,"imap_trafic");
 	    if (is_null($imap_trafic)) $imap_trafic = 0;
 	}else{
 		$smtp_trafic = 0;
@@ -82,9 +82,9 @@ function drawAdminTools_DomainStats($admin,$eddomain){
 	}
 	
 	$q = "SELECT stats_login,stats_pass,stats_subdomain FROM $pro_mysql_domain_table  WHERE name='".$eddomain["name"]."';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 	$n = mysqli_num_rows($r);
-	$a = mysql_fetch_array($r);
+	$a = mysqli_fetch_array($r);
 	$out .= "<br><br><strong>". _("Protect your logs and stats folder with a password") ."</strong><br>";
 	
 	$out .= "<table>";

@@ -150,7 +150,7 @@ define host {
 	$q .= "ON $pro_mysql_vps_table.vps_xen_name = $pro_mysql_vps_ip_table.vps_xen_name ";
 	$q .= "AND $pro_mysql_vps_table.vps_server_hostname = $pro_mysql_vps_ip_table.vps_server_hostname;";
 
-	$r  = mysqli_query($mysql_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r  = mysqli_query($mysqli_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 
 	while($line = mysqli_fetch_array($r,MYSQL_ASSOC)){
 		if( !isset($line['monitoring_email']) || ! $line['monitoring_email'] ){
@@ -275,7 +275,7 @@ define service {
 ";
 	}
 	//echo "\n$text\n";
-	mysql_free_result($r);
+	mysqli_free_result($r);
 	return $text;
 }
 

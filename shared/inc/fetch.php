@@ -4,7 +4,7 @@ function fetchTable($query){
 	$ret["err"] = 0;
 	$ret["mesg"] = "No error";
 
-	$result = mysqli_query($mysql_connection,$query);
+	$result = mysqli_query($mysqli_connection,$query);
 	if (!$result)
 	{
 		$ret["err"] = 1;
@@ -28,11 +28,11 @@ function fetchMailboxInfos($adm_email_login,$adm_email_pass){
 	$mailbox = $a[0];
 	$domain = $a[1];
 	$q = "SELECT * FROM $pro_mysql_pop_table WHERE id='$mailbox' AND mbox_host='$domain';";
-	$r = mysqli_query($mysql_connection,$q);
+	$r = mysqli_query($mysqli_connection,$q);
 	if (!$r)
 	{
 		$ret["err"] = 1;
-		$ret["mesg"] = "Cannot execute query \"$q\" !".mysql_error()." line ".__LINE__." file ".__FILE__;
+		$ret["mesg"] = "Cannot execute query \"$q\" !".mysqli_error()." line ".__LINE__." file ".__FILE__;
 		return $ret;
 	}
 	if(mysqli_num_rows($r) != 1){
@@ -51,7 +51,7 @@ function fetchCommands($id_client){
 	$ret["mesg"] = "No error";
 
 	$query = "SELECT * FROM $pro_mysql_command_table WHERE id_client='$id_client';";
-	$result = mysqli_query($mysql_connection,$query);
+	$result = mysqli_query($mysqli_connection,$query);
 	if (!$result)
 	{
 		$ret["err"] = 1;
@@ -74,13 +74,13 @@ function fetchCommands($id_client){
 
 function fetchAdminInfo($adm_login){
         global $pro_mysql_admin_table;
-	global $mysql_connection;
+	global $mysqli_connection;
 
 	$ret["err"] = 0;
 	$ret["mesg"] = "No error";
 
 	$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-	$result = mysqli_query($mysql_connection,$query);
+	$result = mysqli_query($mysqli_connection,$query);
 	if (!$result)
 	{
 		$ret["err"] = 1;
@@ -101,7 +101,7 @@ function fetchAdminInfo($adm_login){
 	if (!$row)
 	{
 		$ret["err"] = 3;
-		$ret["mesg"] = "Cannot fetch user line ".__LINE__." file ".__FILE__." sql said: ".mysql_error();
+		$ret["mesg"] = "Cannot fetch user line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error();
 		return $ret;
 	}
 	$ret["data"] = $row;
@@ -124,17 +124,17 @@ function fetchAdminStats($admin){
 	$ret["total_hit"] = 0;
 	$adm_path = $admin["info"]["path"];
 	$query = "SELECT name,du_stat FROM ".$pro_mysql_domain_table." WHERE owner='".$admin["info"]["adm_login"]."' ORDER BY name";
-	$result = mysqli_query($mysql_connection,$query);
+	$result = mysqli_query($mysqli_connection,$query);
 	if (!$result)
 	{
 		$ret["err"] = 1;
-		$ret["mesg"] = "Cannot execute query \"$query\"".mysql_error();
+		$ret["mesg"] = "Cannot execute query \"$query\"".mysqli_error();
 		return $ret;
 	}
 	$num_domains = mysqli_num_rows($result);
 	$ret["total_ftp"] = 0;
 	for($ad=0;$ad<$num_domains;$ad++){
-		$domain_name = mysql_result($result,$ad,"name");
+		$domain_name = mysqli_result($result,$ad,"name");
 		$ret["domains"][$ad]["name"] = $domain_name;
 
 		// Retrive disk usage
@@ -144,7 +144,7 @@ function fetchAdminStats($admin){
 //		$ret["domains"][$ad]["du"] = $du_state[0];
 //		$ret["total_du_domains"] += $du_state[0];
 // The following get value from table. du_stat is setup by cron script each time you have setup it (curently each hours)
-		$du_stat = mysql_result($result,$ad,"du_stat");
+		$du_stat = mysqli_result($result,$ad,"du_stat");
 		$ret["domains"][$ad]["du"] = $du_stat;
 		if(!isset($ret["total_du_domains"]))	$ret["total_du_domains"] = $du_stat;
 		else	$ret["total_du_domains"] += $du_stat;
@@ -153,7 +153,7 @@ function fetchAdminStats($admin){
 // Uncomment this if you want it in realtime
 //		sum_http($domain_name);
 		$query_http = "SELECT SUM(bytes_sent) as bytes_sent , SUM(count_impressions) as count_impressions FROM $pro_mysql_acc_http_table WHERE domain='$domain_name' AND month='".date("m",time())."' AND year='".date("Y",time())."'";
-		$result_http = mysqli_query($mysql_connection,$query_http);
+		$result_http = mysqli_query($mysqli_connection,$query_http);
 		if (!$result_http)
 		{	
 			$ret["err"] = 2;
@@ -178,15 +178,15 @@ function fetchAdminStats($admin){
 // Uncomment this if you want it in realtime (currently done in cron)
 //		sum_ftp($domain_name);
 		$query_ftp = "SELECT SUM(transfer) AS transfer FROM $pro_mysql_acc_ftp_table WHERE sub_domain='$domain_name' AND month='".date("m",time())."' AND year='".date("Y",time())."'";
-		$result_ftp = mysqli_query($mysql_connection,$query_ftp);
+		$result_ftp = mysqli_query($mysqli_connection,$query_ftp);
 		if (!$result_ftp)
 		{
 			$ret["err"] = 3;
-			$ret["mesg"] = "Cannot execute query \"$query\" !".mysql_error()." line ".__LINE__." file ".__FILE__;
+			$ret["mesg"] = "Cannot execute query \"$query\" !".mysqli_error()." line ".__LINE__." file ".__FILE__;
 			return $ret;
 		}
 		$num_rows = mysqli_num_rows($result_ftp);
-		$rez_ftp = mysql_result($result_ftp,0,"transfer");
+		$rez_ftp = mysqli_result($result_ftp,0,"transfer");
 		if($rez_ftp == NULL){
 			$ret["total_ftp"] += 0;
 			$ret["domains"][$ad]["ftp"] = 0;
@@ -199,18 +199,18 @@ function fetchAdminStats($admin){
 		// Email accounting
 		$q = "SELECT smtp_trafic,pop_trafic,imap_trafic FROM $pro_mysql_acc_email_table
 		WHERE domain_name='$domain_name' AND month='".date("m")."' AND year='".date("Y")."'";
-		$r = mysqli_query($mysql_connection,$q);
+		$r = mysqli_query($mysqli_connection,$q);
 		if (!$r)
 		{
 			$ret["err"] = 4;
-			$ret["mesg"] = "Cannot execute query \"$q\" !".mysql_error()." line ".__LINE__." file ".__FILE__;
+			$ret["mesg"] = "Cannot execute query \"$q\" !".mysqli_error()." line ".__LINE__." file ".__FILE__;
 			return $ret;
 		}
 		$num_rows = mysqli_num_rows($r);
 		if($num_rows == 1){
-			$smtp_bytes = mysql_result($r,0,"smtp_trafic");
-			$pop_bytes = mysql_result($r,0,"pop_trafic");
-			$imap_bytes = mysql_result($r,0,"imap_trafic");
+			$smtp_bytes = mysqli_result($r,0,"smtp_trafic");
+			$pop_bytes = mysqli_result($r,0,"pop_trafic");
+			$imap_bytes = mysqli_result($r,0,"imap_trafic");
 		}else{
 			$smtp_bytes = 0;
 			$pop_bytes = 0;
@@ -236,14 +236,14 @@ function fetchAdminStats($admin){
 
 	$ret["total_du_db"] = 0;
 	if($conf_demo_version != "yes"){
-		mysql_select_db("mysql");
+		mysqli_select_db("mysql");
 		$qu = "SELECT User FROM user WHERE dtcowner='".$admin["info"]["adm_login"]."'";
-		$ru = $r = mysqli_query($mysql_connection,$qu);
+		$ru = $r = mysqli_query($mysqli_connection,$qu);
 		if (!$ru)
 		{
 			$ret["err"] = 5;
-			$ret["mesg"] = "Cannot query \"$qu\" !".mysql_error()." line ".__LINE__." file ".__FILE__;
-			mysql_select_db($conf_mysql_db);
+			$ret["mesg"] = "Cannot query \"$qu\" !".mysqli_error()." line ".__LINE__." file ".__FILE__;
+			mysqli_select_db($conf_mysql_db);
 			return $ret;
 		}
 		$nbr_mysql_user = mysqli_num_rows($ru);
@@ -252,30 +252,30 @@ function fetchAdminStats($admin){
 			$dtcowner_user = $au["User"];
 
 			$q = "SELECT Db FROM db WHERE User='$dtcowner_user'";
-			$r = mysqli_query($mysql_connection,$q);
+			$r = mysqli_query($mysqli_connection,$q);
 			if (!$r)
 			{
 				$ret["err"] = 6;
-				$ret["mesg"] = "Cannot query \"$q\" !".mysql_error()." line ".__LINE__." file ".__FILE__;
-				mysql_select_db($conf_mysql_db);
+				$ret["mesg"] = "Cannot query \"$q\" !".mysqli_error()." line ".__LINE__." file ".__FILE__;
+				mysqli_select_db($conf_mysql_db);
 				return $ret;
 			}
 			$db_nbr = mysqli_num_rows($r);
 			for($i=0;$i<$db_nbr;$i++){
-				$db_name = mysql_result($r,$i,"Db");
+				$db_name = mysqli_result($r,$i,"Db");
 
 				$query = "SHOW TABLE STATUS FROM $db_name;";
-				$result = mysqli_query($mysql_connection,$query);
+				$result = mysqli_query($mysqli_connection,$query);
 				if (!$result){
 					// $ret["err"] = 7;
-					// $ret["mesg"] = "Cannot query \"$q\" !".mysql_error();
-					// mysql_select_db($conf_mysql_db);
+					// $ret["mesg"] = "Cannot query \"$q\" !".mysqli_error();
+					// mysqli_select_db($conf_mysql_db);
 					// return $ret;
 				}else{
 					$num_tbl = mysqli_num_rows($result);
 					$ret["db"][$i]["du"] = 0;
 					for($k=0;$k<$num_tbl;$k++){
-						$db_du = mysql_result($result,$k,"Data_length");
+						$db_du = mysqli_result($result,$k,"Data_length");
 						$ret["db"][$i]["du"] += $db_du;
 						$ret["total_du_db"] += $db_du;
 					}
@@ -283,7 +283,7 @@ function fetchAdminStats($admin){
 				}
 			}
 		}
-		mysql_select_db($conf_mysql_db);
+		mysqli_select_db($conf_mysql_db);
 	}
 
 	// reset to 0, and add total_du_db and total_du_domains
@@ -327,7 +327,7 @@ function randomizePassword($adm_login,$adm_input_pass){
 
 	global $panel_type;
 	global $gettext_lang;
-	global $mysql_connection;
+	global $mysqli_connection;
 
 	$ret["err"] = 0;
 	$ret["mesg"] = "No error";
@@ -337,7 +337,7 @@ function randomizePassword($adm_login,$adm_input_pass){
 	}
 
 	$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login' AND ((adm_pass='$adm_input_pass' OR adm_pass=SHA1('$adm_input_pass')) OR (pass_next_req='$adm_pass' AND pass_expire > '".time()."'));";
-	$result = mysqli_query($mysql_connection,$query);
+	$result = mysqli_query($mysqli_connection,$query);
 	if (!$result)
 	{
 		$ret["err"] = 1;
@@ -348,7 +348,7 @@ function randomizePassword($adm_login,$adm_input_pass){
 
 	if($num_rows != 1){
 		$q = "SELECT * FROM $pro_mysql_tik_admins_table WHERE pass_next_req='$adm_input_pass' AND pass_expire > '".time()."';";
-		$r = mysqli_query($mysql_connection,$q);
+		$r = mysqli_query($mysqli_connection,$q);
 		if (!$r)
 		{
 			$ret["err"] = 2;
@@ -359,7 +359,7 @@ function randomizePassword($adm_login,$adm_input_pass){
 		if($n == 1){
 			$is_root_admin = "yes";
 			$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-			$result = mysqli_query($mysql_connection,$query);
+			$result = mysqli_query($mysqli_connection,$query);
 			if (!$result)
 			{
 				$ret["err"] = 3;
@@ -386,7 +386,7 @@ function randomizePassword($adm_login,$adm_input_pass){
 	if (!$row)
 	{
 		$ret["err"] = 4;
-		$ret["mesg"] = "Cannot fetch user line ".__LINE__." file ".__FILE__." sql said: ".mysql_error();
+		$ret["mesg"] = "Cannot fetch user line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error();
 		return $ret;
 	}
 
@@ -396,7 +396,7 @@ function randomizePassword($adm_login,$adm_input_pass){
 	$expirationTIME = time() + (60 * $conf_session_expir_minute);
 	if($panel_type == "admin" && $is_root_admin == "yes"){
 		$q = "UPDATE $pro_mysql_tik_admins_table SET pass_next_req='$rand', pass_expire='$expirationTIME' WHERE pseudo='".$_SERVER["PHP_AUTH_USER"]."';";
-		$r = mysqli_query($mysql_connection,$q);
+		$r = mysqli_query($mysqli_connection,$q);
 		if (!$r)
 		{
 			$ret["err"] = 5;
@@ -405,7 +405,7 @@ function randomizePassword($adm_login,$adm_input_pass){
 		}
 	}else{
 		$q = "UPDATE $pro_mysql_admin_table SET pass_next_req='$rand', pass_expire='$expirationTIME' WHERE adm_login='$adm_login'";
-		$r = mysqli_query($mysql_connection,$q);
+		$r = mysqli_query($mysqli_connection,$q);
 		if (!$r)
 		{
 			$ret["err"] = 6;
@@ -416,7 +416,7 @@ function randomizePassword($adm_login,$adm_input_pass){
 	// Save the last used language, so we know for future email sendings what to use.
 	if(isset($gettext_lang) && $panel_type == "client"){
 		$q = "UPDATE $pro_mysql_admin_table SET last_used_lang='$gettext_lang' WHERE adm_login='$adm_login';";
-		$r = mysqli_query($mysql_connection,$q);
+		$r = mysqli_query($mysqli_connection,$q);
 	}
 
 	$adm_pass = $rand;
@@ -451,7 +451,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 	// account at the same time as him without destroying his session.
 	global $DONOT_USE_ROTATING_PASS;
 
-	global $mysql_connection;
+	global $mysqli_connection;
 
 	$ret["err"] = 0;
 	$ret["mesg"] = "No error";
@@ -463,7 +463,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 		$pass = $adm_realpass;
 	}
 	$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login' AND (adm_pass='$pass' OR adm_pass=SHA1('$pass'));";
-	$result = mysqli_query($mysql_connection,$query);
+	$result = mysqli_query($mysqli_connection,$query);
 	if (!$result){
 		$ret["err"] = 1;
 		$ret["mesg"] = "Cannot execute query for password line ".__LINE__." file ".__FILE__." (MySQL error message removed for security reasons).";
@@ -488,11 +488,11 @@ function fetchAdminData($adm_login,$adm_input_pass){
 
 	// Get all the VPS of the user
 	$q = "SELECT * FROM $pro_mysql_vps_table WHERE owner='$adm_login' ORDER BY vps_server_hostname,vps_xen_name;";
-	$r = mysqli_query($mysql_connection,$q);
+	$r = mysqli_query($mysqli_connection,$q);
 	if (!$r)
 	{
 		$ret["err"] = 3;
-		$ret["mesg"]="Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error();
+		$ret["mesg"]="Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error();
 		return $ret;
 	}
 	$n = mysqli_num_rows($r);
@@ -500,11 +500,11 @@ function fetchAdminData($adm_login,$adm_input_pass){
 	for($i=0;$i<$n;$i++){
 		$one_vps = mysqli_fetch_array($r);
 		$q2 = "SELECT * FROM $pro_mysql_vps_ip_table WHERE vps_server_hostname='".$one_vps["vps_server_hostname"]."' AND vps_xen_name='".$one_vps["vps_xen_name"]."' AND available='no' ORDER BY ip_addr;";
-		$r2 = mysqli_query($mysql_connection,$q2);
+		$r2 = mysqli_query($mysqli_connection,$q2);
 		if (!$r2)
 		{
 			$ret["err"] = 4;
-			$ret["mesg"]="Cannot execute query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error();
+			$ret["mesg"]="Cannot execute query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error();
 			return $ret;
 		}
 		$n2 = mysqli_num_rows($r2);
@@ -520,10 +520,10 @@ function fetchAdminData($adm_login,$adm_input_pass){
 
 	// Get all the dedicated servers of the user
 	$q = "SELECT * FROM $pro_mysql_dedicated_table WHERE owner='$adm_login' ORDER BY server_hostname;";
-	$r = mysqli_query($mysql_connection,$q);
+	$r = mysqli_query($mysqli_connection,$q);
 	if (!$r){
 		$ret["err"] = 3;
-		$ret["mesg"]="Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error();
+		$ret["mesg"]="Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error();
 		return $ret;
 	}
 	$n = mysqli_num_rows($r);
@@ -534,10 +534,10 @@ function fetchAdminData($adm_login,$adm_input_pass){
 
 	// Get all custom products of the user
 	$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE owner='$adm_login' ORDER BY id;";
-	$r = mysqli_query($mysql_connection,$q);
+	$r = mysqli_query($mysqli_connection,$q);
 	if (!$r){
 		$ret["err"] = 3;
-		$ret["mesg"]="Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error();
+		$ret["mesg"]="Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error();
 		return $ret;
 	}
 	$n = mysqli_num_rows($r);
@@ -548,7 +548,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 
 	// Get all domains of the user
 	$query = "SELECT * FROM $pro_mysql_domain_table WHERE owner='$adm_login' ORDER BY name;";
-	$result = mysqli_query($mysql_connection,$query);
+	$result = mysqli_query($mysqli_connection,$query);
 	if (!$result)
 	{
 		$ret["err"] = 5;
@@ -615,7 +615,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 		$domain["autogen_subdomain"] = $row["autogen_subdomain"];
 
 		$query2 = "SELECT * FROM $pro_mysql_subdomain_table WHERE domain_name='$name' ORDER BY subdomain_name;";
-		$result2 = mysqli_query($mysql_connection,$query2);
+		$result2 = mysqli_query($mysqli_connection,$query2);
 		if (!$result2)
 		{
 			$ret["err"] = 7;
@@ -707,7 +707,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 //                                         ["associated_txt_record"]
 // Now Can add emails to all thoses domains !
 		$query4 = "SELECT * FROM $pro_mysql_pop_table WHERE mbox_host='$name' ORDER BY id;";
-		$result4 = mysqli_query($mysql_connection,$query4);
+		$result4 = mysqli_query($mysqli_connection,$query4);
 		if (!$result4)
 		{
 			$ret["err"] = 9;
@@ -751,7 +751,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 
 // Now Can add alias emails to all thoses domains !
 		$query5 = "SELECT * FROM $pro_mysql_mailaliasgroup_table WHERE domain_parent='$name' ORDER BY id;";
-		$result5 = mysqli_query($mysql_connection,$query5);
+		$result5 = mysqli_query($mysqli_connection,$query5);
 		if (!$result5)
 		{
 			$ret["err"] = 9;
@@ -785,7 +785,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 
 		//now to add all the mailing lists
 		$query4 = "SELECT * FROM $pro_mysql_list_table WHERE domain='$name' ORDER BY name;";
-		$result4 = mysqli_query($mysql_connection,$query4);
+		$result4 = mysqli_query($mysqli_connection,$query4);
 		if (!$result4)
 		{
 			$ret["err"] = 11;
@@ -814,7 +814,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 		}
 
 		$query4 = "SELECT * FROM $pro_mysql_ftp_table WHERE hostname='$name' ORDER BY login";
-		$result4 = mysqli_query($mysql_connection,$query4);
+		$result4 = mysqli_query($mysqli_connection,$query4);
 		if (!$result4)
 		{
 			$ret["err"] = 13;
@@ -841,7 +841,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 		}
 
 		$query4 = "SELECT * FROM $pro_mysql_ssh_table WHERE hostname='$name' ORDER BY login";
-		$result4 = mysqli_query($mysql_connection,$query4);
+		$result4 = mysqli_query($mysqli_connection,$query4);
 		if (!$result4)
 		{
 			$ret["err"] = 15;
@@ -929,7 +929,7 @@ function fetchClientData($id_client){
 		global $pro_mysql_client_table;
 
 		$query4 = "SELECT * FROM $pro_mysql_client_table WHERE id='$id_client'";
-		$result4 = mysqli_query($mysql_connection,$query4);
+		$result4 = mysqli_query($mysqli_connection,$query4);
 		if (!$result4)
 		{
 			$ret["err"] = 1;

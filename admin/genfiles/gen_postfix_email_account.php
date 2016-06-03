@@ -67,7 +67,7 @@ function mail_account_generate_postfix(){
 	//global $conf_postfix_vmailbox_path;
 	//global $conf_postfix_virtual_uid_mapping_path;
 
-	global $mysql_connection;
+	global $mysqli_connection;
 
 	// prepend the configured path here
 
@@ -108,7 +108,7 @@ function mail_account_generate_postfix(){
 //	}
 	// go through each admin login and find the domains associated 
 	$query = "SELECT * FROM $pro_mysql_admin_table where disabled='no' or disabled='always-no' or disabled='' ORDER BY adm_login;";
-	$result = mysqli_query($mysql_connection,$query)or die("Cannot execute query : \"$query\"");
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query : \"$query\"");
 	$num_rows = mysqli_num_rows($result);
 
 	if($num_rows < 1){
@@ -416,7 +416,7 @@ function mail_account_generate_postfix(){
 
         foreach($relay_recipients_list as $domain){
 		$qqq = "SELECT fullemail FROM $pro_mysql_pop_table WHERE mbox_host='".$domain."';";
-        	$qqr = mysqli_query($mysql_connection,$qqq)or die ("Cannot query $qqq line: ".__LINE__." file ".__FILE__." sql said:" .mysql_error());
+        	$qqr = mysqli_query($mysqli_connection,$qqq)or die ("Cannot query $qqq line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
         	$qqn = mysqli_num_rows($qqr);
         	for($i=0;$i<$qqn;$i++){
                 	$a = mysqli_fetch_array($qqr);

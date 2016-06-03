@@ -41,7 +41,7 @@ global $invoice_dtctext_number;
 $invoice_dtctext_number = "1";
 // Get the completed order from table
 $q = "SELECT * FROM $pro_mysql_completedorders_table WHERE id='".$_REQUEST["id"]."' AND download_pass='".$_REQUEST["download_pass"]."';";
-$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 $n = mysqli_num_rows($r);
 if($n != 1){
 	die("Could not found the invoice or download_pass not correct");
@@ -50,7 +50,7 @@ $completedorder = mysqli_fetch_array($r);
 
 // Get the client file
 $q = "SELECT * FROM $pro_mysql_client_table WHERE id='".$completedorder["id_client"]."';";
-$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 $n = mysqli_num_rows($r);
 if($n != 1){
 	die("Could not found the client file");
@@ -62,7 +62,7 @@ $company_id = findInvoicingCompany ($completedorder["country_code"],$client["cou
 
 // Get the company information
 $q = "SELECT * FROM $pro_mysql_companies_table WHERE id='$company_id' LIMIT 1";
-$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 $n = mysqli_num_rows($r);
 if($n != 1){
 	die("Could not get company informations");
@@ -71,7 +71,7 @@ $company = mysqli_fetch_array($r);
 
 if($completedorder["product_id"] != 0){
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$completedorder["product_id"]."';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Could not find the product");
@@ -102,7 +102,7 @@ if($completedorder["product_id"] != 0){
 			break;
 		}
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$attrs[$ind]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			die("Could not find the product");
@@ -115,7 +115,7 @@ if($completedorder["product_id"] != 0){
 	}
 }
 $q = "SELECT * FROM $pro_mysql_pay_table WHERE id='".$completedorder["payment_id"]."';";
-$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 $n = mysqli_num_rows($r);
 if($n != 1){
 	die("Could not find payment in table");

@@ -218,7 +218,7 @@ function pro_vhost_generate(){
 	global $conf_use_cband_user_exceeded_url;
 	global $conf_cband_user_exceeded_url;
 
-	global $mysql_connection;
+	global $mysqli_connection;
 
 	$vhost_file = "";
 
@@ -273,7 +273,7 @@ RewriteRule .* - [F]
 
 	$num_generated_vhosts=0;
 	$query = "SELECT * FROM $pro_mysql_domain_table WHERE 1 ORDER BY name;";
-	$result = mysqli_query($mysql_connection,$query)or die("Cannot execute query \"$query\"");
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\"");
 	$num_rows = mysqli_num_rows($result);
 
 	if($num_rows < 1){
@@ -284,7 +284,7 @@ RewriteRule .* - [F]
 FROM $pro_mysql_domain_table,$pro_mysql_admin_table
 WHERE $pro_mysql_domain_table.name='$conf_main_domain'
 AND $pro_mysql_admin_table.adm_login=$pro_mysql_domain_table.owner;";
-	$result2 = mysqli_query($mysql_connection,$query2)or die("Cannot execute query \"$query2\"!");
+	$result2 = mysqli_query($mysqli_connection,$query2)or die("Cannot execute query \"$query2\"!");
 	$enable404feature = true;
 	//echo "Query $query2 resulted in ".mysqli_num_rows($result2)."\n";
 	if(mysqli_num_rows($result2) != 1){
@@ -315,7 +315,7 @@ AND $pro_mysql_admin_table.adm_login=$pro_mysql_domain_table.owner;";
 				$vhost_file_listen .= "#Listen ".$all_site_addrs[$i].":80\n";
 			}
 			$query2 = "SELECT * FROM $pro_mysql_domain_table WHERE ip_addr='".$all_site_addrs[$i]."' LIMIT 1;";
-			$result2 = mysqli_query($mysql_connection,$query2)or die("Cannot execute query \"$query\"");
+			$result2 = mysqli_query($mysqli_connection,$query2)or die("Cannot execute query \"$query\"");
 			$num_rows2 = mysqli_num_rows($result2);
 			if($num_rows2 > 0){
 				$vhost_file .= "# Deprecated NameVirtualHost ".$all_site_addrs[$i].":80\n";
@@ -435,7 +435,7 @@ WHERE $pro_mysql_domain_table.owner=$pro_mysql_admin_table.adm_login
 AND pt.id=$pro_mysql_admin_table.prod_id
 AND $pro_mysql_admin_table.prod_id != '0'
 AND $pro_mysql_admin_table.id_client != '0'";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysqli_fetch_array($r);
@@ -468,8 +468,8 @@ AND $pro_mysql_admin_table.id_client != '0'";
 			continue;
 		}
 		$query2 = "SELECT COUNT(*) FROM $pro_mysql_subdomain_table WHERE domain_name='$web_name' AND subdomain_name='autodiscover';";
-		$result2 = mysqli_query($mysql_connection,$query2) or die("Cannot execute query \"$query2\"");
-		if (mysql_result($result2, 0, 'COUNT(*)') > 0) {
+		$result2 = mysqli_query($mysqli_connection,$query2) or die("Cannot execute query \"$query2\"");
+		if (mysqli_result($result2, 0, 'COUNT(*)') > 0) {
 			continue;
 		}
 		$autodiscover_hosts[] = $web_name;
@@ -539,7 +539,7 @@ AND $pro_mysql_admin_table.id_client != '0'";
 
 		// Get the owner informations
 		$query2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$web_owner';";
-		$result2 = mysqli_query($mysql_connection,$query2)or die("Cannot execute query \"$query2\"");
+		$result2 = mysqli_query($mysqli_connection,$query2)or die("Cannot execute query \"$query2\"");
 		$num_rows2 = mysqli_num_rows($result2);
 		if($num_rows2 != 1){
 			echo("No user of that name ($web_owner)!\n");
@@ -576,7 +576,7 @@ AND $pro_mysql_admin_table.id_client != '0'";
 		}else{
 			$query2 = "SELECT * FROM $pro_mysql_subdomain_table WHERE domain_name='$domain_to_get' AND ip='default' AND subdomain_name!='$web_default_subdomain' ORDER BY subdomain_name;";
 		}
-		$result2 = mysqli_query($mysql_connection,$query2)or die("Cannot execute query \"$query2\"");
+		$result2 = mysqli_query($mysqli_connection,$query2)or die("Cannot execute query \"$query2\"");
 		$num_rows2 = mysqli_num_rows($result2);
 
 		$webmail_hostname_exists = "no";
@@ -596,7 +596,7 @@ AND $pro_mysql_admin_table.id_client != '0'";
 		// We get the default subdomain and we add it at the end of the array. The goal is to have the
 		// wildcard subdomain be the last in the list of the vhosts.conf
 		$query2 = "SELECT * FROM $pro_mysql_subdomain_table WHERE domain_name='$domain_to_get' AND ip='default' AND subdomain_name='$web_default_subdomain';";
-		$result2 = mysqli_query($mysql_connection,$query2)or die("Cannot execute query \"$query2\"");
+		$result2 = mysqli_query($mysqli_connection,$query2)or die("Cannot execute query \"$query2\"");
 		$my_num_rows = mysqli_num_rows($result2);
 		if($my_num_rows == 1){
 			$temp_array_subs[] = mysqli_fetch_array($result2) or die (__FILE__ . "Cannot fetch user".__LINE__." file ".__FILE__);
@@ -683,7 +683,7 @@ AND $pro_mysql_admin_table.id_client != '0'";
 				// This does http://dtc.your-domain.com/unresolved-domain.com
 				// TG: added a flag to say yes/no to that alias for each domains
 				$alias_domain_query = "SELECT * FROM $pro_mysql_domain_table WHERE gen_unresolved_domain_alias='yes' ORDER BY name;";
-				$result_alias = mysqli_query($mysql_connection,$alias_domain_query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." mysql said: ".mysql_error());
+				$result_alias = mysqli_query($mysqli_connection,$alias_domain_query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." mysql said: ".mysqli_error());
 				$num_rows_alias = mysqli_num_rows($result_alias);
 				for($x=0;$x<$num_rows_alias;$x++) {
 					$rowX = mysqli_fetch_array($result_alias) or die ("Cannot fetch domain for Alias");
@@ -692,7 +692,7 @@ AND $pro_mysql_admin_table.id_client != '0'";
 					$ip_addrX = $rowX["ip_addr"];
 					$backup_ip_addrX = $rowX["backup_ip_addr"];
 					$alias_user_query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$web_ownerX';";
-					$alias_user_result = mysqli_query($mysql_connection,$alias_user_query) or die(__FILE__ . "Cannot fetch user for Alias");
+					$alias_user_result = mysqli_query($mysqli_connection,$alias_user_query) or die(__FILE__ . "Cannot fetch user for Alias");
 					$num_rows_alias_user = mysqli_num_rows($alias_user_result);
 					if ($num_rows_alias_user != 1) {
 						echo("No user of that name ($web_ownerX)!\n");
@@ -702,7 +702,7 @@ AND $pro_mysql_admin_table.id_client != '0'";
 					$web_pathX = $alias_path["path"];
 					// TG: Added open_basedir restriction (for obvious security reasons)
 					$qsubdom = "SELECT * FROM $pro_mysql_subdomain_table WHERE domain_name='$web_nameX' AND ip='default';";
-					$rx = mysqli_query($mysql_connection,$qsubdom)or die("Cannot execute query \"$qsubdom\" line ".__LINE__." file ".__FILE__." mysql said: ".mysql_error());
+					$rx = mysqli_query($mysqli_connection,$qsubdom)or die("Cannot execute query \"$qsubdom\" line ".__LINE__." file ".__FILE__." mysql said: ".mysqli_error());
 					$numx =  mysqli_num_rows($rx);
 					for($subx=0;$subx<$numx;$subx++){
 						$ax = mysqli_fetch_array($rx) or die ("Cannot fetch subdomain for Alias");
@@ -888,7 +888,7 @@ $vhost_file .= "
 							// Start of <krystian@ezpear.com> patch
 							if($conf_use_nated_vhost=="yes"){
 								$q="select port from $pro_mysql_ssl_ips_table where ip_addr='${subdomain["ssl_ip"]}' and available='no';";
-								$r=mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+								$r=mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 								$n = mysqli_num_rows($r);
 								if($n > 0){
 									$row=mysqli_fetch_array($r);
@@ -964,7 +964,7 @@ $vhost_file .= "
 
 					// ServerAlias for parked domains
 					$q_serveralias = "select * from $pro_mysql_domain_table where domain_parking_type='serveralias' and domain_parking='$web_name'";
-					$r_serveralias = mysqli_query($mysql_connection,$q_serveralias) or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+					$r_serveralias = mysqli_query($mysqli_connection,$q_serveralias) or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 					while ($row_serveralias = mysqli_fetch_array($r_serveralias)) {
 						// default subdomain and wildcard subdomain settings are inherited from the main domain, not the parked domain
 						// this is because in the gui these settings are not accessable for a parked domain

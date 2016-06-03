@@ -6,7 +6,7 @@ function ftpAccountsCallback ($id){
 	global $conf_dtc_system_gid;
 
 	$q = "UPDATE $pro_mysql_ftp_table SET uid='$conf_dtc_system_uid',gid='$conf_dtc_system_gid' WHERE id='$id';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	return "";
 }
 
@@ -26,17 +26,17 @@ function drawAdminTools_Ftp($domain,$adm_path){
 
 	global $pro_mysql_ftp_table;
 	global $pro_mysql_admin_table;
-	global $mysql_connection;
+	global $mysqli_connection;
 
 	checkLoginPassAndDomain($adm_login,$adm_pass,$domain["name"]);
 
 	$q = "SELECT restricted_ftp_path,ftp_login_flag FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("adm_login $adm_login not found line ".__LINE__." file ".__FILE__);
 	}
-	$a = mysql_fetch_array($r);
+	$a = mysqli_fetch_array($r);
 	if($a["ftp_login_flag"] == "no"){
 		die("adm_login $adm_login had no rights to edit FTP accounts line ".__LINE__." file ".__FILE__);
 	}

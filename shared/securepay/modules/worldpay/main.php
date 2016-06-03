@@ -30,17 +30,17 @@ function worldpay_display_icon($product_id,$amount,$item_name,$return_url,$use_r
 	global $pro_mysql_pay_table;
 
 	$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='$pay_id';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query: \"$q\" !".mysql_error().__FILE__." line ".__LINE__);
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query: \"$q\" !".mysqli_error().__FILE__." line ".__LINE__);
 	$n = mysqli_num_rows($r);
 	if($n != 1)die("Client id not found in file ".__FILE__." line ".__LINE__);
-	$pay_row = mysql_fetch_array($r);
+	$pay_row = mysqli_fetch_array($r);
 	$client_id = $pay_row["id_client"];
 
 	$q = "SELECT * FROM $pro_mysql_client_table WHERE id='$client_id';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query: \"$q\" !".mysql_error().__FILE__." line ".__LINE__);
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query: \"$q\" !".mysqli_error().__FILE__." line ".__LINE__);
 	$n = mysqli_num_rows($r);
 	if($n != 1)die("Client id not found in file ".__FILE__." line ".__LINE__);
-	$ar = mysql_fetch_array($r);
+	$ar = mysqli_fetch_array($r);
 
 	$out = '
 <form action="https://select.worldpay.com/wcc/purchase" method="POST">

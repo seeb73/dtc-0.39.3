@@ -25,7 +25,7 @@ function echo_the_headers($filesize,$content_type_prim,$content_type_sec){
 }
 
 $q = "SELECT * FROM tik_attach WHERE id='".$_REQUEST["id"]."'";
-$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 $n = mysqli_num_rows($r);
 if($n != 1){
 	die("Attachement not found!");

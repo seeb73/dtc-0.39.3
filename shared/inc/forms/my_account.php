@@ -46,14 +46,14 @@ function drawAdminTools_MyAccount($admin){
 
 	if(isset($_REQUEST["action"]) && $id_client != 0 && $_REQUEST["action"] == "refund_myaccount"){
 		if(isset($_REQUEST["inneraction"]) && $_REQUEST["inneraction"] == "return_from_paypal_refund_my_account"){
-			$ze_refund = isPayIDValidated(mysql_real_escape_string($_REQUEST["payid"]));
+			$ze_refund = isPayIDValidated(mysqli_real_escape_string($mysqli_connection,$_REQUEST["payid"]));
 			if($ze_refund == 0){
 				$out .= "<font color=\"red\">The transaction failed, please try again!</font>";
 				return $out;
 			}else{
 				$out .= "<font color=\"green\">Funds added to your account!</font><br><br>";
 				$q = "UPDATE $pro_mysql_client_table SET dollar = dollar+".$ze_refund." WHERE id='".$admin["info"]["id_client"]."';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 				$admin["client"]["dollar"] += $ze_refund;
 				$out .= "Your account now has \$".$admin["client"]["dollar"];
 				return $out;
@@ -62,18 +62,18 @@ function drawAdminTools_MyAccount($admin){
 			// Save the values in SQL and process the paynow buttons
 			$q = "INSERT INTO $pro_mysql_pending_renewal_table (id,adm_login,renew_date,renew_time,product_id,renew_id,heb_type,country_code)
 			VALUES ('','".$_REQUEST["adm_login"]."',now(),now(),'".$ro["id"]."','".$rocli["id"]."','shared-upgrade','$country');";
-			$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-			$renew_id = mysql_insert_id();
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+			$renew_id = mysqli_insert_id($mysqli_connection);
 
-			$payid = createCreditCardPaiementID(mysql_real_escape_string($_REQUEST["refund_amount"]),$admin["info"]["id_client"],
+			$payid = createCreditCardPaiementID(mysqli_real_escape_string($mysqli_connection,$_REQUEST["refund_amount"]),$admin["info"]["id_client"],
 				"Refund my account","no",$prod_id,$vat_rate);
 
 			$q = "UPDATE $pro_mysql_pending_renewal_table SET pay_id='$payid' WHERE id='$renew_id';";
-			$r = mysqli_query($mysql_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 
 			$return_url = htmlentities($_SERVER["PHP_SELF"])."?adm_login=$adm_login&adm_pass=$adm_pass"
 				."&addrlink=$addrlink&action=refund_myaccount&inneraction=return_from_paypal_refund_my_account&payid=$payid";
-			$paybutton = paynowButton($payid,mysql_real_escape_string($_REQUEST["refund_amount"]),"Refund my account",$return_url);
+			$paybutton = paynowButton($payid,mysqli_real_escape_string($mysqli_connection,$_REQUEST["refund_amount"]),"Refund my account",$return_url);
 			$out .= "<b><u>Pay \$".$_REQUEST["refund_amount"]." on my account:</u></b><br>";
 			$out .=" Please click on the button below to pay your acount.<br><br>$paybutton";
 			return $out;
@@ -155,10 +155,10 @@ function drawAdminTools_MyAccount($admin){
 					}
 					if ($secpayconf_use_products_for_renewal == 'yes'){
 						$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$admin["info"]["prod_id"]."';";
-						$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+						$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 						$n = mysqli_num_rows($r);
 						if($n == 1){
-							$a = mysql_fetch_array($r);
+							$a = mysqli_fetch_array($r);
 							$out .= "<tr><td><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 	<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 	<input type=\"hidden\" name=\"renew_type\" value=\"shared\">
@@ -171,10 +171,10 @@ function drawAdminTools_MyAccount($admin){
 					}
 
 					$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$admin["info"]["prod_id"]."';";
-					$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+					$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 					$n = mysqli_num_rows($r);
 					for($i=0;$i<$n;$i++){
-						$a = mysql_fetch_array($r);
+						$a = mysqli_fetch_array($r);
 						$out .= "<tr><td><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 					<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 					<input type=\"hidden\" name=\"renew_type\" value=\"shared\">
@@ -191,7 +191,7 @@ function drawAdminTools_MyAccount($admin){
 			if ($conf_show_ssl_tokens == "yes"){
 				$out .= "</center><br /><h3>". _("SSL tokens") ."</h3><br />";
 				$q = "SELECT * FROM $pro_mysql_ssl_ips_table WHERE adm_login='$adm_login' AND available='no';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 				$n = mysqli_num_rows($r);
 				if($n == 0){
 					$out .= _("You currently don't have any SSL tokens.") ."<br><br>";
@@ -199,7 +199,7 @@ function drawAdminTools_MyAccount($admin){
 					$out .= "<table cellspacing=\"0\" cellpadding=\"0\" border=\"1\">";
 					$out .= "<tr><td>". _("IP address") ."</td><td>". _("Used by") ."</td><td>". _("Expire"). "</td><td>". _("Action") ."</td></tr>";
 					for($i=0;$i<$n;$i++){
-						$a = mysql_fetch_array($r);
+						$a = mysqli_fetch_array($r);
 						$nbr_domains = sizeof($admin["data"]);
 						$used_by = "Not used";
 						for($j=0;$j<$nbr_domains;$j++){
@@ -211,12 +211,12 @@ function drawAdminTools_MyAccount($admin){
 							}
 						}
 						$prodq = "SELECT * FROM $pro_mysql_product_table WHERE heb_type='ssl';";
-						$prodr = mysqli_query($mysql_connection,$prodq)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+						$prodr = mysqli_query($mysqli_connection,$prodq)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 						$prodn = mysqli_num_rows($prodr);
 						if($prodn != 1){
 							$ssl_renew_form = _("No ssl product defined.") ;
 						}else{
-							$prod = mysql_fetch_array($prodr);
+							$prod = mysqli_fetch_array($prodr);
 							$ssl_renew_form = "<form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 	<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 	<input type=\"hidden\" name=\"renew_type\" value=\"ssl_renew\">
@@ -232,18 +232,18 @@ function drawAdminTools_MyAccount($admin){
 				$out .= "</table><br><br>";
 				}
 				$q = "SELECT * FROM $pro_mysql_ssl_ips_table WHERE available='yes';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 				$n = mysqli_num_rows($r);
 				if($n == 0){
 					$out .= _("No SSL token available: contact your administrator to request it.") ."<br><br>";
 				}else{
 					$q = "SELECT * FROM $pro_mysql_product_table WHERE heb_type='ssl';";
-					$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+					$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 					$n = mysqli_num_rows($r);
 					if($n != 1){
 						$out .= _("No ssl product defined.") ;
 					}else{
-						$prod = mysql_fetch_array($r);
+						$prod = mysqli_fetch_array($r);
 						$out .= "<form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 	<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 	<input type=\"hidden\" name=\"renew_type\" value=\"ssl\">
@@ -307,11 +307,11 @@ function drawAdminTools_MyAccount($admin){
 		}
 	
 		$qcf = "SELECT * FROM $pro_mysql_custom_fld_table WHERE 1 ORDER BY widgetorder;";
-		$rcf = mysqli_query($mysql_connection,$qcf)or die("Cannot query $qcf line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$rcf = mysqli_query($mysqli_connection,$qcf)or die("Cannot query $qcf line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 		$ncf = mysqli_num_rows($rcf);
 	
 		for($i=0;$i<$ncf;$i++){
-			$acf = mysql_fetch_array($rcf);
+			$acf = mysqli_fetch_array($rcf);
 			if(isset($customer_custom_fields[ $acf["varname"] ])){
 				$val = $customer_custom_fields[ $acf["varname"] ];
 			}else{
@@ -352,8 +352,8 @@ function drawAdminTools_MyAccount($admin){
 		}
 	
 		$sql = "SELECT SUM(kickback) as kickbacks FROM affiliate_payments WHERE adm_login = '{$adm_login}' and date_paid IS NULL; ";
-		$result = mysqli_query($mysql_connection,$sql);
-		$row = mysql_fetch_array($result);
+		$result = mysqli_query($mysqli_connection,$sql);
+		$row = mysqli_fetch_array($result);
 		$afftotal = $row["kickbacks"];
 
 		if ($afftotal) {
@@ -361,9 +361,9 @@ function drawAdminTools_MyAccount($admin){
 			global $pro_mysql_completedorders_table;
 
 			$sql = "SELECT * FROM affiliate_payments INNER JOIN $pro_mysql_completedorders_table on (affiliate_payments.order_id = $pro_mysql_completedorders_table.id) WHERE adm_login = '{$adm_login}' and date_paid IS NULL; ";
-			$result = mysqli_query($mysql_connection,$sql);
+			$result = mysqli_query($mysqli_connection,$sql);
 			$out .= "". _("Outstanding payments:")."<br><table><tr><th>"._("Date")."</th><th>"._("Amount")."</th></tr>";
-			while ($row = mysql_fetch_array($result)) $out .= "<tr><td>{$row['date']}</td><td>{$row['kickback']}</td></tr>";
+			while ($row = mysqli_fetch_array($result)) $out .= "<tr><td>{$row['date']}</td><td>{$row['kickback']}</td></tr>";
 			$out .= "<tr><td></td><th>{$afftotal}</th></tr>";
 			$out .= "</table>";
 

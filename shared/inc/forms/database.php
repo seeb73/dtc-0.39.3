@@ -23,24 +23,24 @@ function drawDataBase($database){
 	global $conf_mysql_login;
 	global $conf_mysql_host;
 	global $conf_mysql_pass;
-	global $mysql_connection;
-	global $mysql_connection_mysql;
+	global $mysqli_connection;
+	global $mysqli_connection_mysql;
 
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n != 1)	die("Cannot find user !");
-	$admin_param = mysql_fetch_array($r);
+	$admin_param = mysqli_fetch_array($r);
 
 	$out = "";
 	if($conf_user_mysql_type=="distant"){
-		if ($mysql_connection == NULL || mysqli_ping($mysql_connection) == false)
+		if ($mysqli_connection == NULL || mysqli_ping($mysqli_connection) == false)
 		{
-			$mysql_connection = mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"$pro_mysql_db")or die("Cannot connect to user SQL host");
+			$mysqli_connection = mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"$pro_mysql_db")or die("Cannot connect to user SQL host");
 		}
-		if ($mysql_connection_mysql == NULL || mysqli_ping($mysql_connection_mysql) == false)
+		if ($mysqli_connection_mysql == NULL || mysqli_ping($mysqli_connection_mysql) == false)
 		{
-			$mysql_connection_mysql = mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql")or die("Cannot connect to user SQL host");
+			$mysqli_connection_mysql = mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql")or die("Cannot connect to user SQL host");
 		}
 	}else {
 	    $out = "<br />" . _("Please use 127.0.0.1 instead of localhost to connect to the database in your scripts.") . "<br />";
@@ -50,16 +50,16 @@ function drawDataBase($database){
 		$out .= "<i>" . _("Your username will be prepended to the database username.") . "</i><br>";
 	}
 	$q = "SELECT DISTINCT User FROM mysql.user WHERE dtcowner='$adm_login' ORDER BY User;";
-	if ($mysql_connection == NULL || mysqli_ping($mysql_connection) == false)
+	if ($mysqli_connection == NULL || mysqli_ping($mysqli_connection) == false)
 	{
-		$mysql_connection = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"$pro_mysql_db")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
+		$mysqli_connection = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"$pro_mysql_db")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
 	}
-	if ($mysql_connection_mysql == NULL || mysqli_ping($mysql_connection_mysql) == false)
+	if ($mysqli_connection_mysql == NULL || mysqli_ping($mysqli_connection_mysql) == false)
 	{
-		$mysql_connection_mysql = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"mysql")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
+		$mysqli_connection_mysql = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"mysql")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
 	}
 
-	$r = mysqli_query($mysql_connection_mysql,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+	$r = mysqli_query($mysqli_connection_mysql,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	$num_users = $n;
 	$out .= "<table><tr><td>". _("User") ."</td><td>". _("Password:") ."</td><td>". _("Action") ."</td><td></td></tr>";
@@ -68,7 +68,7 @@ function drawDataBase($database){
 		<input type=\"hidden\" name=\"adm_pass\" value=\"$adm_pass\">";
 	$dblist_user = "";
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$out .= "<tr><td><form method=\"$conf_post_or_get\" action=\"?\">$hidden
 		<input type=\"hidden\" name=\"action\" value=\"modify_dbuser_pass\">
 		<input type=\"hidden\" name=\"dbuser\" value=\"".$a["User"]."\">
@@ -99,12 +99,12 @@ function drawDataBase($database){
 	}
 	if($conf_demo_version == "no" && $num_users > 0){
 		$query = "SELECT DISTINCT Db,User FROM db WHERE $dblist_clause;";
-		$result = mysqli_query($mysql_connection_mysql,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+		$result = mysqli_query($mysqli_connection_mysql,$query)or die("Cannot query \"$query\" !!!".mysqli_error());
 		$num_rows = mysqli_num_rows($result);
 		$dblist = "<table cellpadding=\"2\" cellspacing=\"2\">";
 		$dblist .= "<tr><td>". _("Database name") ."</td><td>". _("User") ."</td><td>". _("Action") ."</td><td></td></tr>";
 		for($i=0;$i<$num_rows;$i++){
-			$row = mysql_fetch_array($result);
+			$row = mysqli_fetch_array($result);
 			if($i != 0){
 //				$out .= " - ";
 			}
@@ -145,7 +145,7 @@ function drawDataBase($database){
 		$out .= "<br>". _("Total database number:") ." $num_rows/".$admin_param["nbrdb"]."<br>";
 
 		if($conf_user_mysql_type=="distant"){
-			mysql_close($newid)or die("Cannot disconnect to user database");
+			mysqli_close($newid)or die("Cannot disconnect to user database");
 			connect2base();
 		}
 

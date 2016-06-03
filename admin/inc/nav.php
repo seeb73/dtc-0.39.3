@@ -159,7 +159,7 @@ function adminList($password=""){
 	global $pro_mysql_domain_table;
 	global $pro_mysql_vps_table;
 	global $pro_mysql_dedicated_table;
-	global $mysql_connection;
+	global $mysqli_connection;
 
 	global $panel_type;
 	global $cur_admlist_type;
@@ -200,7 +200,7 @@ function adminList($password=""){
 		$dsc["rub"] = "user";
 		// Fetch a list of all name admins
 		$query = "SELECT * FROM $pro_mysql_admin_table ORDER BY adm_login";
-		$result = mysqli_query($mysql_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 		$num_rows = mysqli_num_rows($result);
 
 		for($j=0;$j<$num_rows;$j++){
@@ -224,7 +224,7 @@ function adminList($password=""){
 		$admins .= "<br>";
 		// Display all admins wich has no login.
 		$query2 = "SELECT * FROM $pro_mysql_admin_table WHERE id_client='0';";
-		$result2 = mysqli_query($mysql_connection,$query2) or die("Cannot execute query : \"$query2\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$result2 = mysqli_query($mysqli_connection,$query2) or die("Cannot execute query : \"$query2\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 		$num_rows2 = mysqli_num_rows($result2);
 		if($num_rows2 > 0){
 			$admins .= "Nologins:<br>";
@@ -237,7 +237,7 @@ function adminList($password=""){
 		}
 
 		$query7 = "SELECT * FROM $pro_mysql_client_table ORDER BY familyname,christname";
-		$result7 = mysqli_query($mysql_connection,$query7) or die("Cannot execute query : \"$query7\" !");
+		$result7 = mysqli_query($mysqli_connection,$query7) or die("Cannot execute query : \"$query7\" !");
 		$num_rows7 = mysqli_num_rows($result7);
 		for($i=0;$i<$num_rows7;$i++){
 			$row7 = mysqli_fetch_array($result7);
@@ -248,7 +248,7 @@ function adminList($password=""){
 			$is_company = $row7["is_company"];
 
 			$query2 = "SELECT * FROM $pro_mysql_admin_table WHERE id_client='$id_client';";
-			$result2 = mysqli_query($mysql_connection,$query2) or die("Cannot execute query : \"$query2\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+			$result2 = mysqli_query($mysqli_connection,$query2) or die("Cannot execute query : \"$query2\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 			$num_rows2 = mysqli_num_rows($result2);
 			$admins .= "$lastname, $firstname<br>";
 			if($num_rows2 < 1){
@@ -276,7 +276,7 @@ function adminList($password=""){
 	case "Domains":
 		$admins .= "<br>";
 		$query7 = "SELECT * FROM $pro_mysql_domain_table ORDER BY name";
-		$result7 = mysqli_query($mysql_connection,$query7) or die("Cannot execute query : \"$query7\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$result7 = mysqli_query($mysqli_connection,$query7) or die("Cannot execute query : \"$query7\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 		$num_rows7 = mysqli_num_rows($result7);
 		for($i=0;$i<$num_rows7;$i++){
 			$row7 = mysqli_fetch_array($result7);
@@ -284,7 +284,7 @@ function adminList($password=""){
 			$owner = $row7["owner"];
 			
 			$query2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$owner';";
-			$result2 = mysqli_query($mysql_connection,$query2) or die("Cannot execute query : \"$query2\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+			$result2 = mysqli_query($mysqli_connection,$query2) or die("Cannot execute query : \"$query2\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 			$num_rows2 = mysqli_num_rows($result2);
 			if($num_rows2 != 1){
 				$admins .= "$domain_name<br>&nbsp;&nbsp;&nbsp;<font color=\"red\">Domain without owner !</font><br>";
@@ -301,14 +301,14 @@ function adminList($password=""){
 			}
 		}
 		$query7 = "SELECT * FROM $pro_mysql_vps_table ORDER BY vps_server_hostname,vps_xen_name";
-		$result7 = mysqli_query($mysql_connection,$query7) or die("Cannot execute query : \"$query7\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$result7 = mysqli_query($mysqli_connection,$query7) or die("Cannot execute query : \"$query7\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 		$num_rows7 = mysqli_num_rows($result7);
 		for($i=0;$i<$num_rows7;$i++){
 			$row7 = mysqli_fetch_array($result7);
 			$vps_name = $row7["vps_server_hostname"].":".$row7["vps_xen_name"];
 			$owner = $row7["owner"];
 			$query2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$owner';";
-			$result2 = mysqli_query($mysql_connection,$query2) or die("Cannot execute query : \"".$query2."\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+			$result2 = mysqli_query($mysqli_connection,$query2) or die("Cannot execute query : \"".$query2."\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 			$num_rows2 = mysqli_num_rows($result2);
 			if($num_rows2 != 1){
 				$admins .= "$vps_name<br>&nbsp;&nbsp;&nbsp;<font color=\"red\">VPS without owner !</font><br>";
@@ -324,14 +324,14 @@ function adminList($password=""){
 			}
 		}
 		$query7 = "SELECT * FROM $pro_mysql_dedicated_table ORDER BY server_hostname";
-		$result7 = mysqli_query($mysql_connection,$query7) or die("Cannot execute query : \"$query7\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$result7 = mysqli_query($mysqli_connection,$query7) or die("Cannot execute query : \"$query7\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 		$num_rows7 = mysqli_num_rows($result7);
 		for($i=0;$i<$num_rows7;$i++){
 			$row7 = mysqli_fetch_array($result7);
 			$server_hostname = $row7["server_hostname"];
 			$owner = $row7["owner"];
 			$query2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$owner';";
-			$result2 = mysqli_query($mysql_connection,$query2) or die("Cannot execute query : \"".$query2."\" line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+			$result2 = mysqli_query($mysqli_connection,$query2) or die("Cannot execute query : \"".$query2."\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 			$num_rows2 = mysqli_num_rows($result2);
 			if($num_rows2 != 1){
 				$admins .= "$vps_name<br>&nbsp;&nbsp;&nbsp;<font color=\"red\">Dedicated without owner !</font><br>";

@@ -6,6 +6,7 @@ function stat_script_generate(){
 	global $pro_mysql_domain_table;
 	global $pro_mysql_admin_table;
 	global $pro_mysql_subdomain_table;
+	global $mysqli_connection;
 
 	global $conf_generated_file_path;
 	global $conf_webalizer_stats_script_path;
@@ -26,7 +27,7 @@ function stat_script_generate(){
 
 	// Select all domains
 	$query = "SELECT * FROM $pro_mysql_domain_table WHERE 1 ORDER BY name;";
-	$result = mysqli_query($mysql_connection,$query)or die("Cannot execute query \"$query\"");
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\"");
 	$num_rows = mysqli_num_rows($result);
 
 	if($num_rows < 1){
@@ -41,7 +42,7 @@ function stat_script_generate(){
 
 		// Get the owner informations
 		$query2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$web_owner';";
-		$result2 = mysqli_query($mysql_connection,$query2)or die("Cannot execute query \"$query2\"");
+		$result2 = mysqli_query($mysqli_connection,$query2)or die("Cannot execute query \"$query2\"");
 		$num_rows2 = mysqli_num_rows($result2);
 		if($num_rows2 != 1){
 			die("No user of that name !");
@@ -51,7 +52,7 @@ function stat_script_generate(){
 
 		// Grab all subdomains
 		$query2 = "SELECT * FROM $pro_mysql_subdomain_table WHERE domain_name='$web_name' AND webalizer_generate='yes' ORDER BY subdomain_name;";
-		$result2 = mysqli_query($mysql_connection,$query2)or die("Cannot execute query \"$query2\"");
+		$result2 = mysqli_query($mysqli_connection,$query2)or die("Cannot execute query \"$query2\"");
 		$num_rows2 = mysqli_num_rows($result2);
 
 		for($j=0;$j<$num_rows2;$j++){

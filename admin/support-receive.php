@@ -154,16 +154,16 @@ if(isset($stt->parts)){
 				continue;
 			break;
 		}
-		$file_name = mysql_real_escape_string($stt->parts[$i]->ctype_parameters["name"]);
+		$file_name = mysqli_real_escape_string($mysqli_connection,$stt->parts[$i]->ctype_parameters["name"]);
 		$file_body = bin2hex($stt->parts[$i]->body);
 		$q = "INSERT INTO tik_attach (id,filename,ctype_prim,ctype_sec,datahex)
-VALUES ('','$file_name','".mysql_real_escape_string($stt->parts[$i]->ctype_primary)."','".mysql_real_escape_string($stt->parts[$i]->ctype_secondary)."','$file_body');";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-		$id = mysql_insert_id();
+VALUES ('','$file_name','".mysqli_real_escape_string($mysqli_connection,$stt->parts[$i]->ctype_primary)."','".mysqli_real_escape_string($mysqli_connection,$stt->parts[$i]->ctype_secondary)."','$file_body');";
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$id = mysqli_insert_id($mysqli_connection);
 		if($attachements_ids != ""){
 			$attachements_ids .= "|";
 		}
-		$attachements_ids .= mysql_insert_id();
+		$attachements_ids .= mysqli_insert_id($mysqli_connection);
 	}
 }else{
 	$body = $stt->body;
@@ -185,7 +185,7 @@ if( preg_match("/".$tik_regexp."/",$email_to) ){
 	$ticket_hash = substr($email_to,$start,$end);
 	if( isRandomNum($ticket_hash) ){
 		$q = "SELECT * FROM $pro_mysql_tik_queries_table WHERE hash='$ticket_hash';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n == 1){
 			// We have a match, we should consider inserting this ticket as a reply...
@@ -198,16 +198,16 @@ if( preg_match("/".$tik_regexp."/",$email_to) ){
 
 			// Reopen the ticket if it was closed
 			$q = "UPDATE $pro_mysql_tik_queries_table SET closed='no' WHERE hash='$ticket_hash';";
-			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 
 			$last_id = findLastTicketID($ticket_hash);
 			if($last_id != 0){
 				$q = "INSERT INTO $pro_mysql_tik_queries_table (id,adm_login,date,time,in_reply_of_id,reply_id,admin_or_user,text,initial_ticket,attach)
-				VALUES('','".$start_tik["adm_login"]."','".date('Y-m-d')."','".date('H:i:s')."','$last_id','0','user','". mysql_real_escape_string($body) ."','no','$attachements_ids');";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-				$new_id = mysql_insert_id();
+				VALUES('','".$start_tik["adm_login"]."','".date('Y-m-d')."','".date('H:i:s')."','$last_id','0','user','". mysqli_real_escape_string($mysqli_connection,$body) ."','no','$attachements_ids');";
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+				$new_id = mysqli_insert_id($mysqli_connection);
 				$q = "UPDATE $pro_mysql_tik_queries_table SET reply_id='$new_id' WHERE id='$last_id';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 				mailTicketToAllAdmins($start_tik["subject"],$body,$request_adm_name);
 				exit(0);
 			}
@@ -218,20 +218,20 @@ if( preg_match("/".$tik_regexp."/",$email_to) ){
 
 echo "Not an old ticket, searching for a matching customer\n";
 $q = "SELECT id FROM $pro_mysql_client_table WHERE email='$email_from';";
-$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 $n = mysqli_num_rows($r);
 // A matching email has been found
 if($n == 1){
 	$a = mysqli_fetch_array($r);
 	$q = "SELECT adm_login FROM $pro_mysql_admin_table WHERE id_client='".$a["id"]."';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	// At this point, we got an exact match: let's create a new ticket for this adm_login!
 	if($n == 1){
 		$adm = mysqli_fetch_array($r);
 		$q = "INSERT INTO $pro_mysql_tik_queries_table (id,adm_login,date,time,in_reply_of_id,reply_id,admin_or_user,text,initial_ticket,hash,subject,attach)
-		VALUES('','".$adm["adm_login"]."','".date('Y-m-d')."','".date('H:i:s')."','0','0','user','". mysql_real_escape_string($body) ."','yes','".createSupportHash()."','". mysql_real_escape_string($stt->headers["subject"]) ."','$attachements_ids');";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		VALUES('','".$adm["adm_login"]."','".date('Y-m-d')."','".date('H:i:s')."','0','0','user','". mysqli_real_escape_string($mysqli_connection,$body) ."','yes','".createSupportHash()."','". mysqli_real_escape_string($mysqli_connection,$stt->headers["subject"]) ."','$attachements_ids');";
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 		mailTicketToAllAdmins($stt->headers["subject"],$body,$adm["adm_login"]);
 		exit(0);
 	}
@@ -239,8 +239,8 @@ if($n == 1){
 // this email address.
 }else{
 	$q = "INSERT INTO $pro_mysql_tik_queries_table (id,customer_email,date,time,in_reply_of_id,reply_id,admin_or_user,text,initial_ticket,hash,subject,attach)
-	VALUES('','$email_from','".date('Y-m-d')."','".date('H:i:s')."','0','0','user','". mysql_real_escape_string($body) ."','yes','".createSupportHash()."','". mysql_real_escape_string($stt->headers["subject"]) ."','$attachements_ids');";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	VALUES('','$email_from','".date('Y-m-d')."','".date('H:i:s')."','0','0','user','". mysqli_real_escape_string($mysqli_connection,$body) ."','yes','".createSupportHash()."','". mysqli_real_escape_string($mysqli_connection,$stt->headers["subject"]) ."','$attachements_ids');";
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	mailTicketToAllAdmins($stt->headers["subject"],$body,$email_from);
 }
 exit(0);

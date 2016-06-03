@@ -14,10 +14,10 @@ function mailTicketToAllAdmins($subject,$body,$adm_login){
 	}
 
 	$q = "SELECT * FROM $pro_mysql_tik_admins_table WHERE available='yes';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
-		$a = mysql_fetch_array($r);
+		$a = mysqli_fetch_array($r);
 		$content = "A customer has submitted a support ticket.
 Below is a copy of his message:
 
@@ -92,9 +92,9 @@ function ticket_get_attach(){
 	$content = file_get_contents($tmp_name);
 	$hex = bin2hex($content);
 	$q = "INSERT INTO tik_attach (id,filename,ctype_prim,ctype_sec,datahex)
-VALUES ('','".mysql_real_escape_string($filename)."','".mysql_real_escape_string($prim)."','".mysql_real_escape_string($sec)."','$hex');";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-	$id = mysql_insert_id();
+VALUES ('','".mysqli_real_escape_string($mysqli_connection,$filename)."','".mysqli_real_escape_string($mysqli_connection,$prim)."','".mysqli_real_escape_string($mysqli_connection,$sec)."','$hex');";
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$id = mysqli_insert_id($mysqli_connection);
 	return $id;
 }
 
@@ -107,8 +107,8 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "new_ticket"){
 		$hash = createSupportHash();
 		$attach = ticket_get_attach();
 		$q = "INSERT INTO $pro_mysql_tik_queries_table (id,adm_login,date,time,subject,text,cat_id,initial_ticket,server_hostname,hash,attach)
-		VALUES ('','$adm_login','".date("Y-m-d")."','".date("H:i:s")."','".mysql_real_escape_string($_REQUEST["subject"])."','".mysql_real_escape_string($_REQUEST["ticketbody"])."','".mysql_real_escape_string($_REQUEST["issue_cat_id"])."','yes','".mysql_real_escape_string($_REQUEST["server_hostname"])."','$hash','$attach');";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		VALUES ('','$adm_login','".date("Y-m-d")."','".date("H:i:s")."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["subject"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ticketbody"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["issue_cat_id"])."','yes','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["server_hostname"])."','$hash','$attach');";
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 		mailTicketToAllAdmins($_REQUEST["subject"],$_REQUEST["ticketbody"],$adm_login);
 	}
 }
@@ -120,13 +120,13 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_ticket_reply"){
 	}else{
 		// Check if admin is owning the ticket
 		$q = "SELECT * FROM $pro_mysql_tik_queries_table WHERE id='".$_REQUEST["last_tik_id"]."' AND reply_id='0' AND adm_login='$adm_login';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			echo _("This ticket number isn't owned by you (last_tik_id is wrong).");
 		}else{
 			$q = "SELECT * FROM $pro_mysql_tik_queries_table WHERE id='".$_REQUEST["tik_id"]."' AND adm_login='$adm_login';";
-			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 			$n = mysqli_num_rows($r);
 			if($n != 1){
 				echo _("This ticket number isn't owned by you (tik_id is wrong).");
@@ -134,15 +134,15 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_ticket_reply"){
 				// Insert the new ticket
 				$attach = ticket_get_attach();
 				$q = "INSERT INTO $pro_mysql_tik_queries_table (id,adm_login,date,time,subject,text,cat_id,initial_ticket,server_hostname,in_reply_of_id,request_close,attach)
-				VALUES ('','$adm_login','".date("Y-m-d")."','".date("H:i:s")."','".mysql_real_escape_string($_REQUEST["subject"])."','".mysql_real_escape_string($_REQUEST["ticketbody"])."','".mysql_real_escape_string($_REQUEST["cat_id"])."','no','".mysql_real_escape_string($_REQUEST["server_hostname"])."','".mysql_real_escape_string($_REQUEST["last_tik_id"])."','".mysql_real_escape_string($_REQUEST["request_to_close"])."','$attach');";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
-				$ins_id = mysql_insert_id();
+				VALUES ('','$adm_login','".date("Y-m-d")."','".date("H:i:s")."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["subject"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ticketbody"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["cat_id"])."','no','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["server_hostname"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["last_tik_id"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["request_to_close"])."','$attach');";
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+				$ins_id = mysqli_insert_id($mysqli_connection);
 				// Update the chained list of tickets
 				$q = "UPDATE $pro_mysql_tik_queries_table SET reply_id='$ins_id' WHERE id='".$_REQUEST["last_tik_id"]."';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 				// Set the initial ticket as reopen in case it was closed
 				$q = "UPDATE $pro_mysql_tik_queries_table SET closed='no' WHERE id='".$_REQUEST["tik_id"]."';";
-				$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 				mailTicketToAllAdmins($_REQUEST["subject"],$_REQUEST["ticketbody"],$adm_login);
 			}
 		}

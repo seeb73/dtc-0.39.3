@@ -16,7 +16,7 @@ if( $_SERVER["SCRIPT_NAME"] != "/dtc/vm-io.php"){
 }else{
 	checkLoginPass($adm_login,$adm_pass);
 	$q = "SELECT * FROM $pro_mysql_vps_table WHERE owner='$adm_login' AND vps_server_hostname='".$_REQUEST["vps_server_hostname"]."' AND vps_xen_name='".$_REQUEST["vps_name"]."'";
-	$r = mysqli_query($mysql_connection,$q)or die();
+	$r = mysqli_query($mysqli_connection,$q)or die();
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die( _("Access not granted line ") .__LINE__. _(" file ") .__FILE__ );
@@ -43,7 +43,7 @@ checkLoginPass($adm_login,$adm_pass);
 // Get all the stats info
 $q = "SELECT * FROM $pro_mysql_vps_table WHERE vps_server_hostname='".$_REQUEST["vps_server_hostname"]."' AND vps_xen_name='".$_REQUEST["vps_name"]."' AND owner='$adm_login';";
 //echo $q;
-$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q !");
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q !");
 $n = mysqli_num_rows($r);
 if($n != 1)die("Client not found!");
 $c = mysqli_fetch_array($r);

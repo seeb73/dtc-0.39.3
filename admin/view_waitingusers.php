@@ -29,7 +29,7 @@ $anotherTopBanner = anotherTopBanner("DTC","yes");
 $anotherMenu = "";
 
 $q = "SELECT * FROM $pro_mysql_new_admin_table WHERE id='".$_REQUEST["reqadm_id"]."'";
-$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysqli_error());
 $n = mysqli_num_rows($r);
 if($n != 1){
 	$text = "$q: User not found!!!";
@@ -43,7 +43,7 @@ if($n != 1){
 		$q3 .= $a["paiement_id"];
 	}
 	$q3 .= "';";
-	$r3 = mysqli_query($mysql_connection,$q3)or die("Cannot query \"$q3\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+	$r3 = mysqli_query($mysqli_connection,$q3)or die("Cannot query \"$q3\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysqli_error());
 	$n3 = mysqli_num_rows($r3);
 	if($n3 != 1){
 		$has_payement = 0;
@@ -74,18 +74,18 @@ if($n != 1){
 		if ($b != $a){
 			$c = array();
 			foreach ($b as $id_b => $val_b){
-				$c[] = $id_b." = '".mysql_real_escape_string($val_b)."'";
+				$c[] = $id_b." = '".mysqli_real_escape_string($mysqli_connection,$val_b)."'";
 			}
 			$q1 = "UPDATE $pro_mysql_new_admin_table SET ".join(",",$c)." WHERE id='".$_POST["reqadm_id"]."'";
-			$r1= mysqli_query($mysql_connection,$q1)or die("Cannot query \"$q1\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+			$r1= mysqli_query($mysqli_connection,$q1)or die("Cannot query \"$q1\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysqli_error());
 		}
 		if ($has_payement == 1 and $p != $a3){
 			$d = array();
 			foreach ($p as $id_c => $val_c){
-				$d[] = $id_c." = '".mysql_real_escape_string($val_c)."'";
+				$d[] = $id_c." = '".mysqli_real_escape_string($mysqli_connection,$val_c)."'";
 			}
 			$q2 = "UPDATE $pro_mysql_pay_table SET ".join(",",$d)." WHERE id='".$_POST["paiement_id"]."'";
-			$r2= mysqli_query($mysql_connection,$q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysql_error());
+			$r2= mysqli_query($mysqli_connection,$q2)or die("Cannot query \"$q2\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysqli_error());
 		}
 	}else{
 		$b = $a;
@@ -108,7 +108,7 @@ if($n != 1){
 	$prod_popup = "";
 	$prod_ids = array();
 	$qpr = "SELECT id, name, price_dollar FROM $pro_mysql_product_table WHERE renew_prod_id='0' AND private='no' ORDER BY id";
-	$rpr = mysqli_query($mysql_connection,$qpr)or die("Cannot execute query \"$qpr\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$rpr = mysqli_query($mysqli_connection,$qpr)or die("Cannot execute query \"$qpr\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 	$npr = mysqli_num_rows($rpr);
 	for($ipr=0;$ipr<$npr;$ipr++){
 		$apr = mysqli_fetch_array($rpr);
@@ -138,7 +138,7 @@ if($n != 1){
 	WHERE $pro_mysql_vps_ip_table.vps_server_hostname=$pro_mysql_vps_server_table.hostname
 	AND $pro_mysql_vps_ip_table.available='yes'
 	GROUP BY $pro_mysql_vps_ip_table.vps_server_hostname;";
-	$rv = mysqli_query($mysql_connection,$qv)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysql_error());
+	$rv = mysqli_query($mysqli_connection,$qv)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
 	$nv = mysqli_num_rows($rv);
 	for($iv=0;$iv<$nv;$iv++){
 		$av = mysqli_fetch_array($rv);

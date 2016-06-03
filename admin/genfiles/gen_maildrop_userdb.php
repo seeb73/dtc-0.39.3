@@ -33,7 +33,7 @@ function mail_account_generate_maildrop(){
 
 	global $panel_type;
 
-	global $mysql_connection;
+	global $mysqli_connection;
 
 	if( file_exists("/etc/courier/userdb") ){
 		$path_userdb="/etc/courier/userdb";
@@ -70,7 +70,7 @@ function mail_account_generate_maildrop(){
 
 	// This is a rewrite of this function that should be faster and better.
 	$q2 = "SELECT name,domain_parking FROM $pro_mysql_domain_table";
-	$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n2 = mysqli_num_rows($r2);
 	$userdb_file = "";
 	for($j=0;$j<$n2;$j++){
@@ -91,7 +91,7 @@ function mail_account_generate_maildrop(){
 		AND $pro_mysql_domain_table.name='$query_dom_name'
 		AND ($pro_mysql_admin_table.disabled='no' or $pro_mysql_admin_table.disabled='always-no' or $pro_mysql_admin_table.disabled='')
 		ORDER BY $pro_mysql_pop_table.id";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		for($i=0;$i<$n;$i++){
 			$a = mysqli_fetch_array($r);

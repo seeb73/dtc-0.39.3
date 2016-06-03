@@ -3,22 +3,22 @@
 function getContactsArrayFromID($owner_id,$billing_id,$admin_id,$tech_id){
 	global $pro_mysql_handle_table;
 	$query = "SELECT * FROM $pro_mysql_handle_table WHERE id='$owner_id';";
-	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!! ".mysql_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!! ".mysqli_error());
 	if(mysqli_num_rows($result) != 1)	die("Handle ID not found !");
 	$contacts["owner"] = mysqli_fetch_array($result)or die("Cannot fetch array !");
 
 	$query = "SELECT * FROM $pro_mysql_handle_table WHERE id='$billing_id';";
-	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!! ".mysql_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!! ".mysqli_error());
 	if(mysqli_num_rows($result) != 1)	die("Handle ID not found !");
 	$contacts["billing"] = mysqli_fetch_array($result)or die("Cannot fetch array !");
 
 	$query = "SELECT * FROM $pro_mysql_handle_table WHERE id='$admin_id';";
-	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!! ".mysql_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!! ".mysqli_error());
 	if(mysqli_num_rows($result) != 1)	die("Handle ID not found !");
 	$contacts["admin"] = mysqli_fetch_array($result)or die("Cannot fetch array !");
 
 	$query = "SELECT * FROM $pro_mysql_handle_table WHERE id='$tech_id';";
-	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!! ".mysql_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!! ".mysqli_error());
 	if(mysqli_num_rows($result) != 1)        die("Handle ID not found !");
 	$contacts["teck"] = mysqli_fetch_array($result)or die("Cannot fetch array !");
 	return $contacts;
@@ -34,7 +34,7 @@ function whoisHandleSelection($admin,$show_info="no",$owner=-1,$billing=-1,$admi
 	$link_create = "<a href=\"?adm_login=$adm_login&adm_pass=$adm_pass&addrlink=myaccount/nickhandles\">". _("Create a new handle") ."</a>";
 
 	$query = "SELECT * FROM $pro_mysql_handle_table WHERE owner='$adm_login';";
-	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!!".mysqli_error());
 	$num_rows = mysqli_num_rows($result);
 	unset($rows);
 	for($i=0;$i<$num_rows;$i++){
@@ -200,7 +200,7 @@ _("Email: ") . $infoz["email"] ."<br>";
 function nickHandleCreateCallback($id){
 	global $pro_mysql_handle_table;
 	$q = "SELECT * FROM $pro_mysql_handle_table WHERE id='$id';";
-	$r = mysqli_query($mysql_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find created nick handle line ".__LINE__." file ".__FILE__);
@@ -212,7 +212,7 @@ function nickHandleCreateCallback($id){
 function nickHandleDeleteCallback($id){
 	global $pro_mysql_handle_table;
 	$q = "SELECT * FROM $pro_mysql_handle_table WHERE id='$id';";
-	$r = mysqli_query($mysql_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find created nick handle line ".__LINE__." file ".__FILE__);
@@ -224,7 +224,7 @@ function nickHandleDeleteCallback($id){
 function nickHandleEditCallback($id){
 	global $pro_mysql_handle_table;
 	$q = "SELECT * FROM $pro_mysql_handle_table WHERE id='$id';";
-	$r = mysqli_query($mysql_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find created nick handle line ".__LINE__." file ".__FILE__);
@@ -355,7 +355,7 @@ function drawAdminTools_NickHandles($admin){
 	$out = "<b><u>List of your whois nick handles:</u></b><br>";
 
 	$query = "SELECT * FROM $pro_mysql_handle_table WHERE owner='$adm_login';";
-	$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!!".mysqli_error());
 	$num_rows = mysqli_num_rows($result);
 	for($i=0;$i<$num_rows;$i++){
 		$row = mysqli_fetch_array($result);
@@ -369,7 +369,7 @@ function drawAdminTools_NickHandles($admin){
 		$hdl_id = $_REQUEST["hdl_id"];
 		// Edit currently selected ID.
 		$query = "SELECT * FROM $pro_mysql_handle_table WHERE id='$hdl_id' AND owner='$adm_login';";
-		$result = mysqli_query($mysql_connection,$query)or die("Cannot query \"$query\" !!!".mysql_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!!".mysqli_error());
 		$hdl = mysqli_fetch_array($result);
 		$out .= "<br><br><a href=\"?adm_login=$adm_login&adm_pass=$adm_pass&addrlink=$addrlink\">New handle</a><br>
 		<b><u>Edit existing nick-handle ".$hdl["name"].":</u></b><br>";

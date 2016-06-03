@@ -49,13 +49,13 @@ if($argc > 6){
 	}
 }
 
-$mysql_connection = mysql_connect("$pro_mysql_host", "$pro_mysql_login", "$pro_mysql_pass","$pro_mysql_db" )or die ("Cannot connect to $pro_mysql_host, with db: $pro_mysql_db");
+$mysqli_connection = mysqli_connect("$pro_mysql_host", "$pro_mysql_login", "$pro_mysql_pass","$pro_mysql_db" )or die ("Cannot connect to $pro_mysql_host, with db: $pro_mysql_db");
 
-$result = mysqli_list_tables($mysql_connection,$pro_mysql_db);
+$result = mysqli_list_tables($mysqli_connection,$pro_mysql_db);
 
 if (!$result) {
    echo "DB Error, could not list tables\n";
-   echo 'MySQL Error: ' . mysql_error();
+   echo 'MySQL Error: ' . mysqli_error();
    exit;
 }
 
@@ -67,10 +67,10 @@ $out .= "<?php
 \"tables\" => array(\n";
 $num = mysqli_num_rows($result);
 for($j=0;$j<$num;$j++){
-	$row = mysql_fetch_row($result);
+	$row = mysqli_fetch_row($result);
 	$out .= "\t\"$row[0]\" => array(\n";
 	$q = "DESCRIBE $row[0];";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" !\nError in ".__FILE__." line ".__LINE__.": ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" !\nError in ".__FILE__." line ".__LINE__.": ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	$out .= "\t\t\"vars\" => array(\n";
 	for($i=0;$i<$n;$i++){
@@ -90,7 +90,7 @@ for($j=0;$j<$num;$j++){
 			$out .= "\n\t\t\t)";
 	}
 	$q = "SHOW INDEX FROM $row[0];";
-        $r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" !\nError in ".__FILE__." line ".__LINE__.": ".mysql_error());
+        $r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" !\nError in ".__FILE__." line ".__LINE__.": ".mysqli_error());
         $n = mysqli_num_rows($r);
 	if($i > 0){
 		$out .= ",\n";
@@ -178,10 +178,10 @@ for($j=0;$j<$num;$j++){
 		$out .= "\t\t),\n";
 	else
 		$out .= "\t\t)\n";
-	mysql_free_result($r);
+	mysqli_free_result($r);
 }
 $out .= "\t)\n);\n?>\n";
-mysql_free_result($result);
+mysqli_free_result($result);
 
 $fp = fopen("dtc_db.php","w+b");
 fwrite($fp,$out);

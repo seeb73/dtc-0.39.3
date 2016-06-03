@@ -159,16 +159,16 @@ function drawAdminTools_VPSInstallation($admin,$vps){
 			$class_type = "class=\"alternatecolorline\"";
 		}
 		$q = "SELECT * FROM $pro_mysql_vps_ip_table WHERE ip_addr='".$vps_ips[$i]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 		$n2 = mysqli_num_rows($r);
 		if($n2 != 1){
 			$out .= _("Error line ".__LINE__." file ".__FILE__);
 		}else{
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 
 			$q = "SELECT * FROM $pro_mysql_ip_pool_table WHERE id = '".$a['ip_pool_id']."';";
-			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-			$ip_pool_row = mysql_fetch_array($r);
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$ip_pool_row = mysqli_fetch_array($r);
 
 			$out .= dtcFormLineDraw($vps_ips[$i] . "</th><td $class_type>" . $ip_pool_row['netmask'] . "</td><td $class_type>" . $ip_pool_row['gateway'] . "</td><td $class_type>" . $ip_pool_row['dns'],
 	"$frm_start<input type=\"hidden\" name=\"action\" value=\"set_ip_reverse_dns\">

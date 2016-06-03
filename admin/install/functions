@@ -865,7 +865,7 @@ setupDTCDatabase () {
 	echoIfVerbose "===> DTC is now creating its database:"
 
 	if [ ""$conf_mysql_cli_path = "" ] ; then
-		echoIfVerbose "->mysql_cli_path is not set"
+		echoIfVerbose "->mysqli_cli_path is not set"
 		conf_mysql_cli_path="mysql";
 	fi
 	if [ ""$conf_mysqlshow_cli_path = "" ] ; then
@@ -4472,14 +4472,14 @@ modifyMysqmail () {
 			fi
 			TMP_FILE=/tmp/mysqmail.tmp
 			echo "# Configured by DTC 0.22 : please do not touch this line !" > $TMP_FILE
-			echo "mysql_hostname ${conf_mysql_host}" >> $TMP_FILE
-			echo "mysql_user dtcdaemons" >> $TMP_FILE
-			echo "mysql_pass ${MYSQL_DTCDAEMONS_PASS}" >> $TMP_FILE
-			echo "mysql_db ${conf_mysql_db}" >> $TMP_FILE
-			echo "mysql_table_smtp_logs smtp_logs" >> $TMP_FILE
-			echo "mysql_table_pop_access pop_access" >> $TMP_FILE
-			echo "mysql_table_scoreboard email_accounting" >> $TMP_FILE
-			echo "mysql_table_domain domain" >> $TMP_FILE
+			echo "mysqli_hostname ${conf_mysql_host}" >> $TMP_FILE
+			echo "mysqli_user dtcdaemons" >> $TMP_FILE
+			echo "mysqli_pass ${MYSQL_DTCDAEMONS_PASS}" >> $TMP_FILE
+			echo "mysqli_db ${conf_mysql_db}" >> $TMP_FILE
+			echo "mysqli_table_smtp_logs smtp_logs" >> $TMP_FILE
+			echo "mysqli_table_pop_access pop_access" >> $TMP_FILE
+			echo "mysqli_table_scoreboard email_accounting" >> $TMP_FILE
+			echo "mysqli_table_domain domain" >> $TMP_FILE
 			#if [ $UNIX_TYPE = freebsd ] ; then
 			#	echo "syslog_file /var/log/maillog" >>$TMP_FILE
 			#else

@@ -8,6 +8,7 @@ function ssh_account_generate()
 	global $pro_mysql_domain_table;
         global $pro_mysql_admin_table;
         global $pro_mysql_subdomain_table;
+	global $mysqli_connection;
 
         global $conf_db_version;
         global $conf_unix_type;
@@ -28,7 +29,7 @@ function ssh_account_generate()
 
 	$num_generated_vhosts=0;
         $query = "SELECT * FROM $pro_mysql_domain_table WHERE 1 ORDER BY name;";
-        $result = mysqli_query($mysql_connection,$query)or die("Cannot execute query \"$query\"");
+        $result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\"");
         $num_rows = mysqli_num_rows($result);
 
         if($num_rows < 1){
@@ -42,7 +43,7 @@ function ssh_account_generate()
 
 		// Get the owner informations
                 $query2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$web_owner';";
-                $result2 = mysqli_query($mysql_connection,$query2)or die("Cannot execute query \"$query2\"");
+                $result2 = mysqli_query($mysqli_connection,$query2)or die("Cannot execute query \"$query2\"");
                 $num_rows2 = mysqli_num_rows($result2);
                 if($num_rows2 != 1){
                         die("No user of that name !");
@@ -51,7 +52,7 @@ function ssh_account_generate()
                 $web_path = $webadmin["path"];	
 
 /*		$query2 = "SELECT * FROM $pro_mysql_subdomain_table WHERE domain_name='$web_name' AND ip='default' ORDER BY subdomain_name;";
-		$result2 = mysqli_query($mysql_connection,$query2)or die("Cannot execute query \"$query2\"");
+		$result2 = mysqli_query($mysqli_connection,$query2)or die("Cannot execute query \"$query2\"");
 		$num_rows2 = mysqli_num_rows($result2);
 
 		for ($j=0; $j < $num_rows2; $j++)

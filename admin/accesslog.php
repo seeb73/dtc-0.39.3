@@ -29,7 +29,7 @@ function delete_old_files_in_tmp(){
 	AND subdomain.ip='default'
 	AND subdomain.generate_vhost='yes'
 	ORDER BY admin.adm_login,domain.name,subdomain.subdomain_name";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysqli_fetch_array($r);
@@ -63,7 +63,7 @@ function make_stats(){
 	AND subdomain.ip='default'
 	AND subdomain.generate_vhost='yes'
 	ORDER BY admin.adm_login,domain.name,subdomain.subdomain_name";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysqli_fetch_array($r);
@@ -77,15 +77,15 @@ function make_stats(){
 		$table_name = str_replace("-","A",str_replace(".","_",$a["name"].'$'.$a["subdomain_name"].'$'."xfer"));
 
 		echo "Checking $table_name ... ";
-		if(mysql_table_exists("apachelogs",$table_name)){
-			mysql_select_db("apachelogs");
+		if(mysqli_table_exists("apachelogs",$table_name)){
+			mysqli_select_db("apachelogs");
 			$qus = "SHOW TABLE STATUS LIKE '".$table_name."'";
-			$res = mysqli_query($mysql_connection,$qus) or die("Cannot execute query \"$qus\" line ".__LINE__." file ".__FILE__.": ".mysql_error());
+			$res = mysqli_query($mysqli_connection,$qus) or die("Cannot execute query \"$qus\" line ".__LINE__." file ".__FILE__.": ".mysqli_error());
 			$ars = mysqli_fetch_array($res);
 			if($ars["Rows"] > 0){
 				$query = "SELECT MIN(time_stamp) AS start FROM apachelogs.`".$table_name."`";
-				$result = mysqli_query($mysql_connection,$query) or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__.": ".mysql_error());
-				$start = mysql_result($result,0,"start");
+				$result = mysqli_query($mysqli_connection,$query) or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__.": ".mysqli_error());
+				$start = mysqli_result($result,0,"start");
 				if($start<$today_midnight){
 					echo "stats to be done!";
 				}
@@ -107,7 +107,7 @@ function make_stats(){
 
 					echo "Querying SELECT * FROM apachelogs.".$table_name."...";
 					$query_dump = "SELECT * FROM apachelogs.`".$table_name."` WHERE time_stamp>='".$start."' AND time_stamp<='".$end."' ORDER BY time_stamp";
-					$result_dump = mysqli_query($mysql_connection,$query_dump) or die("Cannot execute query \"$query_dump\" file ".__FILE__." line ".__LINE__.": ".mysql_error());
+					$result_dump = mysqli_query($mysqli_connection,$query_dump) or die("Cannot execute query \"$query_dump\" file ".__FILE__." line ".__LINE__.": ".mysqli_error());
 					$dump_num_rows = mysqli_num_rows($result_dump);
 					if($dump_num_rows>0){
 						echo "$dump_num_rows records for $dump_filename...\n";
@@ -220,28 +220,28 @@ fi
 					// Check if database still alive
 					$is_db_alive = "SELECT FROM apachelogs.`".$table_name."` WHERE time_stamp='".$end."' LIMIT 0,1";
 					// If not trying reconnect
-					if (!mysqli_query($mysql_connection,$is_db_alive)) {
-						mysql_close();
+					if (!mysqli_query($mysqli_connection,$is_db_alive)) {
+						mysqli_close();
 						if(connect2base() == false){
 							die("Cannot connect to database !!!");
 						}
 					}
 															
 					$query_dump = "DELETE FROM apachelogs.`".$table_name."` WHERE time_stamp<='".$end."'";
-					$result_dump = mysqli_query($mysql_connection,$query_dump) or die("Cannot execute query \"$query_dump\" file ".__FILE__." line ".__LINE__.": ".mysql_error());
+					$result_dump = mysqli_query($mysqli_connection,$query_dump) or die("Cannot execute query \"$query_dump\" file ".__FILE__." line ".__LINE__.": ".mysqli_error());
 
 					$opt_table = "OPTIMIZE TABLE apachelogs.`".$table_name."` ;";
-					mysqli_query($mysql_connection,$opt_table) or die("Cannot execute query \"$opt_table\" line ".__LINE__." file ".__FILE__.": ".mysql_error());
+					mysqli_query($mysqli_connection,$opt_table) or die("Cannot execute query \"$opt_table\" line ".__LINE__." file ".__FILE__.": ".mysqli_error());
 
 					$qus = "SHOW TABLE STATUS LIKE '".$table_name."'";
-					$res = mysqli_query($mysql_connection,$qus) or die("Cannot execute query \"$qus\" line ".__LINE__." file ".__FILE__.": ".mysql_error());
+					$res = mysqli_query($mysqli_connection,$qus) or die("Cannot execute query \"$qus\" line ".__LINE__." file ".__FILE__.": ".mysqli_error());
 					$ars = mysqli_fetch_array($res);
 					if($ars["Rows"] == 0){
 						$start = $today_midnight;
 					}else{
 						$query = "SELECT MIN(time_stamp) AS start FROM apachelogs.`".$table_name."`";
-						$result = mysqli_query($mysql_connection,$query) or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__.": ".mysql_error());
-						$start = mysql_result($result,0,"start");
+						$result = mysqli_query($mysqli_connection,$query) or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__.": ".mysqli_error());
+						$start = mysqli_result($result,0,"start");
 					}
 				}
 				echo "[OK]\n";
@@ -251,7 +251,7 @@ fi
 		}else{
 			echo "no table!\n";
 		}
-		mysql_select_db($conf_mysql_db);
+		mysqli_select_db($conf_mysql_db);
 	}
 }
 
@@ -269,7 +269,7 @@ function make_log_archive (){
 	AND subdomain.ip='default'
 	AND subdomain.generate_vhost='yes'
 	ORDER BY admin.adm_login,domain.name,subdomain.subdomain_name";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	$cur_year = date("Y");
 	$cur_month = date("m");

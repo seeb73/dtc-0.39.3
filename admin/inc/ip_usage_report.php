@@ -45,7 +45,7 @@ function findPoolID($ip){
 	$ip_calc = new Net_IPv4();
 	$ip_calc2 = new Net_IPv4();
 	$q = "SELECT * FROM $pro_mysql_ip_pool_table WHERE 1;";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysqli_fetch_array($r);
@@ -101,7 +101,7 @@ function fullIPUsage() {
 	global $pro_mysql_ssl_ips_table;
 
 	$q = "SELECT * FROM $pro_mysql_ip_pool_table WHERE 1;";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	$pools = array();
 	$pools["unpooled"] = array();
@@ -122,7 +122,7 @@ function fullIPUsage() {
 
 
 	$q = "SELECT * FROM $pro_mysql_vps_server_table WHERE 1;";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysqli_fetch_array($r);
@@ -147,7 +147,7 @@ function fullIPUsage() {
 		}
 
 		$q2 = "SELECT * FROM $pro_mysql_vps_ip_table WHERE vps_server_hostname='".$a["hostname"]."';";
-		$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 		$n2 = mysqli_num_rows($r2);
 		for($j=0;$j<$n2;$j++){
 			$a2 = mysqli_fetch_array($r2);
@@ -168,7 +168,7 @@ function fullIPUsage() {
 	}
 
 	$q2 = "SELECT * FROM $pro_mysql_dedicated_ips_table WHERE 1;";
-	$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n2 = mysqli_num_rows($r2);
 	for($j=0;$j<$n2;$j++){
 		$a2 = mysqli_fetch_array($r2);
@@ -184,7 +184,7 @@ function fullIPUsage() {
 	}
 
 	$q2 = "SELECT * FROM $pro_mysql_ssl_ips_table WHERE 1;";
-	$r2 = mysqli_query($mysql_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n2 = mysqli_num_rows($r2);
 	for($j=0;$j<$n2;$j++){
 		$a2 = mysqli_fetch_array($r2);

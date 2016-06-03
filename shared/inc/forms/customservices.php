@@ -27,20 +27,20 @@ function drawAdminTools_Custom($admin,$custom_id){
 	// Check owner and fetch!
 	checkCustomAdmin($adm_login,$adm_pass,$custom_id);
 	$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE id='$custom_id';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$out .= _("Custom id not found!");
 		return $out;
 	}
-	$custom_prod = mysql_fetch_array($r);
+	$custom_prod = mysqli_fetch_array($r);
 
 	// Display the current contract
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$custom_prod["product_id"]."';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n == 1){
-		$server_prod = mysql_fetch_array($r);
+		$server_prod = mysqli_fetch_array($r);
 		$contract = $server_prod["name"];
 	}else{
 		$contract = _("Not found!");
@@ -48,19 +48,19 @@ function drawAdminTools_Custom($admin,$custom_id){
 
 	// Get the current admin
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."';";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 	$n = mysqli_num_rows($r);
 	if($n == 1){
-		$admin = mysql_fetch_array($r);
+		$admin = mysqli_fetch_array($r);
 	}
 
 	$additiona_info = "";
 	if($server_prod["custom_heb_type"] != 0){
 		$q = "SELECT * FROM $pro_mysql_custom_heb_types_table WHERE id='".$server_prod["custom_heb_type"]."'";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		if($n == 1){
-			$custom_heb_types = mysql_fetch_array($r);
+			$custom_heb_types = mysqli_fetch_array($r);
 			if($custom_heb_types["reqdomain"] == "yes"){
 				$additiona_info .= "<br>"._("Domain or user name:")." ".$custom_prod["domain"];
 			}
@@ -89,17 +89,17 @@ function drawAdminTools_Custom($admin,$custom_id){
 	$out .= " ".calculateExpirationDate($custom_prod["expire_date"],$period)."<br>";
 
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$adm_login."'";
-	$r = mysqli_query($mysql_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
-	$admin = mysql_fetch_array($r);
+	$r = mysqli_query($mysqli_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$admin = mysqli_fetch_array($r);
 
 	if($admin["show_invoice_info"] == 'yes' && $conf_show_invoice_info == 'yes'){
 		$out .= "<br>". _("Please renew it with one of the following options") ."<br>";
 		if ($secpayconf_use_products_for_renewal == 'yes'){
 			$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$custom_prod["product_id"]."';";
-			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 			$n = mysqli_num_rows($r);
 			if($n == 1){
-				$a = mysql_fetch_array($r);
+				$a = mysqli_fetch_array($r);
 				$out .= "<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 		<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 		<input type=\"hidden\" name=\"renew_type\" value=\"custom\">
@@ -112,10 +112,10 @@ function drawAdminTools_Custom($admin,$custom_id){
 		}
 
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$custom_prod["product_id"]."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 		$n = mysqli_num_rows($r);
 		for($i=0;$i<$n;$i++){
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$out .= "<br><form method=\"$conf_post_or_get\" action=\"/dtc/new_account.php\">
 		<input type=\"hidden\" name=\"action\" value=\"contract_renewal\">
 		<input type=\"hidden\" name=\"renew_type\" value=\"custom\">

@@ -47,13 +47,13 @@ if($_REQUEST["mb_currency"] != $secpayconf_currency_letters){
 	die("Incorrect currency!");
 }
 
-$item_number = mysql_real_escape_string($_REQUEST["transaction_id"]);
-$amount = mysql_real_escape_string($_REQUEST["mb_amount"]);
+$item_number = mysqli_real_escape_string($mysqli_connection,$_REQUEST["transaction_id"]);
+$amount = mysqli_real_escape_string($mysqli_connection,$_REQUEST["mb_amount"]);
 if($_REQUEST["mb_status"] != "0"){
-	setPaiemntAsPending($item_number,mysql_real_escape_string( "moneybookers" ));
+	setPaiemntAsPending($item_number,mysqli_real_escape_string($mysqli_connection, "moneybookers" ));
 }
 if( $_REQUEST["mb_status"] != "2" ){
-	validatePaiement($item_number,$amount,"online","moneybookers",mysql_real_escape_string($_REQUEST["mb_transaction_id"]));
+	validatePaiement($item_number,$amount,"online","moneybookers",mysqli_real_escape_string($mysqli_connection,$_REQUEST["mb_transaction_id"]));
 }
 
 ?>

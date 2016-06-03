@@ -14,7 +14,7 @@ function perso_vhost_generate(){
 	// Recuperations des infos
 
 	$query = "SELECT login,homedir,hostname,vhost_ip FROM $perso_mysql_table WHERE another_perso='yes' AND hostname='anotherlight.com' ORDER BY hostname,login";
-	$result = mysqli_query($mysql_connection,$query)or die("Cannot execute query \"$query\"");
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\"");
 	$num_rows = mysqli_num_rows($result);
 
 	if($num_rows < 1){

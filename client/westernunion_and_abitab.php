@@ -28,7 +28,7 @@ if( !isset($_REQUEST["item_id"]) || !isRandomNum($_REQUEST["item_id"]) ){
 }
 if( $proceed == "yes"){
 	$q = "SELECT * FROM $pro_mysql_pay_table WHERE hash_check_key='" . $_REQUEST["hash_check"] . "' AND id='" . $_REQUEST["item_id"] . "'";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__);
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__);
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$form = _("Could not find your registration in the database.");
@@ -45,8 +45,8 @@ if( $proceed == "yes"){
 		$pending_reason = "Abitab";
 	}
 	$q = "UPDATE $pro_mysql_pay_table SET paiement_type='$payment_type',valid='pending',pending_reason='$pending_reason' WHERE hash_check_key='" .
-	mysql_real_escape_string($_REQUEST["hash_check"]) . "' AND id='" . mysql_real_escape_string($_REQUEST["item_id"]) . "'";
-	$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+	mysqli_real_escape_string($mysqli_connection,$_REQUEST["hash_check"]) . "' AND id='" . mysqli_real_escape_string($mysqli_connection,$_REQUEST["item_id"]) . "'";
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 }
 
 // Display the payment infos

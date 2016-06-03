@@ -27,10 +27,10 @@ function drawReseller($admin){
 		$next_adm = $admin["info"]["ob_head"];
 		while($next_adm != $adm_login){
 			$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$next_adm';";
-			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysql_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 			$n = mysqli_num_rows($r);
 			if($n != 1)	die("Could not fetch one of the child accounts !!!");
-			$a = mysql_fetch_array($r);
+			$a = mysqli_fetch_array($r);
 			$next_adm = $a["ob_next"];
 			$out .= "<tr><td><form method=\"$conf_post_or_get\" action=\"?\">$hidden
 			<input type=\"hidden\" name=\"action\" value=\"change_child_account_values\">

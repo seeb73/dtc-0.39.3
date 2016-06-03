@@ -26,7 +26,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_stats_login"){
 		$htaccess="AuthName \"Webstats Login!\" \nAuthType Basic \nAuthUserFile ".$admin_path."/".$edit_domain."/.htpasswd \nrequire valid-user";
 
 		$q = "UPDATE $pro_mysql_domain_table SET stats_login='".$_REQUEST["stats_login"]."',stats_pass='".$_REQUEST["stats_pass"]."',stats_subdomain='$stats_subdomain_flag'  WHERE name='$edit_domain';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 		// What's commented below is wrong because it shows the password in a "ps" call, so it's now replaced by crypt() and fwrite().
 		// exec("$conf_htpasswd_path -cb $admin_path/$edit_domain/.htpasswd ".$_REQUEST["stats_login"]." ".$_REQUEST["stats_pass"]."");
 		$encrypted = crypt($_REQUEST["stats_pass"]);
@@ -37,10 +37,10 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_stats_login"){
 		}
 		if($stats_subdomain_flag == "yes"){	
 			$q="SELECT subdomain_name,generate_vhost FROM subdomain where domain_name='".$edit_domain."' and generate_vhost='yes';";
-			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 			$num_rows = mysqli_num_rows($r);
 			for($i=0;$i<$num_rows;$i++){
-				$a=mysql_fetch_array($r);
+				$a=mysqli_fetch_array($r);
 				$filename=$admin_path."/".$edit_domain."/subdomains/".$a["subdomain_name"]."/logs/.htaccess";
 				$handle = fopen($filename, 'w');
 
@@ -94,15 +94,15 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "modify_stats_login_pass
 
 	if($commit_flag == "yes"){
 		$q = "UPDATE $pro_mysql_domain_table SET stats_login='".$_REQUEST["stats_login"]."',stats_pass='".$_REQUEST["stats_pass"]."',stats_subdomain='$stats_subdomain_flag'  WHERE name='$edit_domain';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 		exec("$conf_htpasswd_path -cb $admin_path/$edit_domain/.htpasswd ".$_REQUEST["stats_login"]." ".$_REQUEST["stats_pass"]."");	
 
 		if($stats_subdomain_flag == "yes"){			
 			$q="SELECT subdomain_name FROM subdomain where domain_name='".$edit_domain."' and generate_vhost='yes';";
-			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 			$num_rows = mysqli_num_rows($r);
 			for($i=0;$i<$num_rows;$i++){
-				$a=mysql_fetch_array($r);
+				$a=mysqli_fetch_array($r);
 				$filename=$admin_path."/".$edit_domain."/subdomains/".$a["subdomain_name"]."/logs/.htaccess";
 				$handle = fopen($filename, 'w');			
 
@@ -118,10 +118,10 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "modify_stats_login_pass
 		}
 	}else{	
 		$q="SELECT subdomain_name FROM subdomain where domain_name='".$edit_domain."';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 		$num_rows = mysqli_num_rows($r);
 		for($i=0;$i<$num_rows;$i++){
-			$a=mysql_fetch_array($r);
+			$a=mysqli_fetch_array($r);
 			$filename=$admin_path."/".$edit_domain."/subdomains/".$a["subdomain_name"]."/logs/.htaccess";		
 			
 			if(file_exists($filename)){
@@ -167,13 +167,13 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "del_stats_login"){
 	
 	if($commit_flag == "yes"){
 		$q = "UPDATE $pro_mysql_domain_table SET stats_login='',stats_pass='',stats_subdomain='no'  WHERE name='$edit_domain';";
-		$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());	
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());	
 		if($stats_subdomain_flag == "yes"){
 			$q="SELECT subdomain_name FROM subdomain where domain_name='".$edit_domain."';";
-			$r = mysqli_query($mysql_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
 			$num_rows = mysqli_num_rows($r);
 			for($i=0;$i<$num_rows;$i++){
-				$a=mysql_fetch_array($r);
+				$a=mysqli_fetch_array($r);
 				$filename=$admin_path."/".$edit_domain."/subdomains/".$a["subdomain_name"]."/logs/.htaccess";
 				if(file_exists($filename)){
 					unlink($filename);
