@@ -76,6 +76,7 @@ function sendVPSReminderEmail($remaining_days,$file,$send_webmaster_copy="no"){
 	global $dtcshared_path;
 
 	global $send_email_header;
+	global $mysqli_connection;
 
 	$now_timestamp = time();
 	$one_day = 3600 * 24;
@@ -173,6 +174,7 @@ function sendDedicatedReminderEmail($remaining_days,$file,$send_webmaster_copy="
 	global $dtcshared_path;
 
 	global $send_email_header;
+	global $mysqli_connection;
 
 	$now_timestamp = time();
 	$one_day = 3600 * 24;
@@ -265,6 +267,7 @@ function sendSharedHostingReminderEmail($remaining_days,$file,$send_webmaster_co
 	global $dtcshared_path;
 
 	global $send_email_header;
+	global $mysqli_connection;
 
 	$now_timestamp = time();
 	$one_day = 3600 * 24;
@@ -344,6 +347,7 @@ function sendCustomProductsReminderEmail($remaining_days,$file,$cust_heb_type_id
 	global $dtcshared_path;
 
 	global $send_email_header;
+	global $mysqli_connection;
 
 	$now_timestamp = time();
 	$one_day = 3600 * 24;

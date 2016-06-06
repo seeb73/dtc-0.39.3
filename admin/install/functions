@@ -2249,6 +2249,9 @@ modifyClamavConf () {
 		# need to add the following to the config file:
 		# AllowSupplementaryGroups
 		# LocalSocket /var/run/clamav/clamd.ctl
+
+		# edit the configuration to allow for supplementary groups
+		sed -e 's/AllowSupplementaryGroups false/AllowSupplementaryGroups true/g' $PATH_CLAMAV_CONF
 	
 		# need to fix a problem with a previous version
 
@@ -3096,6 +3099,9 @@ _OPTS=\"--children=$maxprocloopdaemon\"
 OPTIONS=\"--domain=\`cat /var/lib/dtc/etc/local_domains | tr \\\\\\r\\\\\\n ,,\`\"
 " >/etc/sysconfig/dkimproxy_out
 	fi
+
+	# fix permissions for dkim key
+	chown -R dkimproxy /var/lib/dkimproxy
 
 	if [ "$UNIX_TYPE" = "debian" -a "$DKIMPROXY_CONF" != "" -a -f $DKIMPROXY_CONF ] ; then
 		echoIfVerbose "===> adding dkimproxy config to $DKIMPROXY_CONF"
