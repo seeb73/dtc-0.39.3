@@ -99,7 +99,7 @@ if [ -f /etc/debian_version ] ; then
 	/usr/share/dtc/admin/install/uninstall
 	. /usr/share/dtc/admin/install/debian_config
 	. ${DTC_SAVED_INSTALL_CONFIG}
-	if [ ""$conf_apache_version = "2" ] ; then
+	if [ ""$conf_apache_version = "2" -o ""$conf_apache_version = "2.2" -o ""$conf_apache_version = "2.4" ] ; then
 		PATH_HTTPD_CONF=/etc/apache2/apache2.conf
 	else
 		PATH_HTTPD_CONF=/etc/apache/httpd.conf

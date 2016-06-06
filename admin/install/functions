@@ -270,7 +270,7 @@ searchPATH_PHP_INI_APACHE () {
 	# This one for Gentoo
 	elif [ -f /etc/php/apache2-php5/php.ini ] ; then
 		PATH_PHP_INI_APACHE=/etc/php/apache2-php5/php.ini
-	elif [ ""$conf_apache_version = "2" ] ; then
+	elif [[ ""$conf_apache_version == 2* ]] ; then
 		if [ ""${PHPMAJOR} -lt 5 ] ; then
 			if [ -f /etc/php4/apache2/php.ini ] ; then
 				PATH_PHP_INI_APACHE=/etc/php4/apache2/php.ini
@@ -1354,7 +1354,7 @@ createApachePIDSymLink () {
 }
 
 enableApache2Modules () {
-	if [ ""$conf_apache_version = "2" ] ; then
+	if [[ ""$conf_apache_version == 2* ]] ; then
 		echoIfVerbose "-> Enabling mod rewrite, mod spelling and modssl for apache 2"
 		# Activate mod_rewrite
 		if [ -f /etc/apache2/mods-available/rewrite.load ] ; then

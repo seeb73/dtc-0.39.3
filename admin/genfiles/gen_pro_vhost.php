@@ -326,8 +326,15 @@ AND $pro_mysql_admin_table.adm_login=$pro_mysql_domain_table.owner;";
 					$vhost_file .= "<VirtualHost ".$all_site_addrs[$i].":80>
 	ServerName $conf_404_subdomain.$conf_main_domain
 	DocumentRoot $path_404/html
-	<Directory $path_404/html>
-		Allow from all
+	<Directory $path_404/html>";
+					if ($conf_apache_version == "2" || $conf_apache_version == "2.2" || $conf_apache_version == "1")
+					{
+						$vhost_file .= "Allow from all";
+					} else if ($conf_apache_version == "2.4")
+					{
+						$vhost_file .= "Require all granted";
+					}	
+					$vhost_file .="
 	</Directory>
 	ScriptAlias /cgi-bin $path_404/cgi-bin
 	ErrorLog $path_404/logs/error.log
@@ -403,19 +410,49 @@ AND $pro_mysql_admin_table.adm_login=$pro_mysql_domain_table.owner;";
 	}
 
 	$vhost_file .= "<Directory $conf_dtcadmin_path>
-	Options FollowSymLinks
+	Options FollowSymLinks";
+	if ($conf_apache_version == "2" || $conf_apache_version == "2.2" || $conf_apache_version == "1")
+	{
+		$vhost_file .= "
 	Order Deny,Allow
-	Allow from all
+	Allow from all";
+	} 
+	else if ($conf_apache_version == "2.4")
+	{
+		$vhost_file .= "
+	Require all granted";
+	}
+		$vhost_file .="
 </Directory>
 <Directory $conf_dtcclient_path>
-	Options FollowSymLinks
+	Options FollowSymLinks";
+	if ($conf_apache_version == "2" || $conf_apache_version == "2.2" || $conf_apache_version == "1")
+	{
+		$vhost_file .= "
 	Order Deny,Allow
-	Allow from all
+	Allow from all";
+	} 
+	else if ($conf_apache_version == "2.4")
+	{
+		$vhost_file .= "
+	Require all granted";
+	}
+		$vhost_file .="
 </Directory>
 <Directory $conf_dtcemail_path>
-	Options FollowSymLinks
+	Options FollowSymLinks";
+	if ($conf_apache_version == "2" || $conf_apache_version == "2.2" || $conf_apache_version == "1")
+	{
+		$vhost_file .= "
 	Order Deny,Allow
-	Allow from all
+	Allow from all";
+	} 
+	else if ($conf_apache_version == "2.4")
+	{
+		$vhost_file .= "
+	Require all granted";
+	}
+		$vhost_file .="
 </Directory>\n";
 
 	if($conf_autogen_webmail_alias == "yes"){
@@ -796,12 +833,34 @@ AND $pro_mysql_admin_table.id_client != '0'";
 			$vhost_file .= $php_more_conf . "
 	DocumentRoot $web_path/$web_name/subdomains/$web_subname/html
 	<Directory $web_path/$web_name/subdomains/$web_subname/html>
-		DirectoryIndex index.php
-		Allow from all
+		DirectoryIndex index.php";
+		if ($conf_apache_version == "2" || $conf_apache_version == "2.2" || $conf_apache_version == "1")
+		{
+			$vhost_file .= "
+		Order Deny,Allow
+		Allow from all";
+		} 
+		else if ($conf_apache_version == "2.4")
+		{
+			$vhost_file .= "
+		Require all granted";
+		}
+			$vhost_file .="
 	</Directory>
 	<Directory $web_path/$web_name/subdomains/$web_subname/logs>
-		DirectoryIndex index.php
-		Allow from all
+		DirectoryIndex index.php";
+		if ($conf_apache_version == "2" || $conf_apache_version == "2.2" || $conf_apache_version == "1")
+		{
+			$vhost_file .= "
+		Order Deny,Allow
+		Allow from all";
+		} 
+		else if ($conf_apache_version == "2.4")
+		{
+			$vhost_file .= "
+		Require all granted";
+		}
+			$vhost_file .="
 	</Directory>
 # No ScriptAlias: we want to use system's /usr/lib/cgi-bin !!!
 #	ScriptAlias /cgi-bin $web_path/$web_name/subdomains/$web_subname/cgi-bin
@@ -1046,8 +1105,19 @@ $vhost_file .= "
 						if($site_expired == "yes"){
 							$document_root = $conf_generated_file_path."/expired_site";
 							$vhost_file .= "	DocumentRoot $document_root
-	<Directory $document_root>
-		Allow from all
+	<Directory $document_root>";
+		if ($conf_apache_version == "2" || $conf_apache_version == "2.2" || $conf_apache_version == "1")
+		{
+			$vhost_file .= "
+		Order Deny,Allow
+		Allow from all";
+		} 
+		else if ($conf_apache_version == "2.4")
+		{
+			$vhost_file .= "
+		Require all granted";
+		}
+			$vhost_file .="
 	</Directory>\n";
 						}else{
 							if($webadmin["shared_hosting_security"] == 'sbox_aufs' || ($webadmin["shared_hosting_security"] == 'mod_php' && $subdomain["shared_hosting_security"] == 'sbox_aufs')){
@@ -1057,8 +1127,19 @@ $vhost_file .= "
 							}
 
 							$vhost_file .= "	DocumentRoot $document_root
-	<Directory $document_root>
-		Allow from all
+	<Directory $document_root>";
+		if ($conf_apache_version == "2" || $conf_apache_version == "2.2" || $conf_apache_version == "1")
+		{
+			$vhost_file .= "
+		Order Deny,Allow
+		Allow from all";
+		} 
+		else if ($conf_apache_version == "2.4")
+		{
+			$vhost_file .= "
+		Require all granted";
+		}
+			$vhost_file .="
 	</Directory>\n";
 							if($webadmin["shared_hosting_security"] == 'mod_php' && $shared_hosting_subdomain_security == 'mod_php'){
 								if($php_vers_bigger_than_53){
@@ -1203,7 +1284,7 @@ $logrotate_template
 
 	sharedscripts
 ";
-		if($conf_apache_version == "2"){
+		if($conf_apache_version == "2" || $conf_apache_version == "2.2" || $conf_apache_version == "2.4"){
 			$logrotate_file .= "
 	postrotate
 		if [ -f /var/run/apache2.pid ]; then

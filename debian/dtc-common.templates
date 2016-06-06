@@ -275,3 +275,10 @@ Default: 587
 _Description: SMTP submission ports
  Choose what ports are used for the submission service.
  If you choose more than one, separate them with commas.
+
+Template: dtc/conf_apache_version
+Type:string
+Default: 2.4
+_Description: Apache verison (2.2 or 2.4)
+ Please choose desired Apache version to generate vhosts for.
+

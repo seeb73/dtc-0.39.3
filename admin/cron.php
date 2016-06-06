@@ -58,7 +58,7 @@ function searchApachectl () {
 	global $conf_apache_version;
 	// Set here your apachectl path if you need it fully (like for example
 	// /usr/sbin/apachectl for debian, or /usr/local/sbin/apachectl for FreeBSD)
-	if($conf_apache_version == "2"){
+	if($conf_apache_version == "2" || $conf_apache_version == "2.2" || $conf_apache_version == "2.4"){
 		if(file_exists("/usr/sbin/apache2ctl")){
 			$APACHECTL = "/usr/sbin/apache2ctl";
 		}else if(file_exists("/usr/local/sbin/apache2ctl")){
@@ -258,6 +258,7 @@ function updateAllDomainsStats(){
 function updateAllListWebArchive(){
 	global $pro_mysql_list_table;
 	global $pro_mysql_domain_table;
+	global $mysqli_connection;
 
 	$query = "SELECT * FROM $pro_mysql_list_table WHERE webarchive='yes'";
 	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__. " sql said ".mysqli_error());

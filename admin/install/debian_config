@@ -65,6 +65,9 @@ debianGetDebconfValues () {
 
 	conf_apache_version=2
 
+	db_get dtc/conf_apache_version
+	conf_apache_version=$RET
+
 	db_get dtc/conf_gen_ssl_cert
 	conf_gen_ssl_cert=$RET
 	db_get dtc/conf_cert_passphrase
