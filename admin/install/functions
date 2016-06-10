@@ -2259,6 +2259,9 @@ modifyClamavConf () {
 			perl -i -p -e 's/^1;[^\n]*\n//' $PATH_CLAMAV_CONF
 		fi
 
+		# add PidFile to the default configuration, so we can monitor with monit
+		echo "PidFile /var/run/clamav/clamd.pid" >> "$PATH_CLAMAV_CONF"
+
 		# We don't need that code anymore, as clamav is now configured correctly by default
 #		if grep "Configured by DTC" "$PATH_CLAMAV_CONF" >/dev/null; then
 #			echoIfVerbose "$PATH_CLAMAV_CONF already configured..."
