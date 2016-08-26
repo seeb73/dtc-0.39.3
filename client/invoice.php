@@ -301,6 +301,10 @@ class zPDF extends FPDF{
 			}else{
 				$pname = $product["name"];
 			}
+			if ($completedorder["services"] != "")
+			{
+				$pname = $pname . "(" . $completedorder["services"] . ")";
+			}
 			$this->Ln();
 			$this->SetFont('Arial','',9);
 			$this->Cell(110,7,$pname,"1",0,"L");
