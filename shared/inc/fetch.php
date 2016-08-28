@@ -927,6 +927,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 
 function fetchClientData($id_client){
 		global $pro_mysql_client_table;
+		global $mysqli_connection;
 
 		$query4 = "SELECT * FROM $pro_mysql_client_table WHERE id='$id_client'";
 		$result4 = mysqli_query($mysqli_connection,$query4);

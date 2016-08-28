@@ -466,7 +466,7 @@ function checkLoginPassAndDomain($adm_login,$adm_pass,$domain_name){
 	}
 
 	$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login' AND ((adm_pass='$adm_pass' OR adm_pass=SHA1('$adm_pass')) OR (pass_next_req='$adm_pass' AND pass_expire > '".time()."'));";
-	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" !!!".mysqli_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
 	$num_rows = mysqli_num_rows($result);
 	if($num_rows != 1){
 		$query = "SELECT * FROM $pro_mysql_tik_admins_table WHERE pass_next_req='$adm_pass' AND pass_expire > '".time()."';";
@@ -476,7 +476,7 @@ function checkLoginPassAndDomain($adm_login,$adm_pass,$domain_name){
 			die("User or password is incorrect !");
 		}
 		$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" !!!".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
 		$num_rows = mysqli_num_rows($result);
 		if($num_rows != 1){
 			die("User or password is incorrect !");
@@ -484,7 +484,7 @@ function checkLoginPassAndDomain($adm_login,$adm_pass,$domain_name){
 	}
 
 	$query = "SELECT * FROM $pro_mysql_domain_table WHERE owner='$adm_login' AND name='$domain_name';";
-	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" !!!".mysqli_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
 	$num_rows = mysqli_num_rows($result);
 	if($num_rows != 1)	die("Cannot update: you are trying to do something on a domain name you don't own!");
 }
@@ -493,9 +493,10 @@ function checkLoginPass($adm_login,$adm_pass){
 	global $pro_mysql_admin_table;
 	global $pro_mysql_config_table;
 	global $pro_mysql_tik_admins_table;
+	global $mysqli_connection;
 
 	$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login' AND ((adm_pass='$adm_pass' OR adm_pass=SHA1('$adm_pass')) OR (pass_next_req='$adm_pass' AND pass_expire > '".time()."'));";
-	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" !!!".mysqli_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
 	$num_rows = mysqli_num_rows($result);
 	if($num_rows != 1){
 		$query = "SELECT * FROM $pro_mysql_tik_admins_table WHERE pass_next_req='$adm_pass' AND pass_expire > '".time()."';";
@@ -505,7 +506,7 @@ function checkLoginPass($adm_login,$adm_pass){
 			die("User or password is incorrect !");
 		}
 		$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" !!!".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
 		$num_rows = mysqli_num_rows($result);
 		if($num_rows != 1){
 			die("User or password is incorrect !");
@@ -702,6 +703,7 @@ function updateUsingCron($changes){
 // so that backup server can update the domain-list of this server.
 function triggerDomainListUpdate(){
 	global $pro_mysql_backup_table;
+	global $mysqli_connection;
 
 	$q = "UPDATE $pro_mysql_backup_table SET status='pending' WHERE type='trigger_changes';";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
@@ -942,6 +944,7 @@ function addDomainToUser($adm_login,$adm_pass,$domain_name,$domain_password=""){
 	global $conf_root_admin_random_pass;
 	global $conf_pass_expire;
 	global $conf_unix_type;
+	global $mysqli_connection;
 
 	checkLoginPass($adm_login,$adm_pass);
 	$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
@@ -988,7 +991,7 @@ function addDomainToUser($adm_login,$adm_pass,$domain_name,$domain_password=""){
 
 	// Create default domain www
 	$adm_query = "INSERT INTO $pro_mysql_subdomain_table (id,domain_name,subdomain_name,path) VALUES ('','".$domain_name."','www','www');";
-	mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" !!!".mysqli_error());
+	mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
 
 	// Tell the cron job to activate the changes
 	$adm_query = "UPDATE $pro_mysql_cronjob_table SET qmail_newu='yes',restart_qmail='yes',reload_named='yes',restart_apache='yes',gen_vhosts='yes',gen_named='yes',gen_qmail='yes',gen_webalizer='yes',gen_backup='yes' WHERE 1;";

@@ -175,7 +175,7 @@ function skin_LayoutAdminPage_Default (){
 			$rand = getRandomValue();
 			$expirationTIME = time() + (60 * $conf_session_expir_minute);
 			$q = "UPDATE $pro_mysql_config_table SET root_admin_random_pass='$rand', pass_expire='$expirationTIME';";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" !");
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." !");
 		}
 		$leftFrameCells[] = skin($conf_skin,adminList($rand), _("Admin List") );
 		// Make the frame
