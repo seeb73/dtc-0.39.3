@@ -54,10 +54,10 @@ if($num_rows != 1){
 	        $domupdate_result = mysqli_query($mysqli_connection,$domupdate_query)or die("Cannot execute query \"$domupdate_query\"");
 
 		$query = "UPDATE $pro_mysql_subdomain_table SET ip='$ip' WHERE login='$login' AND pass='$pass';";
-		mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" !!!".mysqli_error());
+		mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
 
 		$adm_query = "UPDATE $pro_mysql_cronjob_table SET gen_named='yes',reload_named='yes' WHERE 1;";
-		mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" !!!".mysqli_error());;
+		mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());;
 		echo "Succes: updated to $ip\n";
 	}else{
 		echo "Succes: update not needed to $ip\n";

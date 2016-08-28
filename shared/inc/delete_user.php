@@ -51,6 +51,7 @@ function deleteUserDomain($adm_login,$adm_pass,$deluserdomain,$delete_directorie
 
 	global $conf_root_admin_random_pass;
 	global $conf_pass_expire;
+	global $mysqli_connection;
 
 	checkLoginPassAndDomain($adm_login,$adm_pass,$deluserdomain);
 	$adm_query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
