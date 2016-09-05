@@ -28,8 +28,6 @@ function awstat_script_generate(){
 # Now create all awstats stats
 ";
 
-	mysqli_select_db("dtc");
-
 	// Select all domains
 	$query = "SELECT * FROM $pro_mysql_domain_table WHERE 1 ORDER BY name;";
 	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\"");

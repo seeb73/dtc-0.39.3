@@ -187,7 +187,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 		}
 		$backup_net .= "echo \"===> Backuping all dabatases for user $owner:\"\n";
 
-		if ($mysqli_connection_mysql == NULL || $mysqli_connection_mysql.ping() == false)
+		if ($mysqli_connection_mysql == NULL || mysqli_ping($mysqli_connection_mysql) == false)
 		{
 			$mysqli_connection_mysql = mysqli_connect("$conf_mysql_host", "$conf_mysql_login", "$conf_mysql_pass", "mysql")or die ("Cannot connect to $pro_mysql_host, with db: mysql");
 		}

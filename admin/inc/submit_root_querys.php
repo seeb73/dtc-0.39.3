@@ -1,5 +1,7 @@
 <?php
 
+global $mysqli_connection;
+
 if(!isset($submit_err)){
 	$submit_err = "";
 }
