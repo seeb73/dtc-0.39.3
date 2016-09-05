@@ -2,17 +2,26 @@
 
 function deleteMysqlUserAndDB($adm_login){
 	global $conf_mysql_db;
-	mysqli_select_db("mysql")or die("Cannot select db mysql for account management !!!");
+	global $mysqli_connection_mysql;
+	global $conf_mysql_host;
+	global $conf_mysql_login;
+	global $conf_mysql_pass;
+
+	if ($mysqli_connection_mysql == NULL || mysqli_ping($mysqli_connection_mysql) == false)
+	{
+		$mysqli_connection_mysql = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"mysql")or die("Cannot connect to user SQL host...($conf_mysql_host,$conf_mysql_login,xxx) " . mysqli_error());
+	}
+
 
 	$q = "SELECT * FROM user WHERE dtcowner='$adm_login';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".___LINE__." file".__FILE__);
+	$r = mysqli_query($mysqli_connection_mysql,$q)or die("Cannot query $q line ".__LINE__." file".__FILE__);
 	$n = mysqli_num_rows($r);
 	for($j=0;$j<$n;$j++){
 		$a = mysqli_fetch_array($r);
 		$mysqli_user = $a["User"];
 
 		$query = "SELECT * FROM db WHERE User='$mysqli_user';";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" !!!");
+		$result = mysqli_query($mysqli_connection_mysql,$query)or die("Cannot execute query \"$query\" !!!");
 		$num_rows = mysqli_num_rows($result);
 		for($i=0;$i<$num_rows;$i++){
 			$row = mysqli_fetch_array($result);
@@ -20,20 +29,19 @@ function deleteMysqlUserAndDB($adm_login){
 			// Prevent system db from deletion
 			if($db != $conf_mysql_db && $db != "mysql"){
 				$query2 = "DROP DATABASE IF EXISTS `$db`";
-				mysqli_query($mysqli_connection,$query2)or die("Cannot execute query \"$query2\" line ".__line__." file ".__FILE__." mysql said: ".mysqli_error());
+				mysqli_query($mysqli_connection_mysql,$query2)or die("Cannot execute query \"$query2\" line ".__line__." file ".__FILE__." mysql said: ".mysqli_error());
 			}
 		}
 		// Prevent system user from deletion
 		if($mysqli_user != "mysql" && $mysqli_user != "root"){
 			$query = "DELETE FROM db WHERE User='$mysqli_user';";
-			mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" !!!");
+			mysqli_query($mysqli_connection_mysql,$query)or die("Cannot execute query \"$query\" !!!");
 			$query = "DELETE FROM user WHERE User='$mysqli_user';";
-			mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" !!!");
+			mysqli_query($mysqli_connection_mysql,$query)or die("Cannot execute query \"$query\" !!!");
 		}
 		$query = "FLUSH PRIVILEGES";
-		mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" !!!");
+		mysqli_query($mysqli_connection_mysql,$query)or die("Cannot execute query \"$query\" !!!");
 	}
-	mysqli_select_db($conf_mysql_db)or die("Cannot select db \"$conf_mysql_db\" in deleteMysqlUserAndDB() !!!");
 }
 
 function deleteUserDomain($adm_login,$adm_pass,$deluserdomain,$delete_directories = false){
@@ -126,6 +134,7 @@ function DTCdeleteAdmin ($adm_to_del) {
 	global $pro_mysql_cronjob_table;
 	global $pro_mysql_ssl_ips_table;
 	global $pro_mysql_custom_product_table;
+	global $mysqli_connection;
 
 	global $conf_demo_version;
 	global $conf_mysql_db;

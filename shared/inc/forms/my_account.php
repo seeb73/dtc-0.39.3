@@ -12,6 +12,7 @@ function drawAdminTools_MyAccount($admin){
 	global $pro_mysql_product_table;
 	global $pro_mysql_pending_renewal_table;
 	global $pro_mysql_custom_fld_table;
+	global $mysqli_connection;
 	global $secpayconf_currency_letters;
 	global $conf_post_or_get;
 	global $secpayconf_use_products_for_renewal;

@@ -167,6 +167,7 @@ function exportAllDomain($adm_login){
 }
 
 function updateRowValue($table,$w_cond,$ar,$vars){
+	global $mysqli_connection;
 	$vars_ar = explode(",",$vars);
 	$nbr_vars = sizeof($vars_ar);
 	$sets = "";
@@ -184,6 +185,7 @@ function updateRowValue($table,$w_cond,$ar,$vars){
 }
 
 function recreateAllRows($table,$delete_cond,$ar,$vars,$added_var,$added_val){
+	global $mysqli_connection;
 	// Delete old records if any...
 	$q = "DELETE FROM $table WHERE $delete_cond;";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
@@ -256,6 +258,7 @@ function domainImport($path_from,$adm_login,$adm_pass){
 	global $pro_mysql_list_table;
 	global $pro_mysql_ftp_table;
 	global $pro_mysql_ssh_table;
+	global $mysqli_connection;
 
 	global $conf_dtc_system_uid;
 	global $conf_dtc_system_gid;
