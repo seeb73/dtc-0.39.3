@@ -3,6 +3,7 @@
 function setZoneToGenerate($id){
 	global $pro_mysql_subdomain_table;
 	global $pro_mysql_domain_table;
+	global $mysqli_connection;
 
 	$q = "SELECT domain_name FROM $pro_mysql_subdomain_table WHERE id='$id';";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
@@ -23,6 +24,7 @@ function subdomainCreateDirsCallBack($id){
 	global $conf_generated_file_path;
 	global $conf_unix_type;
 	global $pro_mysql_subdomain_table;
+	global $mysqli_connection;
 
 	setZoneToGenerate($id);
 	$adm_path = getAdminPath($adm_login);
@@ -79,6 +81,7 @@ function subdomainCreateDirsCallBack($id){
 function subdomainDeleteDirsCallBack($id){
 	global $adm_login;
 	global $pro_mysql_subdomain_table;
+	global $mysqli_connection;
 
 	setZoneToGenerate($id);
 	$adm_path = getAdminPath($adm_login);

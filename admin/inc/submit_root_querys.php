@@ -201,9 +201,9 @@ if(isset($_REQUEST["reinit_named_zones"]) && $_REQUEST["reinit_named_zones"] == 
 	$adm_query = "UPDATE $pro_mysql_domain_table SET generate_flag='yes' WHERE 1;";
 	mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" !!!");
 	$adm_query = "UPDATE $pro_mysql_vps_ip_table SET rdns_regen='yes';";
-        mysql_query($adm_query)or die("Cannot execute query \"$adm_query\" !!!");
+        mysqli_query($$mysqli_connection,adm_query)or die("Cannot execute query \"$adm_query\" !!!");
         $adm_query = "UPDATE $pro_mysql_dedicated_ips_table SET rdns_regen='yes';";
-        mysql_query($adm_query)or die("Cannot execute query \"$adm_query\" !!!");
+        mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" !!!");
 
 }
 
