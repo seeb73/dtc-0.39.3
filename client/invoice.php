@@ -307,7 +307,12 @@ class zPDF extends FPDF{
 			}
 			$this->Ln();
 			$this->SetFont('Arial','',9);
+			if (strlen($pname) > 70)
+			{
+				$this->SetFont('Arial','',8);	
+			}
 			$this->Cell(110,7,$pname,"1",0,"L");
+			$this->SetFont('Arial','',9);
 			$this->Cell(20,7,$completedorder["last_expiry_date"],"1",0,"L");
 			$date_expire = calculateExpirationDate($completedorder["last_expiry_date"],$product["period"]);
 			$this->Cell(20,7,$date_expire,"1",0,"L");
