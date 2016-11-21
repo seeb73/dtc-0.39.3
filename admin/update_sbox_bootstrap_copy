@@ -22,7 +22,7 @@ PHP_PKGS="php5-cgi php5-mysql php5-curl php5-gd php5-imap php5-mcrypt php5-odbc 
 PERL_PKGS="perl"
 PYTHON_PKGS="python"
 RUBY_PKGS="ruby"
-UTILS="vim joe screen bash openssh-client ssmtp equivs mysql-client"
+UTILS="vim joe screen bash openssh-client ssmtp equivs mysql-client ssmtp"
 DO_ALL_PKGS="${PHP_PKGS} ${PERL_PKGS} ${PYTHON_PKGS} ${RUBY_PKGS} ${UTILS}"
 
 ############# get arch #############

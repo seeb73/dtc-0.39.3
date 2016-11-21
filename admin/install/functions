@@ -1603,6 +1603,29 @@ ErrorDocument 501 /dtc404/406.php
 		sed -i "s/#LoadModule log_sql_mysql_module modules\/mod_log_sql_mysql.so/LoadModule log_sql_mysql_module modules\/mod_log_sql_mysql.so/" /etc/httpd/conf.d/mod_log_sql.conf
 	fi
 
+	if [ "$UNIX_TYPE" = "debian" ]; then
+
+		APACHE_VERSION=`apache2ctl -v | grep version | cut -f2 -d'/' | cut -f1 -d' '`
+
+		case $APACHE_VERSION in
+                2.2.*)
+			echo "Found Apache $APACHE_VERSION, leaving LockFile as is"
+                        ;;
+                2.4.*)
+			echo "Found Apache $APACHE_VERSION, changing LockFile to Mutex"
+			perl -i -p -e 's/LockFile (.*)\/.*/Mutex file:$1 default/' $PATH_HTTPD_CONF 
+                        ;;
+		esac
+
+		if [ ! -e /etc/apache2/httpd.conf ] ; then
+			touch /etc/apache2/httpd.conf
+		fi
+
+		if [ ! -e /etc/apache2/conf.d ] ; then
+			mkdir -p /etc/apache2/conf.d
+		fi
+	fi
+
 	touch ${PATH_DTC_ETC}/logrotate
 	chown ${CONF_DTC_SYSTEM_USERNAME}:${CONF_DTC_SYSTEM_GROUPNAME} ${PATH_DTC_ETC}/logrotate
 	# The cband folder containing score boards for all users
