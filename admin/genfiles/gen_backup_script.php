@@ -458,7 +458,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 	$restor_net .= "date\n";
 	$filep = fopen("$conf_generated_file_path/net_backup.sh", "w+");
 	if( $filep == NULL){
-		echo("Cannot open file for writting");
+		echo("Cannot open file for writting" . __FILE__ . ":" . __LINE__);
 	}
 	fwrite($filep,$backup_net);
 	fclose($filep);
@@ -468,7 +468,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 
 	$filep = fopen("$conf_generated_file_path/net_restor.sh", "w+");
 	if( $filep == NULL){
-		echo("Cannot open file for writting");
+		echo("Cannot open file for writting" . __FILE__ . ":" . __LINE__);
 	}
 	fwrite($filep,$restor_net);
 	fclose($filep);
@@ -488,7 +488,7 @@ pass $conf_ftp_backup_pass
 
 	$filep = fopen("$conf_generated_file_path/ncftpput_login.cfg", "w+");
 	if( $filep == NULL){
-		echo("Cannot open file for writting");
+		echo("Cannot open file for writting" . __FILE__ . ":" . __LINE__);
 	}
 	fwrite($filep,$ftp_login_cfg);
 	fclose($filep);
@@ -599,7 +599,7 @@ fi
 	// Ecriture du fichier
 	$filep = fopen("$conf_generated_file_path/$conf_backup_script_path", "w+");
 	if( $filep == NULL){
-		echo("Cannot open file for writting");
+		echo("Cannot open file for writting" . __FILE__ . ":" . __LINE__);
 	}
 	fwrite($filep,$backup_script);
 	fclose($filep);

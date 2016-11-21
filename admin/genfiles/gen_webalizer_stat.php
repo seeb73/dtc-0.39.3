@@ -71,7 +71,7 @@ webalizer -o ./ -n $web_subname.$web_name -D $web_subname.$web_name.dnscache -N 
 	// Ecriture du fichier
 	$filep = fopen("$conf_generated_file_path/$conf_webalizer_stats_script_path", "w+");
 	if( $filep == NULL){
-		die("Cannot open file for writting");
+		die("Cannot open file for writting" . __FILE__ . ":" . __LINE__);
 	}
 	fwrite($filep,$stat_script);
 	fclose($filep);

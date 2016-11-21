@@ -14,6 +14,10 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_dbuser"){
 			$mysqli_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user SQL host");
 		}
 	}
+	if ($mysqli_connection_mysql == NULL || mysqli_ping($mysqli_connection_mysql) == false)
+	{
+		$mysqli_connection_mysql = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"mysql")or die("Cannot connect to user SQL host...($conf_mysql_host,$conf_mysql_login,xxx) " . mysqli_error());
+	}
 	if(!isFtpLogin($_REQUEST["dbuser"])){
 		$submit_err .= _("Incorrect MySQL login format: please enter another login and try again.") ."<br>\n";
 		$commit_flag = "no";
@@ -163,6 +167,12 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "del_dbuser"){
 			$mysqli_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user SQL host");
 		}
 	}
+
+	if ($mysqli_connection_mysql == NULL || mysqli_ping($mysqli_connection_mysql) == false)
+	{
+		$mysqli_connection_mysql = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"mysql")or die("Cannot connect to user SQL host...($conf_mysql_host,$conf_mysql_login,xxx) " . mysqli_error());
+	}
+
 	// action=del_dbuser&dbuser=zigo
 	if(!isFtpLogin($_REQUEST["dbuser"])){
 		$submit_err .= _("Incorrect db login form")."<br>\n";

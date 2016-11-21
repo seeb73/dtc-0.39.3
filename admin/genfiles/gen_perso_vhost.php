@@ -46,7 +46,7 @@ function perso_vhost_generate(){
 
 	$filep = fopen("$perso_apache_vhost_path", "w+");
 	if( $filep == NULL){
-		die("Cannot open file for writting");
+		die("Cannot open file for writting" . __FILE__ . ":" .  __LINE__);
 	}
 	fwrite($filep,$vhost_file);
 	fclose($filep);

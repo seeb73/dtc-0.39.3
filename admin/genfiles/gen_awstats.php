@@ -108,7 +108,7 @@ fi
 	// Ecriture du fichier
 	$filep = fopen("$conf_generated_file_path/awstats_gen.sh", "w+");
 	if( $filep == NULL){
-		die("Cannot open file for writting");
+		die("Cannot open file for writting" . __FILE__ . ":" . __LINE__);
 	}
 	fwrite($filep,$stat_script);
 	fclose($filep);
