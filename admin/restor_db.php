@@ -67,6 +67,7 @@ require("../shared/dtc_version.php");
 $mysqli_connection = mysqli_connect("$pro_mysql_host", "$pro_mysql_login", "$pro_mysql_pass", "$pro_mysql_db")or die ("Cannot connect to $pro_mysql_host, with db: $pro_mysql_db");
 
 function mysqli_table_exists($table){
+	global $mysqli_connection;
 	$exists = mysqli_query($mysqli_connection,"SELECT 1 FROM $table LIMIT 0");
 	if ($exists) return true;
 	return false;
@@ -74,6 +75,7 @@ function mysqli_table_exists($table){
 
 // Return true=field found, false=field not found
 function findFieldInTable($table,$field){
+	global $mysqli_connection;
 	$q = "SELECT * FROM $table LIMIT 0;";
 	$res = mysqli_query($mysqli_connection,$q) or die("Could not query $q!");;
 	$num_fields = mysqli_num_fields($res);
@@ -88,6 +90,7 @@ function findFieldInTable($table,$field){
 }
 
 function findKeyInTable($table,$key){
+	global $mysqli_connection;
 	$q = "SHOW INDEX FROM $table";
 	$res = mysqli_query($mysqli_connection,$q) or die("Could not query $q!");;
 	$num_keys = mysqli_num_rows($res);
