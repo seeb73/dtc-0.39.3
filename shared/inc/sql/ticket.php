@@ -2,10 +2,12 @@
 
 function mailTicketToAllAdmins($subject,$body,$adm_login){
 	global $pro_mysql_tik_admins_table;
+	global $mysqli_connection;
 	global $conf_webmaster_email_addr;
 	global $send_email_header;
 
 	global $conf_message_subject_header;
+	global $mysqli_connection;
 
 	if(isset($_REQUEST["server_hostname"])){
 		$thehostname = "Server host name: ".$_REQUEST["server_hostname"];
