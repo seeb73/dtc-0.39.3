@@ -67,61 +67,18 @@ class dtc_HTTPRequest
     	// store errors in case we need to handle them
         $errno;
         $errstr;
-	$response ='';
-        
+		$response ='';
+			
         $crlf = "\r\n";
         
-        // generate request
-        $req = 'GET ' . $this->_uri . ' HTTP/1.0' . $crlf 
-            .    'Host: ' . $this->_host . $crlf 
-            .    $crlf;
-        
-        
-        // fetch from URL
-        $this->_fp = fsockopen(($this->_protocol == 'https' ? 'sslv3://' : '') . $this->_host, $this->_port, $errno, $errstr, $this->_timeout);
-        fwrite($this->_fp, $req);
-        
-        $a_vers = explode(".",phpversion());
-				$use_stream = TRUE;
-				if($a_vers[0] <= 4 && $a_vers[1] < 3)
-				{
-					// first < 4.3, then we need to use socket rather than stream
-					$use_stream = FALSE;
-				}
-				
-				if ($use_stream)
-				{
-					stream_set_blocking($this->_fp, TRUE); 
-	        stream_set_timeout($this->_fp,$this->_timeout); 
-				} 
-				else 
-				{
-	        socket_set_blocking($this->_fp, TRUE); 
-	        socket_set_timeout($this->_fp,$this->_timeout); 
-        }
-        
-        // get the socket status
-        $info;
-        if ($use_stream)
-        {
-        	$info = stream_get_meta_data($this->_fp);
-        } else {
-        	$info = socket_get_status($this->_fp);
-        }
-       
-        while(is_resource($this->_fp) && $this->_fp && !feof($this->_fp) && (!$info['timed_out']))
-        {
-            $response .= fread($this->_fp, 4096);
-            if ($use_stream)
-            {
-            	$info = stream_get_meta_data($this->_fp);
-            } else {
-            	$info = socket_get_status($this->_fp);
-            }
-            @ob_flush(); 
-            flush();
-        }
-        fclose($this->_fp);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->_protocol . "://" . $this->_host . $this->_uri);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Connection: close'));
+        curl_setopt($ch, CURLOPT_TIMEOUT, $this->_timeout);
+        $response = curl_exec($ch);
+        curl_close($ch);
         
         // split header and body
         $pos = strpos($response, $crlf . $crlf);
