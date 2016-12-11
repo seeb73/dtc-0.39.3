@@ -12,6 +12,7 @@ function wire_display_icon($pay_id,$amount,$item_name,$return_url,$use_recurring
 	global $paypal_account;
 	global $conf_administrative_site;
 	global $pro_mysql_pay_table;
+	global $mysqli_connection;
 
 	global $secpayconf_currency_letters;
 	global $secpayconf_wiretransfers_logo_url;

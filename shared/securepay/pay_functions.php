@@ -118,6 +118,7 @@ function isPayIDValidated($pay_id){
 function createCreditCardPaiementID($amount_paid,$client_id,$label,$new_account="yes",$product_id=0,$vat_rate=0,$services=""){
 	global $secpayconf_currency_letters;
 	global $pro_mysql_pay_table;
+	global $mysqli_connection;
 
 	$hash_check_key = getRandomValue();
 
