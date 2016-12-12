@@ -8,6 +8,7 @@ function drawAdminTools_MultipleRenew($admin){
 	global $secpayconf_currency_letters;
 	global $conf_post_or_get;
 	global $secpayconf_use_products_for_renewal;
+	global $mysqli_connection;
 
 	get_secpay_conf();
 	$out = "<br><br>";

@@ -571,6 +571,7 @@ function registration_form(){
 
 	global $conf_require_valid_tld_on_dedicated;
 	global $conf_require_valid_tld_on_custom;
+	global $mysqli_connection;
 
 
 

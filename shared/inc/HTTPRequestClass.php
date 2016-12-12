@@ -73,9 +73,9 @@ class dtc_HTTPRequest
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->_protocol . "://" . $this->_host . $this->_uri);
-		//$fp = fopen('/tmp/curl_errorlog.txt', 'w');
-		//curl_setopt($ch, CURLOPT_VERBOSE, 1);
-		//curl_setopt($ch, CURLOPT_STDERR, $fp);
+		$fp = fopen('/tmp/curl_errorlog.txt', 'w');
+		curl_setopt($ch, CURLOPT_VERBOSE, 1);
+		curl_setopt($ch, CURLOPT_STDERR, $fp);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

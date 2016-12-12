@@ -374,6 +374,10 @@ function renew_form(){
 		$country = $ax["country_code"];
 		$host = $ax["server_hostname"];
 		$pid = $ax["product_id"];
+		if (!isset($services))
+		{
+			$services = "";
+		}
 		$services .= "server:".$host.":".$pid;
 		break;
 	case "custom":

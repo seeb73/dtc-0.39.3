@@ -503,7 +503,7 @@ dtcFromOkDraw()."
 				}else{
 					$maxmind_riskScore = "N/A";
 				}
-				$waiting_new_users .= "<$td>"._("Risk score: ").$fnt.$maxmind["riskScore"].$fnt2."<br>";
+				$waiting_new_users .= "<$td>"._("Risk score: ").$fnt.$maxmind_riskScore.$fnt2."<br>";
 				if($maxmind["ip_isp"] == $maxmind["ip_org"]){
 					$waiting_new_users .= _("ISP: ").$maxmind["ip_isp"].", "."<br>";
 				}else{

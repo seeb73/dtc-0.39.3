@@ -560,6 +560,7 @@ function drawDomainConfig($admin){
 	global $pro_mysql_custom_product_table;
 	global $pro_mysql_custom_heb_types_fld_table;
 	global $pro_mysql_custom_heb_types_table;
+	global $mysqli_connection;
 
 	global $conf_site_addrs;
 	global $conf_use_shared_ssl;

@@ -428,9 +428,9 @@ function HTTP_Get($URL,$data, $referrer=""){
 }
 
 function logPay($txt){
-	//$fp = fopen("/tmp/paylog.txt","a");
-	//fwrite($fp,$txt."\n");
-	//fclose($fp);
+	$fp = fopen("/tmp/paylog.txt","a");
+	fwrite($fp,$txt."\n");
+	fclose($fp);
 	echo $txt."<br>";
 }
 
