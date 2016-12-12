@@ -11,6 +11,7 @@ function drawAdminTools_Dedicated($admin,$dedicated_server_hostname){
 	global $pro_mysql_dedicated_ips_table;
 	global $pro_mysql_raduser_table;
 	global $pro_mysql_admin_table;
+	global $mysqli_connection;
 
 	global $secpayconf_currency_letters;
 	global $secpayconf_use_products_for_renewal;

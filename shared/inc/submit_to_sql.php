@@ -9,6 +9,7 @@ if(!isset($commit_flag)){
 
 function checkDedicatedAdmin($adm_login,$adm_pass,$dedicated_server_hostname){
 	global $pro_mysql_dedicated_table;
+	global $mysqli_connection;
 	checkLoginPass($adm_login,$adm_pass);
 	$q = "SELECT * FROM $pro_mysql_dedicated_table WHERE owner='$adm_login' AND server_hostname='".mysqli_real_escape_string($mysqli_connection,$dedicated_server_hostname)."';";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
@@ -22,6 +23,7 @@ function checkDedicatedAdmin($adm_login,$adm_pass,$dedicated_server_hostname){
 
 function checkCustomAdmin($adm_login,$adm_pass,$custom_service_id){
 	global $pro_mysql_custom_product_table;
+	global $mysqli_connection;
 	checkLoginPass($adm_login,$adm_pass);
 	$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE owner='$adm_login' AND id='".mysqli_real_escape_string($mysqli_connection,$custom_service_id)."';";
 	$r = mysqli_query($mysqli_connection,$q) or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());

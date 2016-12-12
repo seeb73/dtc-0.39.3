@@ -10,6 +10,7 @@ function drawAdminTools_Custom($admin,$custom_id){
 	global $pro_mysql_custom_product_table;
 	global $pro_mysql_custom_heb_types_table;
 	global $pro_mysql_admin_table;
+	global $mysqli_connection;
 
 	global $secpayconf_currency_letters;
 	global $secpayconf_use_products_for_renewal;
