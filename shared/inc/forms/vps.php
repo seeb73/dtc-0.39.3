@@ -18,6 +18,7 @@ function drawAdminTools_VPS($admin,$vps){
 	global $conf_vps_renewal_shutdown;
 	global $conf_global_extend;
 	global $pro_mysql_admin_table;
+	global $mysqli_connection;
 
 	global $pro_mysql_vps_stats_table;
 	global $pro_mysql_admin_table;

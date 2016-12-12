@@ -16,6 +16,7 @@ function drawAdminTools_VPSMonitor($admin,$vps){
 
 	global $pro_mysql_vps_stats_table;
 	global $secpayconf_currency_letters;
+	global $mysqli_connection;
 
 	global $conf_post_or_get;
 	global $panel_type;

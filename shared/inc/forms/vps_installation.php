@@ -14,6 +14,7 @@ function drawAdminTools_VPSInstallation($admin,$vps){
 	global $pro_mysql_product_table;
 	global $pro_mysql_vps_ip_table;
 	global $pro_mysql_ip_pool_table;
+	global $mysqli_connection;
 
 	global $pro_mysql_vps_stats_table;
 	global $secpayconf_currency_letters;
