@@ -26,6 +26,7 @@ function draw_UpgradeAccount($admin){
 	global $secpayconf_currency_letters;
 	global $conf_this_server_country_code;
 	global $conf_post_or_get;
+	global $mysqli_connection;
 
 	if(!isset($secpayconf_currency_letters)){
 		get_secpay_conf();

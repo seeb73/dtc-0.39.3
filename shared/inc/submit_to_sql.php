@@ -45,6 +45,7 @@ function validateRenewal($renew_id){
 	global $pro_mysql_ssl_ips_table;
 	global $pro_mysql_pay_table;
 	global $secpayconf_currency_letters;
+	global $mysqli_connection;
 
 	global $commit_flag;
 	global $submit_err;

@@ -133,6 +133,7 @@ function DTCRMclientAdmins(){
 	global $pro_mysql_client_table;
 	global $pro_mysql_admin_table;
 	global $conf_post_or_get;
+	global $mysqli_connection;
 
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE id_client='".$_REQUEST["id"]."'";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());

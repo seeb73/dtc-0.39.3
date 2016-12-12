@@ -2,6 +2,7 @@
                                                         
 function deleteTicketThread($delete_me){
 	global $pro_mysql_tik_queries_table;
+	global $mysqli_connection;
 
 	$a = array();
 	$a["in_reply_of_id"] = $delete_me;
@@ -67,7 +68,8 @@ function mailUserTicketReply($adm_email,$hash,$subject,$body,$closed="no",$adm_l
 	global $conf_main_domain;
 
 	global $send_email_header;
-	global $pro_mysql_tik_admins_table;
+	global $pro_mysql_tik_admins_table;	
+	global $mysqli_connection;
 
 	if($conf_support_ticket_domain == "default"){
 		$support_domain = $conf_main_domain;
@@ -150,6 +152,7 @@ The administrator decided that the issue is:
 function getCustomerInfoFromLogin($login){
 	global $pro_mysql_admin_table;
 	global $pro_mysql_client_table;
+	global $mysqli_connection;
 	$q = "SELECT id_client FROM $pro_mysql_admin_table WHERE adm_login='$login'";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! Line: ".__LINE__." in file: ".__FILE__." mysql said: ".mysqli_error()); 
 	$n = mysqli_num_rows($r);
@@ -206,6 +209,7 @@ function drawNewAdminForm(){
 	global $secpayconf_use_maxmind;
 
 	global $adm_random_pass;
+	global $mysqli_connection;
 
 	get_secpay_conf();
 

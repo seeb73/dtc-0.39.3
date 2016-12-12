@@ -11,6 +11,7 @@ function renew_form(){
 	global $pro_mysql_dedicated_table;
 	global $pro_mysql_vps_server_table;
 	global $pro_mysql_custom_product_table;
+	global $mysqli_connection;
 
 	global $conf_webmaster_email_addr;
 	global $conf_message_subject_header;
@@ -503,6 +504,11 @@ Service country: $country
 
 		if($_REQUEST["renew_type"] == "multiple-services"){
 			$prod_id = 0;
+		}
+
+		if (!isset($services))
+		{
+			$services = "";
 		}
 
 		// Save the values in SQL and process the paynow buttons

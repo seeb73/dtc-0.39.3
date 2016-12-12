@@ -93,6 +93,7 @@ function readCustomizedMessage($filename,$adm_login){
 // Create a random hash, making sure that it doesn't exists in the DB already
 function createSupportHash(){
 	global $pro_mysql_tik_queries_table;
+	global $mysqli_connection;
 	$n = 1;
 	while($n != 0){
 		$hash = getRandomValue();
@@ -106,6 +107,7 @@ function createSupportHash(){
 // Returns 0 if not found, a valid ID otherwise
 function findLastTicketID($hash){
 	global $pro_mysql_tik_queries_table;
+	global $mysqli_connection;
 
 	$q = "SELECT id,reply_id FROM $pro_mysql_tik_queries_table WHERE hash='$hash';";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
@@ -217,6 +219,7 @@ function domainNamePopup($domain_name=""){
 function vpsLocationSelector(){
 	global $pro_mysql_vps_ip_table;
 	global $pro_mysql_vps_server_table;
+	global $mysqli_connection;
 
 	$q = "SELECT $pro_mysql_vps_server_table.hostname,$pro_mysql_vps_server_table.location
 	FROM $pro_mysql_vps_ip_table,$pro_mysql_vps_server_table
@@ -241,6 +244,7 @@ function vpsLocationSelector(){
 function findLastUsedLangByUser($adm_login){
 	global $pro_mysql_admin_table;
 	global $pro_mysql_new_admin_table;
+	global $mysqli_connection;
 
 	$q = "SELECT last_used_lang FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
@@ -265,6 +269,7 @@ function findLastUsedLangByUser($adm_login){
 function findInvoicingCompany ($service_location,$client_country_code){
 	global $pro_mysql_invoicing_table;
 	global $conf_default_company_invoicing;
+	global $mysqli_connection;
 
 	$q = "SELECT * FROM $pro_mysql_invoicing_table WHERE service_country_code='$service_location';";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
@@ -787,6 +792,7 @@ function make_new_adm_domain_dir($path){
 function addDedicatedToUser($adm_login,$server_hostname,$product_id){
 	global $pro_mysql_product_table;
 	global $pro_mysql_dedicated_table;
+	global $mysqli_connection;
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='$product_id';";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 	$n = mysqli_num_rows($r);
@@ -815,6 +821,7 @@ function resubscribe_VPS_server_list_users($list_name){
 	global $pro_mysql_domain_table;
 
 	global $conf_main_domain;
+	global $mysqli_connection;
 
 	$q = "SELECT * FROM $pro_mysql_list_table WHERE domain='$conf_main_domain' AND name='$list_name';";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());;
@@ -884,6 +891,7 @@ function resubscribe_VPS_server_list_users($list_name){
 
 function VPS_Server_Subscribe_To_Lists($vps_server_hostname){
 	global $pro_mysql_vps_server_lists_table;
+	global $mysqli_connection;
 	$q = "SELECT * FROM $pro_mysql_vps_server_lists_table WHERE hostname='$vps_server_hostname';";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 	$n = mysqli_num_rows($r);
@@ -897,6 +905,7 @@ function addVPSToUser($adm_login,$vps_server_hostname,$product_id,$operating_sys
 	global $pro_mysql_product_table;
 	global $pro_mysql_vps_ip_table;
 	global $pro_mysql_vps_table;
+	global $mysqli_connection;
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='$product_id';";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 	$n = mysqli_num_rows($r);
@@ -1012,6 +1021,7 @@ function drawSubmitButton($text){
 function addCustomProductToUser($adm_login,$server_hostname,$product_id){
 	global $pro_mysql_product_table;
 	global $pro_mysql_custom_product_table;
+	global $mysqli_connection;
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='$product_id';";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
 	$n = mysqli_num_rows($r);
@@ -1156,6 +1166,7 @@ function executeCustomActions($product_id, $action, $custom_id = null, $new_admi
     global $pro_mysql_product_table;
     global $pro_mysql_custom_product_table;
     global $pro_mysql_custom_heb_types_table;
+    global $mysqli_connection;
     //global $pro_mysql_custom_heb_types_fld_table;
     $arr_flds = array();
 

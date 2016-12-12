@@ -270,7 +270,7 @@ searchPATH_PHP_INI_APACHE () {
 	# This one for Gentoo
 	elif [ -f /etc/php/apache2-php5/php.ini ] ; then
 		PATH_PHP_INI_APACHE=/etc/php/apache2-php5/php.ini
-	elif [[ ""$conf_apache_version == 2* ]] ; then
+	elif [ ""$conf_apache_version = 2 -o ""$conf_apache_version = 2.2 -o ""$conf_apache_version = 2.4 ] ; then
 		if [ ""${PHPMAJOR} -lt 5 ] ; then
 			if [ -f /etc/php4/apache2/php.ini ] ; then
 				PATH_PHP_INI_APACHE=/etc/php4/apache2/php.ini
@@ -1354,7 +1354,7 @@ createApachePIDSymLink () {
 }
 
 enableApache2Modules () {
-	if [[ ""$conf_apache_version == 2* ]] ; then
+	if [ ""$conf_apache_version = 2 -o ""$conf_apache_version = 2.4 -o ""$conf_apache_version = 2.2 ] ; then
 		echoIfVerbose "-> Enabling mod rewrite, mod spelling and modssl for apache 2"
 		# Activate mod_rewrite
 		if [ -f /etc/apache2/mods-available/rewrite.load ] ; then
@@ -1537,6 +1537,32 @@ AddType application/x-httpd-php .php
 		fi
 		echo "ScriptAlias /cgi-bin $PATH_CGIBIN
 " >>$PATH_HTTPD_CONF
+		# make sure we have correct permissions for apache 2.4.x
+		if [ "$conf_apache_version" = "2.4" ]; then
+			echo "<Directory /usr/lib/cgi-bin/>
+        AllowOverride None
+        Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+        Require all granted
+</Directory>
+
+<Directory />
+        Options FollowSymLinks
+        AllowOverride AuthConfig FileInfo Limit Indexes
+        Require all denied
+</Directory>
+
+<Directory /usr/share>
+        AllowOverride AuthConfig FileInfo Limit Indexes
+        Require all granted
+</Directory>
+
+<Directory /var/www/>
+        Options Indexes FollowSymLinks
+        AllowOverride AuthConfig FileInfo Limit Indexes
+        Require all granted
+</Directory>" >>$PATH_HTTPD_CONF
+		fi
+
 		echo "
 Include $PATH_DTC_ETC/vhosts.conf
 " >>$PATH_HTTPD_CONF
@@ -1601,6 +1627,29 @@ ErrorDocument 501 /dtc404/406.php
 	if [ "$UNIX_TYPE" = "redhat" -a -f /etc/httpd/conf.d/mod_log_sql.conf ] ; then
 		sed -i "s/#LoadModule log_sql_module modules\/mod_log_sql.so/LoadModule log_sql_module modules\/mod_log_sql.so/" /etc/httpd/conf.d/mod_log_sql.conf
 		sed -i "s/#LoadModule log_sql_mysql_module modules\/mod_log_sql_mysql.so/LoadModule log_sql_mysql_module modules\/mod_log_sql_mysql.so/" /etc/httpd/conf.d/mod_log_sql.conf
+	fi
+
+	if [ "$UNIX_TYPE" = "debian" ]; then
+
+		APACHE_VERSION=`apache2ctl -v | grep version | cut -f2 -d'/' | cut -f1 -d' '`
+
+		case $APACHE_VERSION in
+                2.2.*)
+			echo "Found Apache $APACHE_VERSION, leaving LockFile as is"
+                        ;;
+                2.4.*)
+			echo "Found Apache $APACHE_VERSION, changing LockFile to Mutex"
+			perl -i -p -e 's/LockFile (.*)\/.*/Mutex file:$1 default/' $PATH_HTTPD_CONF 
+                        ;;
+		esac
+
+		if [ ! -e /etc/apache2/httpd.conf ] ; then
+			touch /etc/apache2/httpd.conf
+		fi
+
+		if [ ! -e /etc/apache2/conf.d ] ; then
+			mkdir -p /etc/apache2/conf.d
+		fi
 	fi
 
 	touch ${PATH_DTC_ETC}/logrotate

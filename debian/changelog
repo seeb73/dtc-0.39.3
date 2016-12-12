@@ -1,3 +1,10 @@
+dtc (0.39.1-1) experimental; urgency=low
+
+  * Upgraded to support jessie
+    - Using mysqli instead of old mysql
+
+ -- Damien Mascord <tusker@tusker.org>  Tue, 6 Dec 2016 09:35:40 +1100
+
 dtc (0.38.7-1) experimental; urgency=low
 
   * New upstream release with the below fixes:

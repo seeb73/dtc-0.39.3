@@ -118,6 +118,7 @@ function isPayIDValidated($pay_id){
 function createCreditCardPaiementID($amount_paid,$client_id,$label,$new_account="yes",$product_id=0,$vat_rate=0,$services=""){
 	global $secpayconf_currency_letters;
 	global $pro_mysql_pay_table;
+	global $mysqli_connection;
 
 	$hash_check_key = getRandomValue();
 
@@ -150,6 +151,7 @@ function validatePaiement($pay_id,$amount_paid,$paiement_type,$secpay_site="none
 
 	global $secpayconf_currency_letters;
 	global $conf_message_subject_header;
+	global $mysqli_connection;
 
 	if(!isset($secpayconf_currency_letters)){
 		get_secpay_conf();
@@ -183,8 +185,12 @@ function validatePaiement($pay_id,$amount_paid,$paiement_type,$secpay_site="none
                 $r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
                 $new_account_array = mysqli_fetch_array($r);
 	}
-	$maxmind_hash = unserialize($new_account_array["maxmind_output"]);
-	$maxmind_score = $maxmind_hash["riskScore"];
+	$maxmind_score = 0;
+	if (isset($new_account_array["maxmind_output"]))
+	{
+		$maxmind_hash = unserialize($new_account_array["maxmind_output"]);
+		$maxmind_score = $maxmind_hash["riskScore"];
+	}
 	if ($maxmind_score >= $secpayconf_maxmind_threshold){
 		$q = "UPDATE $pro_mysql_pay_table SET paiement_type='$paiement_type',
 			secpay_site='$secpay_site',paiement_cost='$cost',paiement_total='$total',

@@ -91,6 +91,7 @@ function configEditorTemplate ($dsc,$conftype="config"){
 	global $pro_mysql_config_table;
 	global $pro_mysql_secpayconf_table;
 	global $conf_post_or_get;
+	global $mysqli_connection;
 	$out = "";
 
 	if($conftype == "config"){
