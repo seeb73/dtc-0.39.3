@@ -1,3 +1,9 @@
+dtc (0.39.2-1) experimental; urgency=low
+
+  * Change over to using curl from fsockopen for Paypal and backup DTC
+
+ -- Damien Mascord <tusker@tusker.org>  Mon, 12 Dec 2016 16:17:40 +1100
+
 dtc (0.39.1-1) experimental; urgency=low
 
   * Upgraded to support jessie
