@@ -555,6 +555,7 @@ function checkNamedCronService () {
 		if($keep_dns_generate_flag == "no"){
 			markCronflagOk ("gen_named='no'");
 		}
+		markCronflagOk ("gen_reverse='no'");
 	}
 	if($cronjob_table_content["reload_named"] == "yes"){
 		echo "Reloading name-server\n";
