@@ -115,9 +115,6 @@ case "enets-success":
 			That might need that your payment has been canceled or that it is still being proceed.
 			If you have confirmed the payment then check a bit later here.<br><br>
 			If the payment status was to stay like that, please contact customer support.";
-			$page = basename($_SERVER['REQUEST_URI']);
-			$sec = "0";
-			header("Refresh: $sec; url=$page");
 		}else{
 			$form .= "<h3><font color=\"green\">". _("TRANSACTION FINISHED AND APPROVED") ."<!-- TRANSACTION FINISHED AND APPROVED--></font></h3>";
 			if($a["new_account"] == "yes"){

@@ -116,6 +116,33 @@ function fetchAdminStats($admin){
 	global $pro_mysql_acc_http_table;
 	global $pro_mysql_acc_ftp_table;
 	global $pro_mysql_acc_email_table;
+	global $mysqli_connection;
+	global $mysqli_connection_mysql;
+	global $conf_user_mysql_host;
+	global $conf_user_mysql_root_login;
+	global $conf_user_mysql_root_pass;
+	global $conf_user_mysql_type;
+	global $conf_mysql_host;
+	global $conf_mysql_login;
+	global $conf_mysql_pass;
+
+	// make sure we have a connection to mysql
+	if($conf_user_mysql_type=="distant"){
+		if ($mysqli_connection_mysql == NULL || $mysqli_connection_mysql.ping() == false) 
+		{
+			$mysqli_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user SQL host");
+		}
+	}
+	
+	if ($mysqli_connection == NULL || mysqli_ping($mysqli_connection) == false)
+	{
+			$mysqli_connection = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"$pro_mysql_db")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
+	}
+	
+	if ($mysqli_connection_mysql == NULL || mysqli_ping($mysqli_connection_mysql) == false)
+	{
+			$mysqli_connection_mysql = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"mysql")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
+	}
 
 	$ret["err"] = 0;
 	$ret["mesg"] = "No error";
@@ -236,9 +263,8 @@ function fetchAdminStats($admin){
 
 	$ret["total_du_db"] = 0;
 	if($conf_demo_version != "yes"){
-		mysqli_select_db("mysql");
 		$qu = "SELECT User FROM user WHERE dtcowner='".$admin["info"]["adm_login"]."'";
-		$ru = $r = mysqli_query($mysqli_connection,$qu);
+		$ru = $r = mysqli_query($mysqli_connection_mysql,$qu);
 		if (!$ru)
 		{
 			$ret["err"] = 5;
@@ -283,7 +309,6 @@ function fetchAdminStats($admin){
 				}
 			}
 		}
-		mysqli_select_db($conf_mysql_db);
 	}
 
 	// reset to 0, and add total_du_db and total_du_domains

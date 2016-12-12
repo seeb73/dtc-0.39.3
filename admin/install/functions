@@ -5066,7 +5066,7 @@ createChrootTemplate () {
 				cp -pf /lib/librt.so.1 lib/
 			fi
 
-			CPY_LIBS="libnss_compat.so.2 libnsl.so.1 libnss_files.so.2 libpam.so.0 libpam_misc.so.0 libncurses.so.5 libacl.so.1 libattr.so.1 libcap.so.1 libbz2.so.1.0 libz.so.1 libtinfo.so.5"
+			CPY_LIBS="libnss_compat.so.2 libnsl.so.1 libnss_files.so.2 libpam.so.0 libpam_misc.so.0 libncurses.so.5 libacl.so.1 libattr.so.1 libcap.so.1 libbz2.so.1.0 libz.so.1"
 			for i in ${CPY_LIBS} ; do
 				if [ -f /lib/${i} ] ; then
 					cp -pf  /lib/${i} lib/
