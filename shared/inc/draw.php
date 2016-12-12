@@ -122,7 +122,7 @@ function drawAdminTools($admin){
 
 	global $pro_mysql_custom_product_table;
 	global $pro_mysql_product_table;
-
+	global $mysqli_connection; 
 	$add_array = explode("/",$addrlink);
         $doms_txt = "";
 

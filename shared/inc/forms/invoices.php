@@ -8,6 +8,7 @@ function drawAdminTools_Invoices($admin){
 	global $pro_mysql_pay_table;
 	global $pro_mysql_companies_table;
 	global $conf_default_company_invoicing;
+	global $mysqli_connection;
 
 	global $adm_login;
 	global $adm_pass;
