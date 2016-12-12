@@ -14,10 +14,17 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_dbuser"){
 			$mysqli_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user SQL host");
 		}
 	}
+	
+	if ($mysqli_connection == NULL || mysqli_ping($mysqli_connection) == false)
+	{
+			$mysqli_connection = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"$pro_mysql_db")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
+	}
+	
 	if ($mysqli_connection_mysql == NULL || mysqli_ping($mysqli_connection_mysql) == false)
 	{
-		$mysqli_connection_mysql = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"mysql")or die("Cannot connect to user SQL host...($conf_mysql_host,$conf_mysql_login,xxx) " . mysqli_error());
+			$mysqli_connection_mysql = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"mysql")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
 	}
+
 	if(!isFtpLogin($_REQUEST["dbuser"])){
 		$submit_err .= _("Incorrect MySQL login format: please enter another login and try again.") ."<br>\n";
 		$commit_flag = "no";
@@ -65,6 +72,15 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_dbuser_db"){
 		{
 			$mysqli_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user SQL host");
 		}
+	}
+	if ($mysqli_connection == NULL || mysqli_ping($mysqli_connection) == false)
+	{
+			$mysqli_connection = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"$pro_mysql_db")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
+	}
+	
+	if ($mysqli_connection_mysql == NULL || mysqli_ping($mysqli_connection_mysql) == false)
+	{
+			$mysqli_connection_mysql = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"mysql")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
 	}
 	// Check the db name format and that it's one one of the forbidden dbs
 	if(!isDatabase($_REQUEST["newdb_name"])
@@ -131,6 +147,15 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "modify_dbuser_pass"){
 			$mysqli_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user SQL host");
 		}
 	}
+	if ($mysqli_connection == NULL || mysqli_ping($mysqli_connection) == false)
+	{
+			$mysqli_connection = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"$pro_mysql_db")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
+	}
+	
+	if ($mysqli_connection_mysql == NULL || mysqli_ping($mysqli_connection_mysql) == false)
+	{
+			$mysqli_connection_mysql = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"mysql")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
+	}
 	// action=modify_dbuser_pass&dbuser=zigo&db_pass=bla
 	if(!isFtpLogin($_REQUEST["dbuser"])){
 		$submit_err .= _("Incorrect MySQL db format: please enter another login and try again.")."<br>\n";
@@ -167,12 +192,15 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "del_dbuser"){
 			$mysqli_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user SQL host");
 		}
 	}
-
+	if ($mysqli_connection == NULL || mysqli_ping($mysqli_connection) == false)
+	{
+			$mysqli_connection = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"$pro_mysql_db")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
+	}
+	
 	if ($mysqli_connection_mysql == NULL || mysqli_ping($mysqli_connection_mysql) == false)
 	{
-		$mysqli_connection_mysql = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"mysql")or die("Cannot connect to user SQL host...($conf_mysql_host,$conf_mysql_login,xxx) " . mysqli_error());
+			$mysqli_connection_mysql = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"mysql")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
 	}
-
 	// action=del_dbuser&dbuser=zigo
 	if(!isFtpLogin($_REQUEST["dbuser"])){
 		$submit_err .= _("Incorrect db login form")."<br>\n";
@@ -203,6 +231,15 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "delete_user_db"){
 		{
 			$mysqli_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user SQL host");
 		}
+	}
+	if ($mysqli_connection == NULL || mysqli_ping($mysqli_connection) == false)
+	{
+			$mysqli_connection = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"$pro_mysql_db")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
+	}
+	
+	if ($mysqli_connection_mysql == NULL || mysqli_ping($mysqli_connection_mysql) == false)
+	{
+			$mysqli_connection_mysql = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"mysql")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
 	}
 	// action=delete_user_db&dbname=clem
 	if(!isDatabase($_REQUEST["dbname"])){
@@ -246,6 +283,15 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "change_db_owner"){
 		{
 			$mysqli_connection_mysql=mysqli_connect($conf_user_mysql_host,$conf_user_mysql_root_login,$conf_user_mysql_root_pass,"mysql") or die("Cannot connect to user SQL host");
 		}
+	}
+	if ($mysqli_connection == NULL || mysqli_ping($mysqli_connection) == false)
+	{
+			$mysqli_connection = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"$pro_mysql_db")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
+	}
+	
+	if ($mysqli_connection_mysql == NULL || mysqli_ping($mysqli_connection_mysql) == false)
+	{
+			$mysqli_connection_mysql = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"mysql")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
 	}
 	// action=change_db_owner&dbname=clem&dbuser=zigo
 	if(!isFtpLogin($_REQUEST["dbuser"])){

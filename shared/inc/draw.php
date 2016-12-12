@@ -197,7 +197,7 @@ function drawAdminTools($admin){
 		"type" => "link",
 		"link" => "adddomain");
 	if($admin_info["show_invoice_info"] == 'yes' && $conf_show_invoice_info == 'yes'){
-		if(($nbr_vps + $nbr_dedicated) > 1){
+		if(($nbr_vps + $nbr_dedicated + $nbr_custom) > 1){
 			$user_ZEmenu[] = array(
 				"text" => _("Multiple renew") ,
 				"icon" => "box_wnb_nb_picto-addadomainname.gif",
