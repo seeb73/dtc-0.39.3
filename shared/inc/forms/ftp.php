@@ -4,6 +4,7 @@ function ftpAccountsCallback ($id){
 	global $pro_mysql_ftp_table;
 	global $conf_dtc_system_uid;
 	global $conf_dtc_system_gid;
+	global $mysqli_connection;
 
 	$q = "UPDATE $pro_mysql_ftp_table SET uid='$conf_dtc_system_uid',gid='$conf_dtc_system_gid' WHERE id='$id';";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());

@@ -151,7 +151,7 @@ for($i=0;$i<$nbr_tables;$i++){
 			$qc .= "\n)ENGINE=MyISAM\n";
 		}
 		// echo $q;
-		$r = mysqli_query($mysqli_connection,$qc)or die("Cannot execute query: \"$qc\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$qc)or die("Cannot execute query: \"$qc\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 	// If the table exists already, then check all variables types, primary key, unique keys
 	// and remove useless variables.
 	// All this to make sure that we upgrade correctly each tables.
@@ -162,7 +162,7 @@ for($i=0;$i<$nbr_tables;$i++){
 			$vc = $allvars[$v];
 			// If the field is present, create it.
 			$q = "SHOW FULL COLUMNS FROM $curtbl WHERE Field='$v'";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 			$n = mysqli_num_rows($r);
 			if($n == 0){
 				// If we are adding a new auto_increment field, then we must drop the current PRIMARY KEY
@@ -171,12 +171,12 @@ for($i=0;$i<$nbr_tables;$i++){
 					// In case there was a primary key, drop it!
 					$q = "ALTER IGNORE TABLE $curtbl DROP PRIMARY KEY;";
 					// Don't die, in some case it can fail!
-					$r = mysqli_query($mysqli_connection,$q); // or die("\nCannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+					$r = mysqli_query($mysqli_connection,$q); // or die("\nCannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 					$q = "ALTER TABLE $curtbl ADD $v $vc PRIMARY KEY;";
-					$r = mysqli_query($mysqli_connection,$q)or print("\nCannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error()."\n");
+					$r = mysqli_query($mysqli_connection,$q)or print("\nCannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection)."\n");
 				}else{
 					$q = "ALTER TABLE $curtbl ADD $v $vc;";
-					$r = mysqli_query($mysqli_connection,$q)or print("\nCannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error()."\n");
+					$r = mysqli_query($mysqli_connection,$q)or print("\nCannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection)."\n");
 				}
 			// If it is present in MySQL already, then we need to check if types are marching
 			// if types don't match, then we issue an ALTER TABLE
@@ -192,7 +192,7 @@ for($i=0;$i<$nbr_tables;$i++){
 				case "text":
 					$type = $a_type;
 					$q2 = "SELECT character_set_name FROM information_schema.`COLUMNS` WHERE table_name = '".$curtbl."' AND column_name = '".$v."'";
-                        		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query: \"$q2\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+                        		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query: \"$q2\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 					$a2 = mysqli_fetch_array($r2);
 					if($a2["character_set_name"] != 'latin1'){
 						$type .= ' character set '.$a2["character_set_name"];
@@ -249,7 +249,7 @@ for($i=0;$i<$nbr_tables;$i++){
 					echo "In file: $vc\n";
 					$q = "ALTER TABLE $curtbl CHANGE $v $v $vc;";
 					echo "Altering: $q\n";
-					$r = mysqli_query($mysqli_connection,$q)or print("\nCannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error()."\n");
+					$r = mysqli_query($mysqli_connection,$q)or print("\nCannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection)."\n");
 				}
 			}
 		}
@@ -264,7 +264,7 @@ for($i=0;$i<$nbr_tables;$i++){
 				if(!findKeyInTable($curtbl,$key_name)){
 					$var_2_add = "UNIQUE KEY ".$key_name;
 					$q = "ALTER TABLE ".$curtbl." ADD $var_2_add ".$keys[$key_name].";";
-					$r = mysqli_query($mysqli_connection,$q)or die("\nCannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+					$r = mysqli_query($mysqli_connection,$q)or die("\nCannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 				}
 			}
 		}
@@ -274,7 +274,7 @@ for($i=0;$i<$nbr_tables;$i++){
 		// First, check if primary keys in MySQL and in dtc_db.php are matching
 		// So we first get the primary key from DB, and then compare.
 		$q = "SHOW INDEX FROM $curtbl WHERE Key_name='PRIMARY'";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		$pkey = "";
 		for($j=0;$j<$n;$j++){
@@ -287,11 +287,11 @@ for($i=0;$i<$nbr_tables;$i++){
 		// Is this a primary key that is new in dtc_db.php?
 		if($n == 0 && isset($t["primary"])){
 			$q = "ALTER IGNORE TABLE $curtbl ADD PRIMARY KEY dtcprimary ".$t["primary"].";";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 		// Does dtc_db.php drops a primary key?
 		}elseif($n > 0 && !isset($t["primary"])){
 			$q = "ALTER IGNORE TABLE $curtbl DROP PRIMARY KEY;";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 		// If there's no primary key at all, do nothing...
 		}elseif($n == 0 && !isset($t["primary"])){
 			echo "";
@@ -305,9 +305,9 @@ for($i=0;$i<$nbr_tables;$i++){
 				if( strstr($t["vars"][ $nop_pk ],"auto_increment") === FALSE){
 					// Always remove and readd the PRIMARY KEY in case it has changed
 					$q = "ALTER IGNORE TABLE $curtbl DROP PRIMARY KEY;";
-					$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+					$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 					$q = "ALTER IGNORE TABLE $curtbl ADD PRIMARY KEY dtcprimary $pk;";
-					$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+					$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 				}
 			}
 		}
@@ -315,13 +315,13 @@ for($i=0;$i<$nbr_tables;$i++){
 
 		// We have to rebuild indexes in order to get rid of past mistakes in the db in case of panel upgrade
 		$q = "SHOW INDEX FROM $curtbl WHERE Key_name NOT LIKE 'PRIMARY' AND Non_unique='1' and Seq_in_index='1';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		for($j=0;$j<$n;$j++){
 			$a = mysqli_fetch_array($r);
 			// Drop all indexes
 			$q2 = "ALTER TABLE $curtbl DROP INDEX ".$a["Key_name"].";";
-			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query: \"$q2\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query: \"$q2\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 		}
 		// The readd all indexes
 		if( isset($t["index"]) ){
@@ -334,10 +334,10 @@ for($i=0;$i<$nbr_tables;$i++){
 					// We have to rebuild indexes in order to get rid of past mistakes in the db in case of panel upgrade
 					if(findKeyInTable($curtbl,$v)){
 						$q = "ALTER TABLE $curtbl DROP INDEX ".$v."";
-						$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+						$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 					}
 					$q = "ALTER TABLE $curtbl ADD INDEX ".$v." ".$indexes[$v].";";
-					$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+					$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 				}
 			}
 		}
@@ -350,27 +350,27 @@ echo "\n";
 $year = date("Y");
 $year = $year + 10;
 $q = "UPDATE admin SET expire='".$year."-".date("m-d")."' WHERE expire='0000-00-00';";
-$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 
 // Fill the new quota_couriermaildrop with values
 $q = "UPDATE pop_access SET quota_couriermaildrop=CONCAT(1024000*quota_size,'S,',quota_files,'C')";
-$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 
 // Sets the fullemail field correctly, as it might be wrong in some setups.
 $q = "UPDATE pop_access SET fullemail = concat( `id`,  '@', `mbox_host` )";
-$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 
 // Alter the default shell value for FreeBSD, as the path will be in /usr/local
 if($conf_unix_type == "bsd"){
 	$q = "ALTER TABLE ssh_access CHANGE shell shell varchar(64) NOT NULL default '/usr/local/bin/dtc-chroot-shell'";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$q = "ALTER TABLE ftp_access CHANGE shell shell varchar(64) NOT NULL default '/usr/local/bin/bash'";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 }
 
 // Get all the config values from db
 $q = "SELECT * FROM config";
-$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 $n = mysqli_num_rows($r);
 if($n != 1){
 	die("Cannot read config table: not one and only one row...");
@@ -381,24 +381,24 @@ $config_vals = mysqli_fetch_array($r);
 $zeskin = $config_vals["skin"];
 if( $zeskin == "green2" || $zeskin == "iglobal" || $zeskin == "green_gpl" || $zeskin == "darkblue" || $zeskin == "frame" || $zeskin == "green" || $zeskin == "ruffdogs_mozilla" || $zeskin == "tex" || $zeskin == "muedgrey" || $zeskin == "grayboard"){
 	$q = "UPDATE config SET skin='bwoup';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 }
 
 # Sets old install of ssh shell path to be /usr/bin/dtc-chroot-shell and not /bin/dtc-chroot-shell
 $q = "UPDATE ssh_access SET shell='/usr/bin/dtc-chroot-shell' WHERE shell='/bin/dtc-chroot-shell';";
-$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 
 // Iterate on all mailing lists to set the correct recipient delimiter
 echo "-> Changing all recipient delimiter for mailing lists: ";
 $q = "SELECT * FROM mailinglist";
-$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 $n = mysqli_num_rows($r);
 for($i=0;$i<$n;$i++){
 	$a = mysqli_fetch_array($r);
 
 	echo $a["name"];
 	$q2 = "SELECT * FROM domain WHERE name='".$a["domain"]."';";
-	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query ".$q2." line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query ".$q2." line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$n2 = mysqli_num_rows($r2);
 	if($n2 != 1){
 		echo "Could not found domain of list ".$a["name"]."@".$a["domain"]."\n";
@@ -407,7 +407,7 @@ for($i=0;$i<$n;$i++){
 	$a2 = mysqli_fetch_array($r2);
 
 	$q3 = "SELECT * FROM admin WHERE adm_login='".$a2["owner"]."'";
-	$r3 = mysqli_query($mysqli_connection,$q3)or die("Cannot query ".$q3." line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r3 = mysqli_query($mysqli_connection,$q3)or die("Cannot query ".$q3." line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$n3 = mysqli_num_rows($r3);
 	if($n3 != 1){
 		echo "Could not found owner of list ".$a["name"]."@".$a["domain"]."\n";

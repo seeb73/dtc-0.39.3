@@ -888,16 +888,7 @@ setupDTCDatabase () {
 
 	curdir=`pwd`
 
-	if [ -f "/etc/debian_version" -a "${conf_mysqlautoconfig}" = "true" ] ; then
-		mysql --defaults-file=/etc/mysql/debian.cnf -h${conf_mysql_host} -Dmysql --execute="INSERT IGNORE INTO user (Host,User,Password,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Reload_priv,Shutdown_priv,Process_priv,File_priv,Grant_priv,References_priv,Index_priv,Alter_priv,Show_db_priv,Super_priv,Create_tmp_table_priv,Lock_tables_priv,Execute_priv,Repl_slave_priv,Repl_client_priv,Create_view_priv,Show_view_priv,Create_routine_priv,Alter_routine_priv,Create_user_priv) VALUES ('localhost','${conf_mysql_login}',PASSWORD('${conf_mysql_pass}'),'Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y')"
-		mysql --defaults-file=/etc/mysql/debian.cnf -h${conf_mysql_host} -Dmysql --execute="INSERT IGNORE INTO user (Host,User,Password,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Reload_priv,Shutdown_priv,Process_priv,File_priv,Grant_priv,References_priv,Index_priv,Alter_priv,Show_db_priv,Super_priv,Create_tmp_table_priv,Lock_tables_priv,Execute_priv,Repl_slave_priv,Repl_client_priv,Create_view_priv,Show_view_priv,Create_routine_priv,Alter_routine_priv,Create_user_priv) VALUES ('%','${conf_mysql_login}',PASSWORD('${conf_mysql_pass}'),'Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y')"
-		mysql --defaults-file=/etc/mysql/debian.cnf -h${conf_mysql_host} -Dmysql --execute="UPDATE user SET Password=PASSWORD('${conf_mysql_pass}'),Select_priv='Y',Insert_priv='Y',Update_priv='Y',Delete_priv='Y',Create_priv='Y',Drop_priv='Y',Reload_priv='Y',Shutdown_priv='Y',Process_priv='Y',File_priv='Y',Grant_priv='Y',References_priv='Y',Index_priv='Y',Alter_priv='Y',Show_db_priv='Y',Super_priv='Y',Create_tmp_table_priv='Y',Lock_tables_priv='Y',Execute_priv='Y',Repl_slave_priv='Y',Repl_client_priv='Y',Create_view_priv='Y',Show_view_priv='Y',Create_routine_priv='Y',Alter_routine_priv='Y',Create_user_priv='Y' WHERE Host='%' AND User='${conf_mysql_login}'"
-		mysql --defaults-file=/etc/mysql/debian.cnf -h${conf_mysql_host} -Dmysql --execute="UPDATE user SET Password=PASSWORD('${conf_mysql_pass}'),Select_priv='Y',Insert_priv='Y',Update_priv='Y',Delete_priv='Y',Create_priv='Y',Drop_priv='Y',Reload_priv='Y',Shutdown_priv='Y',Process_priv='Y',File_priv='Y',Grant_priv='Y',References_priv='Y',Index_priv='Y',Alter_priv='Y',Show_db_priv='Y',Super_priv='Y',Create_tmp_table_priv='Y',Lock_tables_priv='Y',Execute_priv='Y',Repl_slave_priv='Y',Repl_client_priv='Y',Create_view_priv='Y',Show_view_priv='Y',Create_routine_priv='Y',Alter_routine_priv='Y',Create_user_priv='Y' WHERE Host='localhost' AND User='${conf_mysql_login}'"
-		mysql --defaults-file=/etc/mysql/debian.cnf -h${conf_mysql_host} -Dmysql --execute="FLUSH PRIVILEGES"
-	fi
-
-	echoIfVerbose "-> Creating db if not exists: ${conf_mysql_db}"
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host --execute="CREATE DATABASE IF NOT EXISTS "${conf_mysql_db}
+	
 
 	echoIfVerbose "-> Checking version of mysql installed..."
 	# mysql  Ver 14.7 Distrib 4.1.20, for pc-linux-gnu (i386) using readline 5.1
@@ -916,11 +907,34 @@ setupDTCDatabase () {
 			echoIfVerbose "Found version 4.1.x ..."
 			MYSQL_VER=41
 			;;
-		*Distrib\ 5.*)
-			echoIfVerbose "Found version 5.x ..."
+		*Distrib\ 5.7*)
+			echoIfVerbose "Found version 5.7 ..."
+			MYSQL_VER=57
+			;;
+		*Distrib\ 5*)
+			echoIfVerbose "Found version 5.0 ..."
 			MYSQL_VER=50
 			;;
 	esac
+	
+	
+	if [ -f "/etc/debian_version" -a "${conf_mysqlautoconfig}" = "true" -a $MYSQL_VER -lt 57 ] ; then
+		mysql --defaults-file=/etc/mysql/debian.cnf -h${conf_mysql_host} -Dmysql --execute="INSERT IGNORE INTO user (Host,User,Password,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Reload_priv,Shutdown_priv,Process_priv,File_priv,Grant_priv,References_priv,Index_priv,Alter_priv,Show_db_priv,Super_priv,Create_tmp_table_priv,Lock_tables_priv,Execute_priv,Repl_slave_priv,Repl_client_priv,Create_view_priv,Show_view_priv,Create_routine_priv,Alter_routine_priv,Create_user_priv) VALUES ('localhost','${conf_mysql_login}',PASSWORD('${conf_mysql_pass}'),'Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y')"
+		mysql --defaults-file=/etc/mysql/debian.cnf -h${conf_mysql_host} -Dmysql --execute="INSERT IGNORE INTO user (Host,User,Password,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Reload_priv,Shutdown_priv,Process_priv,File_priv,Grant_priv,References_priv,Index_priv,Alter_priv,Show_db_priv,Super_priv,Create_tmp_table_priv,Lock_tables_priv,Execute_priv,Repl_slave_priv,Repl_client_priv,Create_view_priv,Show_view_priv,Create_routine_priv,Alter_routine_priv,Create_user_priv) VALUES ('%','${conf_mysql_login}',PASSWORD('${conf_mysql_pass}'),'Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y')"
+		mysql --defaults-file=/etc/mysql/debian.cnf -h${conf_mysql_host} -Dmysql --execute="UPDATE user SET Password=PASSWORD('${conf_mysql_pass}'),Select_priv='Y',Insert_priv='Y',Update_priv='Y',Delete_priv='Y',Create_priv='Y',Drop_priv='Y',Reload_priv='Y',Shutdown_priv='Y',Process_priv='Y',File_priv='Y',Grant_priv='Y',References_priv='Y',Index_priv='Y',Alter_priv='Y',Show_db_priv='Y',Super_priv='Y',Create_tmp_table_priv='Y',Lock_tables_priv='Y',Execute_priv='Y',Repl_slave_priv='Y',Repl_client_priv='Y',Create_view_priv='Y',Show_view_priv='Y',Create_routine_priv='Y',Alter_routine_priv='Y',Create_user_priv='Y' WHERE Host='%' AND User='${conf_mysql_login}'"
+		mysql --defaults-file=/etc/mysql/debian.cnf -h${conf_mysql_host} -Dmysql --execute="UPDATE user SET Password=PASSWORD('${conf_mysql_pass}'),Select_priv='Y',Insert_priv='Y',Update_priv='Y',Delete_priv='Y',Create_priv='Y',Drop_priv='Y',Reload_priv='Y',Shutdown_priv='Y',Process_priv='Y',File_priv='Y',Grant_priv='Y',References_priv='Y',Index_priv='Y',Alter_priv='Y',Show_db_priv='Y',Super_priv='Y',Create_tmp_table_priv='Y',Lock_tables_priv='Y',Execute_priv='Y',Repl_slave_priv='Y',Repl_client_priv='Y',Create_view_priv='Y',Show_view_priv='Y',Create_routine_priv='Y',Alter_routine_priv='Y',Create_user_priv='Y' WHERE Host='localhost' AND User='${conf_mysql_login}'"
+		mysql --defaults-file=/etc/mysql/debian.cnf -h${conf_mysql_host} -Dmysql --execute="FLUSH PRIVILEGES"
+	else
+		mysql --defaults-file=/etc/mysql/debian.cnf -h${conf_mysql_host} -Dmysql --execute="INSERT IGNORE INTO user (Host,User,authentication_string,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Reload_priv,Shutdown_priv,Process_priv,File_priv,Grant_priv,References_priv,Index_priv,Alter_priv,Show_db_priv,Super_priv,Create_tmp_table_priv,Lock_tables_priv,Execute_priv,Repl_slave_priv,Repl_client_priv,Create_view_priv,Show_view_priv,Create_routine_priv,Alter_routine_priv,Create_user_priv) VALUES ('localhost','${conf_mysql_login}',PASSWORD('${conf_mysql_pass}'),'Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y')"
+		mysql --defaults-file=/etc/mysql/debian.cnf -h${conf_mysql_host} -Dmysql --execute="INSERT IGNORE INTO user (Host,User,authentication_string,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Reload_priv,Shutdown_priv,Process_priv,File_priv,Grant_priv,References_priv,Index_priv,Alter_priv,Show_db_priv,Super_priv,Create_tmp_table_priv,Lock_tables_priv,Execute_priv,Repl_slave_priv,Repl_client_priv,Create_view_priv,Show_view_priv,Create_routine_priv,Alter_routine_priv,Create_user_priv) VALUES ('%','${conf_mysql_login}',PASSWORD('${conf_mysql_pass}'),'Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y')"
+		mysql --defaults-file=/etc/mysql/debian.cnf -h${conf_mysql_host} -Dmysql --execute="UPDATE user SET authentication_string=PASSWORD('${conf_mysql_pass}'),Select_priv='Y',Insert_priv='Y',Update_priv='Y',Delete_priv='Y',Create_priv='Y',Drop_priv='Y',Reload_priv='Y',Shutdown_priv='Y',Process_priv='Y',File_priv='Y',Grant_priv='Y',References_priv='Y',Index_priv='Y',Alter_priv='Y',Show_db_priv='Y',Super_priv='Y',Create_tmp_table_priv='Y',Lock_tables_priv='Y',Execute_priv='Y',Repl_slave_priv='Y',Repl_client_priv='Y',Create_view_priv='Y',Show_view_priv='Y',Create_routine_priv='Y',Alter_routine_priv='Y',Create_user_priv='Y' WHERE Host='%' AND User='${conf_mysql_login}'"
+		mysql --defaults-file=/etc/mysql/debian.cnf -h${conf_mysql_host} -Dmysql --execute="UPDATE user SET authentication_string=PASSWORD('${conf_mysql_pass}'),Select_priv='Y',Insert_priv='Y',Update_priv='Y',Delete_priv='Y',Create_priv='Y',Drop_priv='Y',Reload_priv='Y',Shutdown_priv='Y',Process_priv='Y',File_priv='Y',Grant_priv='Y',References_priv='Y',Index_priv='Y',Alter_priv='Y',Show_db_priv='Y',Super_priv='Y',Create_tmp_table_priv='Y',Lock_tables_priv='Y',Execute_priv='Y',Repl_slave_priv='Y',Repl_client_priv='Y',Create_view_priv='Y',Show_view_priv='Y',Create_routine_priv='Y',Alter_routine_priv='Y',Create_user_priv='Y' WHERE Host='localhost' AND User='${conf_mysql_login}'"
+		mysql --defaults-file=/etc/mysql/debian.cnf -h${conf_mysql_host} -Dmysql --execute="FLUSH PRIVILEGES"
+	fi
+
+	echoIfVerbose "-> Creating db if not exists: ${conf_mysql_db}"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host --execute="CREATE DATABASE IF NOT EXISTS "${conf_mysql_db}
+	
 
 	if [ ""$MYSQL_VER -gt 40 ] ; then
 		echoIfVerbose "Modifying DTC db character set to latin1..."
@@ -1012,89 +1026,97 @@ setupDTCDatabase () {
 	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -Dmysql --execute="DESCRIBE user dtcowner" >${TMP_FILE}
 	if ! grep dtcowner ${TMP_FILE} >/dev/null 2>&1 ; then
 		echoIfVerbose "-> Adding dtcowner column to mysql.user"
-		$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="ALTER IGNORE TABLE mysql.user ADD dtcowner varchar (255) DEFAULT 'none' NOT NULL"
+		$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="ALTER TABLE mysql.user ADD dtcowner varchar (255) DEFAULT 'none' NOT NULL"
 	fi
 	if [ -e ${TMP_FILE} ] ; then
 		rm ${TMP_FILE}
 	fi
 
 	# Inserting the user
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.user (Host, User, Password, Select_priv, Insert_priv, Update_priv, Delete_priv, Create_priv, Drop_priv, Reload_priv, Shutdown_priv, Process_priv, File_priv, Grant_priv, References_priv, Index_priv, Alter_priv) VALUES ('%', 'dtcdaemons', PASSWORD('"${MYSQL_DTCDAEMONS_PASS}"'), 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N')"
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.user (Host, User, Password, Select_priv, Insert_priv, Update_priv, Delete_priv, Create_priv, Drop_priv, Reload_priv, Shutdown_priv, Process_priv, File_priv, Grant_priv, References_priv, Index_priv, Alter_priv) VALUES ('localhost', 'dtcdaemons', PASSWORD('"${MYSQL_DTCDAEMONS_PASS}"'), 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N')"
+	if [ -f "/etc/debian_version" -a "${conf_mysqlautoconfig}" = "true" -a $MYSQL_VER -lt 57 ] ; then
+		$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.user (Host, User, Password, Select_priv, Insert_priv, Update_priv, Delete_priv, Create_priv, Drop_priv, Reload_priv, Shutdown_priv, Process_priv, File_priv, Grant_priv, References_priv, Index_priv, Alter_priv) VALUES ('%', 'dtcdaemons', PASSWORD('"${MYSQL_DTCDAEMONS_PASS}"'), 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N')"
+		$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.user (Host, User, Password, Select_priv, Insert_priv, Update_priv, Delete_priv, Create_priv, Drop_priv, Reload_priv, Shutdown_priv, Process_priv, File_priv, Grant_priv, References_priv, Index_priv, Alter_priv) VALUES ('localhost', 'dtcdaemons', PASSWORD('"${MYSQL_DTCDAEMONS_PASS}"'), 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N')"
+		# Update the password in case of (bad) reinstallation case
+		$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="UPDATE mysql.user SET Password=PASSWORD('"${MYSQL_DTCDAEMONS_PASS}"') WHERE User='dtcdaemons'"
 
-	# Update the password in case of (bad) reinstallation case
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="UPDATE mysql.user SET Password=PASSWORD('"${MYSQL_DTCDAEMONS_PASS}"') WHERE User='dtcdaemons'"
+	else
+		$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.user (Host, User, authentication_string, Select_priv, Insert_priv, Update_priv, Delete_priv, Create_priv, Drop_priv, Reload_priv, Shutdown_priv, Process_priv, File_priv, Grant_priv, References_priv, Index_priv, Alter_priv) VALUES ('%', 'dtcdaemons', PASSWORD('"${MYSQL_DTCDAEMONS_PASS}"'), 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N')"
+		$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.user (Host, User, authentication_string, Select_priv, Insert_priv, Update_priv, Delete_priv, Create_priv, Drop_priv, Reload_priv, Shutdown_priv, Process_priv, File_priv, Grant_priv, References_priv, Index_priv, Alter_priv) VALUES ('localhost', 'dtcdaemons', PASSWORD('"${MYSQL_DTCDAEMONS_PASS}"'), 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N')"
+		# Update the password in case of (bad) reinstallation case
+		$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="UPDATE mysql.user SET authentication_string=PASSWORD('"${MYSQL_DTCDAEMONS_PASS}"') WHERE User='dtcdaemons'"
+	fi
 
+	
 	# grant Select,Insert,Update,Delete,References,Index to ftp_access
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'ftp_access', '', NOW(NULL), 'Select,Insert,Update,Delete,References,Index', 'Select')"
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'ftp_access', '', NOW(NULL), 'Select,Insert,Update,Delete,References,Index', 'Select')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'ftp_access', '', NOW(0), 'Select,Insert,Update,Delete,References,Index', 'Select')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'ftp_access', '', NOW(0), 'Select,Insert,Update,Delete,References,Index', 'Select')"
 
 	# grant Select,Insert,Update,Delete,References,Index to groups
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'groups', '', NOW(NULL), 'Select,Insert,Update,Delete,References,Index', 'Select')"
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'groups', '', NOW(NULL), 'Select,Insert,Update,Delete,References,Index', 'Select')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'groups', '', NOW(0), 'Select,Insert,Update,Delete,References,Index', 'Select')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'groups', '', NOW(0), 'Select,Insert,Update,Delete,References,Index', 'Select')"
 
 	# grant Select,Insert,Update,Delete,References,Index to ftp_logs
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'ftp_logs', '', NOW(NULL), 'Select,Insert,Update,Delete,References,Index', '')"
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'ftp_logs', '', NOW(NULL), 'Select,Insert,Update,Delete,References,Index', '')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'ftp_logs', '', NOW(0), 'Select,Insert,Update,Delete,References,Index', '')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'ftp_logs', '', NOW(0), 'Select,Insert,Update,Delete,References,Index', '')"
 
 	# grant Select,Insert,Update,Delete,References,Index to ftp_accounting
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'ftp_accounting', '', NOW(NULL), 'Select,Insert,Update,Delete,References,Index', '')"
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'ftp_accounting', '', NOW(NULL), 'Select,Insert,Update,Delete,References,Index', '')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'ftp_accounting', '', NOW(0), 'Select,Insert,Update,Delete,References,Index', '')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'ftp_accounting', '', NOW(0), 'Select,Insert,Update,Delete,References,Index', '')"
 
 	# grant Select,Insert,Update,Delete,References,Index to http_accounting
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'http_accounting', '', NOW(NULL), 'Select,Insert,Update,Delete,References,Index', '')"
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'http_accounting', '', NOW(NULL), 'Select,Insert,Update,Delete,References,Index', '')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'http_accounting', '', NOW(0), 'Select,Insert,Update,Delete,References,Index', '')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'http_accounting', '', NOW(0), 'Select,Insert,Update,Delete,References,Index', '')"
 
 	# grant all to apachelogs
 	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.db (Host, Db, User, Select_priv, Insert_priv, Update_priv, Delete_priv, Create_priv, Drop_priv, Grant_priv, References_priv, Index_priv, Alter_priv) VALUES ('%', 'apachelogs', 'dtcdaemons', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'N', 'Y', 'Y', 'Y')"
 	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.db (Host, Db, User, Select_priv, Insert_priv, Update_priv, Delete_priv, Create_priv, Drop_priv, Grant_priv, References_priv, Index_priv, Alter_priv) VALUES ('localhost', 'apachelogs', 'dtcdaemons', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'N', 'Y', 'Y', 'Y')"
 
 	# grant select to pop_access 
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'pop_access', '', NOW(NULL), 'Select,Update', 'Select,Update')"
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'pop_access', '', NOW(NULL), 'Select,Update', 'Select,Update')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'pop_access', '', NOW(0), 'Select,Update', 'Select,Update')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'pop_access', '', NOW(0), 'Select,Update', 'Select,Update')"
 
 	# update in case of old installations
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="UPDATE IGNORE mysql.tables_priv SET Timestamp = NOW(NULL) , Table_priv = 'Select,Update', Column_priv = 'Select,Update' WHERE Host = 'localhost' AND Db = '"$conf_mysql_db"' AND User = 'dtcdaemons' AND Table_name = 'pop_access' LIMIT 1 "
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="UPDATE IGNORE mysql.tables_priv SET Timestamp = NOW(0) , Table_priv = 'Select,Update', Column_priv = 'Select,Update' WHERE Host = 'localhost' AND Db = '"$conf_mysql_db"' AND User = 'dtcdaemons' AND Table_name = 'pop_access' LIMIT 1 "
 
 	#$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="GRANT SELECT , UPDATE ( crypt , passwd ) ON dtc.pop_access TO 'dtcdaemons'@'localhost'"
 
 	# grant select to ssh_access 
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'ssh_access', '', NOW(NULL), 'Select,Update', 'Select,Update')"
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'ssh_access', '', NOW(NULL), 'Select,Update', 'Select,Update')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'ssh_access', '', NOW(0), 'Select,Update', 'Select,Update')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'ssh_access', '', NOW(0), 'Select,Update', 'Select,Update')"
 
 	# grant select to ssh_groups
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'ssh_groups', '', NOW(NULL), 'Select,Update', 'Select,Update')"
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'ssh_groups', '', NOW(NULL), 'Select,Update', 'Select,Update')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'ssh_groups', '', NOW(0), 'Select,Update', 'Select,Update')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'ssh_groups', '', NOW(0), 'Select,Update', 'Select,Update')"
 
 	# grant select to ssh_user_group
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'ssh_user_group', '', NOW(NULL), 'Select,Update', 'Select,Update')"
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'ssh_user_group', '', NOW(NULL), 'Select,Update', 'Select,Update')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'ssh_user_group', '', NOW(0), 'Select,Update', 'Select,Update')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'ssh_user_group', '', NOW(0), 'Select,Update', 'Select,Update')"
 
 	# populate some data into the ssh_groups table, so that it works correctly
 	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO ssh_groups (group_id, group_name, status, group_password, gid) VALUES (NULL, 'root', 'A', 'x', 0), (NULL, 'nobody', 'A', 'x', 99), (NULL, 'nobody', 'A', 'x', 65534);"
 
 	# grant Select,Insert,Update,Delete,References,Index to smtp_logs
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'smtp_logs', '', NOW(NULL), 'Select,Insert,Update,Delete,References,Index', '')"
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'smtp_logs', '', NOW(NULL), 'Select,Insert,Update,Delete,References,Index', '')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'smtp_logs', '', NOW(0), 'Select,Insert,Update,Delete,References,Index', '')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'smtp_logs', '', NOW(0), 'Select,Insert,Update,Delete,References,Index', '')"
 
 	# grant select to whitelist
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'whitelist', '', NOW(NULL), 'Select', 'Select')"
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'whitelist', '', NOW(NULL), 'Select', 'Select')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'whitelist', '', NOW(0), 'Select', 'Select')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'whitelist', '', NOW(0), 'Select', 'Select')"
 
 	# grant select to fetchmail
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'fetchmail', '', NOW(NULL), 'Select', 'Select')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'fetchmail', '', NOW(0), 'Select', 'Select')"
 
 	# grant rights for mysqmail
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'domain', '', NOW(NULL), 'Select', 'Select')"
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'email_accounting', '', NOW(NULL), 'Select,Insert,Update,Delete,References,Index', 'Select')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'domain', '', NOW(0), 'Select', 'Select')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'email_accounting', '', NOW(0), 'Select,Insert,Update,Delete,References,Index', 'Select')"
 
 	# grant select to admin
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'admin', '', NOW(NULL), 'Select', 'Select')"
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'admin', '', NOW(NULL), 'Select', 'Select')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'admin', '', NOW(0), 'Select', 'Select')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'admin', '', NOW(0), 'Select', 'Select')"
 
 	# grant select to config
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'config', '', NOW(NULL), 'Select', 'Select')"
-	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'config', '', NOW(NULL), 'Select', 'Select')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('%', '"$conf_mysql_db"', 'dtcdaemons', 'config', '', NOW(0), 'Select', 'Select')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO mysql.tables_priv (Host, Db, User, Table_name, Grantor, Timestamp, Table_priv, Column_priv) VALUES ('localhost', '"$conf_mysql_db"', 'dtcdaemons', 'config', '', NOW(0), 'Select', 'Select')"
 
 	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="FLUSH PRIVILEGES"
 
@@ -1325,7 +1347,7 @@ createApachePIDSymLink () {
 		PATH_APACHE_PID_FILE=${PATH_APACHE_PID_FILE%%\"}
 
 		if [ "${PATH_APACHE_PID_FILE}" = "\${APACHE_PID_FILE}" ] ; then
-			PATH_APACHE_PID_FILE=`cat /etc/apache2/envvars  | grep APACHE_PID_FILE | cut -d'=' -f2 | tail -n 1`
+			PATH_APACHE_PID_FILE=`. /etc/apache2/envvars && echo $APACHE_PID_FILE | cut -d'=' -f2 | tail -n 1`
 		fi
 	
 		# in case the specified pid file doesn't exist, try and find it

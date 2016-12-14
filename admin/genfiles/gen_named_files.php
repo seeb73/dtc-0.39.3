@@ -92,7 +92,7 @@ function get_remote_ns_domains(){
 
 	// Get all domains from the servers for wich we act as backup MX
 	$q = "SELECT * FROM $pro_mysql_backup_table WHERE type='dns_backup';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q ! line ".__FILE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q ! line ".__FILE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$retry = 0;
@@ -122,7 +122,7 @@ function get_remote_ns_domains(){
 				if($size > 0){
 					$domain_list .= $remote_file;
 					$q2 = "UPDATE $pro_mysql_backup_table SET status='done' WHERE id='".$a["id"]."';";
-					$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 ! line ".__FILE__." file ".__FILE__." sql said ".mysqli_error());
+					$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 ! line ".__FILE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 					if( $panel_type == "cronjob"){
 						echo "ok!\n";
 					}else{
@@ -375,7 +375,7 @@ function rnds_generate(){
 	FROM $pro_mysql_ip_pool_table,$pro_mysql_vps_ip_table
 	WHERE $pro_mysql_vps_ip_table.rdns_regen='yes'
 	AND $pro_mysql_ip_pool_table.id=$pro_mysql_vps_ip_table.ip_pool_id;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$num_vps = mysqli_num_rows($r);
 	for($i=0;$i<$num_vps;$i++){
 		$a = mysqli_fetch_array($r);
@@ -384,14 +384,14 @@ function rnds_generate(){
 	}
 	// Update the table so it's not regenerated again, we consider
 	$q = "UPDATE $pro_mysql_vps_ip_table SET rdns_regen='no';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 
 	// Do same for the VPSes
 	$q = "SELECT DISTINCT $pro_mysql_ip_pool_table.id,$pro_mysql_ip_pool_table.ip_addr,$pro_mysql_ip_pool_table.netmask,$pro_mysql_ip_pool_table.zone_type,$pro_mysql_ip_pool_table.custom_part,$pro_mysql_ip_pool_table.location
 	FROM $pro_mysql_ip_pool_table,$pro_mysql_dedicated_ips_table
 	WHERE $pro_mysql_dedicated_ips_table.rdns_regen='yes'
 	AND $pro_mysql_ip_pool_table.id=$pro_mysql_dedicated_ips_table.ip_pool_id;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$num_ded = mysqli_num_rows($r);
 	$tbl_num_of_records = $num_vps + $num_ded;
 	for($i=$num_vps;$i<$tbl_num_of_records;$i++){
@@ -400,7 +400,7 @@ function rnds_generate(){
 		$tbl[$i] = $a;
 	}
 	$q = "UPDATE $pro_mysql_dedicated_ips_table SET rdns_regen='no';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 
 	// Add code here for dedicated servers IPs
 	for($i=0;$i<$tbl_num_of_records;$i++){
@@ -421,7 +421,7 @@ function rnds_generate(){
 			$thiszoneVPSIPs = array();
 			$thiszoneDEDIPs = array();
 			$q2 = "SELECT * FROM $pro_mysql_vps_ip_table WHERE ip_pool_id='$ip_pool_id';";
-			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 			$num_vps = mysqli_num_rows($r2);
 			for($j=0;$j<$num_vps;$j++){
 				$a2 = mysqli_fetch_array($r2);
@@ -429,7 +429,7 @@ function rnds_generate(){
 				$thiszoneIPs[] = $a2;
 			}
 			$q2 = "SELECT * FROM $pro_mysql_dedicated_ips_table WHERE ip_pool_id='$ip_pool_id';";
-			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 			$num_ded = mysqli_num_rows($r2);
 			for($j=0;$j<$num_ded;$j++){
 				$a2 = mysqli_fetch_array($r2);
@@ -507,7 +507,7 @@ $allow_trans_str	allow-query { any; };
 			$thiszoneVPSIPs = array();
 			$thiszoneDEDIPs = array();
 			$q2 = "SELECT * FROM $pro_mysql_vps_ip_table WHERE ip_pool_id='$ip_pool_id';";
-			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 			$num_vps = mysqli_num_rows($r2);
 			for($j=0;$j<$num_vps;$j++){
 				$a = mysqli_fetch_array($r2);
@@ -515,7 +515,7 @@ $allow_trans_str	allow-query { any; };
 				$thiszoneIPs[] = $a;
 			}
 			$q2 = "SELECT * FROM $pro_mysql_dedicated_ips_table WHERE ip_pool_id='$ip_pool_id';";
-			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 			$num_ded = mysqli_num_rows($r2);
 			for($j=0;$j<$num_ded;$j++){
 				$a = mysqli_fetch_array($r2);
@@ -582,7 +582,7 @@ $allow_trans_str	allow-query { any; };
 			$thiszoneVPSIPs = array();
 			$thiszoneDEDIPs = array();
 			$q2 = "SELECT * FROM $pro_mysql_vps_ip_table WHERE ip_pool_id='$ip_pool_id';";
-			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 			$num_vps = mysqli_num_rows($r2);
 			for($j=0;$j<$num_vps;$j++){
 				$a = mysqli_fetch_array($r2);
@@ -590,7 +590,7 @@ $allow_trans_str	allow-query { any; };
 				$thiszoneIPs[] = $a;
 			}
 			$q2 = "SELECT * FROM $pro_mysql_dedicated_ips_table WHERE ip_pool_id='$ip_pool_id';";
-			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 			$num_ded = mysqli_num_rows($r2);
 			for($j=0;$j<$num_ded;$j++){
 				$a = mysqli_fetch_array($r2);
@@ -660,7 +660,7 @@ $allow_trans_str	allow-query { any; };
 			$thiszoneVPSIPs = array();
 			$thiszoneDEDIPs = array();
 			$q2 = "SELECT * FROM $pro_mysql_vps_ip_table WHERE ip_pool_id='$ip_pool_id';";
-			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 			$num_vps = mysqli_num_rows($r2);
 			for($j=0;$j<$num_vps;$j++){
 				$a = mysqli_fetch_array($r2);
@@ -668,7 +668,7 @@ $allow_trans_str	allow-query { any; };
 				$thiszoneIPs[] = $a;
 			}
 			$q2 = "SELECT * FROM $pro_mysql_dedicated_ips_table WHERE ip_pool_id='$ip_pool_id';";
-			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 			$num_ded = mysqli_num_rows($r2);
 			for($j=0;$j<$num_ded;$j++){
 				$a = mysqli_fetch_array($r2);
@@ -735,7 +735,7 @@ $allow_trans_str	allow-query { any; };
 			$thiszoneVPSIPs = array();
 			$thiszoneDEDIPs = array();
 			$q2 = "SELECT * FROM $pro_mysql_vps_ip_table WHERE ip_pool_id='$ip_pool_id';";
-			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 			$num_vps = mysqli_num_rows($r2);
 			for($j=0;$j<$num_vps;$j++){
 				$a = mysqli_fetch_array($r2);
@@ -743,7 +743,7 @@ $allow_trans_str	allow-query { any; };
 				$thiszoneIPs[] = $a;
 			}
 			$q2 = "SELECT * FROM $pro_mysql_dedicated_ips_table WHERE ip_pool_id='$ip_pool_id';";
-			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 			$num_ded = mysqli_num_rows($r2);
 			for($j=0;$j<$num_ded;$j++){
 				$a = mysqli_fetch_array($r2);
@@ -787,12 +787,12 @@ $allow_trans_str	allow-query { any; };
 			break;
 		}
 		$q2 = "UPDATE $pro_mysql_vps_ip_table SET rdns_regen='no' WHERE ip_pool_id='$ip_pool_id';";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	}
 
 
 	$q = "SELECT id,ip_addr,netmask,zone_type,custom_part,location FROM $pro_mysql_ip_pool_table;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysqli_fetch_array($r);
@@ -810,14 +810,14 @@ $allow_trans_str	allow-query { any; };
 			unset($thiszoneDEDIPs);
 			$thiszoneIPs = array();
 			$q2 = "SELECT * FROM $pro_mysql_vps_ip_table WHERE ip_pool_id='$ip_pool_id';";
-			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 			$num_vps = mysqli_num_rows($r2);
 			for($j=0;$j<$num_vps;$j++){
 				$a2 = mysqli_fetch_array($r2);
 				$thiszoneIPs[] = $a2;
 			}
 			$q2 = "SELECT * FROM $pro_mysql_dedicated_ips_table WHERE ip_pool_id='$ip_pool_id';";
-			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 			$num_ded = mysqli_num_rows($r2);
 			for($j=0;$j<$num_ded;$j++){
 				$a2 = mysqli_fetch_array($r2);
@@ -991,7 +991,7 @@ function nodes_vps_generate(){
 
 	$todays_serial = date("YmdH");
 	$q = "SELECT hostname,dom0_ips FROM $pro_mysql_vps_server_table;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n > 0){
 		@mkdir("$conf_generated_file_path/nodes_zones");
@@ -1036,13 +1036,13 @@ zone \"$srv_hostname\" IN {
 
 		$q2 = "SELECT vps_xen_name FROM $pro_mysql_vps_table WHERE vps_server_hostname='".$srv_hostname."';";
 //		echo $q2;
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." mysql said: ".mysqli_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." mysql said: ".mysqli_error($mysqli_connection));
 		$n2 = mysqli_num_rows($r2);
 		for($j=0;$j<$n2;$j++){
 			$a2 = mysqli_fetch_array($r2);
 			$vps_xen_name = $a2["vps_xen_name"];
 			$q3 = "SELECT ip_addr FROM $pro_mysql_vps_ip_table WHERE vps_server_hostname='".$srv_hostname."' AND vps_xen_name='".$vps_xen_name."' LIMIT 1;";
-			$r3 = mysqli_query($mysqli_connection,$q3)or die("Cannot query $q3 line ".__LINE__." file ".__FILE__." mysql said: ".mysqli_error());
+			$r3 = mysqli_query($mysqli_connection,$q3)or die("Cannot query $q3 line ".__LINE__." file ".__FILE__." mysql said: ".mysqli_error($mysqli_connection));
 			if(mysqli_num_rows($r3) == 1){
 				$a3 = mysqli_fetch_array($r3);
 				$ip_vps = $a3["ip_addr"];
@@ -1254,7 +1254,7 @@ function named_generate(){
 		if($domain_parking != "no-parking"){
 			$domain_to_get = $domain_parking;
 			$qp = "SELECT * FROM $pro_mysql_domain_table WHERE name='$domain_parking'";
-			$rp = mysqli_query($mysqli_connection,$qp)or die("Cannot query $qp line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+			$rp = mysqli_query($mysqli_connection,$qp)or die("Cannot query $qp line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 			$np = mysqli_num_rows($rp);
 			if($np != 1){
 				echo "WARNING: error in your SQL table: target domain $domain_parking for parking of $web_name does not exists, will cancel domain parking!!!<br>";
@@ -1358,7 +1358,7 @@ $more_dns_server
 			// Set the "root subdomain" IP as the same as the "default subdomain" IP
 			if ( $web_default_subdomain != "" ){
 				$qd = "SELECT ip FROM $pro_mysql_subdomain_table WHERE subdomain_name='$web_default_subdomain' AND domain_name='$domain_to_get';";
-				$rd = mysqli_query($mysqli_connection,$qd)or die("Cannot query $qd line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+				$rd = mysqli_query($mysqli_connection,$qd)or die("Cannot query $qd line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 				$nd = mysqli_num_rows($rd);
 				if($nd == 1){
 					$ad = mysqli_fetch_array($rd);
