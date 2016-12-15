@@ -20,6 +20,7 @@ function drawAdminTools_AddDomain($admin){
 	global $pro_mysql_domain_table;
 	global $pro_mysql_client_table;
 	global $pro_mysql_product_table;
+	global $mysqli_connection;
 
 	global $registry_api_modules;
 

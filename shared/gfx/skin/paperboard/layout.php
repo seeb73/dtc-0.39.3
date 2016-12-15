@@ -269,6 +269,7 @@ function skin_ClientPage (){
 	global $java_script;
 	global $skinCssString;
 	global $console;
+	global $panel_type;
 
 	////////////////////////////////////
 	// Create the top banner and menu //
@@ -278,9 +279,14 @@ function skin_ClientPage (){
 	$anotherLanguageSelection = anotherLanguageSelection();
 	$lang_sel = skin($conf_skin,$anotherLanguageSelection, _("Language") );
 
-	if($adm_login != "" && isset($adm_login) && $adm_pass != "" && isset($adm_pass)){
+	if ($panel_type != "admin")
+	{
+		$adm_session = fetchSession();
+	}
+
+	if(isset($adm_session ) || (isset($adm_login) && $adm_login != "" && isset($adm_pass) && $adm_pass != "")){
 		// Fetch all the user informations, Print a nice error message if failure.
-		$admin = fetchAdmin($adm_login,$adm_pass);
+		$admin = fetchAdmin($adm_session,$adm_login,$adm_pass);
 		if(($error = $admin["err"]) != 0){
 			$mesg = $admin["mesg"];
 			$login_txt = _("Error") ." $error ". _("fetching admin: ") ."<font color=\"red\">$mesg</font><br />";
@@ -916,13 +922,19 @@ function bwoupUserEditForms($adm_login,$adm_pass){
 	global $conf_skin;
 	global $addrlink;
 	global $rub;
+	global $panel_type;
 
 	$ret["err"] = 0;
 	$ret["mesg"] = "No error";
 
-	if(isset($adm_login) && $adm_login != "" && isset($adm_pass) && $adm_pass != ""){
+	if ($panel_type != "admin")
+	{
+		$adm_session = fetchSession();
+	}
+
+	if(isset($adm_session ) || (isset($adm_login) && $adm_login != "" && isset($adm_pass) && $adm_pass != "")){
 		// Fetch all the selected user informations, Print a nice error message if failure.
-		$admin = fetchAdmin($adm_login,$adm_pass);
+		$admin = fetchAdmin($adm_session,$adm_login,$adm_pass);
 		if(isset($adm_random_pass)){
 			$pass = $adm_random_pass;
 		}else{

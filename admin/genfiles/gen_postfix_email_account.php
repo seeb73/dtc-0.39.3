@@ -123,7 +123,7 @@ function mail_account_generate_postfix(){
 		$adm_pass = $row["adm_pass"];
 		$adm_random_pass = $row["adm_pass"];
 
-		$admin = fetchAdmin($user_admin_name,$user_admin_pass);
+		$admin = fetchAdmin(fetchSession(),$user_admin_name,$user_admin_pass);
 		if(($error = $admin["err"]) != 0){
 			die("Error fetching admin : $error");
 		}

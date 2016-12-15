@@ -63,4 +63,11 @@ $pro_mysql_user_cron_table = "user_cron";
 $pro_mysql_custom_heb_types_table = "custom_heb_types";
 $pro_mysql_custom_heb_types_fld_table = "custom_heb_types_fld";
 $pro_mysql_custom_product_table = "custom_product";
+$pro_mysql_sessions_table = "sessions";
+$pro_mysql_permissions_table = "permissions";
+$pro_mysql_roles_table = "roles";
+$pro_mysql_rolepermissions_table = "rolepermissions";
+$pro_mysql_userroles_table = "userroles";
+
 ?>
+

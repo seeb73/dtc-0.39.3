@@ -596,6 +596,11 @@ last_used_lang   ,path            ,id_client,bandwidth_per_month_mb,quota,nbrdb,
 '$last_used_lang','$newadmin_path','$cid','".$product["bandwidth"]."','".$product["quota_disk"]."','".$product["nbr_database"]."','".$product["allow_add_domain"]."','".$product["max_domain"]."',
 '".$product["restricted_ftp_path"]."','".$product["allow_dns_and_mx_change"]."','".$product["ftp_login_flag"]."','".$product["allow_mailing_list_edit"]."','".$product["allow_subdomain_edit"]."','".$product["nbr_email"]."'$admtbl_added2);";
 		mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		
+		// add default admin role for user
+		$adm_query = "INSERT INTO $pro_mysql_userroles_table (adm_login,role_id) values ('$waiting_login', (select id from roles where code='admin'))";
+		mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		
 	}else{
 		// Update the admin file
 		if($product["heb_type"] == "shared"){

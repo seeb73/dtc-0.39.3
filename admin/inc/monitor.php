@@ -39,7 +39,7 @@ function drawAdminMonitor (){
 			$adm_realpass = $ar2["adm_pass"];
 			$adm_pass = $ar2["adm_pass"];
 			$adm_random_pass = $ar2["adm_pass"];
-			$oneadmin = fetchAdmin($ar2["adm_login"],$ar2["adm_pass"]);
+			$oneadmin = fetchAdmin(fetchSession(),$ar2["adm_login"],$ar2["adm_pass"]);
 			$admin_stats = fetchAdminStats($oneadmin);
 			$admin=array_merge($admin,$oneadmin);
 

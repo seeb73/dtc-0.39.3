@@ -357,6 +357,11 @@ if(isset($_REQUEST["newadminuser"]) && $_REQUEST["newadminuser"]=="Ok"){
 (adm_login        ,adm_pass         ,path            , shared_hosting_security)VALUES
 ('".$_REQUEST["newadmin_login"]."', '".$_REQUEST["newadmin_pass"]."','$newadmin_path', 'sbox_aufs') ";
 		mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		
+		// add default admin role for user
+		$adm_query = "INSERT INTO $pro_mysql_userroles_table (adm_login,role_id) values ('". $_REQUEST["newadmin_login"] ."', (select id from roles where code='admin'))";
+		mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		
 	}else{
 		echo $submit_err;
 	}

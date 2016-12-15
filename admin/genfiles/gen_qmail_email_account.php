@@ -55,7 +55,7 @@ function mail_account_generate_qmail(){
 		$row = mysqli_fetch_array($result) or die (__FILE__ . "Cannot fetch user-admin");
 		$user_admin_name = $row["adm_login"];
 		$user_admin_pass = $row["adm_pass"];
-		$admin = fetchAdmin($user_admin_name,$user_admin_pass);
+		$admin = fetchAdmin(fetchSession(),$user_admin_name,$user_admin_pass);
 
 		$admin_path = getAdminPath($user_admin_name);
 

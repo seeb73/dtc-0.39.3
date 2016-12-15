@@ -448,7 +448,7 @@ function randomizePassword($adm_login,$adm_input_pass){
 	$adm_realpass = $row["adm_pass"];
 }
 
-function fetchAdminData($adm_login,$adm_input_pass){
+function fetchAdminData($adm_session,$adm_login,$adm_input_pass){
 	global $pro_mysql_domain_table;
 	global $pro_mysql_admin_table;
 	global $pro_mysql_list_table;
@@ -463,6 +463,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 	global $pro_mysql_vps_server_table;
 	global $pro_mysql_dedicated_table;
 	global $pro_mysql_custom_product_table;
+	global $pro_mysql_sessions_table;
 	global $panel_type;
 
 	global $conf_session_expir_minute;
@@ -487,18 +488,47 @@ function fetchAdminData($adm_login,$adm_input_pass){
 		randomizePassword($adm_login,$adm_input_pass);
 		$pass = $adm_realpass;
 	}
-	$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login' AND (adm_pass='$pass' OR adm_pass=SHA1('$pass'));";
-	$result = mysqli_query($mysqli_connection,$query);
-	if (!$result){
-		$ret["err"] = 1;
-		$ret["mesg"] = "Cannot execute query for password line ".__LINE__." file ".__FILE__." (MySQL error message removed for security reasons).";
-		return $ret;
+	
+	if (isset($adm_session))
+	{
+		$session_expiry = new DateTime($adm_session["session"]["expiry"]);
+		$date_now = new DateTime("now");
+		// if we have a session passed in, we need to validate our session is valid, and has access to $adm_login
+		// user_access_list * means access all admins
+		if ($session_expiry > $date_now && (in_array("*", $adm_session["user_access_list"]) || in_array($adm_login, $adm_session["user_access_list"])))
+		{
+			$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='". $adm_session["session"]["adm_login"] ."';";
+			$result = mysqli_query($mysqli_connection,$query);
+			if (!$result){
+				$ret["err"] = 1;
+				$ret["mesg"] = "Cannot execute query for password line ".__LINE__." file ".__FILE__." (MySQL error message removed for security reasons).";
+				return $ret;
+			}
+			$row = mysqli_fetch_array($result);
+			if (!$row){
+				$ret["err"] = 2;
+				$ret["mesg"]= _("Cannot fetch user:")." "._("either your username or password is not valid, or your session has expired (timed out).");
+				return $ret;
+			}
+		}
+		
 	}
-	$row = mysqli_fetch_array($result);
-	if (!$row){
-		$ret["err"] = 2;
-		$ret["mesg"]= _("Cannot fetch user:")." "._("either your username or password is not valid, or your session has expired (timed out).");
-		return $ret;
+	else if (isset($pass))
+	{
+		// if we have a password passed in, we can validate it against the database
+		$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login' AND (adm_pass='$pass' OR adm_pass=SHA1('$pass'));";
+		$result = mysqli_query($mysqli_connection,$query);
+		if (!$result){
+			$ret["err"] = 3;
+			$ret["mesg"] = "Cannot execute query for password line ".__LINE__." file ".__FILE__." (MySQL error message removed for security reasons).";
+			return $ret;
+		}
+		$row = mysqli_fetch_array($result);
+		if (!$row){
+			$ret["err"] = 4;
+			$ret["mesg"]= _("Cannot fetch user:")." "._("either your username or password is not valid, or your session has expired (timed out).");
+			return $ret;
+		}
 	}
 
 	$adm_path = $row["path"];
@@ -510,14 +540,78 @@ function fetchAdminData($adm_login,$adm_input_pass){
 	$total_email = 0;
 	$adm_quota = $row["quota"];
 	$total_quota = 0;
+	
+	$session_key = NULL;
+	$session_expiry = NULL;
+	$session_ip = get_ip_address();
+	
+	
+	if ($panel_type != "admin")
+	{
+		// if we haven't got a session cookie yet, create one
+		if (!isset($adm_session["session"]["session_key"]) || !$adm_session["session"]["session_key"])
+		{
+			// see if we have a session cookie in our browser, that hasn't been stored into the DB
+			$cookie = $_COOKIE["dtcsessioncookie"];
+			if (isset($cookie))
+			{
+				$session_key = $cookie;
+			}
+			else
+			{
+				// generate a new UUID
+				$session_key = UUID::uuid4();
+			}
+			
+			$session_expiry = strtotime( '+30 days' );
+			// we have authenticated correctly, generate a session cookie and populate the session table with an expiry
+			setcookie("dtcsessioncookie",$session_key, $session_expiry, '/');
+			$adm_session["session"]["session_key"] = $session_key;
+			$adm_session["session"]["expiry"] = $session_expiry;
+			// if we have an adm_login passed in here, set it into the session object we just created
+			if (isset($adm_login))
+			{
+				$adm_session["session"]["adm_login"] = $adm_login;
+			}
+		}
+		
+		// check to see if we have a full session retrieved (ie, there is a session id), otherwise, store it into the DB
+		if ((!isset($adm_session["session"]["id"]) || $adm_session["session"]["id"] < 0) && isset($adm_login) && $adm_login)
+		{	
+			// pull it from the session
+			$session_expiry = $adm_session["session"]["expiry"];
+			$session_key = $adm_session["session"]["session_key"];
+			
+			$adm_session["session"]["adm_login"] = $adm_login;
+			$q2 = "INSERT INTO $pro_mysql_sessions_table (adm_login,session_key,ip_addr,expiry)
+		VALUES ('$adm_login', '$session_key', '$session_ip', FROM_UNIXTIME($session_expiry) );";
+			
+			if(mysqli_query($mysqli_connection,$q2) === FALSE){
+				// if we can't insert session data, we should bail out here, something is wrong
+				$ret["err"] = 5;
+				$ret["mesg"]="Cannot execute query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection);
+				return $ret;
+			}
+			
+			// expire out sessions that are older than 60 days
+			$q2 = "DELETE FROM $pro_mysql_sessions_table where expiry < (NOW() - INTERVAL 60 DAY) ;";
+			if(mysqli_query($mysqli_connection,$q2) === FALSE){
+				// if we can't delete old session data, we should bail out here, something is wrong
+				$ret["err"] = 6;
+				$ret["mesg"]="Cannot execute query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection);
+				return $ret;
+			}	
+		}
+	}
+	
 
 	// Get all the VPS of the user
 	$q = "SELECT * FROM $pro_mysql_vps_table WHERE owner='$adm_login' ORDER BY vps_server_hostname,vps_xen_name;";
 	$r = mysqli_query($mysqli_connection,$q);
 	if (!$r)
 	{
-		$ret["err"] = 3;
-		$ret["mesg"]="Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error();
+		$ret["err"] = 7;
+		$ret["mesg"]="Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection);
 		return $ret;
 	}
 	$n = mysqli_num_rows($r);
@@ -528,7 +622,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 		$r2 = mysqli_query($mysqli_connection,$q2);
 		if (!$r2)
 		{
-			$ret["err"] = 4;
+			$ret["err"] = 8;
 			$ret["mesg"]="Cannot execute query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error();
 			return $ret;
 		}
@@ -547,7 +641,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 	$q = "SELECT * FROM $pro_mysql_dedicated_table WHERE owner='$adm_login' ORDER BY server_hostname;";
 	$r = mysqli_query($mysqli_connection,$q);
 	if (!$r){
-		$ret["err"] = 3;
+		$ret["err"] = 9;
 		$ret["mesg"]="Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error();
 		return $ret;
 	}
@@ -561,7 +655,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 	$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE owner='$adm_login' ORDER BY id;";
 	$r = mysqli_query($mysqli_connection,$q);
 	if (!$r){
-		$ret["err"] = 3;
+		$ret["err"] = 10;
 		$ret["mesg"]="Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error();
 		return $ret;
 	}
@@ -576,7 +670,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 	$result = mysqli_query($mysqli_connection,$query);
 	if (!$result)
 	{
-		$ret["err"] = 5;
+		$ret["err"] = 11;
 		$ret["mesg"] = "Cannot execute query \"$query\"";
 		return $ret;
 	}
@@ -586,7 +680,7 @@ function fetchAdminData($adm_login,$adm_input_pass){
 		$row = mysqli_fetch_array($result);
 		if (!$row)
 		{
-			$ret["err"] = 6;
+			$ret["err"] = 12;
 			$ret["mesg"] = "Cannot fetch domain";
 			return $ret;
 		}
@@ -983,12 +1077,114 @@ function fetchClientData($id_client){
 		return $ret;
 }
 
-function fetchAdmin($adm_login, $adm_pass){
+function fetchSession(){
+	global $mysqli_connection;
+	global $pro_mysql_admin_table;
+	global $pro_mysql_sessions_table;
+	global $pro_mysql_userroles_table;
+	global $pro_mysql_roles_table;
+	global $pro_mysql_rolepermissions_table;
+	global $mysqli_connection;
+	
+	// TODO - code to check the current session information
+	$cookie = $_COOKIE["dtcsessioncookie"];
+	
+	// if we have a valid session cookie in our session, try and populate it
+	// if we don't have a valid session cookie, 
+	if (!isset($cookie))
+	{
+		$adm_session["err"] = 11;
+		$adm_session["mesg"] = _("No cookie found");
+		return $adm_session;
+	} 
+	else
+	{
+		// check what session this $cookie gives us access to
+		$query = "SELECT * FROM $pro_mysql_sessions_table WHERE (session_key='$cookie' OR session_key=SHA1('$cookie'));";
+		$result = mysqli_query($mysqli_connection,$query);
+		if (!$result){
+			$ret["err"] = 12;
+			$ret["mesg"] = "Cannot execute query for password line ".__LINE__." file ".__FILE__." (MySQL error message removed for security reasons).";
+			return $ret;
+		}
+		$row = mysqli_fetch_array($result);
+		if (!$row){
+			$ret["err"] = 13;
+			$ret["mesg"]= _("Cannot fetch user:")." "._("either your username or password is not valid, or your session has expired (timed out).");
+			return $ret;
+		}
+		$adm_session["session"] = $row;
+		
+		// populate user_access_list based on user/role/permissions
+		$query = "SELECT $pro_mysql_roles_table.id, $pro_mysql_roles_table.code FROM $pro_mysql_roles_table, $pro_mysql_userroles_table WHERE adm_login='". $adm_session["session"]["adm_login"] . "' and $pro_mysql_roles_table.id = $pro_mysql_userroles_table.role_id ;";
+		$result = mysqli_query($mysqli_connection,$query);
+		if (!$result){
+			$ret["err"] = 14;
+			$ret["mesg"] = "Cannot execute query for password line ".__LINE__." file ".__FILE__." (MySQL error message removed for security reasons).";
+			return $ret;
+		}
+		
+		$num_rows = mysqli_num_rows($result);
+		
+		for ($num_rows_i = 0; $num_rows_i < $num_rows; $num_rows_i++)
+		{
+			$row = mysqli_fetch_array($result);
+			if (!$row){
+				$ret["err"] = 15;
+				$ret["mesg"]= _("Cannot fetch user:")." "._("either your username or password is not valid, or your session has expired (timed out).");
+				return $ret;
+			}
+			if (!isset($adm_session["roles"]))
+			{
+				$adm_session["roles"] = array ( $row );
+			}
+			else
+			{
+				array_push($adm_session["roles"], $row);
+			}
+		}
+		
+		foreach ($adm_session["roles"] as $role)
+		{
+			if ($role["code"] == "admin")
+			{
+				// admin role == single user admin user
+				// add $adm_login to user_access_list
+				$adm_session["user_access_list"] = array( $adm_session["session"]["adm_login"] );
+			}
+			else if ($role["code"] == "root_admin")
+			{
+				// root_admin role == access the whole panel
+				$adm_session["user_access_list"] = array( "*" );
+			}
+			// add the rest of the permissions to the session permissions table
+			$query = "SELECT * FROM $pro_mysql_rolepermissions_table WHERE roles_id=" . $role["id"] . ";";
+			$result = mysqli_query($mysqli_connection,$query);
+			if ($result){
+				$row = mysqli_fetch_array($result);
+				if (!isset($adm_session["permissions"]))
+				{
+					$adm_session["permissions"] = $row;
+				}
+				else
+				{
+					array_push($adm_session["permissions"], $row);
+				}
+			}
+		}
+	}
+
+	
+	return $adm_session;
+	
+}
+
+function fetchAdmin($adm_session,$adm_login, $adm_pass){
 	global $panel_type;
 	$ret["err"] = 0;
 	$ret["mesg"] = "No error";
 
-	$data = fetchAdminData($adm_login,$adm_pass);
+	$data = fetchAdminData($adm_session,$adm_login,$adm_pass);
 	if($data["err"] != 0){
 		$ret["err"] = $data["err"];
 		$ret["mesg"] = $data["mesg"];
@@ -1043,6 +1239,12 @@ function fetchAdmin($adm_login, $adm_pass){
 //	$_SERVER['PHP_AUTH_USER'] = $adm_login;
 //	$_SERVER['PHP_AUTH_PW'] = $adm_pass;
 
+	// only use $adm_session data for login purposes if we are not in the admin panel
+	if ($panel_type != "admin" && (!isset($adm_login) || !$adm_login))
+	{
+		$adm_login = $adm_session["session"]["adm_login"];
+	}
+
 	$info = fetchAdminInfo($adm_login);
 	if($info["err"] != 0){
 		$ret["err"] = $info["err"];
@@ -1079,6 +1281,57 @@ function fetchAdmin($adm_login, $adm_pass){
 	}
 	return $ret;
 }
+
+/**
+  * CREDIT goes to http://stackoverflow.com/questions/1634782/what-is-the-most-accurate-way-to-retrieve-a-users-correct-ip-address-in-php/2031935#2031935
+  * Retrieves the best guess of the client's actual IP address.
+  * Takes into account numerous HTTP proxy headers due to variations
+  * in how different ISPs handle IP addresses in headers between hops.
+  */
+ function get_ip_address() {
+  // Check for shared internet/ISP IP
+  if (!empty($_SERVER['HTTP_CLIENT_IP']) && $this->validate_ip($_SERVER['HTTP_CLIENT_IP']))
+   return $_SERVER['HTTP_CLIENT_IP'];
+
+  // Check for IPs passing through proxies
+  if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+   // Check if multiple IP addresses exist in var
+    $iplist = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+    foreach ($iplist as $ip) {
+     if ($this->validate_ip($ip))
+      return $ip;
+    }
+   }
+  if (!empty($_SERVER['HTTP_X_FORWARDED']) && $this->validate_ip($_SERVER['HTTP_X_FORWARDED']))
+   return $_SERVER['HTTP_X_FORWARDED'];
+  if (!empty($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']) && $this->validate_ip($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']))
+   return $_SERVER['HTTP_X_CLUSTER_CLIENT_IP'];
+  if (!empty($_SERVER['HTTP_FORWARDED_FOR']) && $this->validate_ip($_SERVER['HTTP_FORWARDED_FOR']))
+   return $_SERVER['HTTP_FORWARDED_FOR'];
+  if (!empty($_SERVER['HTTP_FORWARDED']) && $this->validate_ip($_SERVER['HTTP_FORWARDED']))
+   return $_SERVER['HTTP_FORWARDED'];
+
+  // Return unreliable IP address since all else failed
+  return $_SERVER['REMOTE_ADDR'];
+ }
+
+ /**
+  * Ensures an IP address is both a valid IP address and does not fall within
+  * a private network range.
+  *
+  * @access public
+  * @param string $ip
+  */
+ function validate_ip($ip) {
+     if (filter_var($ip, FILTER_VALIDATE_IP, 
+                         FILTER_FLAG_IPV4 | 
+                         FILTER_FLAG_IPV6 |
+                         FILTER_FLAG_NO_PRIV_RANGE | 
+                         FILTER_FLAG_NO_RES_RANGE) === false)
+         return false;
+     self::$ip = $ip;
+     return true;
+ }
 
 
 ?>

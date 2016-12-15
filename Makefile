@@ -249,7 +249,7 @@ shared/template/index.php shared/vars/clear_lang_array.php shared/vars/global_va
 shared/vars/lang.php shared/vars/table_names.php shared/visitors_template/visitors.php shared/dtcrm/registry_modulator.php
 
 SHARED_INC_PHP_SCRIPT_FILES=shared/inc/accounting.php shared/inc/dbconect.php shared/inc/delete_user.php shared/inc/domain_export.php \
-shared/inc/draw.php shared/inc/fetchmail.php shared/inc/fetch.php shared/inc/nusoap.php shared/inc/skin.class.php \
+shared/inc/draw.php shared/inc/fetchmail.php shared/inc/fetch.php shared/inc/nusoap.php shared/inc/uuid.php shared/inc/skin.class.php \
 shared/inc/idna_convert.class.php \
 shared/inc/submit_to_sql.php shared/inc/tree_mem_to_db.php shared/inc/vps.php shared/inc/forms/vps_monitoring.php shared/inc/forms/vps_graphs.php \
 shared/inc/forms/vps_installation.php shared/inc/forms/admin_stats.php \

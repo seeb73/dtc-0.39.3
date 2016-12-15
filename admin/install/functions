@@ -984,6 +984,13 @@ setupDTCDatabase () {
 	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO config (unicrow,demo_version,main_site_ip,site_addrs,addr_mail_server,webmaster_email_addr,addr_primary_dns,administrative_site,site_root_host_path,generated_file_path,dtcshared_path,dtcadmin_path,dtcclient_path,mta_type,main_domain,404_subdomain) VALUES('1','no','"$conf_ip_addr"','"$conf_ip_addr"','"${MX_MAIL}"."$main_domain_name"','webmaster@"$main_domain_name"','ns1."$main_domain_name"','"$dtc_admin_subdomain"."$main_domain_name"','"$conf_hosting_path"','"$PATH_DTC_ETC"','"$PATH_DTC_SHARED"','"$PATH_DTC_ADMIN"','"$PATH_DTC_CLIENT"','"$conf_mta_type"','"$main_domain_name"','404')"
 	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO cron_job (unicrow,reload_named,restart_apache,gen_vhosts,gen_named) VALUES ('1','yes','yes','yes','yes')"
 	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO secpayconf (unicrow,use_paypal,paypal_rate,paypal_flat,paypal_autovalidate,paypal_email) VALUES ('1','yes','3.21','0.50','no','webmaster@"$main_domain_name"')"
+	
+	# establish sensible role/permissions for user logins
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO roles (code,description) VALUES ('admin','Basic Admin User')"
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO roles (code,description) VALUES ('root_admin','Root Admin User')"
+	
+	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="INSERT IGNORE INTO userroles (adm_login,role_id) VALUES ('"$conf_adm_login"',(select id from roles where code='root_admin'))"
+	
 
 	# Regenerate the "main" domain on each installs...
 	$MYSQL -u$conf_mysql_login -h$conf_mysql_host -D$conf_mysql_db --execute="UPDATE domain SET generate_flag='yes' WHERE name='"$main_domain_name"'"
@@ -1621,17 +1628,18 @@ ErrorDocument 400 /dtc404/406.php
 ErrorDocument 406 /dtc404/406.php
 ErrorDocument 500 /dtc404/406.php
 ErrorDocument 501 /dtc404/406.php
-<IfModule mod_security2.c>
-	Include $PATH_DTC_ADMIN/mod-security/modsecurity_crs_10_config.conf
-	Include $PATH_DTC_ADMIN/mod-security/modsecurity_crs_20_protocol_violations.conf
-	Include $PATH_DTC_ADMIN/mod-security/modsecurity_crs_21_protocol_anomalies.conf
-	Include $PATH_DTC_ADMIN/mod-security/modsecurity_crs_23_request_limits.conf
-	Include $PATH_DTC_ADMIN/mod-security/modsecurity_crs_30_http_policy.conf     
-	Include $PATH_DTC_ADMIN/mod-security/modsecurity_crs_35_bad_robots.conf      
-	Include $PATH_DTC_ADMIN/mod-security/modsecurity_crs_40_generic_attacks.conf
-	Include $PATH_DTC_ADMIN/mod-security/modsecurity_crs_45_trojans.conf
-	Include $PATH_DTC_ADMIN/mod-security/modsecurity_dtc_web_apps.conf
-</IfModule>
+# Disable mod security (too old and problematic
+#<IfModule mod_security2.c>
+#	Include $PATH_DTC_ADMIN/mod-security/modsecurity_crs_10_config.conf
+#	Include $PATH_DTC_ADMIN/mod-security/modsecurity_crs_20_protocol_violations.conf
+#	Include $PATH_DTC_ADMIN/mod-security/modsecurity_crs_21_protocol_anomalies.conf
+#	Include $PATH_DTC_ADMIN/mod-security/modsecurity_crs_23_request_limits.conf
+#	Include $PATH_DTC_ADMIN/mod-security/modsecurity_crs_30_http_policy.conf     
+#	Include $PATH_DTC_ADMIN/mod-security/modsecurity_crs_35_bad_robots.conf      
+#	Include $PATH_DTC_ADMIN/mod-security/modsecurity_crs_40_generic_attacks.conf
+#	Include $PATH_DTC_ADMIN/mod-security/modsecurity_crs_45_trojans.conf
+#	Include $PATH_DTC_ADMIN/mod-security/modsecurity_dtc_web_apps.conf
+#</IfModule>
 " >>$PATH_HTTPD_CONF
 		echo "# End of DTC configuration v0.12 : please don't touch this line !" >>$PATH_HTTPD_CONF
 	fi

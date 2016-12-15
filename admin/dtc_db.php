@@ -1640,6 +1640,64 @@ $dtc_database = array(
 			"unicbox" => "(pop_user,mail_from_user,mail_from_domain,mbox_host)",
 			"pop_user" => "(pop_user,mbox_host,mail_to)"
 		)
+	),
+	"userroles" => array(
+		"vars" => array(
+			"id" => "int(9) NOT NULL auto_increment",
+			"adm_login" => "varchar(64) NOT NULL default ''",
+			"role_id" => "varchar(64) NOT NULL default ''"
+		),
+		"primary" => "(id)",
+		"keys" => array(
+			"adm_login" => "(adm_login)",
+		)
+	),
+	"rolepermissions" => array(
+		"vars" => array(
+			"id" => "int(9) NOT NULL auto_increment",
+			"roles_id" =>  "int(9) NOT NULL",
+			"permission_id" => "int(9) NOT NULL"
+		),
+		"primary" => "(id)",
+		"keys" => array(
+			"roles_id" => "(roles_id)"
+		)
+	),
+	"roles" => array(
+		"vars" => array(
+			"id" => "int(9) NOT NULL auto_increment",
+			"code" => "varchar(64) NOT NULL default ''",
+			"description" => "varchar(255) NOT NULL default ''"
+		),
+		"primary" => "(id)",
+		"keys" => array(
+			"code" => "(code)"
+		)
+	),
+	"permissions" => array(
+		"vars" => array(
+			"id" => "int(9) NOT NULL auto_increment",
+			"code" => "varchar(64) NOT NULL default ''",
+			"description" => "varchar(255) NOT NULL default ''"
+		),
+		"primary" => "(id)",
+		"keys" => array(
+			"code" => "(code)"
+		)
+	),
+	"sessions" => array(
+		"vars" => array(
+			"id" => "int(9) NOT NULL auto_increment",
+			"adm_login" => "varchar(64) NOT NULL default ''",
+			"session_key" => "varchar(64) NOT NULL default ''",
+			"ip_addr" => "varchar(16) NOT NULL default ''",
+			"expiry" => "date NOT NULL default '1970-01-01 01:00:00'"
+		),
+		"primary" => "(id)",
+		"keys" => array(
+			"adm_lookup" => "(adm_login, session_key)",
+			"session_key" => "(session_key)"
+		)
 	)
 ));
 ?>

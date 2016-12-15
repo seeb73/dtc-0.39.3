@@ -70,6 +70,7 @@ include("$dtcshared_path/dtcrm/submit_to_sql.php");	// Some domain name registra
 include("$dtcshared_path/dtcrm/draw.php");	// Functions Draws the forms for domain-name registration and paiement
 require("$dtcshared_path/drawlib/templates.php");
 // FORMS DRAWING
+require("$dtcshared_path/inc/uuid.php"); // UUID generator used by dtcsessioncookie
 require("$dtcshared_path/inc/fetch.php");		// Code that fetch all the data of one admin, to be used for calling draw.php functions
 #include "$dtcshared_path/cyradm.php";
 #include "$dtcshared_path/cyrus.php";

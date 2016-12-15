@@ -47,6 +47,11 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_child_account"){
 		$q = "INSERT INTO $pro_mysql_admin_table (adm_login, adm_pass, path, ob_next, ob_head, ob_tail)
 		VALUES ('".$_REQUEST["new_adm_login"]."','".$_REQUEST["new_adm_pass"]."', '$new_adm_path','".$a["adm_login"]."','','');";
 		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+		
+		// add default admin role for user
+		$adm_query = "INSERT INTO $pro_mysql_userroles_table (adm_login,role_id) values ('". $_REQUEST["new_adm_login"] ."', (select id from roles where code='admin'))";
+		mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		
 		echo "<!-- $q -->";
 		// If this admin had no child account
 		echo "<!-- ob_head: ".$a["ob_head"]."<br>"."ob_tail: ".$a["ob_tail"]."<br> -->";
