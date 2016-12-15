@@ -443,4 +443,27 @@ function userEditForms($adm_login,$adm_pass){
 	}
 }
 
+function skin_AdminLogin_Default (){
+	global $conf_skin;
+	global $panel_type;
+
+	////////////////////////////////////
+	// Create the top banner and menu //
+	////////////////////////////////////
+	$anotherTopBanner = anotherTopBanner("DTC");
+
+	$anotherLanguageSelection = anotherLanguageSelection();
+	$lang_sel = skin($conf_skin,$anotherLanguageSelection, _("Language") );
+
+	$adm_session = fetchSession($panel_type);
+
+	$login_txt = pseudo_login_form();
+	$login_skined = skin($conf_skin,$login_txt, _("DTC Admin panel:") ." ". _("Login") );
+	$mypage = layout_login_and_languages($login_skined,$lang_sel);
+	// Output the result !
+	if(!isset($anotherHilight)) $anotherHilight = "";
+
+	echo anotherPage("Client:","",$anotherHilight,makePreloads(),$anotherTopBanner,"",$mypage,anotherFooter(""));
+}
+
 ?>

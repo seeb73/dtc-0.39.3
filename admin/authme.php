@@ -23,8 +23,16 @@
 function isPseudoLoggedIn($adm_session){
 	global $mysqli_connection;
 	global $pro_mysql_sessions_table;
+	global $pseudo_login;
 	$ret["err"] = 0;
 	$ret["mesg"]=_("No error");
+	
+	if ($_REQUEST["logout"]=="true")
+	{		
+		unset($_COOKIE['dtcsessioncookie']);
+		setcookie('dtcsessioncookie', null, -1, '/');
+		$adm_session=null;
+	}
 	
 	// if we haven't got a session cookie yet, create one
 	if (!isset($adm_session["session"]["session_key"]) || !$adm_session["session"]["session_key"])
@@ -140,7 +148,7 @@ function pseudo_login_form(){
 </td></tr>
 </table></form>";
 
-	print($HTML_admin_edit_data);
+	return $HTML_admin_edit_data;
 }
 
 

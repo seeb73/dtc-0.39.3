@@ -1086,6 +1086,14 @@ function fetchSession($panel_type){
 	global $pro_mysql_rolepermissions_table;
 	global $mysqli_connection;
 	
+	// logout handling
+	if ($_REQUEST["logout"]=="true")
+	{	
+		unset($_COOKIE['dtcsessioncookie']);
+		setcookie('dtcsessioncookie', null, -1, '/');
+		$adm_session=null;
+	}
+	
 	// TODO - code to check the current session information
 	$cookie = $_COOKIE["dtcsessioncookie"];
 	

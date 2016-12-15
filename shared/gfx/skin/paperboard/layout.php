@@ -990,4 +990,69 @@ function bwoupUserEditForms($adm_login,$adm_pass){
 	}
 }
 
+function skin_AdminLogin (){
+	global $conf_skin;
+
+	global $page_metacontent;
+	global $meta;
+	global $confirm_javascript;
+	global $java_script;
+	global $skinCssString;
+	global $console;
+	global $panel_type;
+
+	////////////////////////////////////
+	// Create the top banner and menu //
+	////////////////////////////////////
+	$anotherTopBanner = anotherTopBanner("DTC");
+
+	$anotherLanguageSelection = anotherLanguageSelection();
+	$lang_sel = skin($conf_skin,$anotherLanguageSelection, _("Language") );
+
+	$adm_session = fetchSession($panel_type);
+
+	$login_txt = pseudo_login_form();
+    $mypage = skin($conf_skin,$login_txt, _("DTC Admin panel:") ." ". _("Login") );
+	echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
+<html xmlns=\"http://www.w3.org/1999/xhtml\" dir=\"ltr\" lang=\"en\" xml:lang=\"en\">
+<head>
+<title>DTC: Client: ".$_SERVER['SERVER_NAME']."</title>
+$page_metacontent
+$meta
+<link rel=\"stylesheet\" href=\"gfx/skin/paperboard/skin.css\" type=\"text/css\" media=\"all\" />
+</head>
+<body id=\"page\">
+	<div id=\"outerwrapper\">
+		<div id=\"wrapper\">
+			".makePreloads()."
+			$confirm_javascript
+			$java_script
+			$skinCssString
+			".anotherTopBanner("DTC","yes")."<div id=\"usernavbarreplacement\"></div>
+			<table class=\"tht\" cellpadding=\"0\" cellspacing=\"0\">
+				<tr>
+					<td class=\"thl-1\" nowrap=\"nowrap\">&nbsp;</td>
+					<td class=\"thm-1 hleft\" nowrap=\"nowrap\">&nbsp;</td>
+					<td class=\"thr-1\" nowrap=\"nowrap\">&nbsp;</td>
+				</tr>
+				<tr>
+					<td class=\"bord-left\" nowrap=\"nowrap\"></td>
+					<td>
+						".$mypage."
+					</td>
+					<td class=\"bord-right\" nowrap=\"nowrap\"></td>
+				</tr>
+				<tr>
+					<td class=\"tbl-1\" nowrap=\"nowrap\"></td>
+					<td class=\"tbm-1 hleft\" nowrap=\"nowrap\">&nbsp;</td>
+					<td class=\"tbr-1\" nowrap=\"nowrap\"></td>
+				</tr>
+			</table>
+			<div id=\"footer\">".anotherFooter("Footer content<br /><br />")."PaperBoard template for DTC made by <a href=\"http://www.labestiole.net\" title=\"la bestiole\" target=\"_blank\">cali</a></div>
+		</div>
+	</div>
+</body>
+</html>";
+}
+
 ?>

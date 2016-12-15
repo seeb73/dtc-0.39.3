@@ -125,6 +125,7 @@ function anotherTopBanner($inside,$drawLanguageSelect="no"){
 	global $conf_dtc_version;
 	global $conf_dtc_release;
 	global $conf_unix_type;
+	global $pseudo_login;
 	global $adm_login;
 	global $adm_email_login;
 	global $panel_type;	
@@ -150,7 +151,7 @@ function anotherTopBanner($inside,$drawLanguageSelect="no"){
 
 
 	if($panel_type == "admin"){
-		$display_user = $_SERVER["PHP_AUTH_USER"];
+		$display_user = $pseudo_login;
 	}else if($panel_type == "client"){
 		$display_user = $adm_login;
 	}else if($panel_type == "email"){
@@ -197,6 +198,7 @@ function anotherTopBanner($inside,$drawLanguageSelect="no"){
 		$inside = str_replace("__AUTH_USER__",_("Logged in as:") . " " . $display_user,$inside);
 		$inside = str_replace("__DOCUMENTATION__",_("Documentation"),$inside);
 		$inside = str_replace("__PHPMYADMIN__",_("PhpMyAdmin"),$inside);
+		$inside = str_replace("__LOGOUT__",_("Log Out"),$inside);
 		$inside .= "<script language=\"JavaScript\" type=\"text/javascript\" src=\"gfx/wz_tooltip.js\"></script>";
 		return $inside;
 	}else{

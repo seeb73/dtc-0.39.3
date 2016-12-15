@@ -688,4 +688,52 @@ function bwoupUserEditForms($adm_login,$adm_pass){
 	}
 }
 
+function skin_AdminLogin (){
+	global $conf_skin;
+
+	global $page_metacontent;
+	global $meta;
+	global $confirm_javascript;
+	global $java_script;
+	global $skinCssString;
+	global $console;
+	global $panel_type;
+
+	////////////////////////////////////
+	// Create the top banner and menu //
+	////////////////////////////////////
+	$anotherTopBanner = anotherTopBanner("DTC");
+
+	$anotherLanguageSelection = anotherLanguageSelection();
+	$lang_sel = skin($conf_skin,$anotherLanguageSelection, _("Language") );
+
+	$login_txt = pseudo_login_form();
+    $mypage = skin($conf_skin,$login_txt, _("DTC Admin panel:") ." ". _("Login") );
+        
+	echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">
+<html>
+<head>
+<title>DTC: Client: ".$_SERVER['SERVER_NAME']."</title>
+$page_metacontent
+$meta
+</head>
+<body id=\"page\" leftmargin=\"0\" topmargin=\"0\" marginwidth=\"0\" marginheight=\"0\">
+	  <div id=\"outerwrapper\">
+    <div id=\"wrapper\">
+
+".makePreloads()."
+$confirm_javascript
+$java_script
+<link rel=\"stylesheet\" href=\"gfx/skin/bwoup/skin.css\" type=\"text/css\">
+$skinCssString
+
+".anotherTopBanner("DTC","yes")."<div id=\"usernavbarreplacement\"></div>
+<div id=\"content\"><div class=\"box_wnb_content_container\">".$mypage."</div></div>
+<div id=\"footer\">".anotherFooter("Footer content<br><br>")."</div>
+    </div>
+</div>
+</body>
+</html>";
+}
+
 ?>
