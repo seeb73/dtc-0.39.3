@@ -1077,7 +1077,7 @@ function fetchClientData($id_client){
 		return $ret;
 }
 
-function fetchSession(){
+function fetchSession($panel_type){
 	global $mysqli_connection;
 	global $pro_mysql_admin_table;
 	global $pro_mysql_sessions_table;
@@ -1088,6 +1088,17 @@ function fetchSession(){
 	
 	// TODO - code to check the current session information
 	$cookie = $_COOKIE["dtcsessioncookie"];
+	
+	// for the admin panel, we use "pseudo" for logins
+	// for the client panel, we use "adm_login" for the logins
+	if ($panel_type == "admin")
+	{
+		$login_type = "pseudo";
+	}
+	else
+	{
+		$login_type = "adm_login";
+	}
 	
 	// if we have a valid session cookie in our session, try and populate it
 	// if we don't have a valid session cookie, 
@@ -1116,7 +1127,7 @@ function fetchSession(){
 		$adm_session["session"] = $row;
 		
 		// populate user_access_list based on user/role/permissions
-		$query = "SELECT $pro_mysql_roles_table.id, $pro_mysql_roles_table.code FROM $pro_mysql_roles_table, $pro_mysql_userroles_table WHERE adm_login='". $adm_session["session"]["adm_login"] . "' and $pro_mysql_roles_table.id = $pro_mysql_userroles_table.role_id ;";
+		$query = "SELECT $pro_mysql_roles_table.id, $pro_mysql_roles_table.code FROM $pro_mysql_roles_table, $pro_mysql_userroles_table WHERE $login_type='". $adm_session["session"][$login_type] . "' and $pro_mysql_roles_table.id = $pro_mysql_userroles_table.role_id ;";
 		$result = mysqli_query($mysqli_connection,$query);
 		if (!$result){
 			$ret["err"] = 14;
@@ -1150,7 +1161,7 @@ function fetchSession(){
 			{
 				// admin role == single user admin user
 				// add $adm_login to user_access_list
-				$adm_session["user_access_list"] = array( $adm_session["session"]["adm_login"] );
+				$adm_session["user_access_list"] = array( $adm_session["session"][$login_type] );
 			}
 			else if ($role["code"] == "root_admin")
 			{
@@ -1189,55 +1200,7 @@ function fetchAdmin($adm_session,$adm_login, $adm_pass){
 		$ret["err"] = $data["err"];
 		$ret["mesg"] = $data["mesg"];
 		return $ret;
-/* I'm disabling this peace of code, I think it's quite hugly
-
-
-		$http_auth_worked = 0;
-		//if we have PHP_AUTH_USER or PHP_AUTH_PW, try to use them here
-		if (!isset($_SERVER['PHP_AUTH_USER'])) {
-			header('WWW-Authenticate: Basic realm="DTC Panel"');
-			header('HTTP/1.0 401 Unauthorized');
-			$ret["err"] = 1;
-			$ret["mesg"] = 'You have not entered a correct user or password, please try again...';
-			return $ret;
-		} else if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])){
-			//we should try and grab the admin data based on the PHP_AUTH_PW and PHP_AUTH_USER (only do this if we are not the admin panel) this is OK for user panels
-			if ($panel_type != "admin" && $adm_login != $_SERVER['PHP_AUTH_USER'])
-			{
-				header('WWW-Authenticate: Basic realm="DTC Panel"');
-				header('HTTP/1.0 401 Unauthorized');
-				$ret["err"] =  2;
-				$ret["mesg"] = 'You have not entered a correct user or password, please try again...';
-				return $ret;
-			}
-			$data = fetchAdminData($adm_login,$_SERVER['PHP_AUTH_PW']);
-			if($data["err"] != 0){
-				$http_auth_worked = 0;
-				$data["mesg"] = "DTC Timeout Error:" . $data["mesg"] ."\n";
-				return $data;
-			} else {
-				$http_auth_worked = 1;
-				//echo "adm_login as $adm_login\n";
-				$adm_pass = $_SERVER['PHP_AUTH_PW'];
-				$adm_login = $_SERVER['PHP_AUTH_USER'];
-				//echo "adm_login is now $adm_login\n";
-				$ret["err"] = 0;
-				$ret["mesg"] = "No error";
-			}
-		}
-		if ($http_auth_worked == 0){
-			return $ret;
-		}
-		*/
 	}
-	//since we are here, our login/password combo must be valid
-
-// Note from Thomas:
-// This one I really want to kill it!
-// My code with MySQL rotating password is to avoid storing
-// things in php sessions that are by definition unsafe.
-//	$_SERVER['PHP_AUTH_USER'] = $adm_login;
-//	$_SERVER['PHP_AUTH_PW'] = $adm_pass;
 
 	// only use $adm_session data for login purposes if we are not in the admin panel
 	if ($panel_type != "admin" && (!isset($adm_login) || !$adm_login))

@@ -16,6 +16,7 @@ if (isset($_GET["PHPSESSID"]))
   session_id($_GET["PHPSESSID"]);
 else
   session_id(date("dgis"));
+  
 @session_start();
 
 // initialise $_SESSION on first run

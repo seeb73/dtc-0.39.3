@@ -8,29 +8,38 @@ require_once("genfiles/genfiles.php");
 
 require_once("authme.php");
 
-include("inc/submit_root_querys.php");
-include("inc/nav.php");
-include("inc/dtc_config.php");
-include("inc/draw_user_admin.php");
-
-if(file_exists("dtcrm")){
-	include("dtcrm/submit_to_sql.php");
-	include("dtcrm/main.php");
-	include("dtcrm/product_manager.php");
-	include("inc/renewals.php");
-	include("inc/graphs.php");
-	include("inc/monitor.php");
-	if( isset($_REQUEST["show_ip_pool_report"]) ){
-		include("inc/ip_usage_report.php");
-	}
+$adm_session = fetchSession("admin");
+$logged_in = isPseudoLoggedIn($adm_session);
+if ($logged_in["err"] != 0)
+{
+	pseudo_login_form();
 }
+else
+{
+	include("inc/submit_root_querys.php");
+	include("inc/nav.php");
+	include("inc/dtc_config.php");
+	include("inc/draw_user_admin.php");
 
-$DONOT_USE_ROTATING_PASS="yes";
+	if(file_exists("dtcrm")){
+		include("dtcrm/submit_to_sql.php");
+		include("dtcrm/main.php");
+		include("dtcrm/product_manager.php");
+		include("inc/renewals.php");
+		include("inc/graphs.php");
+		include("inc/monitor.php");
+		if( isset($_REQUEST["show_ip_pool_report"]) ){
+			include("inc/ip_usage_report.php");
+		}
+	}
 
-if(function_exists("skin_LayoutAdminPage")){
-	skin_LayoutAdminPage();
-}else{
-	skin_LayoutAdminPage_Default();
+	$DONOT_USE_ROTATING_PASS="yes";
+
+	if(function_exists("skin_LayoutAdminPage")){
+		skin_LayoutAdminPage();
+	}else{
+		skin_LayoutAdminPage_Default();
+	}
 }
 
 ?>

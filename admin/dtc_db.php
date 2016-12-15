@@ -1645,6 +1645,7 @@ $dtc_database = array(
 		"vars" => array(
 			"id" => "int(9) NOT NULL auto_increment",
 			"adm_login" => "varchar(64) NOT NULL default ''",
+			"pseudo" => "varchar(64) NOT NULL default ''",
 			"role_id" => "varchar(64) NOT NULL default ''"
 		),
 		"primary" => "(id)",
@@ -1689,6 +1690,7 @@ $dtc_database = array(
 		"vars" => array(
 			"id" => "int(9) NOT NULL auto_increment",
 			"adm_login" => "varchar(64) NOT NULL default ''",
+			"pseudo" => "varchar(64) NOT NULL default ''",
 			"session_key" => "varchar(64) NOT NULL default ''",
 			"ip_addr" => "varchar(16) NOT NULL default ''",
 			"expiry" => "date NOT NULL default '1970-01-01 01:00:00'"
@@ -1696,6 +1698,7 @@ $dtc_database = array(
 		"primary" => "(id)",
 		"keys" => array(
 			"adm_lookup" => "(adm_login, session_key)",
+			"pseudo_lookup" => "(pseudo, session_key)",
 			"session_key" => "(session_key)"
 		)
 	)

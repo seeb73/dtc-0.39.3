@@ -279,10 +279,7 @@ function skin_ClientPage (){
 	$anotherLanguageSelection = anotherLanguageSelection();
 	$lang_sel = skin($conf_skin,$anotherLanguageSelection, _("Language") );
 
-	if ($panel_type != "admin")
-	{
-		$adm_session = fetchSession();
-	}
+	$adm_session = fetchSession($panel_type);
 
 	if(isset($adm_session ) || (isset($adm_login) && $adm_login != "" && isset($adm_pass) && $adm_pass != "")){
 		// Fetch all the user informations, Print a nice error message if failure.
@@ -343,6 +340,7 @@ $meta
 </body>
 </html>";
 }
+
 // complete registering page skin
 function skin_NewAccountPage ($form){
 	global $conf_skin;
@@ -927,12 +925,9 @@ function bwoupUserEditForms($adm_login,$adm_pass){
 	$ret["err"] = 0;
 	$ret["mesg"] = "No error";
 
-	if ($panel_type != "admin")
-	{
-		$adm_session = fetchSession();
-	}
+	$adm_session = fetchSession($panel_type);
 
-	if(isset($adm_session ) || (isset($adm_login) && $adm_login != "" && isset($adm_pass) && $adm_pass != "")){
+	if((isset($adm_session) && $adm_session["session"]["adm_login"] != "")|| (isset($adm_login) && $adm_login != "" && isset($adm_pass) && $adm_pass != "")){
 		// Fetch all the selected user informations, Print a nice error message if failure.
 		$admin = fetchAdmin($adm_session,$adm_login,$adm_pass);
 		if(isset($adm_random_pass)){
