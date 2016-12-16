@@ -68,6 +68,4 @@ $pro_mysql_permissions_table = "permissions";
 $pro_mysql_roles_table = "roles";
 $pro_mysql_rolepermissions_table = "rolepermissions";
 $pro_mysql_userroles_table = "userroles";
-
 ?>
-

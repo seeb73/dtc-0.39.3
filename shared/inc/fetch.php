@@ -490,8 +490,10 @@ function fetchAdminData($adm_session,$adm_login,$adm_input_pass){
 		randomizePassword($adm_login,$adm_input_pass);
 		$pass = $adm_realpass;
 	}
+
+	$row = null;
 	
-	if (isset($adm_session))
+	if (isset($adm_session) && !empty($adm_session["session"]))
 	{
 		$session_expiry = new DateTime($adm_session["session"]["expiry"]);
 		$date_now = new DateTime("now");
@@ -554,7 +556,9 @@ function fetchAdminData($adm_session,$adm_login,$adm_input_pass){
 		if (!isset($adm_session["session"]["session_key"]) || !$adm_session["session"]["session_key"])
 		{
 			// see if we have a session cookie in our browser, that hasn't been stored into the DB
-			$cookie = $_COOKIE["dtcsessioncookie"];
+			$cookie = null;
+			if (!empty($_COOKIE["dtcsessioncookie"]))	
+			 $cookie = $_COOKIE["dtcsessioncookie"];
 			if (isset($cookie))
 			{
 				$session_key = $cookie;
@@ -567,7 +571,10 @@ function fetchAdminData($adm_session,$adm_login,$adm_input_pass){
 			
 			$session_expiry = strtotime( '+30 days' );
 			// we have authenticated correctly, generate a session cookie and populate the session table with an expiry
-			setcookie("dtcsessioncookie",$session_key, $session_expiry, '/');
+			if ($panel_type != "cronjob")
+			{
+				setcookie("dtcsessioncookie",$session_key, $session_expiry, '/');
+			}
 			$adm_session["session"]["session_key"] = $session_key;
 			$adm_session["session"]["expiry"] = $session_expiry;
 			// if we have an adm_login passed in here, set it into the session object we just created
@@ -1079,7 +1086,7 @@ function fetchClientData($id_client){
 		return $ret;
 }
 
-function fetchSession($panel_type){
+function fetchSession($panel_type = "client"){
 	global $mysqli_connection;
 	global $pro_mysql_admin_table;
 	global $pro_mysql_sessions_table;
@@ -1089,7 +1096,7 @@ function fetchSession($panel_type){
 	global $mysqli_connection;
 	
 	// logout handling
-	if ($_REQUEST["logout"]=="true")
+	if (isset($_REQUEST["logout"]) && $_REQUEST["logout"]=="true")
 	{	
 		unset($_COOKIE['dtcsessioncookie']);
 		setcookie('dtcsessioncookie', null, -1, '/');
@@ -1097,7 +1104,10 @@ function fetchSession($panel_type){
 	}
 	
 	// TODO - code to check the current session information
-	$cookie = $_COOKIE["dtcsessioncookie"];
+	if (isset($_COOKIE["dtcsessioncookie"]))
+	{
+		$cookie = $_COOKIE["dtcsessioncookie"];
+	}
 	
 	// for the admin panel, we use "pseudo" for logins
 	// for the client panel, we use "adm_login" for the logins
@@ -1285,7 +1295,9 @@ function fetchAdmin($adm_session,$adm_login, $adm_pass){
    return $_SERVER['HTTP_FORWARDED'];
 
   // Return unreliable IP address since all else failed
-  return $_SERVER['REMOTE_ADDR'];
+  if (!empty($_SERVER['REMOTE_ADDR']))
+   return $_SERVER['REMOTE_ADDR'];
+  return "unknown";
  }
 
  /**

@@ -63,7 +63,7 @@ class UUID
         return $ustr;
     }
 
-    private function uuidFromHash($hash, $version) {
+    private static function uuidFromHash($hash, $version) {
         return sprintf('%08s-%04s-%04x-%04x-%12s',
         // 32 bits for "time_low"
             substr($hash, 0, 8),
