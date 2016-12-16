@@ -28,18 +28,18 @@ allow_add_domain='$yesval',
 heb_type='".$_REQUEST["heb_type"]."',
 renew_prod_id='".$_REQUEST["renew_prod_id"]."'
 WHERE id='".$_REQUEST["id"]."' LIMIT 1;";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 		
 	}else if($_REQUEST["submit"] == "del"){
 		$q = "DELETE FROM $pro_mysql_product_table WHERE id='".$_REQUEST["id"]."' LIMIT 1;";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 	}else if($_REQUEST["submit"] == "create"){
 		$q = "INSERT INTO $pro_mysql_product_table
 (id,price_dollar,price_euro,name,quota_disk,memory_size,nbr_email,nbr_database,
 bandwidth,period,allow_add_domain,heb_type,renew_prod_id) VALUES('','".$_REQUEST["price_dollar"]."','".$_REQUEST["price_euro"]."','".$_REQUEST["prodname"]."',
 '".$_REQUEST["quota_disk"]."','".$_REQUEST["memory_size"]."','".$_REQUEST["nbr_email"]."','".$_REQUEST["nbr_database"]."',
 '".$_REQUEST["bandwidth"]."','".$_REQUEST["period"]."','$yesval','".$_REQUEST["heb_type"]."','".$_REQUEST["renew_prod_id"]."');";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 	}
 }
 
@@ -54,20 +54,20 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "modify_client_cmd"){
 // cmd_id=1&id=1&rub=crm&price=25&quantity=1&action=modify_client_cmd&
 // cmd_date=2004-06-10&cmd_expir=2005-06-10&ed_command=Save
 		$q = "UPDATE $pro_mysql_command_table SET quantity='".$_REQUEST["quantity"]."',price='".$_REQUEST["price"]."',date='".$_REQUEST["cmd_date"]."',expir='".$_REQUEST["cmd_expir"]."' WHERE id='".$_REQUEST["cmd_id"]."';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 	}
 	if($_REQUEST["del_command"] == "Del"){
 		$q = "DELETE FROM $pro_mysql_command_table WHERE id='".$_REQUEST["cmd_id"]."';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 	}
 }
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_admin_to_client"){
 	$q = "UPDATE $pro_mysql_admin_table SET id_client='".$_REQUEST["id"]."' WHERE adm_login='".$_REQUEST["adm_name"]."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 }
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "remove_admin_from_client"){
 	$q = "UPDATE $pro_mysql_admin_table SET id_client='0' WHERE adm_login='".$_REQUEST["adm_name"]."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 }
 //id=0&action=new_client&ed_familyname=&ed_christname=&ed_is_copany=yes&ed_company_name=&ed_addr1=&ed_addr2=&ed_addr3=
 //&ed_city=&ed_zipcode=&ed_state=&ed_country=AF&ed_phone=&ed_fax=&ed_email=&ed_special_note=&ed_dollar=&
@@ -76,15 +76,15 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "remove_admin_from_clien
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "edit_client"){
 	if(isset($_REQUEST["del"]) && $_REQUEST["del"] == "Del"){
 		$q = "DELETE FROM $pro_mysql_client_table WHERE id='".$_REQUEST["delete_id"]."' LIMIT 1;";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 		$q = "UPDATE $pro_mysql_admin_table SET id_client='0' WHERE id_client='".$_REQUEST["delete_id"]."' LIMIT 1;";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 		return;
 	}
 }
 
 $q = "SELECT * FROM $pro_mysql_custom_fld_table ORDER BY widgetorder;";
-$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 $n = mysqli_num_rows($r);
 if($n > 0){
 	$cust_fld_val = "";
@@ -127,7 +127,7 @@ disk_quota_mb,bw_quota_per_month_gb,customfld
 '".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_country"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_phone"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_fax"])."',
 '".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_email"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_special_note"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_dollar"])."',
 '".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_disk_quota_mb"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_bw_quota_per_month_gb"])."','".$cust_fld_val."');";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 }
 
 //id=0&action=new_client&ed_familyname=&ed_christname=&ed_is_copany=yes&ed_company_name=&ed_addr1=&ed_addr2=&ed_addr3=
@@ -156,13 +156,13 @@ disk_quota_mb='".$_REQUEST["ed_disk_quota_mb"]."',
 bw_quota_per_month_gb='".$_REQUEST["ed_bw_quota_per_month_gb"]."',
 customfld='".$cust_fld_val."'
 WHERE id='".$_REQUEST["id"]."' LIMIT 1;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 }
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_cmd_to_client"){
 	get_secpay_conf();
 
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$_REQUEST["add_new_command"]."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1)	die("Product ID not found!!!");
 	$a = mysqli_fetch_array($r);
@@ -174,7 +174,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_cmd_to_client"){
 	$q = "INSERT INTO $pro_mysql_command_table (id,
 id_client,domain_name,quantity,price_devise,price,paiement_method,date,expir,product_id
 )VALUES('','".$_REQUEST["id"]."','".$_REQUEST["add_newcmd_domain_name"]."','1','$secpayconf_currency_letters','".$a["price_dollar"]."','free','".date("Y-m-d")."','$exp_date','".$_REQUEST["add_new_command"]."');";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 }
 
 }

@@ -15,6 +15,7 @@ function drawAdminTools_dm0RRDGraphs($admin,$vps){
 	global $pro_mysql_vps_ip_table;
 
 	global $pro_mysql_vps_stats_table;
+	global $myslqi_connection;
 	global $secpayconf_currency_letters;
 
 	global $panel_type;

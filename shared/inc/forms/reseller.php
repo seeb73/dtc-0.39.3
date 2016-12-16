@@ -12,6 +12,7 @@ function drawReseller($admin){
 	global $adm_login;
 	global $adm_pass;
 	global $pro_mysql_admin_table;
+	global $myslqi_connection;
 	
 	global $conf_demo_version;
 	global $conf_post_or_get;
@@ -27,7 +28,7 @@ function drawReseller($admin){
 		$next_adm = $admin["info"]["ob_head"];
 		while($next_adm != $adm_login){
 			$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$next_adm';";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 			$n = mysqli_num_rows($r);
 			if($n != 1)	die("Could not fetch one of the child accounts !!!");
 			$a = mysqli_fetch_array($r);

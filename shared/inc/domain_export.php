@@ -10,7 +10,7 @@ function getExDomTableData($table,$w_cond,$key,$vars){
 	$n_vars = sizeof($vars_ar);
 
 	$q = "SELECT $key,$vars FROM $table WHERE $w_cond;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysqli_fetch_array($r);
@@ -29,7 +29,7 @@ function getExDomRowValues($table,$w_cond,$vars){
 	$n_vars = sizeof($vars_ar);
 
 	$q = "SELECT $vars FROM $table WHERE $w_cond;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find raw line when calling $q ".__LINE__." file ".__FILE__);
@@ -60,6 +60,7 @@ function getDomainData($domain,$adm_login){
 	global $pro_mysql_domain_table;
 	global $pro_mysql_ssh_table;
 	global $pro_mysql_subdomain_table;
+	global $myslqi_connection;
 
 	unset($dom);
 	$dom = array();
@@ -112,6 +113,7 @@ function exportDomain($domain_name,$adm_login){
 
 function exportAllDomain($adm_login){
 	global $pro_mysql_domain_table;
+	global $myslqi_connection;
 
 	$dom_ar = array(
 		"domains" => array()
@@ -119,7 +121,7 @@ function exportAllDomain($adm_login){
 
 	// Export all domains
 	$q = "SELECT name FROM $pro_mysql_domain_table WHERE owner='$adm_login';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysqli_fetch_array($r);
@@ -128,7 +130,7 @@ function exportAllDomain($adm_login){
 
 	// Get the MySQL user infos
 	$q = "SELECT DISTINCT User,Password FROM mysql.user WHERE dtcowner='$adm_login';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		if($i == 0){
@@ -138,7 +140,7 @@ function exportAllDomain($adm_login){
 		$dom_ar["mysql"][ $a["User"] ]["password"] = $a["Password"];
 
 		$q2 = "SELECT DISTINCT Db FROM mysql.db WHERE User='".$a["User"]."';";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n2 = mysqli_num_rows($r2);
 		for($j=0;$j<$n2;$j++){
 			$a2 = mysqli_fetch_array($r2);
@@ -181,14 +183,14 @@ function updateRowValue($table,$w_cond,$ar,$vars){
 		}
 	}
 	$q = "UPDATE $table SET $sets WHERE $w_cond;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 }
 
 function recreateAllRows($table,$delete_cond,$ar,$vars,$added_var,$added_val){
 	global $mysqli_connection;
 	// Delete old records if any...
 	$q = "DELETE FROM $table WHERE $delete_cond;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 	$vars_ar = explode(",",$vars);
 	$nbr_vars = sizeof($vars_ar);
@@ -211,7 +213,7 @@ function recreateAllRows($table,$delete_cond,$ar,$vars,$added_var,$added_val){
 				}
 			}
 			$q = "INSERT IGNORE INTO $table ($vars $added_var) VALUES ($values $added_val);";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		}
 	}elseif(isset($ar["item"])){
 		$vars = "";
@@ -229,7 +231,7 @@ function recreateAllRows($table,$delete_cond,$ar,$vars,$added_var,$added_val){
 			}
 		}
 		$q = "INSERT IGNORE INTO $table ($vars $added_var) VALUES ($values $added_val);";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	}
 }
 
@@ -380,7 +382,7 @@ function domainImport($path_from,$adm_login,$adm_pass){
 
 		// Check if the domain exists, if not, add it to the user
 		$q = "SELECT * FROM $pro_mysql_domain_table WHERE name='$dom_name';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n == 0){
 			addDomainToUser($adm_login,$adm_pass,$dom_name);
@@ -411,14 +413,14 @@ function domainImport($path_from,$adm_login,$adm_pass){
 			"login,crypt,password,homedir",",hostname",",'$dom_name'");
 		// Fixes the UID / GID for ssh, ftp and email accounts
 		$q = "UPDATE $pro_mysql_pop_table SET uid='$conf_dtc_system_uid',gid='$conf_dtc_system_gid' WHERE mbox_host='$dom_name';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$q = "UPDATE $pro_mysql_ftp_table SET uid='$conf_dtc_system_uid',gid='$conf_dtc_system_gid' WHERE hostname='$dom_name';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$q = "UPDATE $pro_mysql_ssh_table SET uid='$conf_dtc_system_uid',gid='$conf_dtc_system_gid' WHERE hostname='$dom_name';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		// Fixes the pop_access fullemail field.
 		$q = "UPDATE $pro_mysql_pop_table SET fullemail = concat( `id`,  '@', `mbox_host` ) WHERE mbox_host='$dom_name';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	}
 	if( isset($dom_ar["mysql"])){
 		$n_user = sizeof($dom_ar["mysql"]);
@@ -437,7 +439,7 @@ function domainImport($path_from,$adm_login,$adm_pass){
 			Alter_routine_priv,Create_user_priv,dtcowner)
 			VALUES ('%','$username','$password','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N',
 			'N','N','N','N','N','N','N','N','$adm_login');";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 			$q = "INSERT IGNORE INTO mysql.user
 			(Host,User,Password,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Reload_priv,Shutdown_priv,Process_priv,File_priv,
@@ -446,7 +448,7 @@ function domainImport($path_from,$adm_login,$adm_pass){
 			Alter_routine_priv,Create_user_priv,dtcowner)
 			VALUES ('localhost','$username','$password','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N',
 			'N','N','N','N','N','N','N','N','$adm_login');";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 			if( isset($user["dbs"])){
 				$n_db = sizeof($user["dbs"]);
@@ -458,18 +460,18 @@ function domainImport($path_from,$adm_login,$adm_pass){
 					References_priv,Index_priv,Alter_priv,Create_tmp_table_priv,Lock_tables_priv,Create_view_priv,
 					Show_view_priv,Create_routine_priv,Alter_routine_priv,Execute_priv)
 					VALUES('%','$db','$username','Y','Y','Y','Y','Y','Y','N','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y');";
-					$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+					$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 					$q = "INSERT IGNORE INTO mysql.db (Host,Db,User,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Grant_priv,
 					References_priv,Index_priv,Alter_priv,Create_tmp_table_priv,Lock_tables_priv,Create_view_priv,
 					Show_view_priv,Create_routine_priv,Alter_routine_priv,Execute_priv)
 					VALUES('localhost','$db','$username','Y','Y','Y','Y','Y','Y','N','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y');";
-					$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+					$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 				}
 			}
 		}
 		$q = "FLUSH PRIVILEGES;";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	}
 	return;
 }

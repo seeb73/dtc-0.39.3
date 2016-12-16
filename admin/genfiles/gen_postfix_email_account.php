@@ -416,7 +416,7 @@ function mail_account_generate_postfix(){
 
         foreach($relay_recipients_list as $domain){
 		$qqq = "SELECT fullemail FROM $pro_mysql_pop_table WHERE mbox_host='".$domain."';";
-        	$qqr = mysqli_query($mysqli_connection,$qqq)or die ("Cannot query $qqq line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
+        	$qqr = mysqli_query($mysqli_connection,$qqq)or die ("Cannot query $qqq line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
         	$qqn = mysqli_num_rows($qqr);
         	for($i=0;$i<$qqn;$i++){
                 	$a = mysqli_fetch_array($qqr);

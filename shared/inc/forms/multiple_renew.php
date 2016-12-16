@@ -28,14 +28,14 @@ function drawAdminTools_MultipleRenew($admin){
 		$nbr_shared = 1;
 		$td = "td  class=\"dtcDatagrid_table_flds\"";
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$admin["info"]["prod_id"]."';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$out .= "<!-- Cannot find your Shared Hosting product ID ".$admin["info"]["prod_id"].". -->";
 		}
 		$prod = mysqli_fetch_array($r);
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$admin["info"]["prod_id"]."';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n < 1 && $secpayconf_use_products_for_renewal == 'no'){
 			$out .= "<!-- Cannot find renewal product ID for your Shared Hosting ".$admin["info"]["prod_id"].". -->";
@@ -63,14 +63,14 @@ function drawAdminTools_MultipleRenew($admin){
 		}
 		$vps = $admin["vps"][$i];
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$vps["product_id"]."';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$out .= "<!-- Cannot find your VPS product ID ".$vps["product_id"].". -->";
 		}
 		$prod = mysqli_fetch_array($r);
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$vps["product_id"]."';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n < 1 && $secpayconf_use_products_for_renewal == 'no'){
 			$out .= "<!-- Cannot find renewal product ID for your VPS ".$vps["product_id"].". -->";
@@ -99,14 +99,14 @@ function drawAdminTools_MultipleRenew($admin){
 		}
 		$dedi = $admin["dedicated"][$i];
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$dedi["product_id"]."';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$out .= "<!-- Cannot find your dedicated server product ID ".$dedi["product_id"].". -->";
 		}
 		$prod = mysqli_fetch_array($r);
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$dedi["product_id"]."';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n < 1 && $secpayconf_use_products_for_renewal == 'no'){
 			$out .= "<!-- Cannot find renewal product ID for your dedicated server ".$dedi["product_id"].". -->";
@@ -135,14 +135,14 @@ function drawAdminTools_MultipleRenew($admin){
 		}
 		$custom = $admin["custom"][$i];
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$custom["product_id"]."';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$out .= "<!-- Cannot find your custom product ID ".$custom["product_id"].". -->";
 		}
 		$prod = mysqli_fetch_array($r);
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$custom["product_id"]."';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n < 1 && $secpayconf_use_products_for_renewal == 'no'){
 			$out .= "<!-- Cannot find renewal product ID for your custom product ".$custom["product_id"].". -->";

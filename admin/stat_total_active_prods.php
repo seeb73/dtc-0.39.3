@@ -17,13 +17,13 @@ $date_now = date("Y-m-d");
 // Total VPS
 $total_vps = 0;
 $q = "SELECT * FROM product WHERE renew_prod_id = '0' AND heb_type = 'vps'";
-$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 $n = mysqli_num_rows($r);
 for($i=0;$i<$n;$i++){
 	$product = mysqli_fetch_array($r);
 
 	$q2 = "SELECT COUNT(id) AS num_vps FROM vps WHERE product_id='".$product["id"]."' AND expire_date > NOW();";
-	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n2 = mysqli_num_rows($r2);
 	if($n2 != 1){
 		die("Not one row line ".__LINE__." file ".__FILE__);
@@ -46,13 +46,13 @@ $total_vps = round($total_vps,2);
 // Total dedicated
 $total_dedicated = 0;
 $q = "SELECT * FROM product WHERE renew_prod_id = '0' AND heb_type = 'server'";
-$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 $n = mysqli_num_rows($r);
 for($i=0;$i<$n;$i++){
 	$product = mysqli_fetch_array($r);
 
 	$q2 = "SELECT COUNT(id) AS num_dedicated FROM dedicated WHERE product_id='".$product["id"]."' AND expire_date > NOW();";
-	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n2 = mysqli_num_rows($r2);
 	if($n2 != 1){
 		die("Not one row line ".__LINE__." file ".__FILE__);
@@ -76,13 +76,13 @@ $total_dedicated = round($total_dedicated,2);
 // Total shared
 $total_shared = 0;
 $q = "SELECT * FROM product WHERE renew_prod_id = '0' AND heb_type = 'shared'";
-$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 $n = mysqli_num_rows($r);
 for($i=0;$i<$n;$i++){
 	$product = mysqli_fetch_array($r);
 
 	$q2 = "SELECT COUNT(adm_login) AS num_shared FROM admin WHERE prod_id='".$product["id"]."' AND expire > NOW();";
-	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n2 = mysqli_num_rows($r2);
 	if($n2 != 1){
 		die("Not one row line ".__LINE__." file ".__FILE__);

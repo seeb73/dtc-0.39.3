@@ -125,7 +125,7 @@ function get_remote_mail_domains_internal($recipients){
 
 	// Get all domains from the servers for wich we act as backup MX
 	$q = "SELECT * FROM $pro_mysql_backup_table WHERE type='mail_backup';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q ! line ".__FILE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q ! line ".__FILE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$retry = 0;
@@ -189,7 +189,7 @@ function get_remote_mail_domains_internal($recipients){
 					$domain_list .= $remote_file;
 					$recipient_list .= $remote_file_recipients;
 					$q2 = "UPDATE $pro_mysql_backup_table SET status='done' WHERE id='".$a["id"]."';";
-					$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 ! line ".__FILE__." file ".__FILE__." sql said ".mysqli_error());
+					$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 ! line ".__FILE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 					if( $panel_type == "cronjob"){
 						echo "ok!\n";
 					}else{

@@ -61,7 +61,7 @@ function drawAdminTools_Aliases($domain){
 
         // We have to query again, in case something has changed
         $q = "SELECT id FROM $pro_mysql_mailaliasgroup_table WHERE domain_parent='".$domain["name"]."';";
-        $r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
+        $r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
         $n = mysqli_num_rows($r);
 	
 	$out .= $list_items;
@@ -77,9 +77,10 @@ function drawAdminTools_Aliases($domain){
 function emailAliasesEditCallback ($id){
 	global $pro_mysql_pop_table;
 	global $pro_mysql_mailaliasgroup_table;
+	global $myslqi_connection;
 	
 	$q = "SELECT * FROM $pro_mysql_mailaliasgroup_table WHERE autoinc='$id';";
-	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find created email line ".__LINE__." file ".__FILE__);
@@ -87,7 +88,7 @@ function emailAliasesEditCallback ($id){
 	$a = mysqli_fetch_array($r);
 
 	$q = "UPDATE $pro_mysql_mailaliasgroup_table SET delivery_group='".trim($_REQUEST['delivery_group'])."' WHERE autoinc='$id';";
-	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
 
 	//writeDotQmailFile($a["id"],$a["mbox_host"]);
 	triggerMXListUpdate();
@@ -104,9 +105,10 @@ function emailAliasesCreateCallback ($id){
 	global $edit_domain;
 	global $pro_mysql_mailaliasgroup_table;
 	global $pro_mysql_pop_table;
+	global $myslqi_connection;
 	
 	$q = "SELECT * FROM $pro_mysql_mailaliasgroup_table WHERE autoinc='$id';";
-	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find created email line ".__LINE__." file ".__FILE__);
@@ -114,20 +116,20 @@ function emailAliasesCreateCallback ($id){
 	$a = mysqli_fetch_array($r);
 
 	$test_query = "SELECT * FROM $pro_mysql_list_table WHERE name='".$a["id"]."' AND domain='$edit_domain'";
-	$test_result = mysqli_query($mysqli_connection,$test_query) or die("Cannot execute query \"$test_query\" line ".__LINE__." file ".__FILE__. " sql said ".mysqli_error());
+	$test_result = mysqli_query($mysqli_connection,$test_query) or die("Cannot execute query \"$test_query\" line ".__LINE__." file ".__FILE__. " sql said ".mysqli_error($mysqli_connection));
 	$testnum_rows = mysqli_num_rows($test_result);
 	if($testnum_rows >= 1){
 		$q = "DELETE FROM $pro_mysql_mailaliasgroup_table WHERE autoinc='$id';";
-		$r = mysqli_query($mysqli_connection,$q) or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q) or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
 		return "<font color=\"red\">Error: Email address already exists with this name!</font><br />";
 	}
 	
 	$test_query = "SELECT * FROM $pro_mysql_pop_table WHERE id='".$a["id"]."' AND mbox_host='$edit_domain'";
-	$test_result = mysqli_query($mysqli_connection,$test_query) or die("Cannot execute query \"$test_query\" line ".__LINE__." file ".__FILE__. " sql said ".mysqli_error());
+	$test_result = mysqli_query($mysqli_connection,$test_query) or die("Cannot execute query \"$test_query\" line ".__LINE__." file ".__FILE__. " sql said ".mysqli_error($mysqli_connection));
 	$testnum_rows = mysqli_num_rows($test_result);
 	if($testnum_rows >= 1){
 		$q = "DELETE FROM $pro_mysql_mailaliasgroup_table WHERE autoinc='$id';";
-		$r = mysqli_query($mysqli_connection,$q) or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q) or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
 		return "<font color=\"red\">Error: Email address already exists with this name!</font><br />";
 	}
 	
@@ -138,12 +140,13 @@ function emailAliasesCreateCallback ($id){
 
 function emailAliasesDeleteCallback ($id){
 	global $pro_mysql_mailaliasgroup_table;
+	global $myslqi_connection;
 	
 	triggerMXListUpdate();
 	updateUsingCron("gen_qmail='yes', qmail_newu='yes'");
 
 	$q = "DELETE FROM $pro_mysql_mailaliasgroup_table WHERE autoinc='$id';";
-	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
 	if($r != true ){
 		die("Cannot find created email line ".__LINE__." file ".__FILE__);
 	}

@@ -70,7 +70,7 @@ function mail_account_generate_maildrop(){
 
 	// This is a rewrite of this function that should be faster and better.
 	$q2 = "SELECT name,domain_parking FROM $pro_mysql_domain_table";
-	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n2 = mysqli_num_rows($r2);
 	$userdb_file = "";
 	for($j=0;$j<$n2;$j++){
@@ -91,7 +91,7 @@ function mail_account_generate_maildrop(){
 		AND $pro_mysql_domain_table.name='$query_dom_name'
 		AND ($pro_mysql_admin_table.disabled='no' or $pro_mysql_admin_table.disabled='always-no' or $pro_mysql_admin_table.disabled='')
 		ORDER BY $pro_mysql_pop_table.id";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		for($i=0;$i<$n;$i++){
 			$a = mysqli_fetch_array($r);

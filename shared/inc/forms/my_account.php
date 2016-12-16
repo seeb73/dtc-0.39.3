@@ -54,7 +54,7 @@ function drawAdminTools_MyAccount($admin){
 			}else{
 				$out .= "<font color=\"green\">Funds added to your account!</font><br><br>";
 				$q = "UPDATE $pro_mysql_client_table SET dollar = dollar+".$ze_refund." WHERE id='".$admin["info"]["id_client"]."';";
-				$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 				$admin["client"]["dollar"] += $ze_refund;
 				$out .= "Your account now has \$".$admin["client"]["dollar"];
 				return $out;
@@ -63,14 +63,14 @@ function drawAdminTools_MyAccount($admin){
 			// Save the values in SQL and process the paynow buttons
 			$q = "INSERT INTO $pro_mysql_pending_renewal_table (id,adm_login,renew_date,renew_time,product_id,renew_id,heb_type,country_code)
 			VALUES ('','".$_REQUEST["adm_login"]."',now(),now(),'".$ro["id"]."','".$rocli["id"]."','shared-upgrade','$country');";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 			$renew_id = mysqli_insert_id($mysqli_connection);
 
 			$payid = createCreditCardPaiementID(mysqli_real_escape_string($mysqli_connection,$_REQUEST["refund_amount"]),$admin["info"]["id_client"],
 				"Refund my account","no",$prod_id,$vat_rate);
 
 			$q = "UPDATE $pro_mysql_pending_renewal_table SET pay_id='$payid' WHERE id='$renew_id';";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 
 			$return_url = htmlentities($_SERVER["PHP_SELF"])."?adm_login=$adm_login&adm_pass=$adm_pass"
 				."&addrlink=$addrlink&action=refund_myaccount&inneraction=return_from_paypal_refund_my_account&payid=$payid";
@@ -156,7 +156,7 @@ function drawAdminTools_MyAccount($admin){
 					}
 					if ($secpayconf_use_products_for_renewal == 'yes'){
 						$q = "SELECT name, price_dollar FROM $pro_mysql_product_table WHERE id='".$admin["info"]["prod_id"]."';";
-						$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+						$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 						$n = mysqli_num_rows($r);
 						if($n == 1){
 							$a = mysqli_fetch_array($r);
@@ -172,7 +172,7 @@ function drawAdminTools_MyAccount($admin){
 					}
 
 					$q = "SELECT * FROM $pro_mysql_product_table WHERE renew_prod_id='".$admin["info"]["prod_id"]."';";
-					$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+					$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 					$n = mysqli_num_rows($r);
 					for($i=0;$i<$n;$i++){
 						$a = mysqli_fetch_array($r);
@@ -192,7 +192,7 @@ function drawAdminTools_MyAccount($admin){
 			if ($conf_show_ssl_tokens == "yes"){
 				$out .= "</center><br /><h3>". _("SSL tokens") ."</h3><br />";
 				$q = "SELECT * FROM $pro_mysql_ssl_ips_table WHERE adm_login='$adm_login' AND available='no';";
-				$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 				$n = mysqli_num_rows($r);
 				if($n == 0){
 					$out .= _("You currently don't have any SSL tokens.") ."<br><br>";
@@ -212,7 +212,7 @@ function drawAdminTools_MyAccount($admin){
 							}
 						}
 						$prodq = "SELECT * FROM $pro_mysql_product_table WHERE heb_type='ssl';";
-						$prodr = mysqli_query($mysqli_connection,$prodq)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+						$prodr = mysqli_query($mysqli_connection,$prodq)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 						$prodn = mysqli_num_rows($prodr);
 						if($prodn != 1){
 							$ssl_renew_form = _("No ssl product defined.") ;
@@ -233,13 +233,13 @@ function drawAdminTools_MyAccount($admin){
 				$out .= "</table><br><br>";
 				}
 				$q = "SELECT * FROM $pro_mysql_ssl_ips_table WHERE available='yes';";
-				$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 				$n = mysqli_num_rows($r);
 				if($n == 0){
 					$out .= _("No SSL token available: contact your administrator to request it.") ."<br><br>";
 				}else{
 					$q = "SELECT * FROM $pro_mysql_product_table WHERE heb_type='ssl';";
-					$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+					$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 					$n = mysqli_num_rows($r);
 					if($n != 1){
 						$out .= _("No ssl product defined.") ;
@@ -308,7 +308,7 @@ function drawAdminTools_MyAccount($admin){
 		}
 	
 		$qcf = "SELECT * FROM $pro_mysql_custom_fld_table WHERE 1 ORDER BY widgetorder;";
-		$rcf = mysqli_query($mysqli_connection,$qcf)or die("Cannot query $qcf line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$rcf = mysqli_query($mysqli_connection,$qcf)or die("Cannot query $qcf line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$ncf = mysqli_num_rows($rcf);
 	
 		for($i=0;$i<$ncf;$i++){
@@ -360,6 +360,7 @@ function drawAdminTools_MyAccount($admin){
 		if ($afftotal) {
 
 			global $pro_mysql_completedorders_table;
+			global $myslqi_connection;
 
 			$sql = "SELECT * FROM affiliate_payments INNER JOIN $pro_mysql_completedorders_table on (affiliate_payments.order_id = $pro_mysql_completedorders_table.id) WHERE adm_login = '{$adm_login}' and date_paid IS NULL; ";
 			$result = mysqli_query($mysqli_connection,$sql);

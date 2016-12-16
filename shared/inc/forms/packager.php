@@ -105,7 +105,7 @@ function drawAdminTools_PackageInstaller($domain,$adm_path){
 			}
 			// Get the database infos beffore calling the custom package installer
 			$q = "SELECT DISTINCT db.Db,db.User FROM mysql.user,mysql.db WHERE user.dtcowner='$adm_login' AND db.User=user.User AND db.Db='".mysqli_real_escape_string($mysqli_connection,$_REQUEST["database_name"])."';";
-			$r = mysqli_query($mysqli_connection_mysql,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r = mysqli_query($mysqli_connection_mysql,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 			$n = mysqli_num_rows($r);
 			if($n != 1)die("Cannot find database line ".__LINE__." file ".__FILE__);
 			$a = mysqli_fetch_array($r);
@@ -159,7 +159,7 @@ function drawAdminTools_PackageInstaller($domain,$adm_path){
 			$q = "SELECT db.Db,db.User FROM user,db
 			WHERE user.dtcowner='$adm_login'
 			AND db.User=user.User";
-			$r = mysqli_query($mysqli_connection_mysql,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r = mysqli_query($mysqli_connection_mysql,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 			$n = mysqli_num_rows($r);
 			if($n < 1){
 				$txt .= "You don't have any database yet. Please create one using the database tool

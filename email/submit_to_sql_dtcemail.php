@@ -4,6 +4,7 @@
 // adm_email_login=toto%40iglobalwall.com&adm_email_pass=titi&
 function pass_check_email(){
 	global $pro_mysql_pop_table;
+	global $myslqi_connection;
 	global $user;
 	global $host;
 	global $conf_session_expir_minute;

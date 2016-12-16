@@ -89,7 +89,7 @@ function migrate_dump_all_dbs($dir){
 	$script .= "echo -n \"Dumping all dbs to $dir:\"\n";
 
 	$q = "SHOW DATABASES";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysqli_fetch_array($r);
@@ -135,7 +135,7 @@ Use mysql;
 
 ";
 	$q = "SELECT * FROM mysql.user WHERE User NOT LIKE 'root' AND User NOT LIKE 'debian-sys-maint' AND User NOT LIKE 'dtcdaemons'";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysqli_fetch_array($r);
@@ -189,7 +189,7 @@ WHERE Host='".$a["Host"]."' AND User='".$a["User"]."';
 
 	$mdb .= "# Dumping table rights\n\n";
 	$q = "SELECT * FROM mysql.db WHERE Db NOT LIKE 'test%'";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysqli_fetch_array($r);

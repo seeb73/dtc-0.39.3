@@ -110,7 +110,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 	}
 	// Get the owner informations
 	$q = "SELECT adm_login,path FROM $pro_mysql_admin_table WHERE 1;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" !".mysqli_error()." line ".__LINE__." file ".__FILE__);
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" !".mysqli_error($mysqli_connection)." line ".__LINE__." file ".__FILE__);
 	$nr = mysqli_num_rows($r);
 	for($i=0;$i<$nr;$i++){
 		$ra = mysqli_fetch_array($r);
@@ -126,7 +126,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 		$backup_net .= "echo \"===> Backuping all files for user $owner:\"\n";
 		$backup_net .= "cd $path\n";
 		$q2 = "SELECT name FROM $pro_mysql_domain_table WHERE owner='$owner';";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query \"$q2\" !".mysqli_error()." line ".__LINE__." file ".__FILE__);
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query \"$q2\" !".mysqli_error($mysqli_connection)." line ".__LINE__." file ".__FILE__);
 		$nr2 = mysqli_num_rows($r2);
 		for($j=0;$j<$nr2;$j++){
 			$ra2 = mysqli_fetch_array($r2);
@@ -137,7 +137,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 			$backup_net .= "echo -n \",lists\"\n";
 			$backup_net .= "if [ -d $webname/lists ] ; then tar -rf $owner.$webname.tar $webname/lists ; else echo -n \"(dir not found)\"; fi\n";
 			$q3 = "SELECT subdomain_name FROM $pro_mysql_subdomain_table WHERE domain_name='$webname';";
-			$r3 = mysqli_query($mysqli_connection,$q3)or die("Cannot execute query \"$q3\" !".mysqli_error()." line ".__LINE__." file ".__FILE__);
+			$r3 = mysqli_query($mysqli_connection,$q3)or die("Cannot execute query \"$q3\" !".mysqli_error($mysqli_connection)." line ".__LINE__." file ".__FILE__);
 			$nr3 = mysqli_num_rows($r3);
 			for($k=0;$k<$nr3;$k++){
 				$ra3 = mysqli_fetch_array($r3);

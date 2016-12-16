@@ -98,7 +98,7 @@ function createSupportHash(){
 	while($n != 0){
 		$hash = getRandomValue();
 		$q = "SELECT id FROM $pro_mysql_tik_queries_table WHERE hash='$hash';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 	}
 	return $hash;
@@ -110,7 +110,7 @@ function findLastTicketID($hash){
 	global $mysqli_connection;
 
 	$q = "SELECT id,reply_id FROM $pro_mysql_tik_queries_table WHERE hash='$hash';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		return 0;
@@ -122,7 +122,7 @@ function findLastTicketID($hash){
 	$i = 100;
 	while($a["reply_id"] != 0 && $i-- != 0){
 		$q = "SELECT id,reply_id FROM $pro_mysql_tik_queries_table WHERE id='".$a["reply_id"]."';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			return 0;
@@ -226,7 +226,7 @@ function vpsLocationSelector(){
 	WHERE $pro_mysql_vps_ip_table.vps_server_hostname=$pro_mysql_vps_server_table.hostname
 	AND $pro_mysql_vps_ip_table.available='yes'
 	GROUP BY $pro_mysql_vps_server_table.location;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	$vps_location_popup = "<option value=\"-1\">" . _("Please select") . "!</optioon>";
 	for($i=0;$i<$n;$i++){
@@ -247,14 +247,14 @@ function findLastUsedLangByUser($adm_login){
 	global $mysqli_connection;
 
 	$q = "SELECT last_used_lang FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n > 0){
 		$a = mysqli_fetch_array($r);
 		return $a["last_used_lang"];
 	}else{
 		$q = "SELECT last_used_lang FROM $pro_mysql_new_admin_table WHERE reqadm_login='$adm_login';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n > 0){
 			$a = mysqli_fetch_array($r);
@@ -272,14 +272,14 @@ function findInvoicingCompany ($service_location,$client_country_code){
 	global $mysqli_connection;
 
 	$q = "SELECT * FROM $pro_mysql_invoicing_table WHERE service_country_code='$service_location';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n > 0){
 		$a = mysqli_fetch_array($r);
 		$company_id = $a["company_id"];
 	}else{
 		$q = "SELECT * FROM $pro_mysql_invoicing_table WHERE customer_country_code='$client_country_code';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n > 0){
 			$a = mysqli_fetch_array($r);
@@ -471,17 +471,17 @@ function checkLoginPassAndDomain($adm_login,$adm_pass,$domain_name){
 	}
 
 	$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login' AND ((adm_pass='$adm_pass' OR adm_pass=SHA1('$adm_pass')) OR (pass_next_req='$adm_pass' AND pass_expire > '".time()."'));";
-	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error($mysqli_connection));
 	$num_rows = mysqli_num_rows($result);
 	if($num_rows != 1){
 		$query = "SELECT * FROM $pro_mysql_tik_admins_table WHERE pass_next_req='$adm_pass' AND pass_expire > '".time()."';";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" !".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" !".mysqli_error($mysqli_connection));
 		$num_rows = mysqli_num_rows($result);
 		if($num_rows != 1){
 			die("User or password is incorrect !");
 		}
 		$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error($mysqli_connection));
 		$num_rows = mysqli_num_rows($result);
 		if($num_rows != 1){
 			die("User or password is incorrect !");
@@ -489,7 +489,7 @@ function checkLoginPassAndDomain($adm_login,$adm_pass,$domain_name){
 	}
 
 	$query = "SELECT * FROM $pro_mysql_domain_table WHERE owner='$adm_login' AND name='$domain_name';";
-	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error($mysqli_connection));
 	$num_rows = mysqli_num_rows($result);
 	if($num_rows != 1)	die("Cannot update: you are trying to do something on a domain name you don't own!");
 }
@@ -501,17 +501,17 @@ function checkLoginPass($adm_login,$adm_pass){
 	global $mysqli_connection;
 
 	$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login' AND ((adm_pass='$adm_pass' OR adm_pass=SHA1('$adm_pass')) OR (pass_next_req='$adm_pass' AND pass_expire > '".time()."'));";
-	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error($mysqli_connection));
 	$num_rows = mysqli_num_rows($result);
 	if($num_rows != 1){
 		$query = "SELECT * FROM $pro_mysql_tik_admins_table WHERE pass_next_req='$adm_pass' AND pass_expire > '".time()."';";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" !".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" !".mysqli_error($mysqli_connection));
 		$num_rows = mysqli_num_rows($result);
 		if($num_rows != 1){
 			die("User or password is incorrect !");
 		}
 		$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error($mysqli_connection));
 		$num_rows = mysqli_num_rows($result);
 		if($num_rows != 1){
 			die("User or password is incorrect !");
@@ -711,7 +711,7 @@ function triggerDomainListUpdate(){
 	global $mysqli_connection;
 
 	$q = "UPDATE $pro_mysql_backup_table SET status='pending' WHERE type='trigger_changes';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 }
 
 function triggerMXListUpdate(){
@@ -719,7 +719,7 @@ function triggerMXListUpdate(){
 	global $mysqli_connection;
 
 	$q = "UPDATE $pro_mysql_backup_table SET status='pending' WHERE type='trigger_mx_changes';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 
 }
@@ -794,7 +794,7 @@ function addDedicatedToUser($adm_login,$server_hostname,$product_id){
 	global $pro_mysql_dedicated_table;
 	global $mysqli_connection;
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='$product_id';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find product line ".__LINE__." file ".__FILE__);
@@ -804,7 +804,7 @@ function addDedicatedToUser($adm_login,$server_hostname,$product_id){
 	$exp_date = calculateExpirationDate(date("Y-m-d"),$product["period"]);
 	$q = "INSERT INTO $pro_mysql_dedicated_table (id,owner,server_hostname,start_date,expire_date,hddsize,ramsize,product_id,bandwidth_per_month_gb )
 	VALUES('','$adm_login','$server_hostname','".date("Y-m-d")."','$exp_date','".$product["quota_disk"]."','".$product["memory_size"]."','$product_id','".$product["bandwidth"]."');";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	return ;
 }
 
@@ -824,17 +824,17 @@ function resubscribe_VPS_server_list_users($list_name){
 	global $mysqli_connection;
 
 	$q = "SELECT * FROM $pro_mysql_list_table WHERE domain='$conf_main_domain' AND name='$list_name';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());;
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));;
 	$n = mysqli_num_rows($r);
-	if($n != 1)	die("Mailing list not found line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	if($n != 1)	die("Mailing list not found line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$a = mysqli_fetch_array($r);
 
 	$q = "SELECT $pro_mysql_admin_table.path FROM $pro_mysql_admin_table,$pro_mysql_domain_table
 	WHERE $pro_mysql_domain_table.name='$conf_main_domain'
 	AND $pro_mysql_admin_table.adm_login = $pro_mysql_domain_table.owner";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());;
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));;
 	$n = mysqli_num_rows($r);
-	if($n != 1)	die("Admin of main domain not found line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	if($n != 1)	die("Admin of main domain not found line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$a = mysqli_fetch_array($r);
 	$path = $a["path"]."/$conf_main_domain/lists/".$conf_main_domain."_".$list_name."/subscribers.d";
 
@@ -863,7 +863,7 @@ function resubscribe_VPS_server_list_users($list_name){
 	AND $pro_mysql_client_table.id = $pro_mysql_admin_table.id_client
 	AND $pro_mysql_client_table.email!=''
 	GROUP BY $pro_mysql_client_table.email ORDER BY $pro_mysql_client_table.email;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());;
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));;
 	$n = mysqli_num_rows($r);
 	$old_file = "";
 	$addr_list = "";
@@ -893,7 +893,7 @@ function VPS_Server_Subscribe_To_Lists($vps_server_hostname){
 	global $pro_mysql_vps_server_lists_table;
 	global $mysqli_connection;
 	$q = "SELECT * FROM $pro_mysql_vps_server_lists_table WHERE hostname='$vps_server_hostname';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysqli_fetch_array($r);
@@ -907,26 +907,26 @@ function addVPSToUser($adm_login,$vps_server_hostname,$product_id,$operating_sys
 	global $pro_mysql_vps_table;
 	global $mysqli_connection;
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='$product_id';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find product line ".__LINE__." file ".__FILE__);
 	}
 	$product = mysqli_fetch_array($r);
 	$q = "SELECT * FROM $pro_mysql_vps_ip_table WHERE available='yes' AND vps_server_hostname='$vps_server_hostname' LIMIT 1;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		 die("Cannot find available IP and Xen name in $vps_server_hostname line ".__LINE__." file ".__FILE__);
 	}
 	$vps_ip = mysqli_fetch_array($r);
 	$q = "UPDATE $pro_mysql_vps_ip_table SET available='no',rdns_addr='mx.xen".$vps_ip["vps_xen_name"].".".$vps_ip["vps_server_hostname"]."' WHERE vps_xen_name='".$vps_ip["vps_xen_name"]."' AND vps_server_hostname='".$vps_ip["vps_server_hostname"]."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 
 	$exp_date = calculateExpirationDate(date("Y-m-d"),$product["period"]);
 	$q = "INSERT INTO $pro_mysql_vps_table (id,owner,vps_server_hostname,vps_xen_name,start_date,expire_date,hddsize,ramsize,product_id,bandwidth_per_month_gb,operatingsystem)
 	VALUES('','$adm_login','".$vps_ip["vps_server_hostname"]."','".$vps_ip["vps_xen_name"]."','".date("Y-m-d")."','$exp_date','".$product["quota_disk"]."','".$product["memory_size"]."','$product_id','".$product["bandwidth"]."','$operating_system');";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 
 	updateUsingCron("gen_named='yes',reload_named ='yes'");
 
@@ -957,10 +957,10 @@ function addDomainToUser($adm_login,$adm_pass,$domain_name,$domain_password=""){
 
 	checkLoginPass($adm_login,$adm_pass);
 	$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-	$result = mysqli_query($mysqli_connection,$query)or die("Cannot query : \"$query\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot query : \"$query\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$numrows = mysqli_num_rows($result);
 	if($numrows != 1){
-		die("Cannot fetch admin path (maybe rotative random password expired) line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+		die("Cannot fetch admin path (maybe rotative random password expired) line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	}
 	$admin = mysqli_fetch_array($result);
 	$admin_path = $admin["path"];
@@ -996,11 +996,11 @@ function addDomainToUser($adm_login,$adm_pass,$domain_name,$domain_password=""){
 
 	// Create domain in database
 	$domupdate_query = "INSERT INTO $pro_mysql_domain_table (name,owner,default_subdomain,ip_addr,registrar_password) VALUES ('".$domain_name."','$adm_login','www','".$conf_main_site_ip."','$domain_password');";
-	$domupdate_result = mysqli_query($mysqli_connection,$domupdate_query)or die("Cannot execute query \"$domupdate_query\"! line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$domupdate_result = mysqli_query($mysqli_connection,$domupdate_query)or die("Cannot execute query \"$domupdate_query\"! line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 	// Create default domain www
 	$adm_query = "INSERT INTO $pro_mysql_subdomain_table (id,domain_name,subdomain_name,path) VALUES ('','".$domain_name."','www','www');";
-	mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
+	mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" line ".__LINE__." file ".__FILE__." !".mysqli_error($mysqli_connection));
 
 	// Tell the cron job to activate the changes
 	$adm_query = "UPDATE $pro_mysql_cronjob_table SET qmail_newu='yes',restart_qmail='yes',reload_named='yes',restart_apache='yes',gen_vhosts='yes',gen_named='yes',gen_qmail='yes',gen_webalizer='yes',gen_backup='yes' WHERE 1;";
@@ -1023,7 +1023,7 @@ function addCustomProductToUser($adm_login,$server_hostname,$product_id){
 	global $pro_mysql_custom_product_table;
 	global $mysqli_connection;
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='$product_id';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find product line ".__LINE__." file ".__FILE__);
@@ -1033,7 +1033,7 @@ function addCustomProductToUser($adm_login,$server_hostname,$product_id){
 	$exp_date = calculateExpirationDate(date("Y-m-d"),$product["period"]);
 	$q = "INSERT INTO $pro_mysql_custom_product_table (id,owner,domain,start_date,expire_date,product_id,custom_heb_type,custom_heb_type_fld )
 	VALUES('','$adm_login','$server_hostname','".date("Y-m-d")."','$exp_date','$product_id','".$product["custom_heb_type"]."','".$product["custom_heb_type_fld"]."');";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	return ;
 }
 
@@ -1194,14 +1194,14 @@ function executeCustomActions($product_id, $action, $custom_id = null, $new_admi
     }
 
     $q = "SELECT $pro_mysql_custom_heb_types_table.$acfield, $pro_mysql_custom_heb_types_table.$actype, $pro_mysql_product_table.custom_heb_type_fld FROM $pro_mysql_product_table LEFT JOIN $pro_mysql_custom_heb_types_table ON $pro_mysql_product_table.custom_heb_type = $pro_mysql_custom_heb_types_table.id WHERE $pro_mysql_product_table.id='$product_id';";
-    $r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+    $r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
     $n = mysqli_num_rows($r);
     if($n != 1){
 	    die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__);
     }
     $actxt = mysqli_fetch_array($r);
     /*$q = "SELECT varname FROM $pro_mysql_custom_heb_types_fld_table WHERE custom_heb_type_id='$custom_type';";
-    $r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+    $r = mysqli_query($mysqli_connection,$q)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
     $n = mysqli_num_rows($r);
     for($i=0;$i<$n;$i++){
 	    $a = mysqli_fetch_array($r);
@@ -1220,7 +1220,7 @@ function executeCustomActions($product_id, $action, $custom_id = null, $new_admi
     }
     if ($custom_id != null){
 	$qs = "SELECT custom_heb_type_fld FROM $pro_mysql_custom_product_table WHERE id='$product_id';";
-	$rs = mysqli_query($mysqli_connection,$qs)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$rs = mysqli_query($mysqli_connection,$qs)or die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$ns = mysqli_num_rows($rs);
 	if($n != 1){
 		die("Cannot query : \"$q\" line ".__LINE__." file ".__FILE__);

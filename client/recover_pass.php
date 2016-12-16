@@ -32,13 +32,14 @@ function recover_enter_login_or_email(){
 function select_login_out_of_email(){
 	global $pro_mysql_admin_table;
 	global $pro_mysql_client_table;
+	global $myslqi_connection;
 
 	if(!isValidEmail($_REQUEST["adm_lost_email"])){
 		return _("Invalid email address.");
 	}
 	$recover_txt = "";
 	$q = "SELECT * FROM $pro_mysql_admin_table,$pro_mysql_client_table WHERE $pro_mysql_client_table.email='".$_REQUEST["adm_lost_email"]."' AND $pro_mysql_admin_table.id_client=$pro_mysql_client_table.id;";
-	$r = mysqli_query($mysqli_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	$recover_txt .= "<br><br>" . _("The following logins have been found to be related to this email address. Click on any of them to send your password recovery to the email address:")."<br><br>";
 	for($i=0;$i<$n;$i++){
@@ -55,6 +56,7 @@ function select_login_out_of_email(){
 function send_password_recover_token(){
 	global $pro_mysql_admin_table;
 	global $pro_mysql_client_table;
+	global $myslqi_connection;
 	global $conf_administrative_site;
 	global $conf_webmaster_email_addr;
 	global $conf_message_subject_header;
@@ -66,7 +68,7 @@ function send_password_recover_token(){
 
 	$recover_txt = "";
 	$q = "SELECT * FROM $pro_mysql_admin_table,$pro_mysql_client_table WHERE $pro_mysql_admin_table.adm_login='".$_REQUEST["adm_lost_login"]."' AND $pro_mysql_client_table.id = $pro_mysql_admin_table.id_client;";
-	$r = mysqli_query($mysqli_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$recover_txt .= _("Could not find login.");
@@ -75,7 +77,7 @@ function send_password_recover_token(){
 		$my_token = "tok".getRandomValue().getRandomValue();
 		$timestamp_expire = time() + (60*60);	// The timestamp expires in 1 hour from now
 		$q = "UPDATE $pro_mysql_admin_table SET recovery_token='$my_token',recovery_timestamp='$timestamp_expire' WHERE adm_login='".$_REQUEST["adm_lost_login"]."';";
-		$r = mysqli_query($mysqli_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 		// Create the email message, add header and footer
 		$message = "
@@ -117,6 +119,7 @@ function do_recovery_new_pass_form(){
 
 function do_recovery_validate_recovery(){
 	global $pro_mysql_admin_table;
+	global $myslqi_connection;
 	global $conf_enforce_adm_encryption;
 	if( !isDTCLogin($_REQUEST["adm_lost_login"])){
 		return _("Login format incorrect");
@@ -131,7 +134,7 @@ function do_recovery_validate_recovery(){
 		return _("The new password you choosed is one of the most used on the internet, so we wont accept it.");
 	}
 	$q = "SELECT recovery_token,recovery_timestamp FROM $pro_mysql_admin_table WHERE adm_login='".$_REQUEST["adm_lost_login"]."' AND recovery_token='".$_REQUEST["token"]."';";
-	$r = mysqli_query($mysqli_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		return _("Cannot find the recovery token in the database");
@@ -146,7 +149,7 @@ function do_recovery_validate_recovery(){
 				$new_encrypt_dtcadm_pass = "'".$_REQUEST["adm_new_pass1"]."'";
 			}
 			$q = "UPDATE $pro_mysql_admin_table SET adm_pass=$new_encrypt_dtcadm_pass WHERE adm_login='".$_REQUEST["adm_lost_login"]."';";
-			$r = mysqli_query($mysqli_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q) or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 			return _("Your account has been updated with the new password");
 		}
 	}

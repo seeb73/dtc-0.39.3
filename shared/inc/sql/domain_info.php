@@ -36,7 +36,7 @@ if(isset($_REQUEST["set_domain_parcking"]) && $_REQUEST["set_domain_parcking"] =
 			checkLoginPassAndDomain($adm_login,$adm_pass,$_REQUEST["domain_parking_value"]);
 			// Check that the aimed domain is not in parking as well: this could happen only with "hacking the URL", but who knows...
 			$q = "SELECT domain_parking FROM $pro_mysql_domain_table WHERE name='".$_REQUEST["domain_parking_value"]."' AND domain_parking='no-parking'";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 			$n = mysqli_num_rows($r);
 			if($n != 1){
 				echo "Target domain ".$_REQUEST["domain_parking_value"]." is already in parking ".__LINE__." file ".__FILE__;

@@ -5,14 +5,14 @@ function productManager(){
         global $secpayconf_currency_symbol;
         global $pro_mysql_custom_heb_types_table;
         global $pro_mysql_custom_heb_types_fld_table;
-	global $mysqli_connection;
+		global $mysqli_connection;
 
         if(!isset($secpayconf_currency_symbol)){
         	get_secpay_conf();
         }
 
 		$qp = "SELECT id,name FROM $pro_mysql_product_table WHERE renew_prod_id='0' AND heb_type='shared'";
-		$rp = mysqli_query($mysqli_connection,$qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		$rp = mysqli_query($mysqli_connection,$qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$np = mysqli_num_rows($rp);
 		$renew_id_popup = array();
 		$renew_id_popup[] = 0;
@@ -232,7 +232,7 @@ function productManager(){
 
 	// Build the product ID popup
 	$qp = "SELECT id,name FROM $pro_mysql_product_table WHERE renew_prod_id='0' AND heb_type='vps'";
-	$rp = mysqli_query($mysqli_connection,$qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+	$rp = mysqli_query($mysqli_connection,$qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$np = mysqli_num_rows($rp);
 	$renew_id_popup = array();
 	$renew_id_popup[] = 0;
@@ -325,7 +325,7 @@ function productManager(){
 
 	// Build the product ID popup
 		$qp = "SELECT id,name FROM $pro_mysql_product_table WHERE renew_prod_id='0' AND heb_type='server'";
-		$rp = mysqli_query($mysqli_connection,$qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		$rp = mysqli_query($mysqli_connection,$qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$np = mysqli_num_rows($rp);
 		$renew_id_popup = array();
 		$renew_id_popup[] = 0;
@@ -426,7 +426,7 @@ function productManager(){
 
 	// Build the product ID popup
 	$qp = "SELECT id,name FROM $pro_mysql_product_table WHERE renew_prod_id='0' AND heb_type='ssl'";
-	$rp = mysqli_query($mysqli_connection,$qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+	$rp = mysqli_query($mysqli_connection,$qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$np = mysqli_num_rows($rp);
 	$renew_id_popup = array();
 	$renew_id_popup[] = 0;
@@ -500,7 +500,7 @@ function productManager(){
 	$out .= dtcDatagrid($dsc);
 		// Build the product ID popup
 		$qp = "SELECT id,name FROM ".$pro_mysql_custom_heb_types_table;
-		$rp = mysqli_query($mysqli_connection,$qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		$rp = mysqli_query($mysqli_connection,$qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$np = mysqli_num_rows($rp);
 		$type_id_popup = array();
 		$type_id_replace = array();
@@ -515,7 +515,7 @@ function productManager(){
 	}
 	// Build the product ID popup
 		$qp = "SELECT id,name FROM $pro_mysql_product_table WHERE renew_prod_id='0' AND heb_type='custom' order by custom_heb_type";
-		$rp = mysqli_query($mysqli_connection,$qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		$rp = mysqli_query($mysqli_connection,$qp)or die("Cannot query \"$qp\" !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$np = mysqli_num_rows($rp);
 		$renew_id_popup = array();
 		$renew_id_popup[] = 0;

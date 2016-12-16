@@ -7,7 +7,7 @@ function ftpAccountsCallback ($id){
 	global $mysqli_connection;
 
 	$q = "UPDATE $pro_mysql_ftp_table SET uid='$conf_dtc_system_uid',gid='$conf_dtc_system_gid' WHERE id='$id';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	return "";
 }
 
@@ -32,7 +32,7 @@ function drawAdminTools_Ftp($domain,$adm_path){
 	checkLoginPassAndDomain($adm_login,$adm_pass,$domain["name"]);
 
 	$q = "SELECT restricted_ftp_path,ftp_login_flag FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("adm_login $adm_login not found line ".__LINE__." file ".__FILE__);

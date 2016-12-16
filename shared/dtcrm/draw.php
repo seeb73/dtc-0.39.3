@@ -62,7 +62,7 @@ function draw_UpgradeAccount($admin){
 		}	
 
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$admin["info"]["prod_id"]."';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry: \"$q\" !!!".mysqli_error()." line ".__LINE__." in file ".__FILE__);
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry: \"$q\" !!!".mysqli_error($mysqli_connection)." line ".__LINE__." in file ".__FILE__);
 		$prod = mysqli_fetch_array($r);
 		$ar = explode("-",$prod["period"]);
 		$prod_period = mktime (0,0,0,$ar[1]+1,1,1970+$ar[0]);
@@ -85,7 +85,7 @@ function draw_UpgradeAccount($admin){
 .smartByte($admin["info"]["bandwidth_per_month_mb"]*1024*1024). _(" of data transfer each month.") ."<br><br>".
 _("To what capacity would you like to upgrade to?") ."<br>";
 		$q = "SELECT * FROM $pro_mysql_product_table WHERE (quota_disk > '".$admin["info"]["quota"]."' OR bandwidth > '".$admin["info"]["bandwidth_per_month_mb"]."' or max_domain>".$admin["info"]["max_domain"].") and heb_type='shared' AND private='no';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" !".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" !".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		$out .= "$frm_start";
 		$out .= "<table border=\"1\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" height=\"1\">";
@@ -119,12 +119,12 @@ _("To what capacity would you like to upgrade to?") ."<br>";
 		return $out;
 	}
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$_REQUEST["prod_id"]."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" !".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" !".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1)	die("Product not found !!!");
 	$ro = mysqli_fetch_array($r);
 	$q = "SELECT * FROM $pro_mysql_client_table WHERE id='".$admin["info"]["id_client"]."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" !".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" !".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1)	die("Client not found !!!");
 	$rocli = mysqli_fetch_array($r);
@@ -149,7 +149,7 @@ _("To what capacity would you like to upgrade to?") ."<br>";
 		}else{
 			$out .= "<font color=\"green\">" . _("Funds added to your account.") . "</font><br>";
 			$q = "UPDATE $pro_mysql_client_table SET dollar = dollar+".$ze_refund." WHERE id='".$admin["info"]["id_client"]."';";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 			$admin["client"]["dollar"] += $ze_refund;
 			$remaining += $ze_refund;
 		}
@@ -157,7 +157,7 @@ _("To what capacity would you like to upgrade to?") ."<br>";
 
 	if(isset($_REQUEST["inner_action"]) && $_REQUEST["inner_action"] == "toreg_confirm_register"){
 		$q = "UPDATE $pro_mysql_client_table SET dollar = ". $_REQUEST["amount"] . " WHERE id='".$admin["info"]["id_client"]."';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 		validateRenewal($_REQUEST["renew_id"]);
 
 		$out .= '<BR><BR>' . _("Your Product has been Upgraded.");
@@ -179,7 +179,7 @@ _("To what capacity would you like to upgrade to?") ."<br>";
 
        	$company_invoicing_id = findInvoicingCompany ($conf_this_server_country_code,$rocli["country"]);
        	$q = "SELECT * FROM $pro_mysql_companies_table WHERE id='$company_invoicing_id';";
-       	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+       	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
        	if($n != 1){
                	$form = "Cannot find company invoicing line ".__LINE__." file ".__FILE__;
                	break;
@@ -207,7 +207,7 @@ _("To what capacity would you like to upgrade to?") ."<br>";
 	// Save the values in SQL and process the paynow buttons
 	$q = "INSERT INTO $pro_mysql_pending_renewal_table (id,adm_login,renew_date,renew_time,product_id,renew_id,heb_type,country_code)
 	VALUES ('','".$_REQUEST["adm_login"]."',now(),now(),'".$ro["id"]."','".$rocli["id"]."','shared-upgrade','".$rocli["country"]."');";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$renew_id = mysqli_insert_id($mysqli_connection);
 
 	if($heber_price > $remaining){
@@ -216,7 +216,7 @@ _("To what capacity would you like to upgrade to?") ."<br>";
 		$payid = createCreditCardPaiementID($to_pay,$renew_id,"Account upgrade: ".$ro["name"]." (login: ".$_REQUEST["adm_login"].")","no",$prod_id,$vat_rate);
 
 		$q = "UPDATE $pro_mysql_pending_renewal_table SET pay_id='$payid' WHERE id='$renew_id';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 
 		$payButton = paynowButton($payid,$to_pay,"Account upgrade: ".$ro["name"],$return_url,$vat_rate);
 
@@ -228,7 +228,7 @@ _("To what capacity would you like to upgrade to?") ."<br>";
 		$payid = createCreditCardPaiementID($heber_price,$renew_id,"Account upgrade: ".$ro["name"]." (login: ".$_REQUEST["adm_login"].")","no",$ro["id"],$vat_rate);
 
 		$q = "UPDATE $pro_mysql_pending_renewal_table SET pay_id='$payid' WHERE id='$renew_id';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 
 	$after_upgrade_remaining = $remaining - $heber_price;
 	$out .= _("After upgrade, you will have") . ": " . $after_upgrade_remaining . " " .$secpayconf_currency_letters . "<br><br>";

@@ -8,6 +8,7 @@
 // or 1 if error
 function getAdminOb($adm_login){
 	global $pro_mysql_admin_table;
+	global $myslqi_connection;
 	$q = "SELECT adm_login,ob_head,ob_next,ob_tail FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
 	$r = mysqli_query($mysql_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());
 	$n = mysql_num_rows($r);
@@ -20,6 +21,7 @@ function getAdminOb($adm_login){
 // Writes a (modified) getAdminOb() into the db.
 function setAdminOb($ob){
 	global $pro_mysql_admin_table;
+	global $myslqi_connection;
 	$q = "UPDATE $pro_mysql_admin_table SET
 		ob_head='".$ob["ob_head"]."',
 		ob_tail='".$ob["ob_tail"]."',

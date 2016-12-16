@@ -79,7 +79,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "set_vps_monitoring_valu
 		$q = "UPDATE $pro_mysql_vps_table SET monitoring_email='".$_REQUEST["email_addr"]."',
 monitor_ping='$monitor_ping', monitor_ssh='$monitor_ssh', monitor_http='$monitor_http', monitor_smtp='$monitor_smtp', monitor_pop3='$monitor_pop3',
 monitor_imap4='$monitor_imap4', monitor_ftp='$monitor_ftp' WHERE vps_xen_name='$vps_name' AND vps_server_hostname='$vps_node';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 		updateUsingCron("gen_nagios='yes'");
 	}
@@ -88,7 +88,7 @@ monitor_imap4='$monitor_imap4', monitor_ftp='$monitor_ftp' WHERE vps_xen_name='$
 if(isset($_REQUEST["action"]) && ($_REQUEST["action"] == "shutdown_vps" || $_REQUEST["action"] == "destroy_vps" || $_REQUEST["action"] == "start_vps")){
 	if(checkVPSAdmin($adm_login,$adm_pass,$vps_node,$vps_name) == true){
 		$q = "SELECT * FROM $pro_mysql_vps_table WHERE vps_xen_name='$vps_name' AND vps_server_hostname='$vps_node' AND locked='no';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$submit_err = _("Access not granted (VPS is locked), line ") .__LINE__. _(" file ") .__FILE__;
@@ -107,18 +107,18 @@ if(isset($_REQUEST["action"]) && ($_REQUEST["action"] == "set_ip_reverse_dns")){
 				$submit_err = _("This is not a correct hostname or IP line ") .__LINE__. _(" file ") .__FILE__;
 			}else{
 				$q = "SELECT * FROM $pro_mysql_vps_ip_table WHERE ip_addr='".$_REQUEST["ip_addr"]."' AND vps_xen_name='$vps_name' AND vps_server_hostname='$vps_node';";
-				$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 				$n = mysqli_num_rows($r);
 				if($n != 1){
 					$submit_err = _("Access not granted line ") .__LINE__. _(" file ") .__FILE__;
 				}else{
 					$q = "UPDATE $pro_mysql_vps_ip_table SET rdns_addr='".$_REQUEST["rdns"]."',rdns_regen='yes' WHERE ip_addr='".$_REQUEST["ip_addr"]."';";
-					$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+					$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 					$q = "SELECT $pro_mysql_ip_pool_table.zone_type
 					FROM $pro_mysql_vps_ip_table,$pro_mysql_ip_pool_table
 					WHERE $pro_mysql_vps_ip_table.ip_addr='".$_REQUEST["ip_addr"]."'
 					AND $pro_mysql_ip_pool_table.id=$pro_mysql_vps_ip_table.ip_pool_id;";
-					$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+					$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 					$n = mysqli_num_rows($r);
 					if($n != 1){
 						$submit_err = _("Could not find the corresponding IP pool");
@@ -215,7 +215,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "reinstall_os"){
 		$commit_flag = "no";
 	}
 	$q = "SELECT * FROM $pro_mysql_vps_table WHERE vps_xen_name='$vps_name' AND vps_server_hostname='$vps_node';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$commit_flag = "no";
@@ -225,7 +225,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "reinstall_os"){
 
 	// Get all IP addresses
 	$q = "SELECT * FROM $pro_mysql_vps_ip_table WHERE vps_xen_name='$vps_name' AND vps_server_hostname='$vps_node' AND available='no';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n < 1){
 		$commit_flag = "no";
@@ -237,7 +237,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "reinstall_os"){
 		$vps_ip = $iparray["ip_addr"];
 		$pool_id = $iparray["ip_pool_id"];
 		$q2 = "SELECT * FROM $pro_mysql_ip_pool_table WHERE id='$pool_id';";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query \"".$q2."\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query \"".$q2."\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n2 = mysqli_num_rows($r2);
 		if($n2 != 1){
 			$commit_flag = "no";
@@ -263,7 +263,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "reinstall_os"){
 		}
 
 		$q = "UPDATE $pro_mysql_vps_table SET operatingsystem='".$_REQUEST["os_type"]."' WHERE vps_xen_name='$vps_name' AND vps_server_hostname='$vps_node';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		if($_REQUEST["os_type"] != "netbsd"){
 			if (isVPSNodeLVMEnabled($vps_node) == "no"){
 				$image_type = "vbd";	
@@ -316,9 +316,9 @@ if( isset($_REQUEST["action"]) && $_REQUEST["action"] == "change_xenhvm_boot_iso
 	}
 	if( $commit_flag == "yes"){
 		$q = "UPDATE $pro_mysql_vps_table SET vncpassword='".mysqli_real_escape_string($mysqli_connection,$vnc_console_pass)."',howtoboot='".mysqli_real_escape_string($mysqli_connection,$_REQUEST["xenhvm_iso"])."' WHERE vps_xen_name='$vps_name' AND vps_server_hostname='$vps_node';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$q = "SELECT * FROM $pro_mysql_vps_table WHERE vps_xen_name='$vps_name' AND vps_server_hostname='$vps_node';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$commit_flag = "no";
@@ -326,7 +326,7 @@ if( isset($_REQUEST["action"]) && $_REQUEST["action"] == "change_xenhvm_boot_iso
 		}else{
 			$a = mysqli_fetch_array($r);
 			$q = "SELECT * FROM $pro_mysql_vps_ip_table WHERE vps_server_hostname='" . $a["vps_server_hostname"]. "' AND vps_xen_name='" .$a["vps_xen_name"]. "';";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 			$n_ip = mysqli_num_rows($r);
 			$ips = "";
 			for($i=0;$i<$n_ip;$i++){
@@ -364,7 +364,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "change_bsd_kernel_type"
 	}
 
 	$q = "SELECT * FROM $pro_mysql_vps_table WHERE vps_xen_name='$vps_name' AND vps_server_hostname='$vps_node';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$commit_flag = "no";
@@ -374,7 +374,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "change_bsd_kernel_type"
 
 	// Get all IP addresses
 	$q = "SELECT * FROM $pro_mysql_vps_ip_table WHERE vps_xen_name='$vps_name' AND vps_server_hostname='$vps_node' AND available='no';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n < 1){
 		$commit_flag = "no";
@@ -398,7 +398,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "change_bsd_kernel_type"
 			return;
 		}
 		$q = "UPDATE $pro_mysql_vps_table SET bsdkernel='".$_REQUEST["bsdkernel"]."' WHERE vps_xen_name='$vps_name' AND vps_server_hostname='$vps_node';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$r = $soap_client->call("changeBSDkernel",array(
 			"vpsname" => $vps_name,
 			"ramsize" => $ze_vps["ramsize"],

@@ -27,7 +27,7 @@ function drawDataBase($database){
 	global $mysqli_connection_mysql;
 
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1)	die("Cannot find user !");
 	$admin_param = mysqli_fetch_array($r);
@@ -59,7 +59,7 @@ function drawDataBase($database){
 		$mysqli_connection_mysql = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"mysql")or die("Cannot connect to user SQL host " . __FILE__ . ' ' . __LINE__);
 	}
 
-	$r = mysqli_query($mysqli_connection_mysql,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection_mysql,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	$num_users = $n;
 	$out .= "<table><tr><td>". _("User") ."</td><td>". _("Password:") ."</td><td>". _("Action") ."</td><td></td></tr>";
@@ -99,7 +99,7 @@ function drawDataBase($database){
 	}
 	if($conf_demo_version == "no" && $num_users > 0){
 		$query = "SELECT DISTINCT Db,User FROM db WHERE $dblist_clause;";
-		$result = mysqli_query($mysqli_connection_mysql,$query)or die("Cannot query \"$query\" !!!".mysqli_error());
+		$result = mysqli_query($mysqli_connection_mysql,$query)or die("Cannot query \"$query\" !!!".mysqli_error($mysqli_connection));
 		$num_rows = mysqli_num_rows($result);
 		$dblist = "<table cellpadding=\"2\" cellspacing=\"2\">";
 		$dblist .= "<tr><td>". _("Database name") ."</td><td>". _("User") ."</td><td>". _("Action") ."</td><td></td></tr>";

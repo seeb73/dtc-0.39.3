@@ -95,7 +95,7 @@ function drawAdminTools_VPSMonitor($admin,$vps){
 
 	$q = "SELECT * FROM $pro_mysql_vps_stats_table WHERE vps_server_hostname='$vps_node' AND vps_xen_name='xen$vps_name'
 	AND year='".$month_ago_6_year."' AND month='".$month_ago_6."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysqli_fetch_array($r);
@@ -108,7 +108,7 @@ function drawAdminTools_VPSMonitor($admin,$vps){
 
 	$q = "SELECT * FROM $pro_mysql_vps_stats_table WHERE vps_server_hostname='$vps_node' AND vps_xen_name='xen$vps_name'
 	AND year='".$month_ago_5_year."' AND month='".$month_ago_5."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysqli_fetch_array($r);
@@ -121,7 +121,7 @@ function drawAdminTools_VPSMonitor($admin,$vps){
 
 	$q = "SELECT * FROM $pro_mysql_vps_stats_table WHERE vps_server_hostname='$vps_node' AND vps_xen_name='xen$vps_name'
 	AND year='".$month_ago_4_year."' AND month='".$month_ago_4."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysqli_fetch_array($r);
@@ -134,7 +134,7 @@ function drawAdminTools_VPSMonitor($admin,$vps){
 
 	$q = "SELECT * FROM $pro_mysql_vps_stats_table WHERE vps_server_hostname='$vps_node' AND vps_xen_name='xen$vps_name'
 	AND year='".$month_ago_3_year."' AND month='".$month_ago_3."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysqli_fetch_array($r);
@@ -147,7 +147,7 @@ function drawAdminTools_VPSMonitor($admin,$vps){
 
 	$q = "SELECT * FROM $pro_mysql_vps_stats_table WHERE vps_server_hostname='$vps_node' AND vps_xen_name='xen$vps_name'
 	AND year='$tow_month_ago_year' AND month='$tow_month_ago';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysqli_fetch_array($r);
@@ -160,7 +160,7 @@ function drawAdminTools_VPSMonitor($admin,$vps){
 
 	$q = "SELECT * FROM $pro_mysql_vps_stats_table WHERE vps_server_hostname='$vps_node' AND vps_xen_name='xen$vps_name'
 	AND year='$last_month_year' AND month='$last_month';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysqli_fetch_array($r);
@@ -173,7 +173,7 @@ function drawAdminTools_VPSMonitor($admin,$vps){
 
 	$q = "SELECT * FROM $pro_mysql_vps_stats_table WHERE vps_server_hostname='$vps_node' AND vps_xen_name='xen$vps_name'
 	AND year='$cur_year' AND month='$cur_month';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysqli_fetch_array($r);

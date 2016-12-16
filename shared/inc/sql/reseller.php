@@ -17,7 +17,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_child_account"){
 
 	if($commit_flag == "yes"){
 		$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$_REQUEST["new_adm_login"]."';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n != 0){
 			$submit_err .= "There is already an admin with that name. Please pickup another name!<br>\n";
@@ -27,7 +27,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_child_account"){
 
 	checkLoginPass($adm_login,$adm_pass);
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1)	die("Cannot find user $adm_login line ".__LINE__." file ".__FILE__);
 	$a = mysqli_fetch_array($r);
@@ -46,11 +46,11 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_child_account"){
 		// Insert the new admin
 		$q = "INSERT INTO $pro_mysql_admin_table (adm_login, adm_pass, path, ob_next, ob_head, ob_tail)
 		VALUES ('".$_REQUEST["new_adm_login"]."','".$_REQUEST["new_adm_pass"]."', '$new_adm_path','".$a["adm_login"]."','','');";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 		
 		// add default admin role for user
 		$adm_query = "INSERT INTO $pro_mysql_userroles_table (adm_login,role_id) values ('". $_REQUEST["new_adm_login"] ."', (select id from roles where code='admin'))";
-		mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		
 		echo "<!-- $q -->";
 		// If this admin had no child account
@@ -58,18 +58,18 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "add_child_account"){
 		if($a["ob_head"] == "" && $a["ob_tail"] == ""){
 			// Simply update the main account ob_head and tail
 			$q = "UPDATE $pro_mysql_admin_table SET ob_head='".$_REQUEST["new_adm_login"]."',ob_tail='".$_REQUEST["new_adm_login"]."' WHERE adm_login='$adm_login';";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 		echo "<!-- $q -->";
 		// If this admin has children
 		}else{
 			// Update the last child's ob_next to point to the added admin
 			$q = "UPDATE $pro_mysql_admin_table SET ob_next='".$_REQUEST["new_adm_login"]."' WHERE adm_login='".$a["ob_tail"]."';";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 		echo "<!-- $q -->";
 
 			// Simply update the main account ob_tail, ob_head is good already
 			$q = "UPDATE $pro_mysql_admin_table SET ob_tail='".$_REQUEST["new_adm_login"]."' WHERE adm_login='$adm_login';";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 		echo "<!-- $q -->";
 		}
 	}

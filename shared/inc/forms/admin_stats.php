@@ -6,6 +6,7 @@ function drawAdminTools_AdminStats($admin){
 	global $pro_mysql_domain_table;
 	global $pro_mysql_acc_http_table;
 	global $pro_mysql_acc_ftp_table;
+	global $myslqi_connection;
 
 	$out = "";
 	$nowrap = " style=\"white-space:nowrap\" nowrap";

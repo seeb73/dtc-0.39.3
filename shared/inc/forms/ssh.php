@@ -2,11 +2,12 @@
 
 function sshAccountsCallback ($id){
 	global $pro_mysql_ssh_table;
+	global $myslqi_connection;
 	global $conf_dtc_system_uid;
 	global $conf_dtc_system_gid;
 
 	$q = "UPDATE $pro_mysql_ssh_table SET uid='$conf_dtc_system_uid',gid='$conf_dtc_system_gid' WHERE id='$id';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	return "";
 }
 
@@ -24,6 +25,7 @@ function drawAdminTools_SSH($domain,$adm_path){
 	global $conf_hide_password;
 	global $conf_domain_based_ssh_logins;
 	global $pro_mysql_ssh_table;
+	global $myslqi_connection;
 
 	$txt = "";
 

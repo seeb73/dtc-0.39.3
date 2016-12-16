@@ -4,9 +4,10 @@ function checkLoginPassSubmitToSQL(){
 	global $adm_login;
 	global $adm_pass;
 	global $pro_mysql_admin_table;
+	global $myslqi_connection;
 
 	$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login' AND (adm_pass='$adm_pass' OR adm_pass=SHA1('$adm_pass'));";
-	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error($mysqli_connection));
 	$num_rows = mysqli_num_rows($result);
 	if($num_rows != 1)      die("User or password is incorrect !");
 }
@@ -17,21 +18,21 @@ function checkLoginPassSubmitToSQL(){
 // https://dtc.gplhost.com/dtc/?adm_login=dianflon&adm_pass=dec0lease&addrlink=myaccount&action=refund&refund_amount=12
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "refund"){
 	$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login' AND (adm_pass='$adm_pass' OR adm_pass=SHA1('$adm_pass'));";
-	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error($mysqli_connection));
 	$num_rows = mysqli_num_rows($result);
 	if($num_rows != 1)      die("User or password is incorrect !");
 	$row = mysqli_fetch_array($result);
 	$id_client = $row["id_client"];
 	if($id_client != 0){
 		$query = "SELECT * FROM $pro_mysql_client_table WHERE id='$id_client';";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error($mysqli_connection));
 		$num_rows = mysqli_num_rows($result);
 		if($num_rows != 1)	die("Client id not found in client table !");
 		$row = mysqli_fetch_array($result);
 		$funds = $row["dolar"];
 		$funds += $_REQUEST["refund_amount"];
 		$query = "UPDATE $pro_mysql_client_table SET dolar='$funds' WHERE id='$id_client';";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error($mysqli_connection));
 	}else{
 		die("You don't have a client ID !!!");
 	}
@@ -43,7 +44,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "registry_renew_domain")
 		echo _("Number of years is not a number between 1 and 9.");
 	}else{
 		$q = "SELECT id_client FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			die("ID client not found line ".__LINE__." file ".__FILE__);
@@ -51,7 +52,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "registry_renew_domain")
 		$admin = mysqli_fetch_array($r);
 		$id_client = $admin["id_client"];
 		$q = "SELECT * FROM $pro_mysql_client_table WHERE id='$id_client';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			die("Client record not found line ".__LINE__." file ".__FILE__);
@@ -74,9 +75,9 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "registry_renew_domain")
 		// If renew successful, remove some money from the account, and update expiration date of the domain
 		if($renew_return["attributes"]["status"] == 0){
 			$q = "UPDATE $pro_mysql_client_table SET dollar='$remaining' WHERE id='$id_client';";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 			$q = "UPDATE $pro_mysql_domain_table SET expiration_date=DATE_ADD(expiration_date, INTERVAL ".$_REQUEST["num_years"]." YEAR) WHERE name='$edit_domain';";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		}
 	}
 }

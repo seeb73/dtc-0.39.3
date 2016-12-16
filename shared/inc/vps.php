@@ -5,7 +5,7 @@ function checkVPSAdmin($adm_login,$adm_pass,$vps_node,$vps_name){
 	global $mysqli_connection;
 	checkLoginPass($adm_login,$adm_pass);
 	$q = "SELECT * FROM $pro_mysql_vps_table WHERE owner='$adm_login' AND vps_server_hostname='".mysqli_real_escape_string($mysqli_connection,$vps_node)."' AND vps_xen_name='".mysqli_real_escape_string($mysqli_connection,$vps_name)."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n == 1){
 		return true;
@@ -18,7 +18,7 @@ function connectToVPSServer($vps_node){
 	global $pro_mysql_vps_server_table;
 	global $mysqli_connection;
 	$q = "SELECT * FROM $pro_mysql_vps_server_table WHERE hostname='$vps_node';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find hostname $vps_node of VPS server line ".__LINE__." file ".__FILE__);
@@ -45,7 +45,7 @@ function isVPSNodeLVMEnabled($vps_node){
 	global $pro_mysql_vps_server_table;
 	global $mysqli_connection;
 	$q = "SELECT * FROM $pro_mysql_vps_server_table WHERE hostname='$vps_node';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find hostname of VPS server line ".__LINE__." file ".__FILE__);

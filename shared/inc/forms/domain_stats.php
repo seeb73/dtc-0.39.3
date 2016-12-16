@@ -17,7 +17,7 @@ function drawAdminTools_DomainStats($admin,$eddomain){
 	$out = "<br><h3>"._("HTTP stats per subdomain")."</h3>";
 
 	$q = "SELECT vhost,bytes_sent FROM $pro_mysql_acc_http_table WHERE domain='".$eddomain["name"]."' AND month='".date("m")."' AND year='".date("Y")."' ORDER BY vhost";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){   
 	$a = mysqli_fetch_array($r);
@@ -38,7 +38,7 @@ function drawAdminTools_DomainStats($admin,$eddomain){
 //	sum_ftp($eddomain["name"]);
 	$q = "SELECT sum(transfer) as transfer FROM $pro_mysql_acc_ftp_table WHERE sub_domain='".$eddomain["name"]."'
 	AND month='".date("m")."' AND year='".date("Y")."'";
-	$r = mysqli_query($mysqli_connection,$q) or die("Cannot execute query \"$q\" !".mysqli_error().
+	$r = mysqli_query($mysqli_connection,$q) or die("Cannot execute query \"$q\" !".mysqli_error($mysqli_connection).
 	" line ".__LINE__." file ".__FILE__);
 	$num_rows = mysqli_num_rows($r);
 	if($num_rows > 0)
@@ -49,7 +49,7 @@ function drawAdminTools_DomainStats($admin,$eddomain){
 //	sum_email($eddomain["name"]);
     $q = "SELECT sum(smtp_trafic) as smtp_trafic,sum(pop_trafic) as pop_trafic,sum(imap_trafic) as imap_trafic FROM $pro_mysql_acc_email_table WHERE domain_name='".$eddomain["name"]."'
 	AND month='".date("m")."' AND year='".date("Y")."'";
-    $r = mysqli_query($mysqli_connection,$q) or die("Cannot execute query \"$q\" !".mysqli_error().
+    $r = mysqli_query($mysqli_connection,$q) or die("Cannot execute query \"$q\" !".mysqli_error($mysqli_connection).
 	" line ".__LINE__." file ".__FILE__);
     $num_rows = mysqli_num_rows($r);
 	if($num_rows > 0){
@@ -82,7 +82,7 @@ function drawAdminTools_DomainStats($admin,$eddomain){
 	}
 	
 	$q = "SELECT stats_login,stats_pass,stats_subdomain FROM $pro_mysql_domain_table  WHERE name='".$eddomain["name"]."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	$a = mysqli_fetch_array($r);
 	$out .= "<br><br><strong>". _("Protect your logs and stats folder with a password") ."</strong><br>";

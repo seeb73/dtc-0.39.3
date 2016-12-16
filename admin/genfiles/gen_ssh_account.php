@@ -4,11 +4,11 @@
 // TODO This doesn't seem to work correctly... 
 function ssh_account_generate()
 {
-	// make sure we change all files to be owned by nobody, so that they can't escalate privelages
-	global $pro_mysql_domain_table;
+		// make sure we change all files to be owned by nobody, so that they can't escalate privelages
+		global $pro_mysql_domain_table;
         global $pro_mysql_admin_table;
         global $pro_mysql_subdomain_table;
-	global $mysqli_connection;
+		global $mysqli_connection;
 
         global $conf_db_version;
         global $conf_unix_type;

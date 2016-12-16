@@ -121,7 +121,7 @@ if(isset($_REQUEST["new_dns_and_mx_config"]) && $_REQUEST["new_dns_and_mx_config
 	// If domain whois is hosted here, change the whois value using a registry call.
 	if(file_exists($dtcshared_path."/dtcrm")){
 		$query = "SELECT * FROM $pro_mysql_domain_table WHERE name='$edit_domain';";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error($mysqli_connection));
 		$row = mysqli_fetch_array($result);
 		if($row["whois"] == "here"){
 			$regz = registry_update_whois_dns($adm_login,$adm_pass,$edit_domain,"$new_dns_1|$new_dns_2");
@@ -134,7 +134,7 @@ Server said: <i>" . $regz["response_text"] . "</i>");
 
 	$query = "UPDATE $pro_mysql_domain_table SET primary_dns='$new_dns_1',other_dns='$new_dns_2',primary_mx='$new_mx_1',other_mx='$new_mx_2',txt_root_entry='".mysqli_real_escape_string($mysqli_connection,$_REQUEST["txt_root_entry"])."',txt_root_entry2='".mysqli_real_escape_string($mysqli_connection,$_REQUEST["txt_root_entry2"])."',spf_txt_entry='".mysqli_real_escape_string($mysqli_connection,$_REQUEST["spf_txt_entry"])."',mail_relay_host='".mysqli_real_escape_string($mysqli_connection,$_REQUEST["mail_relay_host"])."',custom_part='".mysqli_real_escape_string
 ($_REQUEST["custom_part"])."' WHERE owner='$adm_login' AND name='$edit_domain';";
-	mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error());
+	mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error($mysqli_connection));
 
 	$domupdate_query = "UPDATE $pro_mysql_domain_table SET generate_flag='yes' WHERE name='$edit_domain' LIMIT 1;";
 	$domupdate_result = mysqli_query($mysqli_connection,$domupdate_query)or die("Cannot execute query \"$domupdate_query\"");

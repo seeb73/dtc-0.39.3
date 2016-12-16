@@ -81,7 +81,7 @@ function sendVPSReminderEmail($remaining_days,$file,$send_webmaster_copy="no"){
 	$now_timestamp = time();
 	$one_day = 3600 * 24;
 	$q = "SELECT * FROM $pro_mysql_vps_table WHERE expire_date='".date("Y-m-d",$now_timestamp + $one_day*$remaining_days)."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$vps = mysqli_fetch_array($r);
@@ -93,7 +93,7 @@ function sendVPSReminderEmail($remaining_days,$file,$send_webmaster_copy="no"){
 
 		// Get the admin
 		$q2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$vps["owner"]."';";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n2 = mysqli_num_rows($r2);
 		if($n2 != 1){
 			sendAdminWarning("Could not get admin_login ".$vps["owner"]." line ".__LINE__." file ".__FILE__);
@@ -107,7 +107,7 @@ function sendVPSReminderEmail($remaining_days,$file,$send_webmaster_copy="no"){
 
 		// Get the client
 		$q2 = "SELECT * FROM $pro_mysql_client_table WHERE id='".$admin["id_client"]."';";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n2 = mysqli_num_rows($r2);
 		if($n2 != 1){
 			sendAdminWarning("Could not find id client ".$admin["id_client"]." for admin ".$vps["owner"]." line ".__LINE__." file ".__FILE__);
@@ -179,14 +179,14 @@ function sendDedicatedReminderEmail($remaining_days,$file,$send_webmaster_copy="
 	$now_timestamp = time();
 	$one_day = 3600 * 24;
 	$q = "SELECT * FROM $pro_mysql_dedicated_table WHERE expire_date='".date("Y-m-d",$now_timestamp + $one_day*$remaining_days)."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$dedicated = mysqli_fetch_array($r);
 
 		// Get the admin
 		$q2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$dedicated["owner"]."';";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n2 = mysqli_num_rows($r2);
 		if($n2 != 1){
 			sendAdminWarning("Could not get admin_login ".$dedicated["owner"]." line ".__LINE__." file ".__FILE__);
@@ -200,7 +200,7 @@ function sendDedicatedReminderEmail($remaining_days,$file,$send_webmaster_copy="
 
 		// Get the client
 		$q2 = "SELECT * FROM $pro_mysql_client_table WHERE id='".$admin["id_client"]."';";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n2 = mysqli_num_rows($r2);
 		if($n2 != 1){
 			sendAdminWarning("Could not find id client ".$admin["id_client"]." for admin ".$dedicated["owner"]." line ".__LINE__." file ".__FILE__);
@@ -272,21 +272,21 @@ function sendSharedHostingReminderEmail($remaining_days,$file,$send_webmaster_co
 	$now_timestamp = time();
 	$one_day = 3600 * 24;
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE expire='".date("Y-m-d",$now_timestamp + $one_day*$remaining_days)."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$admin = mysqli_fetch_array($r);
 
 		// Check to see if the user has some domain name hosted (it could be an admin only for VPS or Dedicated...)
 		$q2 = "SELECT * FROM $pro_mysql_domain_table WHERE owner='".$admin["adm_login"]."';";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n2 = mysqli_num_rows($r2);
 		if($n2 < 0){
 			continue;
 		}
 
 		$q2 = "SELECT * FROM $pro_mysql_client_table WHERE id='".$admin["id_client"]."';";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n2 = mysqli_num_rows($r2);
 		if($n2 != 1){
 			sendAdminWarning("Could not find id client ".$admin["id_client"]." for admin ".$admin["adm_login"]." line ".__LINE__." file ".__FILE__);
@@ -352,7 +352,7 @@ function sendCustomProductsReminderEmail($remaining_days,$file,$cust_heb_type_id
 	$now_timestamp = time();
 	$one_day = 3600 * 24;
 	$q = "SELECT * FROM $pro_mysql_custom_product_table WHERE expire_date='".date("Y-m-d",$now_timestamp + $one_day*$remaining_days)."' and custom_heb_type='".$cust_heb_type_id."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$cust_pr = mysqli_fetch_array($r);
@@ -365,7 +365,7 @@ function sendCustomProductsReminderEmail($remaining_days,$file,$cust_heb_type_id
 
 		// Get the admin
 		$q2 = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$cust_pr["owner"]."';";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n2 = mysqli_num_rows($r2);
 		if($n2 != 1){
 			sendAdminWarning("Could not get admin_login ".$cust_pr["owner"]." line ".__LINE__." file ".__FILE__);
@@ -379,7 +379,7 @@ function sendCustomProductsReminderEmail($remaining_days,$file,$cust_heb_type_id
 
 		// Get the client
 		$q2 = "SELECT * FROM $pro_mysql_client_table WHERE id='".$admin["id_client"]."';";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n2 = mysqli_num_rows($r2);
 		if($n2 != 1){
 			sendAdminWarning("Could not find id client ".$admin["id_client"]." for admin ".$cust_pr["owner"]." line ".__LINE__." file ".__FILE__);
@@ -411,9 +411,10 @@ function sendCustomProductsReminderEmail($remaining_days,$file,$cust_heb_type_id
 ////////////////////////////////////////
 // Send reminders before expiration
 global $pro_mysql_custom_heb_types_table;
+global $myslqi_connection;
 
 $qsq = "SELECT id FROM $pro_mysql_custom_heb_types_table;";
-$rsq = mysqli_query($mysqli_connection,$qsq)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+$rsq = mysqli_query($mysqli_connection,$qsq)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 $nsq = mysqli_num_rows($rsq);
 for($nid=0;$nid<$n;$nid++){
 	$cust_pr_id = mysqli_fetch_array($rsq);

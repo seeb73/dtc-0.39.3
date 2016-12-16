@@ -104,8 +104,9 @@ function paynowButton($pay_id,$amount,$item_name,$return_url,$vat_rate=0,$use_re
 // Return the amount of money that has been added to the account if payid has been validated
 function isPayIDValidated($pay_id){
 	global $pro_mysql_pay_table;
+	global $myslqi_connection;
 	$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='$pay_id' AND valid='yes';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! ".mysqli_error()." in file ".__FILE__." line ".__LINE__);
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! ".mysqli_error($mysqli_connection)." in file ".__FILE__." line ".__LINE__);
 	$n = mysqli_insert_id($mysqli_connection);
 	if($n != 1){
 		return 0;
@@ -124,15 +125,16 @@ function createCreditCardPaiementID($amount_paid,$client_id,$label,$new_account=
 
 	$q = "INSERT INTO $pro_mysql_pay_table (id,id_client,label,currency,refund_amount,paiement_type,date,time,valid,new_account,shopper_ip,product_id,paiement_total,vat_rate,hash_check_key,services)
 		VALUES ('','$client_id','label','{$secpayconf_currency_letters}','$amount_paid','online','".date("Y-m-j")."','".date("H:i:s")."','no','$new_account','".$_SERVER["REMOTE_ADDR"]."','$product_id','$amount_paid','$vat_rate','$hash_check_key','$services');";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! ".mysqli_error()." in file ".__FILE__." line ".__LINE__);
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! ".mysqli_error($mysqli_connection)." in file ".__FILE__." line ".__LINE__);
 	$n = mysqli_insert_id($mysqli_connection);
 	return $n;
 }
 function setPaiemntAsPending($pay_id,$reason,$paiement_type="online",$secpay_site="paypal"){
 	global $pro_mysql_pay_table;
+	global $myslqi_connection;
 	$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='$pay_id';";
 	logPay("Querying: $q");
-	$r = mysqli_query($mysqli_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysqli_error()." in file ".__FILE__." line ".__LINE__));
+	$r = mysqli_query($mysqli_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysqli_error($mysqli_connection)." in file ".__FILE__." line ".__LINE__));
 	$n = mysqli_num_rows($r);
 	if($n != 1)die(logPay("Pay id $pay_id not found in file ".__FILE__." line ".__LINE__));
 	$ar = mysqli_fetch_array($r);
@@ -140,7 +142,7 @@ function setPaiemntAsPending($pay_id,$reason,$paiement_type="online",$secpay_sit
 	logPay("Setting item $pay_id as pending");
 	$q = "UPDATE $pro_mysql_pay_table SET paiement_type='$paiement_type',secpay_site='$secpay_site',valid='pending',pending_reason='$reason' WHERE id='$pay_id';";
 	logPay($q);
-	mysqli_query($mysqli_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysqli_error()." in file ".__FILE__." line ".__LINE__));
+	mysqli_query($mysqli_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysqli_error($mysqli_connection)." in file ".__FILE__." line ".__LINE__));
 }
 
 function validatePaiement($pay_id,$amount_paid,$paiement_type,$secpay_site="none",$secpay_custom_id="0",$total_payed=-1){
@@ -159,7 +161,7 @@ function validatePaiement($pay_id,$amount_paid,$paiement_type,$secpay_site="none
 
 	$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='$pay_id';";
 	logPay("Querying: $q");
-	$r = mysqli_query($mysqli_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysqli_error()." in file ".__FILE__." line ".__LINE__));
+	$r = mysqli_query($mysqli_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysqli_error($mysqli_connection)." in file ".__FILE__." line ".__LINE__));
 	$n = mysqli_num_rows($r);
 	if($n != 1)die(logPay("Pay id $pay_id not found in file ".__FILE__." line ".__LINE__));
 	$ar = mysqli_fetch_array($r);
@@ -182,7 +184,7 @@ function validatePaiement($pay_id,$amount_paid,$paiement_type,$secpay_site="none
 	$new_account_array;
 	if($ar["new_account"] == "yes"){
                 $q = "SELECT * FROM $pro_mysql_new_admin_table WHERE paiement_id='".$ar["id"]."';";
-                $r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+                $r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
                 $new_account_array = mysqli_fetch_array($r);
 	}
 	$maxmind_score = 0;
@@ -203,7 +205,7 @@ function validatePaiement($pay_id,$amount_paid,$paiement_type,$secpay_site="none
 		secpay_custom_id='$secpay_custom_id',valid='yes' WHERE id='$pay_id';";
 	}
 	logPay($q);
-	mysqli_query($mysqli_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysqli_error()." in file ".__FILE__." line ".__LINE__));
+	mysqli_query($mysqli_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysqli_error($mysqli_connection)." in file ".__FILE__." line ".__LINE__));
 
 	$txt_userwaiting_account_activated_subject = "$conf_message_subject_header ".$amount_paid." $secpayconf_currency_letters payment occured";
 
@@ -240,7 +242,7 @@ function get_secpay_conf(){
 	global $mysqli_connection;
 
         $query = "SELECT * FROM $pro_mysql_secpayconf_table WHERE 1 LIMIT 1;";
-        $result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+        $result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
         $num_rows = mysqli_num_rows($result);
         if($num_rows != 1)      die("No config values in table !!!");
         $row = mysqli_fetch_array($result);

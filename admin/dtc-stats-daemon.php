@@ -102,6 +102,7 @@ function daemonize() {
 function send_quota_warning_email($vps_specs,$warning_type){
 	global $pro_mysql_admin_table;
 	global $pro_mysql_client_table;
+	global $myslqi_connection;
 	global $conf_webmaster_email_addr;
 	global $conf_message_subject_header;
 

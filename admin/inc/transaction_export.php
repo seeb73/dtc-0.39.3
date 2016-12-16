@@ -8,6 +8,7 @@ function exportTransactions(){
 	global $conf_administrative_site;
 	global $conf_default_company_invoicing;
 	global $pro_mysql_companies_table;
+	global $myslqi_connection;
 	global $cc_europe;
 	get_secpay_conf();
 	//$secpayconf_currency_letters = "EUR";
@@ -23,7 +24,7 @@ function exportTransactions(){
 
 	// TODO: replace this by something which checks what country has been used for the transaction
 	$q = "SELECT country FROM $pro_mysql_companies_table WHERE id='$conf_default_company_invoicing';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find invoicing company ID $conf_default_company_invoicing: please check that you have selected a default invoicing company!");
@@ -121,7 +122,7 @@ DVAT on Sales
 		WHERE $pro_mysql_completedorders_table.payment_id = $pro_mysql_pay_table.id
 		AND $pro_mysql_completedorders_table.date >= '$start_date' AND $pro_mysql_completedorders_table.date <= '$end_date'
 		ORDER BY $pro_mysql_pay_table.valid_date,$pro_mysql_pay_table.valid_time;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n < 1){
 		die("No transactions for this period: $start_date to $end_date: $q");
@@ -130,7 +131,7 @@ DVAT on Sales
 		// Fetch the corresponding payment
 		$completed_order = mysqli_fetch_array($r);
 		$q2 = "SELECT * FROM $pro_mysql_pay_table WHERE id='".$completed_order["payment_id"]."'";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query \"$q2\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query \"$q2\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n2 = mysqli_num_rows($r2);
 		if($n2 =! 1){
 			die("Completed order ".$completed_order["id"]." has no corresponding payment ID");
@@ -138,7 +139,7 @@ DVAT on Sales
 		$pay = mysqli_fetch_array($r2);
 
 		$q2 = "SELECT * FROM $pro_mysql_client_table WHERE id='".$completed_order["id_client"]."';";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query \"$q2\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query \"$q2\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n2 = mysqli_num_rows($r2);
 		if($n2 =! 1){
 			$client_name = "Client name could not be fetched";
@@ -293,6 +294,7 @@ function exportTransactions_vat_report($fmonth,$lmonth){
 	global $conf_administrative_site;
 	global $conf_default_company_invoicing;
 	global $pro_mysql_companies_table;
+	global $myslqi_connection;
 	global $cc_europe;
 	get_secpay_conf();
 
@@ -306,7 +308,7 @@ function exportTransactions_vat_report($fmonth,$lmonth){
 
 	// TODO: replace this by something which checks what country has been used for the transaction
 	$q = "SELECT country FROM $pro_mysql_companies_table WHERE id='$conf_default_company_invoicing';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find invoicing company ID $conf_default_company_invoicing: please check that you have selected a default invoicing company!");
@@ -316,7 +318,7 @@ function exportTransactions_vat_report($fmonth,$lmonth){
 
 	// Fetch all completed orders for the period
 	$q = "SELECT * FROM $pro_mysql_completedorders_table WHERE date >= '$start_date' AND date <= '$end_date' ORDER BY date;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n < 1){
 		die("No transactions for this period: $start_date to $end_date: $q");
@@ -326,7 +328,7 @@ function exportTransactions_vat_report($fmonth,$lmonth){
 		// Fetch the corresponding payment
 		$completed_order = mysqli_fetch_array($r);
 		$q2 = "SELECT * FROM $pro_mysql_pay_table WHERE id='".$completed_order["payment_id"]."'";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query \"$q2\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query \"$q2\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n2 = mysqli_num_rows($r2);
 		if($n2 =! 1){
 			die("Completed order ".$completed_order["id"]." has no corresponding payment ID");
@@ -334,7 +336,7 @@ function exportTransactions_vat_report($fmonth,$lmonth){
 		$pay = mysqli_fetch_array($r2);
 
 		$q2 = "SELECT * FROM $pro_mysql_client_table WHERE id='".$completed_order["id_client"]."';";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query \"$q2\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query \"$q2\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n2 = mysqli_num_rows($r2);
 		if($n2 =! 1){
 			continue;

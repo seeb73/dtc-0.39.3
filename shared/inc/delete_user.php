@@ -9,7 +9,7 @@ function deleteMysqlUserAndDB($adm_login){
 
 	if ($mysqli_connection_mysql == NULL || mysqli_ping($mysqli_connection_mysql) == false)
 	{
-		$mysqli_connection_mysql = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"mysql")or die("Cannot connect to user SQL host...($conf_mysql_host,$conf_mysql_login,xxx) " . mysqli_error());
+		$mysqli_connection_mysql = mysqli_connect($conf_mysql_host,$conf_mysql_login,$conf_mysql_pass,"mysql")or die("Cannot connect to user SQL host...($conf_mysql_host,$conf_mysql_login,xxx) " . mysqli_error($mysqli_connection));
 	}
 
 
@@ -29,7 +29,7 @@ function deleteMysqlUserAndDB($adm_login){
 			// Prevent system db from deletion
 			if($db != $conf_mysql_db && $db != "mysql"){
 				$query2 = "DROP DATABASE IF EXISTS `$db`";
-				mysqli_query($mysqli_connection_mysql,$query2)or die("Cannot execute query \"$query2\" line ".__line__." file ".__FILE__." mysql said: ".mysqli_error());
+				mysqli_query($mysqli_connection_mysql,$query2)or die("Cannot execute query \"$query2\" line ".__line__." file ".__FILE__." mysql said: ".mysqli_error($mysqli_connection));
 			}
 		}
 		// Prevent system user from deletion
@@ -63,7 +63,7 @@ function deleteUserDomain($adm_login,$adm_pass,$deluserdomain,$delete_directorie
 
 	checkLoginPassAndDomain($adm_login,$adm_pass,$deluserdomain);
 	$adm_query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
-	$result = mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" line ".__LINE__." file ".__FILE__."sql said ".mysqli_error());
+	$result = mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" line ".__LINE__." file ".__FILE__."sql said ".mysqli_error($mysqli_connection));
 	$num_rows = mysqli_num_rows($result);
 	if($num_rows != 1) die("User not found for deletion of domain $deluserdomain !!!");
 	$row = mysqli_fetch_array($result);
@@ -167,21 +167,21 @@ function DTCdeleteAdmin ($adm_to_del) {
 
 	// Make all SSL vhosts the user registered available again
 	$q = "UPDATE $pro_mysql_ssl_ips_table SET available='yes' WHERE adm_login='$adm_to_del';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 	deleteMysqlUserAndDB($adm_to_del);
 
 	// Delete all VPS of the user, and set all its IPs as available
 	$q = "SELECT * FROM $pro_mysql_vps_table WHERE owner='$adm_to_del';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$vps = mysqli_fetch_array($r);
 		$q2 = "UPDATE $pro_mysql_vps_ip_table SET available='yes' WHERE vps_server_hostname='".$vps["vps_server_hostname"]."' AND vps_xen_name='".$vps["vps_xen_name"]."';";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query \"$q2\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query \"$q2\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 		$q2 = "DELETE FROM $pro_mysql_vps_stats_table WHERE vps_server_hostname='".$vps["vps_server_hostname"]."' AND vps_xen_name='".$vps["vps_xen_name"]."';";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query \"$q2\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot execute query \"$q2\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 		// Unload (eg: destroy) the VPS directly
 		remoteVPSAction($vps["vps_server_hostname"],$vps["vps_xen_name"],"destroy_vps");
@@ -189,15 +189,15 @@ function DTCdeleteAdmin ($adm_to_del) {
 	}
 
 	$q = "DELETE FROM $pro_mysql_vps_table WHERE owner='$adm_to_del';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 	// Delete all dedicated servers of the admin
 	$q = "DELETE FROM $pro_mysql_dedicated_table WHERE owner='$adm_to_del';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 	// Delete all support tickets attachements of the admin
 	$q = "SELECT attach FROM $pro_mysql_tik_queries_table WHERE adm_login='$adm_to_del' AND attach IS NOT NULL;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$tik_a = mysqli_fetch_array($r);
@@ -208,7 +208,7 @@ function DTCdeleteAdmin ($adm_to_del) {
 				$id = $exploded[$j];
 				if(isRandomNum($id)){
 					$qd = "DELETE FROM $pro_mysql_tik_atc_table WHERE id='$id';";
-					mysqli_query($mysqli_connection,$qd)or die("Cannot execute query \"$qd\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+					mysqli_query($mysqli_connection,$qd)or die("Cannot execute query \"$qd\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 				}
 			}
 		}
@@ -216,11 +216,11 @@ function DTCdeleteAdmin ($adm_to_del) {
 
 	// Delete all support tickets of the admin
 	$q = "DELETE FROM $pro_mysql_tik_queries_table WHERE adm_login='$adm_to_del';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 	// Delete all custom products of the admin
 	$q = "DELETE FROM $pro_mysql_custom_product_table WHERE owner='$adm_to_del';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 	$adm_query = "DELETE FROM $pro_mysql_admin_table WHERE adm_login='$adm_to_del'";
 	mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" !!!");

@@ -107,6 +107,7 @@ function skin_LayoutAdminPage_Default (){
 	global $adm_pass;
 	global $conf_session_expir_minute;
 	global $pro_mysql_config_table;
+	global $myslqi_connection;
 	global $conf_skin;
 	global $top_commands;
 
@@ -212,6 +213,7 @@ function skin_Navbar_Default() {
 	global $adm_pass;
 
 	global $pro_mysql_admin_table;
+	global $myslqi_connection;
 
 	if(isset($adm_login) && isset($adm_pass)){
 		$added_logpass = "&adm_login=$adm_login&adm_pass=$adm_pass";
@@ -235,7 +237,7 @@ function skin_Navbar_Default() {
 	// CRM Button
 	if(!isset($rub) || $rub != "crm"){
 		$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login' AND (adm_pass='$adm_pass' OR adm_pass=SHA1('$adm_pass'));";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!!".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!!".mysqli_error($mysqli_connection));
 		if(mysqli_num_rows($result) == 1){
 			$row = mysqli_fetch_array($result);
 			$url_addon = "&id=".$row["id_client"];

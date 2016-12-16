@@ -6,14 +6,14 @@ function setZoneToGenerate($id){
 	global $mysqli_connection;
 
 	$q = "SELECT domain_name FROM $pro_mysql_subdomain_table WHERE id='$id';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		echo "<font color=\"red\">". _("Could not found subdomain in table for folder deletion") ."</font>";
 	}else{
 		$a = mysqli_fetch_array($r);
 		$q = "UPDATE $pro_mysql_domain_table SET generate_flag='yes' WHERE name='".$a["domain_name"]."';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	}
 }
 
@@ -33,7 +33,7 @@ function subdomainCreateDirsCallBack($id){
 	$newsubdomain_dirpath = $adm_path."/".$domain."/subdomains/".$_REQUEST["subdomain_name"];
 
 	$q = "SELECT * FROM $pro_mysql_subdomain_table WHERE id='$id';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	$shared_hosting_security = "sbox_copy";
 	if($n != 1){
@@ -89,7 +89,7 @@ function subdomainDeleteDirsCallBack($id){
 	$domain = $doms[0];
 
 	$q = "SELECT * FROM $pro_mysql_subdomain_table WHERE id='$id';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		echo "<font color=\"red\">". _("Could not found subdomain in table for folder deletion") ."</font>";
@@ -325,7 +325,7 @@ function drawAdminTools_Subdomain($admin,$domain){
 
 	// Get all SSL IPs asigned to this customer
 	$q = "SELECT * FROM $pro_mysql_ssl_ips_table WHERE adm_login='$adm_login' AND available='no';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 0){
 		$ssl_ips = array();
@@ -362,7 +362,7 @@ function drawAdminTools_Subdomain($admin,$domain){
 
 	// Check to see if there is some SSL IPs for that customer
 	$q = "SELECT * FROM $pro_mysql_ssl_ips_table WHERE adm_login='$adm_login' AND available='no';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 	$dsc["cols"]["login"] = array(
 				"type" => "text",

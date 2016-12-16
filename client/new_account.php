@@ -103,7 +103,7 @@ case "enets-success":
 
 
 	$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='$extapi_pay_id';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$form .= _("Cannot reselect transaction: registration failed!") ;//"Cannot reselect transaction for id $extapi_pay_id: registration failed!";
@@ -122,7 +122,7 @@ case "enets-success":
 			$form .= "<h3><font color=\"green\">". _("TRANSACTION FINISHED AND APPROVED") ."<!-- TRANSACTION FINISHED AND APPROVED--></font></h3>";
 			if($a["new_account"] == "yes"){
 				$q2 = "SELECT * FROM $pro_mysql_new_admin_table WHERE paiement_id='$extapi_pay_id';";
-				$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query \"$q2\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+				$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query \"$q2\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 				$n2 = mysqli_num_rows($r2);
 				if($n2 != 1){
 					$form .= _("Cannot reselect user: registration failed!") ;//"Cannot reselect user: registration failed!";
@@ -139,7 +139,7 @@ case "enets-success":
 			// If it's not a new account, then it's a renewal and there must be a record of it
 			}else{
 				$q2 = "SELECT * FROM $pro_mysql_pending_renewal_table WHERE pay_id='$extapi_pay_id';";
-				$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query \"$q2\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+				$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query \"$q2\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 				$n2 = mysqli_num_rows($r2);
 				if($n2 != 1){
 					$form .= "Could not find your renewal order in the database!";
@@ -190,7 +190,7 @@ case "add_new_service":
 	}
 	// Product
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE id='".$_REQUEST["product_id"]."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$form = _("Cannot reselect product: registration failed.") ;
@@ -200,7 +200,7 @@ case "add_new_service":
 
 	if($product["heb_type"] == "vps"){
 		$q = "SELECT * FROM $pro_mysql_vps_server_table WHERE hostname='".$_REQUEST["vps_location"]."'";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		if($n != 1){
 			$form = _("Cannot reselect product: registration failed.") ;//"Cannot reselect product: registration failed.";
 			break;
@@ -214,7 +214,7 @@ case "add_new_service":
 
 	// Admin
 	$q = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='".$_REQUEST["adm_login"]."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$form .= _("Cannot reselect user: registration failed.");
@@ -224,7 +224,7 @@ case "add_new_service":
 
 	// Client
 	$q = "SELECT * FROM $pro_mysql_client_table WHERE id='".$admin["id_client"]."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$form .= _("Cannot reselect client: registration failed.");
@@ -251,12 +251,12 @@ case "add_new_service":
 	'".mysqli_real_escape_string($mysqli_connection,$_REQUEST["custom_notes"])."','".$_REQUEST["vps_location"]."','".$_REQUEST["vps_os"]."',
 	
 	'". mysqli_real_escape_string($mysqli_connection,$client["vat_num"]) ."','".$_SERVER["REMOTE_ADDR"]."','".date("Y-m-d")."','".date("H:i:s")."','yes')";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$insert_id = mysqli_insert_id($mysqli_connection);
 
 	if($product["heb_type"] == "vps"){
 		$q = "SELECT * FROM $pro_mysql_vps_server_table WHERE hostname='".$_REQUEST["vps_location"]."'";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		if($n != 1){
 			$form = _("Cannot reselect product: registration failed.") ;//"Cannot reselect product: registration failed.";
 			break;
@@ -270,7 +270,7 @@ case "add_new_service":
 
 	$company_invoicing_id = findInvoicingCompany ($service_location,$client["country"]);
 	$q = "SELECT * FROM $pro_mysql_companies_table WHERE id='$company_invoicing_id';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	if($n != 1){
 		$form = "Cannot find company invoicing line ".__LINE__." file ".__FILE__;
 		break;
@@ -296,7 +296,7 @@ case "add_new_service":
 	}
 	$payid = createCreditCardPaiementID($product["price_dollar"] + $product["setup_fee"],$insert_id,$product["name"]." (login: ".$_REQUEST["adm_login"].")","yes",$product["id"],$vat_rate);
 	$q = "UPDATE $pro_mysql_new_admin_table SET paiement_id='$payid' WHERE id='$insert_id';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$return_url = htmlentities($_SERVER["PHP_SELF"])."?action=return_from_pay&regid=$payid";
 	$paybutton =paynowButton($payid,$product["price_dollar"] + $product["setup_fee"],$product["name"]." (login: ".$_REQUEST["adm_login"].")",$return_url,$vat_rate,$secpayconf_use_paypal_recurring);
 

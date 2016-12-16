@@ -57,6 +57,7 @@ if(function_exists("skin_NewAccountPage")){
 // Uppon error, $ret["form"] contains the select_user form and $ret["err"] == 1, plus $ret["mesg"] contains an error message
 function select_user(){
 	global $pro_mysql_new_admin_table;
+	global $myslqi_connection;
 	$ret = array( "err" => 0, "mesg" => "Query ok!", "form" => "");
 
 	if(!isset($_REQUEST['username']) && !isset($_REQUEST['password']) ){
@@ -78,7 +79,7 @@ function select_user(){
 	$sqls_username = mysqli_real_escape_string($mysqli_connection,$_REQUEST['username']);
 	$sqls_password = mysqli_real_escape_string($mysqli_connection,$_REQUEST['password']);
 	$q = "SELECT id FROM $pro_mysql_new_admin_table WHERE reqadm_login='".$sqls_username."' AND reqadm_pass='".$sqls_password."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		$ret["mesg"] = _("User or password invalid.");

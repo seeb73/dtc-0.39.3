@@ -2,9 +2,10 @@
 
 function make_registration_tld_popup(){
 	global $pro_mysql_registrar_domains_table;
+	global $myslqi_connection;
 
 	$q = "SELECT tld FROM $pro_mysql_registrar_domains_table WHERE 1;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	$reg_tld_popup = "";
 	for($i=0;$i<$n;$i++){

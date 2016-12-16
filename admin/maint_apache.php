@@ -52,7 +52,7 @@ function daily_maintenance (){
 	FROM $pro_mysql_admin_table,$pro_mysql_domain_table,$pro_mysql_subdomain_table
 	WHERE $pro_mysql_domain_table.owner = $pro_mysql_admin_table.adm_login
 	AND $pro_mysql_subdomain_table.domain_name = $pro_mysql_domain_table.name";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysqli_fetch_array($r);
@@ -68,7 +68,7 @@ function daily_maintenance (){
 	WHERE $pro_mysql_domain_table.owner = $pro_mysql_admin_table.adm_login
 	AND $pro_mysql_pop_table.mbox_host = $pro_mysql_domain_table.name
 	GROUP BY $pro_mysql_pop_table.fullemail";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysqli_fetch_array($r);

@@ -539,10 +539,11 @@ function getListOptionsList($ctrl_path,$tunable_name,$tunable_title){
 
 function getListOptionsWABoolean($tunable_name, $tunable_title){
 	global $pro_mysql_list_table;
+	global $myslqi_connection;
 	global $edit_domain;
 	$name = $_REQUEST["edit_mailbox"];
 	$test_query = "SELECT webarchive FROM $pro_mysql_list_table	WHERE domain='$edit_domain' AND name='$name' LIMIT 1";
-	$test_result = mysqli_query($mysqli_connection,$test_query)or die("Cannot execute query \"$test_query\" line ".__LINE__." file ".__FILE__. " sql said ".mysqli_error());
+	$test_result = mysqli_query($mysqli_connection,$test_query)or die("Cannot execute query \"$test_query\" line ".__LINE__." file ".__FILE__. " sql said ".mysqli_error($mysqli_connection));
 	$test = mysqli_fetch_array($test_result);
 	if ($test[0]== "yes"){
 		$check_option = " checked";

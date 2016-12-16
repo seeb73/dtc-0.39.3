@@ -521,6 +521,7 @@ function ovh_registry_get_auth_code(){
 
 function ovh_registry_add_nick_handle($a){
 global $pro_mysql_handle_table;
+global $myslqi_connection;
 $ovh_nic_mdp = mdpauto();
 echo _("Your password : "), $ovh_nic_mdp;
 /*
@@ -554,7 +555,7 @@ try {
 }
 	if (isset($result)){
         $query = "UPDATE `$pro_mysql_handle_table` SET `ovh_passwd`='$ovh_nic_mdp', `ovh_id`='$result' WHERE `id`='$a[id]';";
-	$result = mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!! ".mysqli_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!! ".mysqli_error($mysqli_connection));
         }
 }
 

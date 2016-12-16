@@ -62,7 +62,7 @@ echo "Period: $START_INVOICE to $END_INVOICE\n";
 
 $q = "SELECT * FROM $pro_mysql_completedorders_table WHERE date >= '".$START_INVOICE."' AND DATE <= '".$END_INVOICE."' ORDER BY date;";
 echo $q."\n";
-$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 $n = mysqli_num_rows($r);
 
 if($n == 0){
@@ -77,7 +77,7 @@ echo "Found $n invoices\n";
 for($i=0;$i<$n;$i++){
 	$comp = mysqli_fetch_array($r);
 	$q2 = "SELECT * FROM $pro_mysql_pay_table WHERE id='".$comp["payment_id"]."';";
-	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n2 = mysqli_num_rows($r2);
 	if($n2 != 1){
 		echo "Completed order ".$comp["id"]." has no corresponding payment entry in payment table!\n";
@@ -85,7 +85,7 @@ for($i=0;$i<$n;$i++){
 	}
 	$payment = mysqli_fetch_array($r2);
 	$q2 = "SELECT * FROM $pro_mysql_client_table WHERE id='".$comp["id_client"]."';";
-	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n2 = mysqli_num_rows($r2);
 	if($n2 != 1){
 		echo "Completed order ".$comp["id"]." has no corresponding client entry in client table!\n";
@@ -95,7 +95,7 @@ for($i=0;$i<$n;$i++){
 
 	$random_val = getRandomValue();
 	$q2 = "UPDATE $pro_mysql_completedorders_table SET download_pass='".$random_val."' WHERE id='".$comp["id"]."';";
-	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	if($client["is_company"] == "yes"){
 		$client_name = $client["company_name"]."_".$client["familyname"]."_".$client["christname"];
 	}else{

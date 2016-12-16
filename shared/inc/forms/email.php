@@ -14,6 +14,7 @@ function drawImportedMail($mailbox){
 	global $adm_email_pass;
 	global $errTxt;
 	global $pro_mysql_fetchmail_table;
+	global $myslqi_connection;
 
 	$mydomain = $mailbox["data"]["mbox_host"];
 	$myuserid = $mailbox["data"]["id"];
@@ -285,7 +286,7 @@ function getCyrusUsedQuota ($id) {
 	global $mysqli_connection;
 
 	$q = "SELECT fullemail FROM $pro_mysql_pop_table WHERE autoinc='$id';";
-	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		 die("Cannot find created email line ".__LINE__." file ".__FILE__);
@@ -329,7 +330,7 @@ function emailAccountsCreateCallback ($id){
 	global $mysqli_connection;
 
 	$q = "SELECT * FROM $pro_mysql_pop_table WHERE autoinc=$id;";
-	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find created email line ".__LINE__." file ".__FILE__);
@@ -337,19 +338,19 @@ function emailAccountsCreateCallback ($id){
 	$a = mysqli_fetch_array($r);
 
 	$test_query = "SELECT * FROM $pro_mysql_list_table WHERE name='".$a["id"]."' AND domain='$edit_domain'";
-	$test_result = mysqli_query($mysqli_connection,$test_query)or die("Cannot execute query \"$test_query\" line ".__LINE__." file ".__FILE__. " sql said ".mysqli_error());
+	$test_result = mysqli_query($mysqli_connection,$test_query)or die("Cannot execute query \"$test_query\" line ".__LINE__." file ".__FILE__. " sql said ".mysqli_error($mysqli_connection));
 	$testnum_rows = mysqli_num_rows($test_result);
 	if($testnum_rows >= 1){
 		$q = "DELETE FROM $pro_mysql_pop_table WHERE autoinc='$id';";
-		$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
 		return "<font color=\"red\">". _("Error: a mailing list already exists with this name!") ."</font>";
 	}
 	$test_query = "SELECT * FROM $pro_mysql_mailaliasgroup_table WHERE id='".$a["id"]."' AND domain_parent='$edit_domain'";
-	$test_result = mysqli_query($mysqli_connection,$test_query) or die("Cannot execute query \"$test_query\" line ".__LINE__." file ".__FILE__. " sql said ".mysqli_error());
+	$test_result = mysqli_query($mysqli_connection,$test_query) or die("Cannot execute query \"$test_query\" line ".__LINE__." file ".__FILE__. " sql said ".mysqli_error($mysqli_connection));
 	$testnum_rows = mysqli_num_rows($test_result);
 	if($testnum_rows >= 1){
 		$q = "DELETE FROM $pro_mysql_pop_table WHERE autoinc='$id';";
-		$r = mysqli_query($mysqli_connection,$q) or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q) or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
 		return "<font color=\"red\">". _("Error: Email group alias already exists with this name!") ."</font><br />";
 	}
 	$crypted_pass = crypt($a["passwd"], dtc_makesalt());
@@ -359,7 +360,7 @@ function emailAccountsCreateCallback ($id){
 	$admin_path = getAdminPath($adm_login);
 	$box_path = "$admin_path/$edit_domain/Mailboxs/".$a["id"];
 	$q = "UPDATE $pro_mysql_pop_table SET crypt='$crypted_pass',home='$box_path',uid='$conf_dtc_system_uid',gid='$conf_dtc_system_gid',fullemail='".$a["id"].'@'.$a["mbox_host"]."',quota_couriermaildrop=CONCAT(1024000*quota_size,'S,',quota_files,'C') WHERE autoinc='$id';";
-	$r2 = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
+	$r2 = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
 	triggerMXListUpdate();
 	if ($cyrus_used){
 		# login to cyradm
@@ -382,7 +383,7 @@ function emailAccountsEditCallback ($id){
 	global $mysqli_connection;
 
 	$q = "SELECT * FROM $pro_mysql_pop_table WHERE autoinc=$id;";
-	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find created email line ".__LINE__." file ".__FILE__);
@@ -391,7 +392,7 @@ function emailAccountsEditCallback ($id){
 
 	$crypted_pass = crypt($a["passwd"], dtc_makesalt());
 	$q = "UPDATE $pro_mysql_pop_table SET crypt='$crypted_pass',quota_couriermaildrop=CONCAT(1024000*quota_size,'S,',quota_files,'C') WHERE autoinc='$id';";
-	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
 
 	if(!$cyrus_used){
 		writeDotQmailFile($a["id"],$a["mbox_host"]);
@@ -422,7 +423,7 @@ function emailAccountsDeleteCallback ($id){
 	triggerMXListUpdate();
 	updateUsingCron("gen_qmail='yes', qmail_newu='yes'");
 	$q = "SELECT id, mbox_host, home FROM $pro_mysql_pop_table WHERE autoinc='$id';";
-	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
 		die("Cannot find created email line ".__LINE__." file ".__FILE__);
@@ -440,7 +441,7 @@ function emailAccountsDeleteCallback ($id){
 	$cmd = "rm -rf " . $v["home"];
 	exec($cmd,$exec_out,$return_val);
 	$q = "DELETE FROM $pro_mysql_fetchmail_table WHERE domain_user='".$v["id"]."' AND domain_name='".$v["mbox_host"]."';";
-	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
 	updateUsingCron("qmail_newu='yes',restart_qmail='yes',gen_qmail='yes'");
 	return "";
 }
@@ -801,7 +802,7 @@ function drawAdminTools_Emails($domain){
 
         // We have to query again, in case something has changed
         $q = "SELECT id FROM $pro_mysql_pop_table WHERE mbox_host='".$domain["name"]."';";
-        $r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error());
+        $r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
         $n = mysqli_num_rows($r);
 	$catch_popup = "<option value=\"no-mail-account\">". _("No catch-all") ."</option>";
         for($i=0;$i<$n;$i++){

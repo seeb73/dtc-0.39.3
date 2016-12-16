@@ -20,6 +20,7 @@ function fetchTable($query){
 
 function fetchMailboxInfos($adm_email_login,$adm_email_pass){
 	global $pro_mysql_pop_table;
+	global $myslqi_connection;
 
 	$ret["err"] = 0;
 	$ret["mesg"] = "No error";
@@ -32,7 +33,7 @@ function fetchMailboxInfos($adm_email_login,$adm_email_pass){
 	if (!$r)
 	{
 		$ret["err"] = 1;
-		$ret["mesg"] = "Cannot execute query \"$q\" !".mysqli_error()." line ".__LINE__." file ".__FILE__;
+		$ret["mesg"] = "Cannot execute query \"$q\" !".mysqli_error($mysqli_connection)." line ".__LINE__." file ".__FILE__;
 		return $ret;
 	}
 	if(mysqli_num_rows($r) != 1){
@@ -46,6 +47,7 @@ function fetchMailboxInfos($adm_email_login,$adm_email_pass){
 
 function fetchCommands($id_client){
 	global $pro_mysql_command_table;
+	global $myslqi_connection;
 
 	$ret["err"] = 0;
 	$ret["mesg"] = "No error";
@@ -73,7 +75,7 @@ function fetchCommands($id_client){
 }
 
 function fetchAdminInfo($adm_login){
-        global $pro_mysql_admin_table;
+    global $pro_mysql_admin_table;
 	global $mysqli_connection;
 
 	$ret["err"] = 0;
@@ -101,7 +103,7 @@ function fetchAdminInfo($adm_login){
 	if (!$row)
 	{
 		$ret["err"] = 3;
-		$ret["mesg"] = "Cannot fetch user line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error();
+		$ret["mesg"] = "Cannot fetch user line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection);
 		return $ret;
 	}
 	$ret["data"] = $row;
@@ -155,7 +157,7 @@ function fetchAdminStats($admin){
 	if (!$result)
 	{
 		$ret["err"] = 1;
-		$ret["mesg"] = "Cannot execute query \"$query\"".mysqli_error();
+		$ret["mesg"] = "Cannot execute query \"$query\"".mysqli_error($mysqli_connection);
 		return $ret;
 	}
 	$num_domains = mysqli_num_rows($result);
@@ -209,7 +211,7 @@ function fetchAdminStats($admin){
 		if (!$result_ftp)
 		{
 			$ret["err"] = 3;
-			$ret["mesg"] = "Cannot execute query \"$query\" !".mysqli_error()." line ".__LINE__." file ".__FILE__;
+			$ret["mesg"] = "Cannot execute query \"$query\" !".mysqli_error($mysqli_connection)." line ".__LINE__." file ".__FILE__;
 			return $ret;
 		}
 		$num_rows = mysqli_num_rows($result_ftp);
@@ -230,7 +232,7 @@ function fetchAdminStats($admin){
 		if (!$r)
 		{
 			$ret["err"] = 4;
-			$ret["mesg"] = "Cannot execute query \"$q\" !".mysqli_error()." line ".__LINE__." file ".__FILE__;
+			$ret["mesg"] = "Cannot execute query \"$q\" !".mysqli_error($mysqli_connection)." line ".__LINE__." file ".__FILE__;
 			return $ret;
 		}
 		$num_rows = mysqli_num_rows($r);
@@ -268,7 +270,7 @@ function fetchAdminStats($admin){
 		if (!$ru)
 		{
 			$ret["err"] = 5;
-			$ret["mesg"] = "Cannot query \"$qu\" !".mysqli_error()." line ".__LINE__." file ".__FILE__;
+			$ret["mesg"] = "Cannot query \"$qu\" !".mysqli_error($mysqli_connection)." line ".__LINE__." file ".__FILE__;
 			mysqli_select_db($conf_mysql_db);
 			return $ret;
 		}
@@ -282,7 +284,7 @@ function fetchAdminStats($admin){
 			if (!$r)
 			{
 				$ret["err"] = 6;
-				$ret["mesg"] = "Cannot query \"$q\" !".mysqli_error()." line ".__LINE__." file ".__FILE__;
+				$ret["mesg"] = "Cannot query \"$q\" !".mysqli_error($mysqli_connection)." line ".__LINE__." file ".__FILE__;
 				mysqli_select_db($conf_mysql_db);
 				return $ret;
 			}
@@ -294,7 +296,7 @@ function fetchAdminStats($admin){
 				$result = mysqli_query($mysqli_connection,$query);
 				if (!$result){
 					// $ret["err"] = 7;
-					// $ret["mesg"] = "Cannot query \"$q\" !".mysqli_error();
+					// $ret["mesg"] = "Cannot query \"$q\" !".mysqli_error($mysqli_connection);
 					// mysqli_select_db($conf_mysql_db);
 					// return $ret;
 				}else{
@@ -411,7 +413,7 @@ function randomizePassword($adm_login,$adm_input_pass){
 	if (!$row)
 	{
 		$ret["err"] = 4;
-		$ret["mesg"] = "Cannot fetch user line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error();
+		$ret["mesg"] = "Cannot fetch user line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection);
 		return $ret;
 	}
 
@@ -623,7 +625,7 @@ function fetchAdminData($adm_session,$adm_login,$adm_input_pass){
 		if (!$r2)
 		{
 			$ret["err"] = 8;
-			$ret["mesg"]="Cannot execute query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error();
+			$ret["mesg"]="Cannot execute query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection);
 			return $ret;
 		}
 		$n2 = mysqli_num_rows($r2);
@@ -642,7 +644,7 @@ function fetchAdminData($adm_session,$adm_login,$adm_input_pass){
 	$r = mysqli_query($mysqli_connection,$q);
 	if (!$r){
 		$ret["err"] = 9;
-		$ret["mesg"]="Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error();
+		$ret["mesg"]="Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection);
 		return $ret;
 	}
 	$n = mysqli_num_rows($r);
@@ -656,7 +658,7 @@ function fetchAdminData($adm_session,$adm_login,$adm_input_pass){
 	$r = mysqli_query($mysqli_connection,$q);
 	if (!$r){
 		$ret["err"] = 10;
-		$ret["mesg"]="Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error();
+		$ret["mesg"]="Cannot execute query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection);
 		return $ret;
 	}
 	$n = mysqli_num_rows($r);

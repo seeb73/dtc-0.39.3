@@ -12,7 +12,7 @@ function drawAdminMonitor (){
 	$out = "";
 	// For each clients
 	$q = "SELECT * FROM $pro_mysql_client_table WHERE 1 ORDER BY familyname,christname";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query: \"$q\" !".mysqli_error()." line ".__LINE__." in file ".__FILE__);
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query: \"$q\" !".mysqli_error($mysqli_connection)." line ".__LINE__." in file ".__FILE__);
 	$nr = mysqli_num_rows($r);
 	$out .= '<br><table border="1" width="100%" height="1" cellpadding="1" cellspacing="1">';
 	$out .=
@@ -30,7 +30,7 @@ function drawAdminMonitor (){
 		mysqli_select_db($conf_mysql_db);
 		// For each of it's admins
 		$q2 = "SELECT * FROM $pro_mysql_admin_table WHERE id_client='".$ar["id"]."';";
-		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query: \"$q2\" !".mysqli_error()." line ".__LINE__." in file ".__FILE__);
+		$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query: \"$q2\" !".mysqli_error($mysqli_connection)." line ".__LINE__." in file ".__FILE__);
 		$nr2 = mysqli_num_rows($r2);
 		$admin=array();
 		$admin_stats=array();

@@ -472,7 +472,7 @@ WHERE $pro_mysql_domain_table.owner=$pro_mysql_admin_table.adm_login
 AND pt.id=$pro_mysql_admin_table.prod_id
 AND $pro_mysql_admin_table.prod_id != '0'
 AND $pro_mysql_admin_table.id_client != '0'";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysqli_fetch_array($r);
@@ -720,7 +720,7 @@ AND $pro_mysql_admin_table.id_client != '0'";
 				// This does http://dtc.your-domain.com/unresolved-domain.com
 				// TG: added a flag to say yes/no to that alias for each domains
 				$alias_domain_query = "SELECT * FROM $pro_mysql_domain_table WHERE gen_unresolved_domain_alias='yes' ORDER BY name;";
-				$result_alias = mysqli_query($mysqli_connection,$alias_domain_query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." mysql said: ".mysqli_error());
+				$result_alias = mysqli_query($mysqli_connection,$alias_domain_query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." mysql said: ".mysqli_error($mysqli_connection));
 				$num_rows_alias = mysqli_num_rows($result_alias);
 				for($x=0;$x<$num_rows_alias;$x++) {
 					$rowX = mysqli_fetch_array($result_alias) or die ("Cannot fetch domain for Alias");
@@ -739,7 +739,7 @@ AND $pro_mysql_admin_table.id_client != '0'";
 					$web_pathX = $alias_path["path"];
 					// TG: Added open_basedir restriction (for obvious security reasons)
 					$qsubdom = "SELECT * FROM $pro_mysql_subdomain_table WHERE domain_name='$web_nameX' AND ip='default';";
-					$rx = mysqli_query($mysqli_connection,$qsubdom)or die("Cannot execute query \"$qsubdom\" line ".__LINE__." file ".__FILE__." mysql said: ".mysqli_error());
+					$rx = mysqli_query($mysqli_connection,$qsubdom)or die("Cannot execute query \"$qsubdom\" line ".__LINE__." file ".__FILE__." mysql said: ".mysqli_error($mysqli_connection));
 					$numx =  mysqli_num_rows($rx);
 					for($subx=0;$subx<$numx;$subx++){
 						$ax = mysqli_fetch_array($rx) or die ("Cannot fetch subdomain for Alias");
@@ -947,7 +947,7 @@ $vhost_file .= "
 							// Start of <krystian@ezpear.com> patch
 							if($conf_use_nated_vhost=="yes"){
 								$q="select port from $pro_mysql_ssl_ips_table where ip_addr='${subdomain["ssl_ip"]}' and available='no';";
-								$r=mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+								$r=mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 								$n = mysqli_num_rows($r);
 								if($n > 0){
 									$row=mysqli_fetch_array($r);
@@ -1023,7 +1023,7 @@ $vhost_file .= "
 
 					// ServerAlias for parked domains
 					$q_serveralias = "select * from $pro_mysql_domain_table where domain_parking_type='serveralias' and domain_parking='$web_name'";
-					$r_serveralias = mysqli_query($mysqli_connection,$q_serveralias) or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+					$r_serveralias = mysqli_query($mysqli_connection,$q_serveralias) or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 					while ($row_serveralias = mysqli_fetch_array($r_serveralias)) {
 						// default subdomain and wildcard subdomain settings are inherited from the main domain, not the parked domain
 						// this is because in the gui these settings are not accessable for a parked domain

@@ -44,7 +44,7 @@ function drawTickets($admin){
 		}
 
 		$q = "SELECT * FROM $pro_mysql_tik_cats_table WHERE 1 ORDER BY id";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		$popup_cats = "";
 		for($i=0;$i<$n;$i++){
@@ -78,7 +78,7 @@ $att_frm<br><br>
 			die("Selected ticket id is not valid!");
 		}
 		$q = "SELECT * FROM $pro_mysql_tik_queries_table WHERE adm_login='$adm_login' AND id='".$_REQUEST["tik_id"]."';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$out .= _("Ticket not found.") ;
@@ -87,7 +87,7 @@ $att_frm<br><br>
 			$out .= _("Subject:") ." ".htmlspecialchars(stripslashes($a_t["subject"]))."<br>";
 
 			$q2 = "SELECT * FROM $pro_mysql_tik_cats_table WHERE id='".$a_t["cat_id"]."';";
-			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 			$n2 = mysqli_num_rows($r2);
 			if($n2 != 1){
 				$out .= _("Type: type not found.") ;
@@ -106,7 +106,7 @@ $att_frm<br><br>
 			$next_tikq = $_REQUEST["tik_id"];
 			while($next_tikq != 0){
 				$q = "SELECT * FROM $pro_mysql_tik_queries_table WHERE adm_login='$adm_login' AND id='$next_tikq';";
-				$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 				$n = mysqli_num_rows($r);
 				if($n != 1){
 					$out .= _("Ticket not found.") ;
@@ -122,7 +122,7 @@ $att_frm<br><br>
 				}
 				if($a["admin_or_user"] == "admin"){
 					$qr = "SELECT * FROM $pro_mysql_tik_admins_table WHERE pseudo='".$a["admin_name"]."';";
-					$rr = mysqli_query($mysqli_connection,$qr)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+					$rr = mysqli_query($mysqli_connection,$qr)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 					$nr = mysqli_num_rows($rr);
 					if($nr == 1){
 						$ar = mysqli_fetch_array($rr);
@@ -140,7 +140,7 @@ $att_frm<br><br>
 					$natc = sizeof($atc);
 					for($z=0;$z<$natc;$z++){
 						$qat = "SELECT * FROM $pro_mysql_tik_atc_table WHERE id='".$atc[$z]."';";
-						$rat = mysqli_query($mysqli_connection,$qat)or die("Cannot query $qat line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+						$rat = mysqli_query($mysqli_connection,$qat)or die("Cannot query $qat line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 						$natr = mysqli_num_rows($rat);
 						if($natr == 1){
 							$aat = mysqli_fetch_array($rat);
@@ -176,7 +176,7 @@ $att_frm<br>
 ";
 		$out .= "<br><br><h3>". _("Old tickets:") ."</h3>";
 		$q = "SELECT * FROM $pro_mysql_tik_queries_table WHERE adm_login='$adm_login' AND in_reply_of_id='0' ORDER BY date,time DESC;";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		$out .= "<font color=\"red\">". _("Replying to an already closed ticket will reopen it."). "</font><br>";
 		$out .= "<table cellspacing=\"0\" cellpadding=\"0\" border=\"1\">
@@ -190,7 +190,7 @@ $att_frm<br>
 				$out .= "<td><font color=\"red\">". _("Open") ."</font></td>";
 			}
 			$q2 = "SELECT * FROM $pro_mysql_tik_cats_table WHERE id='".$a["cat_id"]."';";
-			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r2 = mysqli_query($mysqli_connection,$q2)or die("Cannot query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 			$n2 = mysqli_num_rows($r2);
 			if($n2 != 1){
 				$out .= "<td>Cat not found!</td>";

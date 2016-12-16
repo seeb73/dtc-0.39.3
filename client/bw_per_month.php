@@ -64,7 +64,7 @@ for($m=0;$m<12;$m++){
 
 /*
 $q = "SELECT bw_quota_per_month_gb FROM $pro_mysql_client_table WHERE id='".$_REQUEST["cid"]."';";
-$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__.mysqli_error());
+$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__.mysqli_error($mysqli_connection));
 $n = mysqli_num_rows($r);
 if($n!=1)die("Client not found!");
 $c = mysqli_fetch_array($r);
@@ -98,7 +98,7 @@ AND subdomain.domain_name=domain.name
 AND http_accounting.vhost=subdomain.subdomain_name
 AND http_accounting.domain=subdomain.domain_name
 AND year='$year' AND month='$month'";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." MySql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." MySql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysqli_fetch_array($r);
@@ -110,7 +110,7 @@ WHERE admin.id_client='".$cid."'
 AND domain.owner=admin.adm_login
 AND $pro_mysql_acc_ftp_table.sub_domain=domain.name
 AND year='$year' AND month='$month';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." SQL said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." SQL said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysqli_fetch_array($r);
@@ -123,7 +123,7 @@ WHERE admin.id_client='".$cid."'
 AND domain.owner=admin.adm_login
 AND $pro_mysql_acc_email_table.domain_name=domain.name
 AND $pro_mysql_acc_email_table.year='$year' AND $pro_mysql_acc_email_table.month='$month';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." SQL said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." SQL said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysqli_fetch_array($r);

@@ -55,7 +55,7 @@ $result = mysqli_list_tables($mysqli_connection,$pro_mysql_db);
 
 if (!$result) {
    echo "DB Error, could not list tables\n";
-   echo 'MySQL Error: ' . mysqli_error();
+   echo 'MySQL Error: ' . mysqli_error($mysqli_connection);
    exit;
 }
 
@@ -70,7 +70,7 @@ for($j=0;$j<$num;$j++){
 	$row = mysqli_fetch_row($result);
 	$out .= "\t\"$row[0]\" => array(\n";
 	$q = "DESCRIBE $row[0];";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" !\nError in ".__FILE__." line ".__LINE__.": ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" !\nError in ".__FILE__." line ".__LINE__.": ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	$out .= "\t\t\"vars\" => array(\n";
 	for($i=0;$i<$n;$i++){
@@ -90,7 +90,7 @@ for($j=0;$j<$num;$j++){
 			$out .= "\n\t\t\t)";
 	}
 	$q = "SHOW INDEX FROM $row[0];";
-        $r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" !\nError in ".__FILE__." line ".__LINE__.": ".mysqli_error());
+        $r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" !\nError in ".__FILE__." line ".__LINE__.": ".mysqli_error($mysqli_connection));
         $n = mysqli_num_rows($r);
 	if($i > 0){
 		$out .= ",\n";

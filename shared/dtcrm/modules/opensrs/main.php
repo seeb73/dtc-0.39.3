@@ -20,6 +20,7 @@ $handle = "save"; //If you want to comfirm registration, renew and transfer from
 function opensrs_cookies($domain){
 require_once ("/usr/share/dtc/shared/dtcrm/modules/opensrs/opensrs/openSRS_loader.php");
 	global $pro_mysql_domain_table;
+	global $myslqi_connection;
 	
 	$q = "SELECT owner,registrar_password FROM $pro_mysql_domain_table WHERE name = '$domain';";
 	$r = mysqli_query($mysql_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." file ".__FILE__." sql said: ".mysql_error());

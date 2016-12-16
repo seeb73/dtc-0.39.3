@@ -7,6 +7,7 @@ function drawNameRenew($domain_name,$admin){
 	global $registry_api_modules;
 	global $pro_mysql_client_table;
 	global $pro_mysql_domain_table;
+	global $myslqi_connection;
 	global $conf_post_or_get;
 	
 	$form_start = "<form method=\"$conf_post_or_get\" action=\"?\">
@@ -59,7 +60,7 @@ if($admin["info"]["id_client"] != 0){
 		}else{
 			$out .= "<font color=\"green\">". _("Your account has been credited.") ."</font><br>";
 			$q = "UPDATE $pro_mysql_client_table SET dollar = dollar+".$ze_refund." WHERE id='".$admin["info"]["id_client"]."';";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 			$remaining += $ze_refund;
 		}
 	}
@@ -102,7 +103,7 @@ return $out;
 // START OF DOMAIN NAME RENEW           //
 
 	$q = "SELECT * FROM $pro_mysql_domain_table WHERE owner='$adm_login';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n > 0){
 		$new_user = "no";
@@ -122,7 +123,7 @@ Server said: <i>" . $regz["response_text"] . "</i><br>";
 
 	$operation = $remaining - $fqdn_price;
 	$query = "UPDATE $pro_mysql_client_table SET dollar='$operation' WHERE id='".$admin["info"]["id_client"]."';";
-	mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!!".mysqli_error());
+	mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!!".mysqli_error($mysqli_connection));
 
 	$out .= "<font color=\"green\"><b>". _("Successfully renewed your domain name") ."</b></font><br><br>";
 

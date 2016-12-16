@@ -9,6 +9,7 @@ function drawNameTransfer($admin,$given_fqdn="none"){
 
 	global $pro_mysql_domain_table;
 	global $pro_mysql_client_table;
+	global $myslqi_connection;
 	global $registry_api_modules;
 
 	global $form_enter_dns_infos;
@@ -129,7 +130,7 @@ $form_start<br>
 		}else{
 			$out .= "<font color=\"green\">". _("Your account has been credited.") ."</font><br>";
 			$q = "UPDATE $pro_mysql_client_table SET dollar = dollar+".$ze_refund." WHERE id='".$admin["info"]["id_client"]."';";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 			$remaining += $ze_refund;
 		}
 	}
@@ -185,7 +186,7 @@ $form_start
 		}
 	}
 	$q = "SELECT * FROM $pro_mysql_domain_table WHERE owner='$adm_login';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n > 0){
 		$new_user = "no";
@@ -205,11 +206,11 @@ Server said: <i>" . $regz["response_text"] . "</i><br>";
 
 	$operation = $remaining - $fqdn_price;
 	$query = "UPDATE $pro_mysql_client_table SET dollar='$operation' WHERE id='".$admin["info"]["id_client"]."';";
-	mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!!".mysqli_error());
+	mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!!".mysqli_error($mysqli_connection));
 
 
 	$q = "SELECT * FROM $pro_mysql_domain_table WHERE domain='$fqdn';";
-        $r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+        $r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
         $n = mysqli_num_rows($r);
 
         // Is this a transfer of a domain already hosted?
@@ -219,7 +220,7 @@ Server said: <i>" . $regz["response_text"] . "</i><br>";
 	if($regz["is_success"] == 1){
 		$id = find_registry_id($fqdn);
 		$q = "UPDATE $pro_mysql_domain_table SET registrar='".$registry_api_modules[$id]["name"]."' WHERE name='$fqdn';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 		unset($ns_ar);
 		$ns_ar = array();

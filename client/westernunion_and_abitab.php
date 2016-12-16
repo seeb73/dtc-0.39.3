@@ -46,7 +46,7 @@ if( $proceed == "yes"){
 	}
 	$q = "UPDATE $pro_mysql_pay_table SET paiement_type='$payment_type',valid='pending',pending_reason='$pending_reason' WHERE hash_check_key='" .
 	mysqli_real_escape_string($mysqli_connection,$_REQUEST["hash_check"]) . "' AND id='" . mysqli_real_escape_string($mysqli_connection,$_REQUEST["item_id"]) . "'";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 }
 
 // Display the payment infos

@@ -38,7 +38,7 @@ class getSkin{
 
     function skin(){
 		$query = "SELECT * FROM config WHERE 1 LIMIT 1;";
-		$result = mysqli_query($mysqli_connection, $query)or die("Cannot query $query !!!".mysqli_error());	
+		$result = mysqli_query($mysqli_connection, $query)or die("Cannot query $query !!!".mysqli_error($mysqli_connection));	
 		$row = mysqli_fetch_array($result);
 		$this->config_skin=$row['skin'];
 		return $this->config_skin; 

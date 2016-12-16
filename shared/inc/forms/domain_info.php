@@ -26,7 +26,7 @@ function drawAdminTools_DomainInfo($admin,$eddomain){
 		$out .= _("Your domain is not registered here.");
 	}else{
 		$q = "SELECT * FROM $pro_mysql_domain_table WHERE name='$webname';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		if($n != 1){
 			$out .= _("Cannot find your domain name registration information in the database.");
@@ -114,7 +114,7 @@ function drawAdminTools_DomainInfo($admin,$eddomain){
 				$ret = registry_set_domain_protection($webname,$sel);
 				if($ret != FALSE && $ret["is_success"] == 1){
 					$q = "UPDATE $pro_mysql_domain_table SET protection='$sel' WHERE name='$webname';";
-					$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__."sql said: ".mysqli_error());
+					$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__."sql said: ".mysqli_error($mysqli_connection));
 					$a["protection"] = $sel;
 				}
 			}
@@ -222,7 +222,7 @@ function drawAdminTools_DomainInfo($admin,$eddomain){
 <option value=\"no-parking\">". _("No parking") ."</option>
 ";
 	$q = "SELECT name FROM $pro_mysql_domain_table WHERE owner='$adm_login' AND domain_parking='no-parking' AND name NOT LIKE '".$_REQUEST["addrlink"]."';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." in file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" line ".__LINE__." in file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysqli_fetch_array($r);

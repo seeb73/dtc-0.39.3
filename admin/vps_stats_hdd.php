@@ -74,7 +74,7 @@ for($m=0;$m<12;$m++){
 	AND vps_xen_name='xen".$_REQUEST["vps_name"]."'
 	AND month='$month'
 	AND year='$year';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." MySql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q in ".__FILE__." line ".__LINE__." MySql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n == 1){
 		$a = mysqli_fetch_array($r);

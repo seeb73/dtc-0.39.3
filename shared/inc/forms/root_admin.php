@@ -257,7 +257,7 @@ function drawEditAdminData($admin){
 
 	// The product popup
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE (heb_type='shared' OR heb_type='custom' OR heb_type='ssl') AND renew_prod_id='0' ORDER BY id;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	$prodsid = "";
 	$prodsid .= "<select class=\"dtcDatagrid_input_color\" name=\"heb_prod_id\"><option value=\"0\">". _("No product") ."</option>";
@@ -407,7 +407,7 @@ function drawEditAdminDomains($admin){
 
 	// Deletion of VPS
 	$q = "SELECT * FROM $pro_mysql_vps_table WHERE owner='$adm_login' ORDER BY vps_server_hostname,vps_xen_name;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n > 0){
 		$domain_conf .= "<h3>". _("Delete one of the admin VPS: ") ."</h3><br>";
@@ -424,7 +424,7 @@ function drawEditAdminDomains($admin){
 
 	// Creation of VPS
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE heb_type='vps' AND renew_prod_id='0';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	$num_prods_vps = $n;
 	$vps_prods = "";
@@ -434,7 +434,7 @@ function drawEditAdminDomains($admin){
 	}
 
 	$q = "SELECT * FROM $pro_mysql_vps_ip_table WHERE available='yes' ORDER BY vps_server_hostname,vps_xen_name;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	$vps_srvs = "";
 	for($i=0;$i<$n;$i++){
@@ -467,7 +467,7 @@ function drawEditAdminDomains($admin){
 
 	// Deletion of dedicated
 	$q = "SELECT * FROM $pro_mysql_dedicated_table WHERE owner='$adm_login';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n > 0){
 		$domain_conf .= "<br><br><h3>". _("Delete one of the admin dedicated server:") ."</h3><br>";
@@ -481,7 +481,7 @@ function drawEditAdminDomains($admin){
 	}
 	// Creation of dedicated servers
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE heb_type='server' AND renew_prod_id='0';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	$num_prods_vps = $n;
 	$server_prods = "";
@@ -506,7 +506,7 @@ function drawEditAdminDomains($admin){
 
 	// Deletion of custom products
 	$q = "SELECT *,$pro_mysql_custom_product_table.id as delid FROM $pro_mysql_custom_product_table,$pro_mysql_product_table WHERE product_id=$pro_mysql_product_table.id and owner='$adm_login';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n > 0){
 		$domain_conf .= "<br><br><h3>". _("Delete one of the admin custom products:") ."</h3><br>";
@@ -521,7 +521,7 @@ function drawEditAdminDomains($admin){
 
 	// Creation of Custom Products
 	$q = "SELECT * FROM $pro_mysql_product_table WHERE heb_type='custom' AND renew_prod_id='0';";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	$num_prods_vps = $n;
 	$server_prods = "";
@@ -585,7 +585,7 @@ function drawDomainConfig($admin){
 	if($nbr_domain > 0){
 		if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "change_domain_config_edit"){
 			$q = "UPDATE $pro_mysql_domain_table SET generate_flag='yes' WHERE name='".$_REQUEST["name"]."';";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 			updateUsingCron("gen_vhosts='yes',restart_apache='yes',gen_named='yes',reload_named ='yes'");
 		}
 		$title = " ";
@@ -676,7 +676,7 @@ function drawDomainConfig($admin){
 		if( isset($_REQUEST["edithost"]) && isHostname($_REQUEST["edithost"]) ){
 			$ret .= "<h3>". _("Custom Apache directives for") ." ".$idn->decode($_REQUEST["edithost"])."</h3>";
 			$q = "SELECT subdomain_name FROM $pro_mysql_subdomain_table WHERE domain_name='".$_REQUEST["edithost"]."';";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 			$n = mysqli_num_rows($r);
 			for($j=0;$j<$n;$j++){
 				$a = mysqli_fetch_array($r);
@@ -691,7 +691,7 @@ function drawDomainConfig($admin){
 				$ret .= "<u>". _("Subdomain") .": ".$_REQUEST["subdomain"].":</u><br>";
 				$ret .= _("IMPORTANT: No syntax checking is done on your custom directives - a mistake here could lead to your web server not restarting properly.")."<br>";
 				$q = "SELECT customize_vhost FROM $pro_mysql_subdomain_table WHERE subdomain_name='".$_REQUEST["subdomain"]."' AND domain_name='".$_REQUEST["edithost"]."';";
-				$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error());
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 				$n = mysqli_num_rows($r);
 				if($n != 1){
 					die("Domain name not found line ".__LINE__." file ".__FILE__);
@@ -803,7 +803,7 @@ function drawDomainConfig($admin){
 
 	if($nbr_vps > 0){
 		$q = "SELECT id,name FROM $pro_mysql_product_table WHERE heb_type='vps' AND renew_prod_id='0';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		$prod_name = array();
 		$prod_id = array();
@@ -880,7 +880,7 @@ function drawDomainConfig($admin){
 	}
 	if($nbr_server > 0){
 		$q = "SELECT id,name FROM $pro_mysql_product_table WHERE heb_type='server' AND renew_prod_id='0';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		$prod_name = array();
 		$prod_id = array();
@@ -954,7 +954,7 @@ function drawDomainConfig($admin){
 	}
 	if($nbr_server > 0){
 		$q = "SELECT id,name FROM $pro_mysql_product_table WHERE heb_type='custom' AND renew_prod_id='0';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
 		$prod_name = array();
 		$prod_id = array();

@@ -43,7 +43,7 @@ function createTableIfNotExists(){
 				$query = "SELECT * FROM $table_name WHERE 1 LIMIT 1;";
 				$result = @mysqli_query($mysqli_connection,$query);
 				if($result == false){
-					mysqli_query($mysqli_connection,$table_create_query)or die("Cannot create table $table_name when querying :<br><font color=\"#FF0000\">$table_create_query</font> !!!".mysqli_error());
+					mysqli_query($mysqli_connection,$table_create_query)or die("Cannot create table $table_name when querying :<br><font color=\"#FF0000\">$table_create_query</font> !!!".mysqli_error($mysqli_connection));
 					$console .= "Table ".$table_name." has been created<br>";
 				}else{
 					// echo "Table ".$table_name." can be selected<br>";
@@ -54,29 +54,29 @@ function createTableIfNotExists(){
 
 		// Verify that the groups and config tables have at least one record. If not, create it using default values.
 		$query = "SELECT * FROM groups WHERE 1;";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error($mysqli_connection));
 		$num_rows = mysqli_num_rows($result);
 		if($num_rows < 1){
 			$query = "INSERT INTO groups (members) VALUES ('zigo')";
-			$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error());
+			$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error($mysqli_connection));
 			$console .= "Default values has been inserted in groups table.<br>";
 		}
 
 		$query = "SELECT * FROM config WHERE 1;";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error($mysqli_connection));
 		$num_rows = mysqli_num_rows($result);
 		if($num_rows < 1){
 			$query = "INSERT INTO config () VALUES ()";
-			$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error());
+			$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error($mysqli_connection));
 			$console .= "Default values has been inserted in config table.<br>";
 		}
 
 		$query = "SELECT * FROM cron_job WHERE 1;";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error($mysqli_connection));
 		$num_rows = mysqli_num_rows($result);
 		if($num_rows < 1){
 			$query = "INSERT INTO cron_job () VALUES ()";
-			$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error());
+			$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error($mysqli_connection));
 			$console .= "Default values has been inserted in cron_job table.<br>";
 		}
 	}
@@ -89,7 +89,7 @@ function getConfig(){
 	global $conf_mysql_db;
 	global $mysqli_connection;
 	$query = "SELECT * FROM config WHERE 1 LIMIT 1;";
-	$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error());
+	$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error($mysqli_connection));
 	$num_rows = mysqli_num_rows($result);
 	if($num_rows != 1)	die("No config values in table !!!");
 	$row = mysqli_fetch_array($result,MYSQLI_ASSOC);
@@ -132,19 +132,19 @@ if($conf_demo_version == 'yes'){
 	if(!isset($_SESSION["demo_version_has_started"]) || $_SESSION["demo_version_has_started"] != "started"){
 		$_SESSION["demo_version_has_started"] = "started";
 		$query = "DELETE FROM admin;";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error($mysqli_connection));
 		$query = "DELETE FROM clients;";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error($mysqli_connection));
 		$query = "DELETE FROM commande;";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error($mysqli_connection));
 		$query = "DELETE FROM domain;";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error($mysqli_connection));
 		$query = "DELETE FROM ftp_access;";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error($mysqli_connection));
 		$query = "DELETE FROM pop_access;";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error($mysqli_connection));
 		$query = "DELETE FROM subdomain;";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error());
+		$result = mysqli_query($mysqli_connection,$query)or die("Cannot query $query !!!".mysqli_error($mysqli_connection));
 
 		die("Welcom to DTC demo version. In demo version, all tables are erased at
 		launch time.<br><br>

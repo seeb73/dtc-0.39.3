@@ -3,13 +3,14 @@
 function user_cron_generate() {
 	global $conf_generated_file_path;
 	global $pro_mysql_user_cron_table;
+	global $myslqi_connection;
 	global $console;
 
 	$filename=$conf_generated_file_path.'/dtc-user-cron';
 	$console.="Generating $filename : ";
 
 	$q = "SELECT * FROM $pro_mysql_user_cron_table;";
-	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error());
+	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	$f = "# /etc/cron.d/dtc-user/cron\n\n";
 
