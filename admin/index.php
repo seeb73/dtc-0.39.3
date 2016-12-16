@@ -12,7 +12,7 @@ $adm_session = fetchSession("admin");
 $logged_in = isPseudoLoggedIn($adm_session);
 if ($logged_in["err"] != 0)
 {
-	if(function_exists("skin_ClientPage")){
+	if(function_exists("skin_AdminLogin")){
 		skin_AdminLogin();
 	}else{
 		skin_AdminLogin_Default();
