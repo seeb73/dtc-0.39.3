@@ -411,7 +411,7 @@ function sendCustomProductsReminderEmail($remaining_days,$file,$cust_heb_type_id
 ////////////////////////////////////////
 // Send reminders before expiration
 global $pro_mysql_custom_heb_types_table;
-global $myslqi_connection;
+global $mysqli_connection;
 
 $qsq = "SELECT id FROM $pro_mysql_custom_heb_types_table;";
 $rsq = mysqli_query($mysqli_connection,$qsq)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));

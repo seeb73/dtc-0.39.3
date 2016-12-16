@@ -107,7 +107,7 @@ function skin_LayoutAdminPage_Default (){
 	global $adm_pass;
 	global $conf_session_expir_minute;
 	global $pro_mysql_config_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $conf_skin;
 	global $top_commands;
 
@@ -213,7 +213,7 @@ function skin_Navbar_Default() {
 	global $adm_pass;
 
 	global $pro_mysql_admin_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	if(isset($adm_login) && isset($adm_pass)){
 		$added_logpass = "&adm_login=$adm_login&adm_pass=$adm_pass";

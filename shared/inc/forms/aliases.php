@@ -77,7 +77,7 @@ function drawAdminTools_Aliases($domain){
 function emailAliasesEditCallback ($id){
 	global $pro_mysql_pop_table;
 	global $pro_mysql_mailaliasgroup_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	
 	$q = "SELECT * FROM $pro_mysql_mailaliasgroup_table WHERE autoinc='$id';";
 	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
@@ -105,7 +105,7 @@ function emailAliasesCreateCallback ($id){
 	global $edit_domain;
 	global $pro_mysql_mailaliasgroup_table;
 	global $pro_mysql_pop_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	
 	$q = "SELECT * FROM $pro_mysql_mailaliasgroup_table WHERE autoinc='$id';";
 	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
@@ -140,7 +140,7 @@ function emailAliasesCreateCallback ($id){
 
 function emailAliasesDeleteCallback ($id){
 	global $pro_mysql_mailaliasgroup_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	
 	triggerMXListUpdate();
 	updateUsingCron("gen_qmail='yes', qmail_newu='yes'");

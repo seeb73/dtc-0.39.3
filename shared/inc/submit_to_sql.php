@@ -471,7 +471,7 @@ function validateWaitingUser($waiting_login_id){
 	global $pro_mysql_completedorders_table;
 	global $pro_mysql_domain_table;
 	global $pro_mysql_custom_heb_types_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	global $dtcshared_path;
 

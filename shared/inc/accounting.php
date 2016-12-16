@@ -304,7 +304,7 @@ function sum_ftp($webname){
 	global $pro_mysql_ftp_table;
 	global $conf_mysql_db;
 	global $pro_mysql_acc_ftp_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 //	mysqli_select_db($conf_mysql_db);
 ////////////////////////////////////////////////////////////////////////////////////
 // Sirhexalo: when you see this text, please erase it !!! and commit the file !!! //

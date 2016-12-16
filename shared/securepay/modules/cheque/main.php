@@ -12,7 +12,7 @@ function cheque_display_icon($pay_id,$amount,$item_name,$return_url,$use_recurri
 	global $paypal_account;
 	global $conf_administrative_site;
 	global $pro_mysql_pay_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $secpayconf_cheques_logo_url;
 
 	global $secpayconf_currency_letters;

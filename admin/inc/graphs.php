@@ -3,7 +3,7 @@
 function drawRrdtoolGraphs (){
 	global $rub;
 	global $pro_mysql_vps_server_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	if(!isset($_REQUEST["sousrub"]) || $_REQUEST["sousrub"] == ""){
 		$sousrub = "localserver";

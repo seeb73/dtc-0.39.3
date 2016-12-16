@@ -12,7 +12,7 @@ function drawReseller($admin){
 	global $adm_login;
 	global $adm_pass;
 	global $pro_mysql_admin_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	
 	global $conf_demo_version;
 	global $conf_post_or_get;

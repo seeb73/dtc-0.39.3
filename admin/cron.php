@@ -219,7 +219,7 @@ function checkTriggers($recipients){
 function updateAllDomainsStats(){
 	global $pro_mysql_admin_table;
 	global $pro_mysql_domain_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $conf_unix_type;
 
 	$query = "SELECT * FROM $pro_mysql_admin_table WHERE 1;";
@@ -725,7 +725,7 @@ function checkDisableAdmins() {
 
 function checkArchiveOrDeleteNewAdmins(){
 	global $pro_mysql_new_admin_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $conf_action_on_old_new_admin;
 	global $conf_new_admin_old_age;
 

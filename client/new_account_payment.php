@@ -57,7 +57,7 @@ if(function_exists("skin_NewAccountPage")){
 // Uppon error, $ret["form"] contains the select_user form and $ret["err"] == 1, plus $ret["mesg"] contains an error message
 function select_user(){
 	global $pro_mysql_new_admin_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	$ret = array( "err" => 0, "mesg" => "Query ok!", "form" => "");
 
 	if(!isset($_REQUEST['username']) && !isset($_REQUEST['password']) ){

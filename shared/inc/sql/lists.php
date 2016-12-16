@@ -319,7 +319,7 @@ function tunablesTextareaRequestCheck($ctrl_path,$tunable_name){
 function tunablesWABooleanRequestCheck($list_dir,$tunable_name){
 	global $adm_login;
 	global $pro_mysql_list_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $edit_domain;
 	$name = $_REQUEST["edit_mailbox"];
 	$admin_path = getAdminPath($adm_login);
@@ -377,7 +377,7 @@ function tunablesWABooleanRequestCheck($list_dir,$tunable_name){
 function tunablesWABooleanActionsRequestCheck($list_dir){
 	global $adm_login;
 	global $pro_mysql_list_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $edit_domain;
 	$name = $_REQUEST["edit_mailbox"];
 	$admin_path = getAdminPath($adm_login);

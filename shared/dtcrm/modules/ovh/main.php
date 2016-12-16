@@ -521,7 +521,7 @@ function ovh_registry_get_auth_code(){
 
 function ovh_registry_add_nick_handle($a){
 global $pro_mysql_handle_table;
-global $myslqi_connection;
+global $mysqli_connection;
 $ovh_nic_mdp = mdpauto();
 echo _("Your password : "), $ovh_nic_mdp;
 /*

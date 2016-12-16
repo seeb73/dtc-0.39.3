@@ -2,7 +2,7 @@
 
 function newWhois($domain_name,$owner_id,$billing_id,$admin_id,$teck_id,$period,$ns_ar,$registrar){
 	global $pro_mysql_domain_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	$y = date("Y");
 	$m = date("m");
@@ -30,7 +30,7 @@ function drawAdminTools_Whois($admin,$eddomain){
 
 	global $pro_mysql_handle_table;
 	global $pro_mysql_domain_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	global $conf_addr_primary_dns;
 	global $conf_addr_secondary_dns;

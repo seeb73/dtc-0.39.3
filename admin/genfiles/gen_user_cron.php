@@ -3,7 +3,7 @@
 function user_cron_generate() {
 	global $conf_generated_file_path;
 	global $pro_mysql_user_cron_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $console;
 
 	$filename=$conf_generated_file_path.'/dtc-user-cron';

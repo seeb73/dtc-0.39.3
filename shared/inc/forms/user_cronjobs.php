@@ -19,7 +19,7 @@ function drawAdminTools_User_CronJob($admin,$domain){
 	global $addrlink;
 	global $pro_mysql_user_cron_table;
 	global $pro_mysql_subdomain_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	$dom_name = $domain["name"];
 	checkLoginPassAndDomain($adm_login,$adm_pass,$dom_name);

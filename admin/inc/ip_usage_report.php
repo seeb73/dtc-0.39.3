@@ -41,7 +41,7 @@ function calculate_pool_size($netmask){
 
 function findPoolID($ip){
 	global $pro_mysql_ip_pool_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	$ip_calc = new Net_IPv4();
 	$ip_calc2 = new Net_IPv4();
@@ -100,7 +100,7 @@ function fullIPUsage() {
 	global $pro_mysql_vps_ip_table;
 	global $pro_mysql_dedicated_ips_table;
 	global $pro_mysql_ssl_ips_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	$q = "SELECT * FROM $pro_mysql_ip_pool_table WHERE 1;";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));

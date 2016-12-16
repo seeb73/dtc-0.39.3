@@ -370,7 +370,7 @@ function drawDedicatedIPConfig(){
 	global $pro_mysql_dedicated_ips_table;
 	global $pro_mysql_dedicated_table;
 	global $pro_mysql_ip_pool_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	$out = "";
 
 	$q = "SELECT server_hostname FROM $pro_mysql_dedicated_table ORDER BY server_hostname";
@@ -441,7 +441,7 @@ function drawIPPoolConfig(){
 	global $pro_mysql_dedicated_ips_table;
 	global $pro_mysql_vps_ip_table;
 	global $pro_mysql_cronjob_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $conf_post_or_get;
 
 	global $rub;
@@ -540,7 +540,7 @@ function drawIPPoolConfig(){
 
 function drawSSLIPConfig(){
 	global $pro_mysql_ssl_ips_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $rub;
 	global $sousrub;
 
@@ -867,7 +867,7 @@ function checkIPAssigned(){
 	global $pro_mysql_vps_server_table;
 	global $pro_mysql_dedicated_ips_table;
 	global $pro_mysql_ssl_ips_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $action_error_txt;
 
 
@@ -977,7 +977,7 @@ function drawVPSServerConfig(){
 	global $pro_mysql_list_table;
 	global $pro_mysql_vps_server_lists_table;
 	global $pro_mysql_ip_pool_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $rub;
 	global $sousrub;
 	global $cc_code_array;
@@ -1133,7 +1133,7 @@ function drawVPSServerConfig(){
 
 function drawRegistrySelection(){
 	global $pro_mysql_registry_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $conf_post_or_get;
 
 	$out = "<h3>". _("Registry selection") ."</h3>";
@@ -1586,7 +1586,7 @@ function drawNetworkConfig(){
 function namedEditionCallback(){
 	global $pro_mysql_domain_table;
 	global $pro_mysql_cronjob_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	$q = "UPDATE $pro_mysql_domain_table SET generate_flag='yes';";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$q = "UPDATE $pro_mysql_cronjob_table SET reload_named='yes', gen_named='yes';";
@@ -1681,7 +1681,7 @@ transfers separated by &quot;|&quot; (pipe)<br>
 
 function drawBackupConfig(){
         global $pro_mysql_backup_table;
-        global $myslqi_connection;
+        global $mysqli_connection;
 
 	$out = "";
 
@@ -1820,7 +1820,7 @@ function drawRegistryApiConfig(){
 
 	global $pro_mysql_config_table;
 	global $pro_mysql_registrar_domains_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $allTLD;
 	global $registry_api_modules;
 
@@ -1890,7 +1890,7 @@ function drawDTCpayConfig(){
 	global $pro_mysql_secpayconf_table;
 	global $pro_mysql_custom_fld_table;
 	global $pro_mysql_config_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	$out = "";
 
@@ -2395,7 +2395,7 @@ function drawDTCradiusConfig(){
 	global $pro_mysql_radreply_table;
 	global $pro_mysql_product_table;
 	global $pro_mysql_dedicated_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $lang;
 
 	$out = "WARNING!!! All parameteres (specially Attributes) set here have NO validation at all, so be careful.<BR>Freeradius will have unexpected behavoiurs if you do mistakes or errors here, and may be it can't start.";
@@ -2791,7 +2791,7 @@ All of the DTC daemon config files defined on this page will be saved here:"),
 
 function drawCompaniesConfig(){
 	global $pro_mysql_companies_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $cc_code_array;
 	global $conf_generated_file_path;
 
@@ -2861,7 +2861,7 @@ function drawCompaniesConfig(){
 function drawInvoicingConfig(){
 	global $pro_mysql_companies_table;
 	global $pro_mysql_invoicing_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $cc_code_array;
 
 	$out = "";

@@ -4,7 +4,7 @@ function checkLoginPassSubmitToSQL(){
 	global $adm_login;
 	global $adm_pass;
 	global $pro_mysql_admin_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login' AND (adm_pass='$adm_pass' OR adm_pass=SHA1('$adm_pass'));";
 	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error($mysqli_connection));

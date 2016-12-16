@@ -11,7 +11,7 @@ function abitab_calculate_fee($amount){
 function abitab_display_icon($pay_id,$amount,$item_name,$return_url,$use_recurring = "no"){
 	global $conf_administrative_site;
 	global $pro_mysql_pay_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	global $secpayconf_currency_letters;
 	global $secpayconf_abitab_logo_url;

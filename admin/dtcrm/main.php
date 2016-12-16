@@ -173,7 +173,7 @@ function DTCRMclientAdmins(){
 function DTCRMeditClients(){
 	global $pro_mysql_client_table;
 	global $pro_mysql_custom_fld_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $conf_post_or_get;
 	global $mysqli_connection;
 

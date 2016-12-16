@@ -14,7 +14,7 @@ function drawImportedMail($mailbox){
 	global $adm_email_pass;
 	global $errTxt;
 	global $pro_mysql_fetchmail_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	$mydomain = $mailbox["data"]["mbox_host"];
 	$myuserid = $mailbox["data"]["id"];

@@ -32,7 +32,7 @@ function recover_enter_login_or_email(){
 function select_login_out_of_email(){
 	global $pro_mysql_admin_table;
 	global $pro_mysql_client_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	if(!isValidEmail($_REQUEST["adm_lost_email"])){
 		return _("Invalid email address.");
@@ -56,7 +56,7 @@ function select_login_out_of_email(){
 function send_password_recover_token(){
 	global $pro_mysql_admin_table;
 	global $pro_mysql_client_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $conf_administrative_site;
 	global $conf_webmaster_email_addr;
 	global $conf_message_subject_header;
@@ -119,7 +119,7 @@ function do_recovery_new_pass_form(){
 
 function do_recovery_validate_recovery(){
 	global $pro_mysql_admin_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $conf_enforce_adm_encryption;
 	if( !isDTCLogin($_REQUEST["adm_lost_login"])){
 		return _("Login format incorrect");

@@ -28,7 +28,7 @@ function worldpay_display_icon($product_id,$amount,$item_name,$return_url,$use_r
 	global $wp_callback_url;
 
 	global $pro_mysql_pay_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='$pay_id';";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query: \"$q\" !".mysqli_error($mysqli_connection).__FILE__." line ".__LINE__);

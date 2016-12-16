@@ -2,7 +2,7 @@
 
 function getContactsArrayFromID($owner_id,$billing_id,$admin_id,$tech_id){
 	global $pro_mysql_handle_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	$query = "SELECT * FROM $pro_mysql_handle_table WHERE id='$owner_id';";
 	$result = mysqli_query($mysqli_connection,$query)or die("Cannot query \"$query\" !!! ".mysqli_error($mysqli_connection));
 	if(mysqli_num_rows($result) != 1)	die("Handle ID not found !");
@@ -31,7 +31,7 @@ function whoisHandleSelection($admin,$show_info="no",$owner=-1,$billing=-1,$admi
 	global $addrlink;
 
 	global $pro_mysql_handle_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	$link_create = "<a href=\"?adm_login=$adm_login&adm_pass=$adm_pass&addrlink=myaccount/nickhandles\">". _("Create a new handle") ."</a>";
 
@@ -201,7 +201,7 @@ _("Email: ") . $infoz["email"] ."<br>";
 
 function nickHandleCreateCallback($id){
 	global $pro_mysql_handle_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	$q = "SELECT * FROM $pro_mysql_handle_table WHERE id='$id';";
 	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
@@ -214,7 +214,7 @@ function nickHandleCreateCallback($id){
 
 function nickHandleDeleteCallback($id){
 	global $pro_mysql_handle_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	$q = "SELECT * FROM $pro_mysql_handle_table WHERE id='$id';";
 	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
@@ -227,7 +227,7 @@ function nickHandleDeleteCallback($id){
 
 function nickHandleEditCallback($id){
 	global $pro_mysql_handle_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	$q = "SELECT * FROM $pro_mysql_handle_table WHERE id='$id';";
 	$r = mysqli_query($mysqli_connection,$q)or die ("Cannot query $q line: ".__LINE__." file ".__FILE__." sql said:" .mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
@@ -250,7 +250,7 @@ function drawAdminTools_NickHandles($admin){
 
 	global $hdl_id;
 	global $pro_mysql_handle_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	$dsc = array(
 		"title" => _("List of your whois nick handles:"),

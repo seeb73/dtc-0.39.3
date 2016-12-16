@@ -8,7 +8,7 @@ function drawAdminTools_NameServers($admin){
 	global $pro_mysql_subdomain_table;
 	global $pro_mysql_nameservers_table;
 	global $pro_mysql_domain_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $conf_post_or_get;
 
 	$out = "";

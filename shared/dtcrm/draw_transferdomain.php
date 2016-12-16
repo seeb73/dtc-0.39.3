@@ -9,7 +9,7 @@ function drawNameTransfer($admin,$given_fqdn="none"){
 
 	global $pro_mysql_domain_table;
 	global $pro_mysql_client_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $registry_api_modules;
 
 	global $form_enter_dns_infos;

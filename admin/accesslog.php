@@ -15,7 +15,7 @@ function delete_old_files_in_tmp(){
 	global $conf_mysql_db;
 	global $conf_webalizer_country_graph;
 	global $pro_mysql_domain_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $dtcshared_path;
 	global $conf_generated_file_path;
 
@@ -48,7 +48,7 @@ function make_stats(){
 	global $conf_mysql_db;
 	global $conf_webalizer_country_graph;
 	global $pro_mysql_domain_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $dtcshared_path;
 	global $conf_generated_file_path;
 
@@ -260,7 +260,7 @@ fi
 function make_log_archive (){
 	global $conf_mysql_db;
 	global $pro_mysql_domain_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $dtcshared_path;
 
 	$today_midnight = mktime(0,0,0);

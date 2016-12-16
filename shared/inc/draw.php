@@ -49,7 +49,7 @@ function drawPasswordChange(){
 	global $adm_pass;
 	global $addrlink;
 	global $pro_mysql_admin_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $conf_enforce_adm_encryption;
 	global $conf_post_or_get;
 

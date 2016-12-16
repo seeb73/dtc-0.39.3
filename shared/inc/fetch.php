@@ -20,7 +20,7 @@ function fetchTable($query){
 
 function fetchMailboxInfos($adm_email_login,$adm_email_pass){
 	global $pro_mysql_pop_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	$ret["err"] = 0;
 	$ret["mesg"] = "No error";
@@ -47,7 +47,7 @@ function fetchMailboxInfos($adm_email_login,$adm_email_pass){
 
 function fetchCommands($id_client){
 	global $pro_mysql_command_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	$ret["err"] = 0;
 	$ret["mesg"] = "No error";

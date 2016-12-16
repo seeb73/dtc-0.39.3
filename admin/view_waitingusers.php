@@ -103,7 +103,7 @@ if($n != 1){
 	global $pro_mysql_product_table;
 	global $pro_mysql_vps_ip_table;
 	global $pro_mysql_vps_server_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $conf_post_or_get;
 	
 	$prod_popup = "";

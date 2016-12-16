@@ -360,7 +360,7 @@ function drawAdminTools_MyAccount($admin){
 		if ($afftotal) {
 
 			global $pro_mysql_completedorders_table;
-			global $myslqi_connection;
+			global $mysqli_connection;
 
 			$sql = "SELECT * FROM affiliate_payments INNER JOIN $pro_mysql_completedorders_table on (affiliate_payments.order_id = $pro_mysql_completedorders_table.id) WHERE adm_login = '{$adm_login}' and date_paid IS NULL; ";
 			$result = mysqli_query($mysqli_connection,$sql);

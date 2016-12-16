@@ -104,7 +104,7 @@ function paynowButton($pay_id,$amount,$item_name,$return_url,$vat_rate=0,$use_re
 // Return the amount of money that has been added to the account if payid has been validated
 function isPayIDValidated($pay_id){
 	global $pro_mysql_pay_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='$pay_id' AND valid='yes';";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! ".mysqli_error($mysqli_connection)." in file ".__FILE__." line ".__LINE__);
 	$n = mysqli_insert_id($mysqli_connection);
@@ -131,7 +131,7 @@ function createCreditCardPaiementID($amount_paid,$client_id,$label,$new_account=
 }
 function setPaiemntAsPending($pay_id,$reason,$paiement_type="online",$secpay_site="paypal"){
 	global $pro_mysql_pay_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	$q = "SELECT * FROM $pro_mysql_pay_table WHERE id='$pay_id';";
 	logPay("Querying: $q");
 	$r = mysqli_query($mysqli_connection,$q)or die(logPay("Cannot query \"$q\" ! ".mysqli_error($mysqli_connection)." in file ".__FILE__." line ".__LINE__));

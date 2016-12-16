@@ -20,7 +20,7 @@ function mail_account_generate_qmail(){
 	global $pro_mysql_admin_table;
 	global $pro_mysql_subdomain_table;
 	global $pro_mysql_backup_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	global $console;
 

@@ -2,7 +2,7 @@
 
 function sshAccountsCallback ($id){
 	global $pro_mysql_ssh_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $conf_dtc_system_uid;
 	global $conf_dtc_system_gid;
 
@@ -25,7 +25,7 @@ function drawAdminTools_SSH($domain,$adm_path){
 	global $conf_hide_password;
 	global $conf_domain_based_ssh_logins;
 	global $pro_mysql_ssh_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	$txt = "";
 

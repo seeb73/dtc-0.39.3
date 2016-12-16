@@ -24,7 +24,7 @@ function register_user($adding_service="no"){
 	global $pro_mysql_domain_table;
 	global $pro_mysql_dedicated_table;
 	global $pro_mysql_custom_product_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $conf_send_registration_mail_to_customer;
 	global $conf_registration_mail_subject;
 	global $conf_include_payment_on_reg_mail;
@@ -1087,7 +1087,7 @@ function new_account_payment($reguser){
 	global $secpayconf_currency_letters;
 	global $secpayconf_use_paypal_recurring;
 	global $pro_mysql_companies_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	$form = "";
 	$print_form = "yes";

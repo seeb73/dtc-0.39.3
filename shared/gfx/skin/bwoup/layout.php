@@ -448,7 +448,7 @@ function skin_LayoutAdminPage (){
 	global $conf_session_expir_minute;
 	global $pro_mysql_config_table;
 	global $pro_mysql_tik_admins_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $conf_skin;
 	global $mysqli_connection;
 

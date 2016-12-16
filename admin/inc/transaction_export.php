@@ -8,7 +8,7 @@ function exportTransactions(){
 	global $conf_administrative_site;
 	global $conf_default_company_invoicing;
 	global $pro_mysql_companies_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $cc_europe;
 	get_secpay_conf();
 	//$secpayconf_currency_letters = "EUR";
@@ -294,7 +294,7 @@ function exportTransactions_vat_report($fmonth,$lmonth){
 	global $conf_administrative_site;
 	global $conf_default_company_invoicing;
 	global $pro_mysql_companies_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $cc_europe;
 	get_secpay_conf();
 

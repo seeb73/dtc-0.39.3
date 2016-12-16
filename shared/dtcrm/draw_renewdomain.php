@@ -7,7 +7,7 @@ function drawNameRenew($domain_name,$admin){
 	global $registry_api_modules;
 	global $pro_mysql_client_table;
 	global $pro_mysql_domain_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $conf_post_or_get;
 	
 	$form_start = "<form method=\"$conf_post_or_get\" action=\"?\">

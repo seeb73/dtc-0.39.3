@@ -1,7 +1,7 @@
 <?php
 global $pro_mysql_raduser_table;
 global $pro_mysql_dedicated_table;
-global $myslqi_connection;
+global $mysqli_connection;
 
 if(isset($_REQUEST["action"]) && ($_REQUEST["action"] == "set_dedicated_ip_rdns")){
 	checkLoginPass($adm_login,$adm_pass);

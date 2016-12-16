@@ -60,7 +60,7 @@ function getDomainData($domain,$adm_login){
 	global $pro_mysql_domain_table;
 	global $pro_mysql_ssh_table;
 	global $pro_mysql_subdomain_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	unset($dom);
 	$dom = array();
@@ -113,7 +113,7 @@ function exportDomain($domain_name,$adm_login){
 
 function exportAllDomain($adm_login){
 	global $pro_mysql_domain_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 
 	$dom_ar = array(
 		"domains" => array()

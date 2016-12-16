@@ -539,7 +539,7 @@ function getListOptionsList($ctrl_path,$tunable_name,$tunable_title){
 
 function getListOptionsWABoolean($tunable_name, $tunable_title){
 	global $pro_mysql_list_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $edit_domain;
 	$name = $_REQUEST["edit_mailbox"];
 	$test_query = "SELECT webarchive FROM $pro_mysql_list_table	WHERE domain='$edit_domain' AND name='$name' LIMIT 1";

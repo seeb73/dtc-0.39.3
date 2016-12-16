@@ -3,7 +3,7 @@
 function nagios_generate(){
 	global $pro_mysql_vps_table;
 	global $pro_mysql_vps_ip_table;
-	global $myslqi_connection;
+	global $mysqli_connection;
 	global $conf_main_domain;
 
 	$agent_title  = "DTC Services Monitor";
