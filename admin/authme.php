@@ -27,7 +27,7 @@ function isPseudoLoggedIn($adm_session){
 	$ret["err"] = 0;
 	$ret["mesg"]=_("No error");
 	
-	if ($_REQUEST["logout"]=="true")
+	if (!empty($_REQUEST["logout"]) && $_REQUEST["logout"]=="true")
 	{		
 		unset($_COOKIE['dtcsessioncookie']);
 		setcookie('dtcsessioncookie', null, -1, '/');
@@ -38,7 +38,10 @@ function isPseudoLoggedIn($adm_session){
 	if (!isset($adm_session["session"]["session_key"]) || !$adm_session["session"]["session_key"])
 	{
 		// see if we have a session cookie in our browser, that hasn't been stored into the DB
-		$cookie = $_COOKIE["dtcsessioncookie"];
+		if (!empty($_COOKIE["dtcsessioncookie"]))
+		{
+			$cookie = $_COOKIE["dtcsessioncookie"];
+		}
 		if (isset($cookie))
 		{
 			$session_key = $cookie;
@@ -56,7 +59,7 @@ function isPseudoLoggedIn($adm_session){
 		$adm_session["session"]["expiry"] = $session_expiry;
 	}
 	// if we have already got a pseudo login in our session, use that login
-	if ($adm_session["session"]["pseudo"])
+	if (!empty($adm_session["session"]["pseudo"]))
 	{
 		$pseudo_login = $adm_session["session"]["pseudo"];
 	}

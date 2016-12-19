@@ -499,9 +499,17 @@ function fetchAdminData($adm_session,$adm_login,$adm_input_pass){
 		$date_now = new DateTime("now");
 		// if we have a session passed in, we need to validate our session is valid, and has access to $adm_login
 		// user_access_list * means access all admins
-		if ($session_expiry > $date_now && (in_array("*", $adm_session["user_access_list"]) || in_array($adm_login, $adm_session["user_access_list"])))
+		if ($panel_type == "admin")
 		{
-			$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='". $adm_session["session"]["adm_login"] ."';";
+			$login_type = "pseudo";
+		}
+		else
+		{
+			$login_type = "adm_login";
+		}
+		if ($session_expiry > $date_now && (in_array("*", $adm_session["user_access_list"]) || in_array($adm_session["session"][$login_type], $adm_session["user_access_list"])))
+		{
+			$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='". $adm_login ."';";
 			$result = mysqli_query($mysqli_connection,$query);
 			if (!$result){
 				$ret["err"] = 1;
@@ -1174,7 +1182,13 @@ function fetchSession($panel_type = "client"){
 				array_push($adm_session["roles"], $row);
 			}
 		}
-		
+
+		// if we don't have any roles defined in the DB, assume we are a normal admin
+		if (empty($adm_session["roles"]))
+		{
+			$adm_session["roles"] = array (array ( "code" =>  "admin" ));
+		}
+	
 		foreach ($adm_session["roles"] as $role)
 		{
 			if ($role["code"] == "admin")
@@ -1188,23 +1202,34 @@ function fetchSession($panel_type = "client"){
 				// root_admin role == access the whole panel
 				$adm_session["user_access_list"] = array( "*" );
 			}
-			// add the rest of the permissions to the session permissions table
-			$query = "SELECT * FROM $pro_mysql_rolepermissions_table WHERE roles_id=" . $role["id"] . ";";
-			$result = mysqli_query($mysqli_connection,$query);
-			if ($result){
-				$row = mysqli_fetch_array($result);
-				if (!isset($adm_session["permissions"]))
-				{
-					$adm_session["permissions"] = $row;
-				}
-				else
-				{
-					array_push($adm_session["permissions"], $row);
+			else
+			{
+				$adm_session["user_access_list"] = array( $adm_session["session"][$login_type] );
+			}
+			if (!empty($role["id"]))
+			{
+				// add the rest of the permissions to the session permissions table
+				$query = "SELECT * FROM $pro_mysql_rolepermissions_table WHERE roles_id=" . $role["id"] . ";";
+				$result = mysqli_query($mysqli_connection,$query);
+				if ($result){
+					$row = mysqli_fetch_array($result);
+					if (!isset($adm_session["permissions"]))
+					{
+						$adm_session["permissions"] = $row;
+					}
+					else
+					{
+						array_push($adm_session["permissions"], $row);
+					}
 				}
 			}
 		}
 	}
 
+	if (empty($adm_session["user_access_list"]))
+	{
+		$adm_session["user_access_list"] = array( $adm_session["session"][$login_type] );
+	}
 	
 	return $adm_session;
 	

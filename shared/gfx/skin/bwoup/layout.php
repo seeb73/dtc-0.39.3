@@ -450,7 +450,6 @@ function skin_LayoutAdminPage (){
 	global $pro_mysql_tik_admins_table;
 	global $mysqli_connection;
 	global $conf_skin;
-	global $mysqli_connection;
 
 	global $top_commands;
 
@@ -550,8 +549,13 @@ function skin_LayoutAdminPage (){
 			$rand = getRandomValue();
 			$adm_random_pass = $rand;
 			$expirationTIME = time() + (60 * $conf_session_expir_minute);
-			$q = "UPDATE $pro_mysql_tik_admins_table SET pass_next_req='$rand', pass_expire='$expirationTIME' WHERE pseudo='".$_SERVER["PHP_AUTH_USER"]."';";
-			$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." !");
+
+			// only write the new random password if we still have a PHP authenticated user here
+			if (!empty($_SERVER["PHP_AUTH_USER"]))
+			{
+				$q = "UPDATE $pro_mysql_tik_admins_table SET pass_next_req='$rand', pass_expire='$expirationTIME' WHERE pseudo='".$_SERVER["PHP_AUTH_USER"]."';";
+				$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." !");
+			}
 		}
 		$skinedConsole = '<table cellpadding="0" cellspacing="0" class="console">
 	  <tr><td class="console_title">'. _("Console output") .' :</td>
@@ -627,7 +631,7 @@ function bwoupUserEditForms($adm_login,$adm_pass){
 
 	$adm_session = fetchSession($panel_type);
 
-	if((isset($adm_session) && $adm_session["session"]["adm_login"] != "")|| (isset($adm_login) && $adm_login != "" && isset($adm_pass) && $adm_pass != "")){
+	if((!empty($adm_session["session"]) && !empty($adm_session["session"]["adm_login"])) || (isset($adm_login) && $adm_login != "" && isset($adm_pass) && $adm_pass != "")){
 		// Fetch all the selected user informations, Print a nice error message if failure.
 		$admin = fetchAdmin($adm_session,$adm_login,$adm_pass);
 		if(isset($adm_random_pass)){
@@ -671,6 +675,7 @@ function bwoupUserEditForms($adm_login,$adm_pass){
 		//fix up the $adm_login in case it changed because of session vars:
 		//in case users play silly bugger with the "GET" variables
 		$adm_login = $admin["info"]["adm_login"];
+
 
 		// Draw the html forms
 		if(isset($rub) && $rub == "adminedit"){

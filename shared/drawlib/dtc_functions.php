@@ -467,24 +467,49 @@ function checkLoginPassAndDomain($adm_login,$adm_pass,$domain_name){
 	global $pro_mysql_tik_admins_table;
 	global $mysqli_connection;
 
-	if(strlen($adm_pass) > 16){
-	}
-
-	$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login' AND ((adm_pass='$adm_pass' OR adm_pass=SHA1('$adm_pass')) OR (pass_next_req='$adm_pass' AND pass_expire > '".time()."'));";
-	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error($mysqli_connection));
-	$num_rows = mysqli_num_rows($result);
-	if($num_rows != 1){
-		$query = "SELECT * FROM $pro_mysql_tik_admins_table WHERE pass_next_req='$adm_pass' AND pass_expire > '".time()."';";
-		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" !".mysqli_error($mysqli_connection));
-		$num_rows = mysqli_num_rows($result);
-		if($num_rows != 1){
-			die("User or password is incorrect !");
+	$adm_session = fetchSession();
+	if (isset($adm_session) && !empty($adm_session["session"]))
+	{
+		$session_expiry = new DateTime($adm_session["session"]["expiry"]);
+		$date_now = new DateTime("now");
+		// if we have a session passed in, we need to validate our session is valid, and has access to $adm_login
+		// user_access_list * means access all admins
+		if ($session_expiry > $date_now && (in_array("*", $adm_session["user_access_list"]) || in_array($adm_login, $adm_session["user_access_list"])))
+		{
+			$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='". $adm_session["session"]["adm_login"] ."';";
+			$result = mysqli_query($mysqli_connection,$query);
+			if (!$result){
+				$ret["err"] = 1;
+				$ret["mesg"] = "Cannot execute query for password line ".__LINE__." file ".__FILE__." (MySQL error message removed for security reasons).";
+				return $ret;
+			}
+			$row = mysqli_fetch_array($result);
+			if (!$row){
+				$ret["err"] = 2;
+				$ret["mesg"]= _("Cannot fetch user:")." "._("either your username or password is not valid, or your session has expired (timed out).");
+				return $ret;
+			}
 		}
-		$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
+
+	}
+	else
+	{
+		$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login' AND ((adm_pass='$adm_pass' OR adm_pass=SHA1('$adm_pass')) OR (pass_next_req='$adm_pass' AND pass_expire > '".time()."'));";
 		$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error($mysqli_connection));
 		$num_rows = mysqli_num_rows($result);
 		if($num_rows != 1){
-			die("User or password is incorrect !");
+			$query = "SELECT * FROM $pro_mysql_tik_admins_table WHERE pass_next_req='$adm_pass' AND pass_expire > '".time()."';";
+			$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" !".mysqli_error($mysqli_connection));
+			$num_rows = mysqli_num_rows($result);
+			if($num_rows != 1){
+				die("User or password is incorrect !");
+			}
+			$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='$adm_login';";
+			$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\" line ".__LINE__." file ".__FILE__." !".mysqli_error($mysqli_connection));
+			$num_rows = mysqli_num_rows($result);
+			if($num_rows != 1){
+				die("User or password is incorrect !");
+			}
 		}
 	}
 
