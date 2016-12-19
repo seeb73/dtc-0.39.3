@@ -1650,7 +1650,7 @@ $dtc_database = array(
 		),
 		"primary" => "(id)",
 		"keys" => array(
-			"adm_login" => "(adm_login)",
+			"adm_login_pseudo" => "(adm_login,pseudo)"
 		)
 	),
 	"rolepermissions" => array(
