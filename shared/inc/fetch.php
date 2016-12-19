@@ -75,7 +75,7 @@ function fetchCommands($id_client){
 }
 
 function fetchAdminInfo($adm_login){
-    global $pro_mysql_admin_table;
+    	global $pro_mysql_admin_table;
 	global $mysqli_connection;
 
 	$ret["err"] = 0;
@@ -507,7 +507,7 @@ function fetchAdminData($adm_session,$adm_login,$adm_input_pass){
 		{
 			$login_type = "adm_login";
 		}
-		if ($session_expiry > $date_now && (in_array("*", $adm_session["user_access_list"]) || in_array($adm_session["session"][$login_type], $adm_session["user_access_list"])))
+		if ($session_expiry > $date_now && (in_array("*", $adm_session["user_access_list"]) || in_array($adm_login, $adm_session["user_access_list"])))
 		{
 			$query = "SELECT * FROM $pro_mysql_admin_table WHERE adm_login='". $adm_login ."';";
 			$result = mysqli_query($mysqli_connection,$query);
@@ -522,6 +522,12 @@ function fetchAdminData($adm_session,$adm_login,$adm_input_pass){
 				$ret["mesg"]= _("Cannot fetch user:")." "._("either your username or password is not valid, or your session has expired (timed out).");
 				return $ret;
 			}
+		}
+		else
+		{
+			$ret["err"] = 33;
+			$ret["mesg"]= _("Cannot fetch user:")." "._("either your username or password is not valid, or your session has expired (timed out).");
+			return $ret;
 		}
 		
 	}
