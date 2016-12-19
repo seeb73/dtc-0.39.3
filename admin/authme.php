@@ -23,6 +23,8 @@
 function isPseudoLoggedIn($adm_session){
 	global $mysqli_connection;
 	global $pro_mysql_sessions_table;
+	global $pro_mysql_userroles_table;
+	global $pro_mysql_roles_table;
 	global $pseudo_login;
 	$ret["err"] = 0;
 	$ret["mesg"]=_("No error");
@@ -123,7 +125,7 @@ function isPseudoLoggedIn($adm_session){
 		}
 		
 		// since we have authenticated here as a tik_admin, make sure we have the correct userroles setup
-		$adm_query = "INSERT IGNORE INTO $pro_mysql_userroles_table (pseudo,role_id) values ('". $adm_session["session"]["pseudo"] ."', (select id from roles where code='root_admin'))";
+		$adm_query = "INSERT IGNORE INTO $pro_mysql_userroles_table (pseudo,role_id) values ('". $adm_session["session"]["pseudo"] ."', (select id from $pro_mysql_roles_table where code='root_admin'))";
 		mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 		
 		// expire out sessions that are older than 60 days
