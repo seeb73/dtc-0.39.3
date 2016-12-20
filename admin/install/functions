@@ -1462,7 +1462,8 @@ enableApache2Modules () {
 
 createApacheAdminProtectedDir () {
 	echoIfVerbose "Creating "$PATH_DTC_ADMIN"/.htaccess file."
-	echo "DirectoryIndex index.php
+	if [ "$conf_apache_version" != "2.4" ]; then
+		echo "DirectoryIndex index.php
 <Files *>
 	Order deny,allow
 	deny from all
@@ -1483,6 +1484,28 @@ createApacheAdminProtectedDir () {
 	allow from all
 </FilesMatch>
 " >$PATH_DTC_ADMIN/.htaccess
+	
+	else
+		echo "DirectoryIndex index.php
+<Files *>
+	Require all denied
+</Files>
+
+<FilesMatch \"^\$\">
+	Require all granted
+</FilesMatch>
+
+<FilesMatch \"\\.(|gif|jpg|jpeg|png|ico|css|js)\$\">
+	Require all granted
+</FilesMatch>
+
+<FilesMatch ^(index\\.php|vps_status\\.php|show_attachment\\.php|logPushlet\\.php|bw_per_month\\.php|deamons_state\\.php|vm-cpu\\.php|vm-net-all\\.php|vps_stats_hdd\\.php|cpugraph\\.php|logPushlet\\.php|memgraph\\.php|view_waitingusers\\.php|vm-io-all\\.php|vm-net\\.php|vps_stats_network\\.php|mailgraph\\.php|netusegraph\\.php|active_prods_graph\\.php|vm-cpu-all\\.php|vm-io\\.php|vps_stats_cpu\\.php|vps_stats_swap\\.php)\$>
+	Require all granted
+</FilesMatch>
+Header always unset X-Frame-Options
+Header set X-Frame-Options SAMEORIGIN
+" >$PATH_DTC_ADMIN/.htaccess
+	fi
 }
 
 modifyHTTPD_CONF () {
