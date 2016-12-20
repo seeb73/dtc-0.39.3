@@ -101,8 +101,14 @@ $body
 	$content .= $footer_admin_reply;
 
 	$tocustomer_subject = readCustomizedMessage("tickets/subject_admin_reply",$adm_login);
+	$adm_session = fetchSession();
+	$pseudo_user = "unknown";
+	if (!empty($adm_session["session"]["pseudo"]))
+	{
+		$pseudo_user = $adm_session["session"]["pseudo"];
+	}
 
-	$q = "SELECT * FROM $pro_mysql_tik_admins_table WHERE pseudo='".$_SERVER["PHP_AUTH_USER"]."';";
+	$q = "SELECT * FROM $pro_mysql_tik_admins_table WHERE pseudo='".$pseudo_user."';";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 	$n = mysqli_num_rows($r);
 	if($n != 1){
@@ -212,6 +218,8 @@ function drawNewAdminForm(){
 	global $mysqli_connection;
 
 	get_secpay_conf();
+
+	$adm_session = fetchSession();
 
 	$out = "";
 	// Resolve support ticket stuff
@@ -370,11 +378,16 @@ function drawNewAdminForm(){
 			$closed = "no";
 		}
 		if(isset($_REQUEST["answer"]) || isset($_REQUEST["answer_close"])){
-			$qps = "SELECT * FROM $pro_mysql_tik_admins_table WHERE pseudo='".$_SERVER["PHP_AUTH_USER"]."';";
+			$pseudo_user = "unknown";
+			if (!empty($adm_session["session"]["pseudo"]))
+			{
+				$pseudo_user = $adm_session["session"]["pseudo"];
+			}
+			$qps = "SELECT * FROM $pro_mysql_tik_admins_table WHERE pseudo='".$pseudo_user."';";
 			$rps = mysqli_query($mysqli_connection,$qps)or die("Cannot query $qps line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 			$nps = mysqli_num_rows($rps);
 			if($nps != 1){
-				die("Ticket admin not found line ".__LINE__." file ".__FILE__);
+				die("Ticket admin $pseudo_user not found ($nps) line ".__LINE__." file ".__FILE__);
 			}
 			$aps = mysqli_fetch_array($rps);
 			$pseudo = $aps["pseudo"];

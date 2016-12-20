@@ -322,7 +322,7 @@ function renew_form(){
 			return $ret;
 		}
 		$client_id = $_REQUEST["vps_id"];
-		$q = "SELECT vps_server_name,vps_xen_name,product_id,country_code  FROM $pro_mysql_vps_table,$pro_mysql_vps_server_table
+		$q = "SELECT vps_server_hostname,vps_xen_name,product_id,country_code  FROM $pro_mysql_vps_table,$pro_mysql_vps_server_table
 		WHERE $pro_mysql_vps_table.id='".$_REQUEST["vps_id"]."' AND $pro_mysql_vps_server_table.hostname = $pro_mysql_vps_table.vps_server_hostname";
 		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said: ".mysqli_error($mysqli_connection));
 		$n = mysqli_num_rows($r);
