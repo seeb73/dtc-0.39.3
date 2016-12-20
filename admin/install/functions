@@ -1383,7 +1383,7 @@ createApachePIDSymLink () {
 
 enableApache2Modules () {
 	if [ ""$conf_apache_version = 2 -o ""$conf_apache_version = 2.4 -o ""$conf_apache_version = 2.2 ] ; then
-		echoIfVerbose "-> Enabling mod rewrite, mod spelling and modssl for apache 2"
+		echoIfVerbose "-> Enabling mod rewrite, mod spelling, headers and modssl for apache 2"
 		# Activate mod_rewrite
 		if [ -f /etc/apache2/mods-available/rewrite.load ] ; then
 			if [ -d /etc/apache2/mods-enabled ] ; then
@@ -1428,6 +1428,18 @@ enableApache2Modules () {
 						a2enmod ssl || true
 					else
 						ln -s ../mods-available/ssl.load /etc/apache2/mods-enabled/ssl.load
+					fi
+				fi
+			fi
+		fi
+		# Activate mod_headers
+		if [ -f /etc/apache2/mods-available/headers.load ] ; then
+			if [ -d /etc/apache2/mods-enabled ] ; then
+				if ! [ -e /etc/apache2/mods-enabled/headers.load ] ; then
+					if [ -x /usr/sbin/a2enmod ] ; then
+						a2enmod headers || true
+					else
+						ln -s ../mods-available/headers.load /etc/apache2/mods-enabled/headers.load
 					fi
 				fi
 			fi
