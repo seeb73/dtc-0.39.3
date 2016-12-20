@@ -310,6 +310,9 @@ function renew_form(){
 
 	$form = "<b><u>". _("Renewal for login:") ."</u></b> ".$_REQUEST["adm_login"]."<br>";
 	$form .= "<b><u>". _("Product to renew:") ."</u></b> ".$the_prod."<br><br>";
+		
+	if (empty($services))
+		$services = "";
 
 	switch($_REQUEST["renew_type"]){
 	case "multiple-services":
@@ -333,7 +336,7 @@ function renew_form(){
 		}
 		$ax = mysqli_fetch_array($r);
 		$country = $ax["country_code"];
-		$node = $ax["vps_server_name"];
+		$node = $ax["vps_server_hostname"];
 		$vps_num = $ax["vps_xen_name"];
 		$pid = $ax["product_id"];
 		$services .= "vps:".$node.":".$vps_num.":".$pid;

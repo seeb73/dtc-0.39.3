@@ -151,7 +151,7 @@ The administrator decided that the issue is:
 	$n = mysqli_num_rows($r);
 	for($i=0;$i<$n;$i++){
 		$a = mysqli_fetch_array($r);
-		mail($a["email"],"$conf_message_subject_header ".$_SERVER["PHP_AUTH_USER"]." replied to the support ticket of ".$subject_line_adm_name,$adm_content,$headers);
+		mail($a["email"],"$conf_message_subject_header ".$pseudo_user." replied to the support ticket of ".$subject_line_adm_name,$adm_content,$headers);
 	}
 }
 
@@ -853,7 +853,12 @@ dtcFormLineDraw("","
 			$rand = getRandomValue();
 			$adm_random_pass = $rand;
 			$expirationTIME = time() + (60 * $conf_session_expir_minute);
-			$q = "UPDATE $pro_mysql_tik_admins_table SET pass_next_req='$rand', pass_expire='$expirationTIME' WHERE pseudo='".$_SERVER["PHP_AUTH_USER"]."';";
+			$pseudo_user = "unknown";
+			if (!empty($adm_session["session"]["pseudo"]))
+			{
+				$pseudo_user = $adm_session["session"]["pseudo"];
+			}
+			$q = "UPDATE $pro_mysql_tik_admins_table SET pass_next_req='$rand', pass_expire='$expirationTIME' WHERE pseudo='".$pseudo_user."';";
 			$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" line ".__LINE__." file ".__FILE__." !");
 		}
 
