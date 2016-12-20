@@ -1623,7 +1623,14 @@ AddType application/x-httpd-php .php
         Options Indexes FollowSymLinks
         AllowOverride AuthConfig FileInfo Limit Indexes
         Require all granted
-</Directory>" >>$PATH_HTTPD_CONF
+</Directory>
+
+<Directory /var/lib/dtc/etc/dtc404/>
+        Options Indexes FollowSymLinks
+        AllowOverride AuthConfig FileInfo Limit Indexes
+        Require all granted
+</Directory>
+" >>$PATH_HTTPD_CONF
 		fi
 
 		echo "
