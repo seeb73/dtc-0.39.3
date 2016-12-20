@@ -5,6 +5,7 @@ require_once("../shared/autoSQLconfig.php");
 
 function getSpaceSlotsRemaining(){
 	$space = array();
+	global $mysqli_connection;
 
 	$q = "SELECT location FROM vps_server GROUP BY location";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
