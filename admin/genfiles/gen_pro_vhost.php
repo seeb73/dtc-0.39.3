@@ -277,7 +277,8 @@ RewriteRule .* - [F]
 	$num_rows = mysqli_num_rows($result);
 
 	if($num_rows < 1){
-		die("No account to generate : database has to contain AT LEAST one domain name");
+		echo("No account to generate : database has to contain AT LEAST one domain name");
+		return -1;
 	}
 
 	$query2 = "SELECT $pro_mysql_admin_table.path

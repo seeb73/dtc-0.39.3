@@ -1126,7 +1126,9 @@ function named_generate(){
 	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\"");
 	$num_rows = mysqli_num_rows($result);
 
-	if($num_rows < 1){//		die("No account to generate");
+	if($num_rows < 1){
+		echo("No account to generate");
+		return -1;
 	}
 	for($i=0;$i<$num_rows;$i++){
 		unset($wildcard_dns_txt);

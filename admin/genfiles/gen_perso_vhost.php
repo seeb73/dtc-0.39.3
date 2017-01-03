@@ -18,7 +18,8 @@ function perso_vhost_generate(){
 	$num_rows = mysqli_num_rows($result);
 
 	if($num_rows < 1){
-		die("No account to generate");
+		echo("No account to generate");
+		return -1;
 	}
 
 	$vhost_file = "";

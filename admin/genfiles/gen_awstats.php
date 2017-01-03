@@ -34,7 +34,8 @@ function awstat_script_generate(){
 	$num_rows = mysqli_num_rows($result);
 
 	if($num_rows < 1){
-		die("No account to generate");
+		echo("No account to generate");
+		return -1;
 	}
 
 	for($i=0;$i<$num_rows;$i++){

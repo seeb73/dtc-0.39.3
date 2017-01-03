@@ -545,10 +545,6 @@ fi
 	$result = mysqli_query($mysqli_connection,$query)or die("Cannot execute query \"$query\"");
 	$num_rows = mysqli_num_rows($result);
 
-//	if($num_rows < 1){
-//		die("No account to generate");
-//	}
-
 	for($i=0;$i<$num_rows;$i++){
 		$row = mysqli_fetch_array($result) or die (__FILE__ . "Cannot fetch user");
 		$web_name = $row["name"];
