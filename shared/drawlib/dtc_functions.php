@@ -1055,7 +1055,7 @@ function addDomainToUser($adm_login,$adm_pass,$domain_name,$domain_password=""){
 	$domupdate_result = mysqli_query($mysqli_connection,$domupdate_query)or die("Cannot execute query \"$domupdate_query\"! line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 	// Create default domain www
-	$adm_query = "INSERT INTO $pro_mysql_subdomain_table (id,domain_name,subdomain_name,path) VALUES ('','".$domain_name."','www','www');";
+	$adm_query = "INSERT INTO $pro_mysql_subdomain_table (domain_name,subdomain_name,path) VALUES ('".$domain_name."','www','www');";
 	mysqli_query($mysqli_connection,$adm_query)or die("Cannot execute query \"$adm_query\" line ".__LINE__." file ".__FILE__." !".mysqli_error($mysqli_connection));
 
 	// Tell the cron job to activate the changes
