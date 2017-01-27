@@ -240,7 +240,7 @@ function drawIPUsageReport(){
 			$all_ips = $pools[$j]["all_ips"];
 			$nbr_ip = sizeof($all_ips);
 			$keys = array_keys($all_ips);
-			usort  ( &$keys  , "ip_compare_func" );
+			usort  ( $keys  , "ip_compare_func" );
 			$out .= "<table border=\"1\"><tr><th>IP address</th><th>Type</th><th>Name</th></tr>";
 			for($i=0;$i<$nbr_ip;$i++){
 				$ip = $keys[$i];
