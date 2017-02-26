@@ -481,6 +481,8 @@ function fetchAdminData($adm_session,$adm_login,$adm_input_pass){
 
 	global $mysqli_connection;
 
+	$logged_in_with_pass = false;
+
 	$ret["err"] = 0;
 	$ret["mesg"] = "No error";
 
@@ -547,6 +549,7 @@ function fetchAdminData($adm_session,$adm_login,$adm_input_pass){
 			$ret["mesg"]= _("Cannot fetch user:")." "._("either your username or password is not valid, or your session has expired (timed out).");
 			return $ret;
 		}
+		$logged_in_with_pass = true;
 	}
 
 	$adm_path = $row["path"];
@@ -606,14 +609,19 @@ function fetchAdminData($adm_session,$adm_login,$adm_input_pass){
 			$session_key = $adm_session["session"]["session_key"];
 			
 			$adm_session["session"]["adm_login"] = $adm_login;
-			$q2 = "INSERT INTO $pro_mysql_sessions_table (adm_login,session_key,ip_addr,expiry)
-		VALUES ('$adm_login', '$session_key', '$session_ip', FROM_UNIXTIME($session_expiry) );";
+	
+			// only set into the session table if logged in with pass
+			if ($logged_in_with_pass)
+			{
+				$q2 = "INSERT INTO $pro_mysql_sessions_table (adm_login,session_key,ip_addr,expiry)
+				VALUES ('$adm_login', '$session_key', '$session_ip', FROM_UNIXTIME($session_expiry) );";
 			
-			if(mysqli_query($mysqli_connection,$q2) === FALSE){
-				// if we can't insert session data, we should bail out here, something is wrong
-				$ret["err"] = 5;
-				$ret["mesg"]="Cannot execute query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection);
-				return $ret;
+				if(mysqli_query($mysqli_connection,$q2) === FALSE){
+					// if we can't insert session data, we should bail out here, something is wrong
+					$ret["err"] = 5;
+					$ret["mesg"]="Cannot execute query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection);
+					return $ret;
+				}
 			}
 			
 			// expire out sessions that are older than 60 days
@@ -624,6 +632,12 @@ function fetchAdminData($adm_session,$adm_login,$adm_input_pass){
 				$ret["mesg"]="Cannot execute query $q2 line ".__LINE__." file ".__FILE__." sql said: ".mysqli_error($mysqli_connection);
 				return $ret;
 			}	
+			if (!$logged_in_with_pass)
+			{
+				$ret["err"] = 4;
+				$ret["mesg"]= _("Cannot fetch user:")." "._("either your username or password is not valid, or your session has expired (timed out).");
+				return $ret;
+			}
 		}
 	}
 	
