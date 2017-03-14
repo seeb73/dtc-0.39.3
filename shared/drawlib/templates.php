@@ -333,6 +333,12 @@ function dtcDatagrid($dsc){
 				case "popup":
 				case "textarea":
 				case "password":
+					// don't process empty values
+					if ($_REQUEST[ $keys[$i] ] == '')
+					{
+							continue;
+					}
+				
 					if($added_one == "yes"){
 						$vals .= ", ";
 						$qflds .= ", ";
