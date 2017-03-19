@@ -111,21 +111,29 @@ if($n > 0){
 }
 
 if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "new_client"){
+	$dollarparam = "";
+	$dollarvalue = "";
+	if (isset($_REQUEST["ed_dollar"]) && $_REQUEST["ed_dollar"] != "")
+	{
+		$dollarparam = "dollar,";
+		$dollarvalue = mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_dollar"]);
+	}
+	
 	$q = "INSERT INTO $pro_mysql_client_table(
-id,is_company,company_name,vat_num,
+is_company,company_name,vat_num,
 familyname,christname,
 addr1,addr2,addr3,
 city,zipcode,state,
 country,phone,fax,
-email,special_note,dollar,
+email,special_note, $dollarparam 
 disk_quota_mb,bw_quota_per_month_gb,customfld
 )VALUES(
-'','".$_REQUEST["ed_is_company"]."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_company_name"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_vat_num"])."',
+'".$_REQUEST["ed_is_company"]."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_company_name"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_vat_num"])."',
 '".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_familyname"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_christname"])."',
 '".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_addr1"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_addr2"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_addr3"])."',
 '".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_city"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_zipcode"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_state"])."',
 '".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_country"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_phone"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_fax"])."',
-'".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_email"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_special_note"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_dollar"])."',
+'".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_email"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_special_note"])."','".$dollarvalue."',
 '".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_disk_quota_mb"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_bw_quota_per_month_gb"])."','".$cust_fld_val."');";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 }
