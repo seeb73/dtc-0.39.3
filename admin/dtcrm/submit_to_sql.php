@@ -116,7 +116,7 @@ if(isset($_REQUEST["action"]) && $_REQUEST["action"] == "new_client"){
 	if (isset($_REQUEST["ed_dollar"]) && $_REQUEST["ed_dollar"] != "")
 	{
 		$dollarparam = "dollar,";
-		$dollarvalue = mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_dollar"]);
+		$dollarvalue = ",'" . mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_dollar"]) . "'";
 	}
 	
 	$q = "INSERT INTO $pro_mysql_client_table(
@@ -133,7 +133,7 @@ disk_quota_mb,bw_quota_per_month_gb,customfld
 '".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_addr1"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_addr2"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_addr3"])."',
 '".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_city"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_zipcode"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_state"])."',
 '".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_country"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_phone"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_fax"])."',
-'".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_email"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_special_note"])."','".$dollarvalue."',
+'".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_email"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_special_note"])."'".$dollarvalue.",
 '".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_disk_quota_mb"])."','".mysqli_real_escape_string($mysqli_connection,$_REQUEST["ed_bw_quota_per_month_gb"])."','".$cust_fld_val."');";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot execute query: \"$q\" line ".__LINE__." in file ".__FILE__.", mysql said: ".mysqli_error($mysqli_connection));
 }
