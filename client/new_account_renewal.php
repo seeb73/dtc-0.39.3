@@ -486,8 +486,11 @@ Service country: $country
 		$form .= "<br>"._("Client: ").$client["id"];
 		$form .= "<br>"._("Remaining on your account before payment: ").$client["dollar"];
 		$form .= "<br>"._("Price: ").$price;
-		$q = "UPDATE $pro_mysql_client_table SET dollar=dollar-" . $product["price_dollar"] . " WHERE id='".$client["id"]."';";
-		$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said: ".mysqli_error($mysqli_connection));
+		if (isset($product["price_dollar"]) && $product["price_dollar"] > 0)
+        {
+			$q = "UPDATE $pro_mysql_client_table SET dollar=dollar-" . $product["price_dollar"] . " WHERE id='".$client["id"]."';";
+			$r = mysqli_query($mysqli_connection,$q)or die("Cannot query $q line ".__LINE__." file ".__FILE__." mysql said: ".mysqli_error($mysqli_connection));
+		}
 
 		if(!isset($_REQUEST["renew_id"]) || !isRandomNum($_REQUEST["renew_id"])){
 			die("Renew ID is not a number line ".__LINE__." file ".__FILE__);
@@ -519,8 +522,8 @@ Service country: $country
 		}
 
 		// Save the values in SQL and process the paynow buttons
-		$q = "INSERT INTO $pro_mysql_pending_renewal_table (id,adm_login,renew_date,renew_time,product_id,renew_id,heb_type,country_code,services)
-		VALUES ('','".$_REQUEST["adm_login"]."',now(),now(),'".$prod_id."','".$client_id."','".$_REQUEST["renew_type"]."','$country','$services');";
+		$q = "INSERT INTO $pro_mysql_pending_renewal_table (adm_login,renew_date,renew_time,product_id,renew_id,heb_type,country_code,services)
+		VALUES ('".$_REQUEST["adm_login"]."',now(),now(),'".$prod_id."','".$client_id."','".$_REQUEST["renew_type"]."','$country','$services');";
 		$r = mysqli_query($mysqli_connection,$q)or die("Cannot querry $q line ".__LINE__." file ".__FILE__." sql said ".mysqli_error($mysqli_connection));
 		$renew_id = mysqli_insert_id($mysqli_connection);
 

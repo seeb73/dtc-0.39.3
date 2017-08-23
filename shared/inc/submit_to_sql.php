@@ -450,8 +450,8 @@ Date: ".$renew_entry["renew_date"]." ".$renew_entry["renew_time"]."
 
 
 	// Now add a command to the user so we keep tracks of payments
-	$q = "INSERT INTO $pro_mysql_completedorders_table (id,id_client,domain_name,quantity,date,product_id,payment_id,country_code,last_expiry_date,services)
-	VALUES ('','$cid','','1','".date("Y-m-d")."','$prod_id','".$renew_entry["pay_id"]."','".$renew_entry["country_code"]."','$old_expire','".$renew_entry["services"]."');";
+	$q = "INSERT INTO $pro_mysql_completedorders_table (id_client,domain_name,quantity,date,product_id,payment_id,country_code,last_expiry_date,services)
+	VALUES ('$cid','','1','".date("Y-m-d")."','$prod_id','".$renew_entry["pay_id"]."','".$renew_entry["country_code"]."','$old_expire','".$renew_entry["services"]."');";
 	mysqli_query($mysqli_connection,$q)or die("Cannot execute query \"$q\" ! line: ".__LINE__." file: ".__FILE__." sql said: ".mysqli_error($mysqli_connection));
 
 	$q = "DELETE FROM $pro_mysql_pending_renewal_table WHERE id='$renew_id';";

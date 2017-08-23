@@ -1,3 +1,9 @@
+dtc (0.39.3-1) experimental; urgency=low
+
+  * Bump
+
+ -- Damien Mascord <tusker@tusker.org>  Wed, 23 Aug 2017 14:37:40 +1000
+
 dtc (0.39.2-1) experimental; urgency=low
 
   * Change over to using curl from fsockopen for Paypal and backup DTC

@@ -122,9 +122,14 @@ function createCreditCardPaiementID($amount_paid,$client_id,$label,$new_account=
 	global $mysqli_connection;
 
 	$hash_check_key = getRandomValue();
+	
+	if (!isset($amount_paid) || $amount_paid == '')
+	{
+			$amount_paid = 0.0;
+	}
 
-	$q = "INSERT INTO $pro_mysql_pay_table (id,id_client,label,currency,refund_amount,paiement_type,date,time,valid,new_account,shopper_ip,product_id,paiement_total,vat_rate,hash_check_key,services)
-		VALUES ('','$client_id','label','{$secpayconf_currency_letters}','$amount_paid','online','".date("Y-m-j")."','".date("H:i:s")."','no','$new_account','".$_SERVER["REMOTE_ADDR"]."','$product_id','$amount_paid','$vat_rate','$hash_check_key','$services');";
+	$q = "INSERT INTO $pro_mysql_pay_table (id_client,label,currency,refund_amount,paiement_type,date,time,valid,new_account,shopper_ip,product_id,paiement_total,vat_rate,hash_check_key,services)
+		VALUES ('$client_id','label','{$secpayconf_currency_letters}','$amount_paid','online','".date("Y-m-j")."','".date("H:i:s")."','no','$new_account','".$_SERVER["REMOTE_ADDR"]."','$product_id','$amount_paid','$vat_rate','$hash_check_key','$services');";
 	$r = mysqli_query($mysqli_connection,$q)or die("Cannot query \"$q\" ! ".mysqli_error($mysqli_connection)." in file ".__FILE__." line ".__LINE__);
 	$n = mysqli_insert_id($mysqli_connection);
 	return $n;

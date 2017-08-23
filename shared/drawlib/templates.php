@@ -223,6 +223,7 @@ function dtcFoldingForm($dsc){
 	$jscript .= "</script>";
 	$out .= dtcFromOkDraw();
 //	$out .= dtcFormLineDraw("",submitButtonStart()._("Ok").submitButtonEnd(),0);
+	$out .= "</form>";
 	$out .= "</table>";
 	return $jscript.$out;
 
