@@ -1,0 +1,124 @@
+#!/bin/bash
+clear
+## set -x
+#dtc-getssl - wrapper script around .getssl with specifics for DTC and more help
+#Author:  Don Gould - don@gplhost.com & Damien Mascord - damien@gplhost.com - 20 Apr 2017
+
+#Before you run this script on a domain you have to:
+# * Set up IP addresses in /etc/network/interface
+# * Set up the addresses in DTC - General Configuration - IP Addresses and Network
+# * Set up the addresses in DTC - General Configuration - SSL IP Addresses
+# * Assign a "SSL Token" to a customer by having them 'purchase it'
+
+#Get the passed in parameters
+for i in $@ ; do
+        case "${1}" in
+        "-s")
+                subdomain="${2}"
+                shift
+                shift
+                ;;
+        "-d")
+                domain="${2}"
+                shift
+                shift
+                ;;
+        "-a")
+                admin="${2}"
+                shift
+                shift
+                ;;
+
+        "-f")
+                f="-f"
+                shift
+                shift
+                ;;
+
+        "-c")
+                c="c"
+                shift
+                shift
+                ;;
+
+        esac
+done
+
+
+
+#We used "sudo -u dtc " with every command to ensure that the correct rights are on the files.
+
+#Get some parameters so we can make the cert...
+
+# $admin - a
+# $domain - d
+# $subdomain - s
+# $c - create
+# $f - force
+
+# dtc-getssl -a don -s www -d donsblog.geek.nz -c
+#If we're creating a new entry we'll do this...
+if [ -n "$c" ]; then
+
+	# sudo -u dtc touch  /var/www/sites/bowenvale/bowenvale.co.nz/subdomains/blog/ssl/blog.bowenvale.co.nz.cert.csr
+	# sudo -u dtc touch  /var/www/sites/bowenvale/bowenvale.co.nz/subdomains/blog/ssl/privkey.pem
+
+	#We have to make a csr file because getssl doesn't but gen_pro_vhost.php checks for it to exist
+	# sudo -u dtc touch  /var/www/sites/bowenvale/bowenvale.co.nz/subdomains/blog/ssl/blog.bowenvale.co.nz.cert.csr
+
+	sudo -u dtc mkdir /var/www/sites/$admin/$domain/subdomains/$subdomain/ssl/
+	sudo -u dtc touch  /var/www/sites/$admin/$domain/subdomains/$subdomain/ssl/$subdomain.$domain.cert.csr
+	sudo -u dtc touch  /var/www/sites/$admin/$domain/subdomains/$subdomain/ssl/privkey.pem
+
+	#If -c used then we have to make the domain...
+	#sudo -u dtc ./getssl -c blog.bowenvale.co.nz 
+
+	sudo -u dtc ./getssl -$c $subdomain.$domain
+
+	echo "Done creating, please edit the configuration file now then run dtc-getssl $..."
+	echo
+	 echo "Stuff you need to edit..."
+        echo "You need to make sure you're using the production CA server or you'll get an error.  The cert will install but it then won't work properly."
+        echo "CA="https://acme-v01.api.letsencrypt.org""
+        echo
+        echo "You'll need to edit the SANS setting"
+        echo "If you're setting up the www domain and you want it to be the default, eg http://gplhost.com vs http://www.gplhost.com then you need to create a cert with both www and . in it."
+        echo "eg SANS=\"gplhost.com,www.gplhost.com\""
+        echo "This will need to be done on the www subdomain - eg www.gplhost.com for the example above."
+        echo
+        echo "Set your ACL value.  This is just a file that the script writes to the web server so that it can be seen to verify that you are geting a cert for the public facing server."
+        echo "ACL=('/var/www/sites/$admin/$domain/subdomains/$subdomain/html/.well-known/acme-challenge')"
+        echo
+        echo "You need to set USE_SINGLE_ACL to true if you set a SANS with more than one domain name."
+        echo "USE_SINGLE_ACL=\"true\""
+        echo
+        echo "You need to set your file locations so the certs end up in the right place for DTC."
+        echo
+        echo "DOMAIN_CERT_LOCATION=\"/var/www/sites/$admin/$domain/subdomains/$subdomain/ssl/$subdomain.$domain.cert.cert\""
+        echo "DOMAIN_KEY_LOCATION=\"/var/www/sites/$admin/$domain/subdomains/$subdomain/ssl/$subdomain.$domain.cert.key\""
+        echo "CA_CERT_LOCATION=\"/var/www/sites/$admin/$domain/subdomains/$subdomain/ssl/$subdomain.$domain.cert.ca\""
+        echo
+        echo "nano /home/dtc/.getssl/$subdomain.$domain/getssl.cfg"
+        echo
+
+
+fi
+
+#Now make the domain after you've manually edited the config file
+#check if the -c switch has not been used and assume we're doing the make, also $f is just inserted... $f is the 'force' option to make a redo
+if [ -z "$c" ]; then
+	sudo -u dtc ./getssl $f $subdomain.$domain
+fi
+
+#Now make the domain after you've manually edited the config file
+
+# sudo -u dtc ./getssl $subdomain.$domain
+
+#if the user said -f... - this is to force a remake
+
+# sudo -u dtc ./getssl -$f $subdomain.$domain
+
+
+
+exit
+
