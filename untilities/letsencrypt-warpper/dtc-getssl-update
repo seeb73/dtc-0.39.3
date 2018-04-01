@@ -1,0 +1,2 @@
+sudo -u dtc ./getssl  -u -a -q
+
