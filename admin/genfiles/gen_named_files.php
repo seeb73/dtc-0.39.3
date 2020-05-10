@@ -1480,7 +1480,13 @@ $more_dns_server
 
 				// if we have a srv_record here (ie a port, then we don't write the normal subdomain entry, just the SRV record
 			 	if (isset($subdomain["srv_record"]) && $subdomain["srv_record"] != ""){
-					$this_site_file .= "_$web_subname._".$subdomain["srv_record_protocol"]."	$sub_ttl	IN	SRV	0	10	".$subdomain["srv_record"]."	".$subdomain["ip"]."\n";
+					 // if we already have a _ prefix, don't add another one
+                                        if (strpos($web_subname,"_") === 0)
+                                        {
+                                                $web_subname = substr($web_subname,1);
+                                        }
+					// set the SRV record weight and priority based on Microsoft DNS strict rules
+                                        $this_site_file .= "_$web_subname._".$subdomain["srv_record_protocol"]."        $sub_ttl        IN      SRV     1       100     ".$subdomain["srv_record"]."    ".$subdomain["ip"]."\n";
 				} else {
 					// write TTL values into subdomain
 					if($web_subname == $web_default_subdomain && $wildcard_dns == "yes"){
