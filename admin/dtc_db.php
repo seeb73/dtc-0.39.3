@@ -1409,7 +1409,7 @@ $dtc_database = array(
 			"use_shared_ssl" => "enum('no','yes') NOT NULL",
 			"redirect_url" => "varchar(512) NOT NULL default ''",
 			"windows_compat" => "enum('no','yes') NOT NULL",
-			"srv_record_protocol" => "enum('tcp','udp','sctp') NOT NULL default 'tcp'"
+			"srv_record_protocol" => "enum('tcp','udp','sctp','tls') NOT NULL default 'tcp'"
 		),
 		"primary" => "(id)",
 		"keys" => array(
